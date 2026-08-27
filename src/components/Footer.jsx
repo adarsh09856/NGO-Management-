@@ -133,7 +133,16 @@ export default function Footer({ onOpenDonate }) {
             <Link to="/about" className="hover:text-[#D4AF37]">Terms & Conditions</Link>
           </div>
           <div className="text-right text-[#D1D5DB]">
-            Designed & Developed by <span className="text-[#D4AF37] font-medium">Netlink Group, Kolkata, India</span> &nbsp;·&nbsp; v1.0.0
+            Designed & Developed by{' '}
+            <a
+              href="https://www.linkedin.com/in/adarsh-nule/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-[#D4AF37] font-semibold hover:underline"
+            >
+              Adarsh Nule
+            </a>
+            &nbsp;·&nbsp; v1.0.0
           </div>
         </div>
       </div>

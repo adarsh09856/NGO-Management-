@@ -30,7 +30,16 @@ export default function AdminLayout({ breadcrumbs }) {
             © 2026 Drodul Phendey Ling Foundation. All Rights Reserved.
           </div>
           <div>
-            Designed & Developed by <span className="font-medium text-[#4A0E17]">Netlink Group, Kolkata, India</span> &nbsp;·&nbsp; v1.0.0
+            Designed & Developed by{' '}
+            <a
+              href="https://www.linkedin.com/in/adarsh-nule/"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-[#4A0E17] hover:underline"
+            >
+              Adarsh Nule
+            </a>
+            &nbsp;·&nbsp; v1.0.0
           </div>
         </footer>
       </div>
