@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    color: #2D1810;
+    background-color: #FDFBF7;
+  }
+
+  h1, h2, h3, .font-serif-brand {
+    font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  }
+
+  .font-tibetan {
+    font-family: 'Noto Sans Tibetan', 'Jomolhari', sans-serif;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F8F6F0;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B89020;
+}
+
+/* Monastery Custom Components */
+.monastery-card {
+  background: #FFFFFF;
+  border: 1px solid #EBE5D8;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.monastery-card-hover {
+  transition: all 0.2s ease-in-out;
+}
+.monastery-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 14, 23, 0.08);
+  border-color: #D4AF37;
+}
+
+/* Golden Accent Glow */
+.gold-glow {
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+}
+
+/* Admin Sidebar Active Item */
+.sidebar-item-active {
+  background-color: #5A121E;
+  color: #FFFFFF;
+  border-left: 3px solid #D4AF37;
+}

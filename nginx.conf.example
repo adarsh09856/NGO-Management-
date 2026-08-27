@@ -1,0 +1,68 @@
+# ===================================================================
+# Nginx Configuration for Drodul Phendey Ling Foundation
+# Compatible with aaPanel, cPanel (Reverse Proxy) & Raw VPS Nginx
+# ===================================================================
+
+server {
+    listen 80;
+    server_name drodulphendeyling.org www.drodulphendeyling.org;
+    # Redirect all HTTP traffic to HTTPS
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name drodulphendeyling.org www.drodulphendeyling.org;
+
+    # SSL Certificate Paths (Managed via aaPanel SSL or Let's Encrypt Certbot)
+    ssl_certificate /www/server/panel/vhost/cert/drodulphendeyling.org/fullchain.pem;
+    ssl_certificate_key /www/server/panel/vhost/cert/drodulphendeyling.org/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+
+    # Root directory for static production build of frontend (/dist)
+    root /www/wwwroot/drodulphendeyling.org/dist;
+    index index.html index.htm;
+
+    # Enable Gzip Compression
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml;
+
+    # 1. Frontend SPA Routing Fallback
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # 2. Reverse Proxy API calls to Node.js Backend on PM2 (Port 5000)
+    location /api/ {
+        proxy_pass http://127.0.0.1:5000/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        client_max_body_size 25M;
+    }
+
+    # 3. Serve Uploaded Media & PDF Files via Node Backend Proxy or Persistent Disk
+    location /uploads/ {
+        proxy_pass http://127.0.0.1:5000/uploads/;
+        proxy_set_header Host $host;
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    # Security Headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+
+    # Access and Error Logs
+    access_log /www/wwwlogs/drodulphendeyling.org.log;
+    error_log /www/wwwlogs/drodulphendeyling.org.error.log;
+}
