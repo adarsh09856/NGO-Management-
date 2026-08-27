@@ -13,6 +13,12 @@
     "db:backup": "node db/backup.js",
     "test": "node test/integration-assertions.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adarsh09856/NGO-Management-.git"
+  },
+  "author": "Adarsh Nule <adarshnule90@gmail.com> (https://github.com/adarsh09856)",
+  "license": "MIT",
   "dependencies": {
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
@@ -39,7 +45,5 @@
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
     "vite": "^6.0.7"
-  },
-  "author": "Drodul Phendey Ling Foundation / Netlink Group",
-  "license": "ISC"
+  }
 }

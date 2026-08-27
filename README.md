@@ -2,10 +2,11 @@
 
 # Drodul Phendey Ling Foundation — Monastery & NGO Management CRM
 
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Database: MySQL 8.0](https://img.shields.io/badge/Database-MySQL%208.0%20InnoDB-orange.svg)](https://www.mysql.com/)
 [![Runtime: Node.js 18+](https://img.shields.io/badge/Runtime-Node.js%2018%2B-green.svg)](https://nodejs.org/)
 [![Frontend: React 18 + Vite + Tailwind](https://img.shields.io/badge/Frontend-React%2018%20%7C%20Vite%20%7C%20Tailwind-blueviolet.svg)](https://react.dev/)
+[![Author: Adarsh Nule](https://img.shields.io/badge/Author-Adarsh%20Nule-blue.svg)](https://www.linkedin.com/in/adarsh-nule/)
 
 > **Keywords:** `ngo-management`, `monastery-crm`, `donation-management`, `80g-receipts`, `buddhist-monastery`, `bhutan`, `react`, `express`, `mysql`, `vite`, `tailwind-css`, `lms`, `payroll`, `inventory`, `aapanel-deployment`, `pm2`, `nginx`, `full-stack`
 
@@ -48,7 +49,7 @@ The application comprises **four integrated portals**:
 ## 📁 Single Unified Directory Structure
 
 ```text
-e:\ai\bhutanprojects\ngo/
+./
 ├── config/                  # MySQL connection pool & transaction helper
 │   └── db.js
 ├── controllers/             # All 16 modular backend controllers
@@ -152,7 +153,7 @@ npm run db:seed
 
 ### 4. Install & Run Application
 ```bash
-# 1. Install all dependencies (Backend + Frontend) in one command
+# 1. Install all dependencies in one command
 npm install
 
 # 2. Build React production bundle
@@ -205,7 +206,7 @@ Deploying Drodul Phendey Ling CRM in **aaPanel Node.js Project Manager** require
 
 ---
 
-### Step 3: Install, Migrate & Build (Single Terminal Session)
+### Step 3: Install, Migrate & Build
 ```bash
 cd /www/wwwroot/drodulphendeyling
 
@@ -245,10 +246,15 @@ npm run build
 
 ---
 
-## ☸ Lineage & Foundation Credits
+## 👤 Author & Maintainer
 
-**Drodul Phendey Ling Foundation**  
-*Great Druk Wangyel Peace Stupa Complex, Gelephu, Sarpang Dzongkhag, Kingdom of Bhutan*  
-**Spiritual Head**: Khenpo Tashi Dorji  
-**Contact**: contact@drodulphendeyling.org | +975 17556559  
-**Software Architect**: Netlink Group, Kolkata, India
+- **Developer**: **Adarsh Nule**
+- **GitHub**: [@adarsh09856](https://github.com/adarsh09856)
+- **LinkedIn**: [https://www.linkedin.com/in/adarsh-nule/](https://www.linkedin.com/in/adarsh-nule/)
+- **Repository**: [https://github.com/adarsh09856/NGO-Management-](https://github.com/adarsh09856/NGO-Management-)
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
