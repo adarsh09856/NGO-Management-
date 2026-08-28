@@ -24,6 +24,9 @@ import BlogDetail from './pages/public/BlogDetail';
 import Login from './pages/public/Login';
 import Register from './pages/public/Register';
 
+// Admin Login
+import AdminLogin from './pages/admin/AdminLogin';
+
 // Unified User Panel
 import UserLayout from './pages/user/UserLayout';
 import UserDashboard from './pages/user/UserDashboard';
@@ -56,7 +59,7 @@ import ReportsHub from './pages/admin/ReportsHub';
 function RequireAdmin({ children }) {
   const { user, loading, isAdmin } = useAuth();
   if (loading) return <div className="p-8 text-center text-gray-500">Authenticating...</div>;
-  if (!user || !isAdmin) return <Navigate to="/login?portal=admin" replace />;
+  if (!user || !isAdmin) return <Navigate to="/admin/login" replace />;
   return children;
 }
 
@@ -106,7 +109,12 @@ export default function App() {
         />
 
         {/* ========================================================= */}
-        {/* 2. UNIFIED USER / MEMBER PANEL                            */}
+        {/* 2. DEDICATED ADMIN / STAFF LOGIN                          */}
+        {/* ========================================================= */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+
+        {/* ========================================================= */}
+        {/* 3. UNIFIED USER / MEMBER PANEL                            */}
         {/* ========================================================= */}
         <Route
           path="/user/*"
@@ -127,7 +135,7 @@ export default function App() {
         <Route path="/student/*" element={<Navigate to="/learning" replace />} />
 
         {/* ========================================================= */}
-        {/* 3. ADMIN & STAFF ROLE-RESTRICTED PORTAL                   */}
+        {/* 4. ADMIN & STAFF ROLE-RESTRICTED PORTAL                   */}
         {/* ========================================================= */}
         <Route
           path="/admin/*"

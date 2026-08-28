@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Lock, Mail, ShieldCheck, Heart, User, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Lock, Mail, Heart, ArrowRight, UserCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
@@ -8,89 +8,57 @@ export default function Login() {
   const { login } = useAuth();
   const { success, error } = useToast();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
-  const initialPortal = searchParams.get('portal') === 'admin' ? 'admin' : 'user';
-  const [portalTab, setPortalTab] = useState(initialPortal); // 'user', 'admin'
-  const [email, setEmail] = useState(initialPortal === 'admin' ? 'admin@drodulphendeyling.org' : 'tashi.phuntsho@email.com');
+  const [email, setEmail] = useState('tashi.phuntsho@email.com');
   const [password, setPassword] = useState('password123');
   const [loading, setLoading] = useState(false);
-
-  const handleTabChange = (tab) => {
-    setPortalTab(tab);
-    if (tab === 'admin') {
-      setEmail('admin@drodulphendeyling.org');
-    } else {
-      setEmail('tashi.phuntsho@email.com');
-    }
-  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
-      const user = await login(email, password, portalTab);
+      const user = await login(email, password, 'user');
       success(`Welcome back, ${user.fullName}!`);
 
-      if (user.role?.slug === 'super_admin' || user.role?.slug === 'accountant' || user.role?.slug === 'staff' || user.role?.slug === 'hr_manager') {
+      if (['super_admin', 'accountant', 'staff', 'hr_manager'].includes(user.role?.slug)) {
         navigate('/admin');
       } else {
         navigate('/user');
       }
     } catch (err) {
-      error(err.message || 'Login failed. Please check credentials.');
+      error(err.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#FDFBF7]">
+    <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#FDFBF7]">
       <div className="max-w-md w-full space-y-6">
         {/* Brand Crest */}
         <div className="text-center space-y-2">
           <div className="w-14 h-14 rounded-full bg-[#4A0E17] border-2 border-[#D4AF37] flex items-center justify-center mx-auto shadow-md">
             <span className="text-[#D4AF37] text-2xl font-serif font-bold">☸</span>
           </div>
-          <h2 className="font-serif-brand font-extrabold text-2xl text-[#4A0E17] tracking-wider uppercase">
+          <h1 className="font-serif-brand font-extrabold text-2xl text-[#4A0E17] tracking-wider uppercase">
             DRODUL PHENDEY LING
-          </h2>
+          </h1>
           <p className="text-xs text-gray-500 font-medium">
-            Sign in to access your dashboard
+            Devotee & Member Portal Login
           </p>
-        </div>
-
-        {/* Portal Type Tabs */}
-        <div className="grid grid-cols-2 gap-2 bg-[#F8F6F0] p-1.5 rounded-xl border border-[#EBE5D8]">
-          <button
-            type="button"
-            onClick={() => handleTabChange('user')}
-            className={`py-2 text-xs font-bold rounded-lg flex items-center justify-center space-x-1.5 transition-all ${
-              portalTab === 'user'
-                ? 'bg-[#4A0E17] text-white shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <Heart className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>User / Member</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleTabChange('admin')}
-            className={`py-2 text-xs font-bold rounded-lg flex items-center justify-center space-x-1.5 transition-all ${
-              portalTab === 'admin'
-                ? 'bg-[#4A0E17] text-white shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>Admin / Staff</span>
-          </button>
         </div>
 
         {/* Login Form Card */}
         <div className="monastery-card p-6 sm:p-8 space-y-6 shadow-md">
+          <div className="space-y-1">
+            <h2 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+              Sign In to Your User Panel
+            </h2>
+            <p className="text-xs text-gray-500">
+              Access your donation history, 80G tax receipts, and prayer requests.
+            </p>
+          </div>
+
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">
@@ -104,7 +72,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#7E1929] bg-[#FAF9F5]"
-                  placeholder="name@drodulphendeyling.org"
+                  placeholder="devotee@email.com"
                 />
               </div>
             </div>
@@ -136,62 +104,41 @@ export default function Login() {
               disabled={loading}
               className="w-full bg-[#7E1929] hover:bg-[#5A121E] text-white py-2.5 rounded font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-1.5 shadow transition-all"
             >
-              <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
+              <span>{loading ? 'Authenticating...' : 'Sign In to User Panel'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </form>
 
-          {/* Quick Demo Credentials Switcher */}
+          {/* Quick Demo Login */}
           <div className="pt-4 border-t border-gray-100 space-y-2">
             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider text-center">
-              1-Click Demo Accounts (Password: password123)
+              Demo Devotee Login (Password: password123)
             </p>
-            <div className="grid grid-cols-2 gap-1.5 text-[11px]">
-              <button
-                type="button"
-                onClick={() => { setPortalTab('admin'); setEmail('admin@drodulphendeyling.org'); }}
-                className="p-1.5 rounded bg-gray-50 hover:bg-[#FDF6E2] text-left border border-gray-200"
-              >
-                <p className="font-bold text-[#4A0E17]">Super Admin</p>
-                <p className="text-[9px] text-gray-500">Full System Control</p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => { setPortalTab('admin'); setEmail('accountant@drodulphendeyling.org'); }}
-                className="p-1.5 rounded bg-gray-50 hover:bg-[#FDF6E2] text-left border border-gray-200"
-              >
-                <p className="font-bold text-[#4A0E17]">Accountant</p>
-                <p className="text-[9px] text-gray-500">Finance & Payroll</p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => { setPortalTab('admin'); setEmail('staff@drodulphendeyling.org'); }}
-                className="p-1.5 rounded bg-gray-50 hover:bg-[#FDF6E2] text-left border border-gray-200"
-              >
-                <p className="font-bold text-[#4A0E17]">Staff Coordinator</p>
-                <p className="text-[9px] text-gray-500">Operations & CMS</p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => { setPortalTab('user'); setEmail('tashi.phuntsho@email.com'); }}
-                className="p-1.5 rounded bg-gray-50 hover:bg-[#FDF6E2] text-left border border-gray-200"
-              >
-                <p className="font-bold text-[#4A0E17]">Devotee Member</p>
-                <p className="text-[9px] text-gray-500">Donations & 80G Receipts</p>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setEmail('tashi.phuntsho@email.com')}
+              className="w-full p-2 rounded bg-[#FAF9F5] hover:bg-[#FDF6E2] text-left border border-gray-200 flex items-center justify-between"
+            >
+              <div>
+                <p className="font-bold text-xs text-[#4A0E17]">Tashi Phuntsho (Devotee Donor)</p>
+                <p className="text-[10px] text-gray-500">tashi.phuntsho@email.com</p>
+              </div>
+              <UserCheck className="w-4 h-4 text-[#D4AF37]" />
+            </button>
           </div>
         </div>
 
-        <p className="text-center text-xs text-gray-500">
-          Want to become a devotee member?{' '}
-          <Link to="/register" className="text-[#7E1929] font-bold hover:underline">
-            Create an Account
+        <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-2 px-1">
+          <p>
+            New devotee?{' '}
+            <Link to="/register" className="text-[#7E1929] font-bold hover:underline">
+              Create an Account
+            </Link>
+          </p>
+          <Link to="/admin/login" className="text-gray-400 hover:text-[#4A0E17] font-medium">
+            Staff / Admin Login →
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );
