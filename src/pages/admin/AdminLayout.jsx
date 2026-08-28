@@ -24,22 +24,13 @@ export default function AdminLayout({ breadcrumbs }) {
           <Outlet />
         </main>
 
-        {/* Admin Footer (Matching screenshot) */}
+        {/* Admin Footer */}
         <footer className="px-6 py-4 bg-white border-t border-[#EBE5D8] text-[11px] text-gray-500 flex flex-col sm:flex-row justify-between items-center gap-2">
           <div>
             © 2026 Drodul Phendey Ling Foundation. All Rights Reserved.
           </div>
           <div>
-            Designed & Developed by{' '}
-            <a
-              href="https://www.linkedin.com/in/adarsh-nule/"
-              target="_blank"
-              rel="noreferrer"
-              className="font-semibold text-[#4A0E17] hover:underline"
-            >
-              Adarsh Nule
-            </a>
-            &nbsp;·&nbsp; v1.0.0
+            Gelephu, Sarpang, Bhutan &nbsp;·&nbsp; v1.0.0
           </div>
         </footer>
       </div>
