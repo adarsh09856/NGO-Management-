@@ -35,11 +35,9 @@ async function login(req, res) {
     if (portal === 'admin' && !['super_admin', 'accountant', 'hr_manager', 'staff'].includes(user.role_slug)) {
       return res.status(403).json({ success: false, message: 'Access denied: Admin portal credentials required.' });
     }
-    if (portal === 'donor' && user.role_slug !== 'donor' && user.role_slug !== 'super_admin') {
-      return res.status(403).json({ success: false, message: 'Access denied: Donor portal credentials required.' });
-    }
-    if (portal === 'student' && user.role_slug !== 'student_monk' && user.role_slug !== 'super_admin') {
-      return res.status(403).json({ success: false, message: 'Access denied: Student / Monk credentials required.' });
+    // Allow all active users to access the User Panel
+    if (portal === 'user' && !['user', 'donor', 'student_monk', 'super_admin', 'accountant', 'staff', 'hr_manager'].includes(user.role_slug)) {
+      return res.status(403).json({ success: false, message: 'Access denied: Member portal credentials required.' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password_hash);

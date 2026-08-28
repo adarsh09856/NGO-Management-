@@ -347,16 +347,31 @@ INSERT INTO prayer_requests (id, devotee_name, devotee_email, devotee_phone, cou
 (2, 'David Miller', 'david.miller@zenpacific.com', '+1 206 555 0192', 'United States', 'World Peace', 'Dedication for global peace, relief from natural calamities, and blessings for the Bhutanese peace stupa.', 108, 'Miller Family & all sentient beings', 5000.00, 'INR', 'paid', 'pending')
 ON DUPLICATE KEY UPDATE id=VALUES(id);
 
--- 35. Gallery Items
-INSERT INTO gallery_items (id, title, category, image_url, caption, display_order, is_featured) VALUES
-(1, 'Great Druk Wangyel Peace Stupa in Morning Light', 'Stupa Construction', 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800', 'The magnificent stupa rising against the serene foothills of Gelephu, Bhutan.', 1, 1),
-(2, 'Monks Chanting in Shedra Assembly Hall', 'Shedra Life', 'https://images.unsplash.com/photo-1609137144822-446757b4f535?w=800', 'Resident monastic students reciting sacred Prajnaparamita texts.', 2, 1),
-(3, 'Consecration of 1000 Butter Lamps', 'Puja & Ceremonies', 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800', 'Devotees and monks illuminating butter lamps for world harmony.', 3, 1),
-(4, 'Traditional Stone Carving Artisans at Work', 'Monastic Arts', 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=800', 'Master craftsmen carving auspicious Buddhist motifs for the Stupa base.', 4, 1),
-(5, 'Meditation Retreat on the Foothills', 'Shedra Life', 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800', 'Novice monks practicing Shamatha meditation at sunrise.', 5, 1)
+-- 35. Gallery Items (Photos, Video Uploads & YouTube / Vimeo Video URLs)
+INSERT INTO gallery_items (id, title, category, media_type, media_url, thumbnail_url, caption, display_order, is_featured) VALUES
+(1, 'Great Druk Wangyel Peace Stupa in Morning Light', 'Stupa Construction', 'image', 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800', 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400', 'The magnificent stupa rising against the serene foothills of Gelephu, Bhutan.', 1, 1),
+(2, 'Monks Chanting in Shedra Assembly Hall', 'Shedra Life', 'image', 'https://images.unsplash.com/photo-1609137144822-446757b4f535?w=800', 'https://images.unsplash.com/photo-1609137144822-446757b4f535?w=400', 'Resident monastic students reciting sacred Prajnaparamita texts.', 2, 1),
+(3, 'Consecration Ceremony & 1000 Butter Lamps Video', 'Puja & Ceremonies', 'video_url', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400', 'Official video footage of the 1000 Butter Lamps world peace dedication ritual.', 3, 1),
+(4, 'Traditional Stone Carving Artisans at Work', 'Monastic Arts', 'image', 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=800', 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=400', 'Master craftsmen carving auspicious Buddhist motifs for the Stupa base.', 4, 1),
+(5, 'Morning Puja & Dharma Talk by Khenpo Tashi Dorji', 'Puja & Ceremonies', 'video_url', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400', 'Watch the profound morning discourse on compassion and Bodhicitta.', 5, 1)
 ON DUPLICATE KEY UPDATE id=VALUES(id);
 
--- 36. System Settings
+-- 36. Blog Posts
+INSERT INTO blog_posts (id, title, slug, summary, content, cover_image, author_id, author_name, status, tags, views_count, published_at) VALUES
+(1, 'The Spiritual Significance of the Great Druk Wangyel Peace Stupa', 'spiritual-significance-peace-stupa', 'Explore why stupas are regarded as the living mind of the Buddha and how this monument radiates blessings for global peace.', '<p>In Buddhist tradition, a stupa (Chorten in Dzongkha) is not merely an architectural monument; it represents the enlightened mind of the Buddha. Building a stupa in Gelephu, at the peaceful crossroads of southern Bhutan, serves as a beacon of harmony, pacifying conflicts, natural disasters, and negative energies across the world.</p><h3>The Eight Auspicious Symbols</h3><p>Every tier and spire of the Great Druk Wangyel Peace Stupa embodies deep philosophical teachings—from the four immeasurables at the base to the golden crescent moon and sun at the summit representing wisdom and compassion.</p><p>We invite devotees and well-wishers worldwide to participate in this merit-yielding endeavor.</p>', 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800', 1, 'Khenpo Tashi Dorji', 'published', 'Peace Stupa, Buddhism, Philosophy, Gelephu', 245, '2026-08-20 10:00:00'),
+(2, 'Daily Life in the Shedra: Nurturing Compassion & Wisdom', 'daily-life-shedra-monastic-university', 'A glimpse into the daily schedule, philosophical debates, and meditation practices of our resident monk scholars.', '<p>The sound of the sacred conch echoes across the foothills of Gelephu at 5:00 AM, marking the beginning of another day of study and spiritual practice at Drodul Phendey Ling Shedra Monastic University.</p><p>Our students undergo an intensive 9-year curriculum studying Madhyamaka (the Middle Way), Pramana (Buddhist Logic), and Abhidharma. In the evening, the courtyard comes alive with traditional dialectical debate, sharpening intellect and refining understanding.</p><p>Through the support of our generous donors, these young monks are provided with books, food, and accommodation as they dedicate their lives to the service of all beings.</p>', 'https://images.unsplash.com/photo-1609137144822-446757b4f535?w=800', 1, 'Lopen Karma Samten', 'published', 'Shedra, Monastic Life, Education, Dharma', 189, '2026-08-22 14:30:00'),
+(3, 'The Merit of 108 Butter Lamp Offerings for World Peace', 'merit-butter-lamp-offerings', 'How the light of butter lamps dispels the darkness of ignorance and generates merit for all sentient beings.', '<p>Lighting butter lamps is one of the most powerful practices of generosity and dedication in Vajrayana Buddhism. The flame symbolizes the light of wisdom dispelling the darkness of ignorance and confusion.</p><p>Every evening, 108 butter lamps are offered in front of the main shrine at Drodul Phendey Ling, dedicating the positive energy toward world peace, health, and liberation from suffering for all families who request prayers through our foundation desk.</p>', 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800', 1, 'Dechen Wangmo', 'published', 'Butter Lamps, Puja, Prayers, Merit', 312, '2026-08-25 09:15:00')
+ON DUPLICATE KEY UPDATE slug=VALUES(slug);
+
+-- 37. Learning & Dharma Video Materials (Public Library)
+INSERT INTO learning_materials (id, title, description, category, media_type, media_url, thumbnail_url, instructor, duration, display_order, is_published, views_count) VALUES
+(1, 'Introduction to the Four Noble Truths & Eightfold Path', 'A foundational discourse on the core tenets of Buddha Dharma, understanding suffering and the path to ultimate liberation.', 'Buddhist Philosophy', 'video_url', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800', 'Khenpo Tashi Dorji', '42 mins', 1, 1, 1420),
+(2, 'Shamatha Meditation: Cultivating Calm Abiding & Focus', 'Practical step-by-step guidance on posture, breath awareness, and pacifying mental turbulence for daily mindfulness practice.', 'Meditation & Retreats', 'video_url', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800', 'Lopen Karma Samten', '35 mins', 2, 1, 980),
+(3, 'Bodhicitta: The Awakened Mind of Universal Compassion', 'Exploring Shantideva\'s Way of the Bodhisattva and generating unconditional love for all sentient beings.', 'Dharma Teachings', 'video_url', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=800', 'Khenpo Tashi Dorji', '55 mins', 3, 1, 1150),
+(4, 'Sacred Bhutanese Monastic Chanting & Mantra Recitation', 'An immersive audio-visual guide to sacred Chod, Tara, and Chenrezig chanting melodies preserved in Bhutanese monasteries.', 'Monastic Arts', 'video_url', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'https://images.unsplash.com/photo-1609137144822-446757b4f535?w=800', 'Sangha Master Choten', '28 mins', 4, 1, 620)
+ON DUPLICATE KEY UPDATE id=VALUES(id);
+
+-- 38. System Settings
 INSERT INTO system_settings (id, setting_key, setting_value, description, group_name) VALUES
 (1, 'org_name', 'Drodul Phendey Ling Foundation', 'Official registered name of the foundation', 'general'),
 (2, 'org_tagline', 'Building Peace. Empowering Lives.', 'Official foundation motto', 'general'),
@@ -371,3 +386,4 @@ INSERT INTO system_settings (id, setting_key, setting_value, description, group_
 ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value);
 
 SET FOREIGN_KEY_CHECKS = 1;
+

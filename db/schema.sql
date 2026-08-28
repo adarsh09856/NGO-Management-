@@ -808,12 +808,14 @@ CREATE TABLE IF NOT EXISTS prayer_requests (
   FOREIGN KEY (dedicated_by_monk_id) REFERENCES students_monks(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 45. Gallery Items
+-- 45. Gallery Items (Supporting Photos, Video Uploads, and Video URLs)
 CREATE TABLE IF NOT EXISTS gallery_items (
   id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(150) NOT NULL,
-  category ENUM('Stupa Construction', 'Puja & Ceremonies', 'Shedra Life', 'Monastic Arts', 'Community Welfare') DEFAULT 'Stupa Construction',
-  image_url VARCHAR(255) NOT NULL,
+  category VARCHAR(100) DEFAULT 'Stupa Construction',
+  media_type ENUM('image', 'video_upload', 'video_url') DEFAULT 'image',
+  media_url VARCHAR(1000) NOT NULL,
+  thumbnail_url VARCHAR(1000),
   caption VARCHAR(255),
   display_order INT DEFAULT 0,
   is_featured TINYINT(1) DEFAULT 1,
@@ -847,6 +849,47 @@ CREATE TABLE IF NOT EXISTS system_settings (
   group_name VARCHAR(50) DEFAULT 'general',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 48. Blog Posts (Rich Content, Cover Image, Publishing)
+CREATE TABLE IF NOT EXISTS blog_posts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) NOT NULL UNIQUE,
+  summary TEXT,
+  content LONGTEXT NOT NULL,
+  cover_image VARCHAR(500),
+  author_id INT NULL,
+  author_name VARCHAR(150) DEFAULT 'Khenpo Tashi Dorji',
+  status ENUM('draft', 'published', 'archived') DEFAULT 'published',
+  tags VARCHAR(255) DEFAULT 'Buddhism, Bhutan, Peace Stupa',
+  views_count INT DEFAULT 0,
+  published_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL,
+  INDEX idx_blog_slug (slug),
+  INDEX idx_blog_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 49. Learning & Dharma Video Materials (Public Training Library)
+CREATE TABLE IF NOT EXISTS learning_materials (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  category VARCHAR(100) DEFAULT 'Buddhist Philosophy',
+  media_type ENUM('video_upload', 'video_url', 'document') DEFAULT 'video_url',
+  media_url VARCHAR(1000) NOT NULL,
+  thumbnail_url VARCHAR(1000),
+  instructor VARCHAR(255) DEFAULT 'Khenpo Tashi Dorji',
+  duration VARCHAR(50) DEFAULT '45 mins',
+  display_order INT DEFAULT 0,
+  is_published TINYINT(1) DEFAULT 1,
+  views_count INT DEFAULT 0,
+  published_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_learning_cat (category)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

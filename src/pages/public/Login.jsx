@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Lock, Mail, ShieldCheck, Heart, GraduationCap, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Lock, Mail, ShieldCheck, Heart, User, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
@@ -10,8 +10,9 @@ export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const [portalTab, setPortalTab] = useState('admin'); // 'admin', 'donor', 'student'
-  const [email, setEmail] = useState('admin@drodulphendeyling.org');
+  const initialPortal = searchParams.get('portal') === 'admin' ? 'admin' : 'user';
+  const [portalTab, setPortalTab] = useState(initialPortal); // 'user', 'admin'
+  const [email, setEmail] = useState(initialPortal === 'admin' ? 'admin@drodulphendeyling.org' : 'tashi.phuntsho@email.com');
   const [password, setPassword] = useState('password123');
   const [loading, setLoading] = useState(false);
 
@@ -19,10 +20,8 @@ export default function Login() {
     setPortalTab(tab);
     if (tab === 'admin') {
       setEmail('admin@drodulphendeyling.org');
-    } else if (tab === 'donor') {
+    } else {
       setEmail('tashi.phuntsho@email.com');
-    } else if (tab === 'student') {
-      setEmail('tenzin.norbu@monastery.bt');
     }
   };
 
@@ -33,12 +32,10 @@ export default function Login() {
       const user = await login(email, password, portalTab);
       success(`Welcome back, ${user.fullName}!`);
 
-      if (user.role.slug === 'donor') {
-        navigate('/donor');
-      } else if (user.role.slug === 'student_monk') {
-        navigate('/student');
-      } else {
+      if (user.role?.slug === 'super_admin' || user.role?.slug === 'accountant' || user.role?.slug === 'staff' || user.role?.slug === 'hr_manager') {
         navigate('/admin');
+      } else {
+        navigate('/user');
       }
     } catch (err) {
       error(err.message || 'Login failed. Please check credentials.');
@@ -59,134 +56,142 @@ export default function Login() {
             DRODUL PHENDEY LING
           </h2>
           <p className="text-xs text-gray-500 font-medium">
-            Authentication & Unified Multi-Portal Access
+            Sign in to access your dashboard
           </p>
         </div>
 
-        {/* Card */}
-        <div className="bg-white rounded-xl shadow-xl border border-[#EBE5D8] overflow-hidden">
-          {/* Portal Tabs */}
-          <div className="grid grid-cols-3 bg-[#F8F6F0] p-1.5 border-b border-[#EBE5D8] text-xs font-semibold">
-            <button
-              type="button"
-              onClick={() => handleTabChange('admin')}
-              className={`py-2 px-1 rounded-md flex flex-col sm:flex-row items-center justify-center gap-1 transition-all ${
-                portalTab === 'admin' ? 'bg-[#4A0E17] text-white shadow' : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Admin / Staff</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleTabChange('donor')}
-              className={`py-2 px-1 rounded-md flex flex-col sm:flex-row items-center justify-center gap-1 transition-all ${
-                portalTab === 'donor' ? 'bg-[#4A0E17] text-white shadow' : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <Heart className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>Donor</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleTabChange('student')}
-              className={`py-2 px-1 rounded-md flex flex-col sm:flex-row items-center justify-center gap-1 transition-all ${
-                portalTab === 'student' ? 'bg-[#4A0E17] text-white shadow' : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <GraduationCap className="w-3.5 h-3.5" />
-              <span>Monk / LMS</span>
-            </button>
-          </div>
+        {/* Portal Type Tabs */}
+        <div className="grid grid-cols-2 gap-2 bg-[#F8F6F0] p-1.5 rounded-xl border border-[#EBE5D8]">
+          <button
+            type="button"
+            onClick={() => handleTabChange('user')}
+            className={`py-2 text-xs font-bold rounded-lg flex items-center justify-center space-x-1.5 transition-all ${
+              portalTab === 'user'
+                ? 'bg-[#4A0E17] text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <Heart className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span>User / Member</span>
+          </button>
 
-          {/* Form */}
-          <form onSubmit={handleLogin} className="p-6 space-y-4">
+          <button
+            type="button"
+            onClick={() => handleTabChange('admin')}
+            className={`py-2 text-xs font-bold rounded-lg flex items-center justify-center space-x-1.5 transition-all ${
+              portalTab === 'admin'
+                ? 'bg-[#4A0E17] text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span>Admin / Staff</span>
+          </button>
+        </div>
+
+        {/* Login Form Card */}
+        <div className="monastery-card p-6 sm:p-8 space-y-6 shadow-md">
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Email Address</label>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">
+                Email Address
+              </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#7E1929] bg-[#FAF9F5]"
                   placeholder="name@drodulphendeyling.org"
-                  className="w-full text-xs pl-9 pr-3 py-2.5 rounded-md border border-gray-300 focus:ring-2 focus:ring-[#D4AF37] focus:border-[#4A0E17]"
                 />
               </div>
             </div>
 
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="text-xs font-bold text-gray-700">Password</label>
-                <span className="text-[11px] text-gray-400 font-mono">password123</span>
+                <label className="text-xs font-semibold text-gray-700">
+                  Password
+                </label>
+                <Link to="/forgot-password" className="text-[11px] text-[#7E1929] hover:underline">
+                  Forgot?
+                </Link>
               </div>
               <div className="relative">
-                <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#7E1929] bg-[#FAF9F5]"
                   placeholder="••••••••"
-                  className="w-full text-xs pl-9 pr-3 py-2.5 rounded-md border border-gray-300 focus:ring-2 focus:ring-[#D4AF37] focus:border-[#4A0E17]"
                 />
-              </div>
-            </div>
-
-            {/* Quick Demo Credentials Switcher */}
-            <div className="p-3 bg-[#FAF5F0] border border-[#EBE5D8] rounded-md text-[11px] space-y-1 text-gray-600">
-              <span className="font-bold text-[#4A0E17]">Quick Seeded Logins (Password: password123):</span>
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <button
-                  type="button"
-                  onClick={() => { setPortalTab('admin'); setEmail('admin@drodulphendeyling.org'); }}
-                  className="px-2 py-0.5 bg-white border rounded text-[#4A0E17] hover:bg-gray-50"
-                >
-                  Admin
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setPortalTab('admin'); setEmail('accountant@drodulphendeyling.org'); }}
-                  className="px-2 py-0.5 bg-white border rounded text-[#4A0E17] hover:bg-gray-50"
-                >
-                  Accountant
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setPortalTab('donor'); setEmail('tashi.phuntsho@email.com'); }}
-                  className="px-2 py-0.5 bg-white border rounded text-[#4A0E17] hover:bg-gray-50"
-                >
-                  Donor (Tashi)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setPortalTab('student'); setEmail('tenzin.norbu@monastery.bt'); }}
-                  className="px-2 py-0.5 bg-white border rounded text-[#4A0E17] hover:bg-gray-50"
-                >
-                  Monk (Tenzin)
-                </button>
               </div>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#4A0E17] hover:bg-[#5A121E] text-white font-bold py-2.5 rounded-md text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+              className="w-full bg-[#7E1929] hover:bg-[#5A121E] text-white py-2.5 rounded font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-1.5 shadow transition-all"
             >
-              <span>{loading ? 'Authenticating...' : `Log In to ${portalTab === 'admin' ? 'Admin Portal' : portalTab === 'donor' ? 'Donor Portal' : 'Student Portal'}`}</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </form>
 
-          {/* Footer Register Link */}
-          <div className="px-6 py-3 bg-gray-50 border-t border-gray-100 text-center text-xs text-gray-600">
-            Don't have an account?{' '}
-            <Link to="/register" className="font-bold text-[#8B1E2F] hover:underline">
-              Create New Account
-            </Link>
+          {/* Quick Demo Credentials Switcher */}
+          <div className="pt-4 border-t border-gray-100 space-y-2">
+            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider text-center">
+              1-Click Demo Accounts (Password: password123)
+            </p>
+            <div className="grid grid-cols-2 gap-1.5 text-[11px]">
+              <button
+                type="button"
+                onClick={() => { setPortalTab('admin'); setEmail('admin@drodulphendeyling.org'); }}
+                className="p-1.5 rounded bg-gray-50 hover:bg-[#FDF6E2] text-left border border-gray-200"
+              >
+                <p className="font-bold text-[#4A0E17]">Super Admin</p>
+                <p className="text-[9px] text-gray-500">Full System Control</p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setPortalTab('admin'); setEmail('accountant@drodulphendeyling.org'); }}
+                className="p-1.5 rounded bg-gray-50 hover:bg-[#FDF6E2] text-left border border-gray-200"
+              >
+                <p className="font-bold text-[#4A0E17]">Accountant</p>
+                <p className="text-[9px] text-gray-500">Finance & Payroll</p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setPortalTab('admin'); setEmail('staff@drodulphendeyling.org'); }}
+                className="p-1.5 rounded bg-gray-50 hover:bg-[#FDF6E2] text-left border border-gray-200"
+              >
+                <p className="font-bold text-[#4A0E17]">Staff Coordinator</p>
+                <p className="text-[9px] text-gray-500">Operations & CMS</p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setPortalTab('user'); setEmail('tashi.phuntsho@email.com'); }}
+                className="p-1.5 rounded bg-gray-50 hover:bg-[#FDF6E2] text-left border border-gray-200"
+              >
+                <p className="font-bold text-[#4A0E17]">Devotee Member</p>
+                <p className="text-[9px] text-gray-500">Donations & 80G Receipts</p>
+              </button>
+            </div>
           </div>
         </div>
+
+        <p className="text-center text-xs text-gray-500">
+          Want to become a devotee member?{' '}
+          <Link to="/register" className="text-[#7E1929] font-bold hover:underline">
+            Create an Account
+          </Link>
+        </p>
       </div>
     </div>
   );

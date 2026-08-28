@@ -3,12 +3,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Heart, MapPin, Phone, Mail, Globe, ChevronDown, ChevronRight, Menu, X,
   User, LogOut, ShieldCheck, GraduationCap, Flame, Calendar, Image as ImageIcon,
-  BookOpen, Sparkles, Building, Landmark, Compass, Award, HandHeart
+  BookOpen, Sparkles, Building, Landmark, Compass, Award, HandHeart, Newspaper, Video
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar({ onOpenDonate }) {
-  const { user, logout, isAdmin, isDonor, isStudent } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -18,18 +18,16 @@ export default function Navbar({ onOpenDonate }) {
 
   // Mobile Menu & Dropdowns
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState(null); // 'activities', 'programs', 'involved', null
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
   // Mobile Accordion States
   const [mobileActivitiesOpen, setMobileActivitiesOpen] = useState(false);
-  const [mobileProgramsOpen, setMobileProgramsOpen] = useState(false);
-  const [mobileInvolvedOpen, setMobileInvolvedOpen] = useState(false);
 
   const [lang, setLang] = useState('English');
 
   const isActive = (path) => location.pathname === path;
 
-  // Track scroll position and calculate percentage for Golden Ribbon
+  // Track scroll position for dynamic ribbon
   useEffect(() => {
     const handleScroll = () => {
       const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
@@ -118,7 +116,7 @@ export default function Navbar({ onOpenDonate }) {
         </Link>
 
         {/* Desktop Magnetic Silk Navigation Links */}
-        <nav className="hidden xl:flex items-center space-x-6 text-xs font-bold text-[#374151] tracking-wider">
+        <nav className="hidden xl:flex items-center space-x-5 2xl:space-x-6 text-xs font-bold text-[#374151] tracking-wider">
           {/* HOME */}
           <Link
             to="/"
@@ -163,7 +161,7 @@ export default function Navbar({ onOpenDonate }) {
                   : 'text-gray-700'
               }`}
             >
-              <span>OUR ACTIVITIES</span>
+              <span>ACTIVITIES</span>
               <ChevronDown
                 className={`w-3.5 h-3.5 text-[#D4AF37] transition-transform duration-200 ${
                   activeDropdown === 'activities' ? 'rotate-180' : ''
@@ -220,187 +218,52 @@ export default function Navbar({ onOpenDonate }) {
                       <p className="text-[10px] text-gray-500 line-clamp-1">Sacred scriptures, thangka & arts</p>
                     </div>
                   </Link>
-
-                  <Link
-                    to="/activities#welfare"
-                    className="p-2.5 rounded-xl hover:bg-[#FDF6E2] transition-colors flex items-start space-x-3 group"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#4A0E17] text-[#4A0E17] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
-                      <HandHeart className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-xs text-[#4A0E17]">Community Welfare</p>
-                      <p className="text-[10px] text-gray-500 line-clamp-1">Humanitarian relief & healthcare</p>
-                    </div>
-                  </Link>
                 </div>
               </div>
             )}
           </div>
 
-          {/* PROGRAMS DROPDOWN */}
-          <div
-            className="relative"
-            onMouseEnter={() => setActiveDropdown('programs')}
-            onMouseLeave={() => setActiveDropdown(null)}
-          >
-            <button
-              type="button"
-              className={`flex items-center gap-1 py-1.5 transition-all duration-200 hover:text-[#4A0E17] hover:scale-105 group ${
-                activeDropdown === 'programs' || location.pathname.startsWith('/programs')
-                  ? 'text-[#8B1E2F]'
-                  : 'text-gray-700'
-              }`}
-            >
-              <span>PROGRAMS</span>
-              <ChevronDown
-                className={`w-3.5 h-3.5 text-[#D4AF37] transition-transform duration-200 ${
-                  activeDropdown === 'programs' ? 'rotate-180' : ''
-                }`}
-              />
-              <span
-                className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#8B1E2F] transition-all duration-300 ${
-                  activeDropdown === 'programs' || location.pathname.startsWith('/programs')
-                    ? 'w-full'
-                    : 'w-0 group-hover:w-full'
-                }`}
-              />
-            </button>
-
-            {/* Silk Dropdown Card */}
-            {activeDropdown === 'programs' && (
-              <div className="absolute top-full left-0 mt-2 w-80 bg-white/95 backdrop-blur-xl rounded-2xl shadow-[0_15px_40px_rgba(74,14,23,0.18)] border border-[#D4AF37]/40 p-3 z-50 animate-fadeIn">
-                <div className="space-y-1">
-                  <Link
-                    to="/programs#monastic"
-                    className="p-2.5 rounded-xl hover:bg-[#FDF6E2] transition-colors flex items-start space-x-3 group"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#4A0E17] text-[#4A0E17] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
-                      <BookOpen className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-xs text-[#4A0E17]">Monastic Training (Shedra)</p>
-                      <p className="text-[10px] text-gray-500 line-clamp-1">9-year Buddhist curriculum</p>
-                    </div>
-                  </Link>
-
-                  <Link
-                    to="/programs#philosophy"
-                    className="p-2.5 rounded-xl hover:bg-[#FDF6E2] transition-colors flex items-start space-x-3 group"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#4A0E17] text-[#4A0E17] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
-                      <Compass className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-xs text-[#4A0E17]">Buddhist Philosophy Courses</p>
-                      <p className="text-[10px] text-gray-500 line-clamp-1">Madhyamaka, Prajnaparamita & Vinaya</p>
-                    </div>
-                  </Link>
-
-                  <Link
-                    to="/programs#meditation"
-                    className="p-2.5 rounded-xl hover:bg-[#FDF6E2] transition-colors flex items-start space-x-3 group"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#4A0E17] text-[#4A0E17] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
-                      <Flame className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-xs text-[#4A0E17]">Meditation & Retreats</p>
-                      <p className="text-[10px] text-gray-500 line-clamp-1">Shamatha & Vipassana guidance</p>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* GET INVOLVED DROPDOWN */}
-          <div
-            className="relative"
-            onMouseEnter={() => setActiveDropdown('involved')}
-            onMouseLeave={() => setActiveDropdown(null)}
-          >
-            <button
-              type="button"
-              className={`flex items-center gap-1 py-1.5 transition-all duration-200 hover:text-[#4A0E17] hover:scale-105 group ${
-                activeDropdown === 'involved' || location.pathname.startsWith('/get-involved')
-                  ? 'text-[#8B1E2F]'
-                  : 'text-gray-700'
-              }`}
-            >
-              <span>GET INVOLVED</span>
-              <ChevronDown
-                className={`w-3.5 h-3.5 text-[#D4AF37] transition-transform duration-200 ${
-                  activeDropdown === 'involved' ? 'rotate-180' : ''
-                }`}
-              />
-              <span
-                className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#8B1E2F] transition-all duration-300 ${
-                  activeDropdown === 'involved' || location.pathname.startsWith('/get-involved')
-                    ? 'w-full'
-                    : 'w-0 group-hover:w-full'
-                }`}
-              />
-            </button>
-
-            {/* Silk Dropdown Card */}
-            {activeDropdown === 'involved' && (
-              <div className="absolute top-full left-0 mt-2 w-80 bg-white/95 backdrop-blur-xl rounded-2xl shadow-[0_15px_40px_rgba(74,14,23,0.18)] border border-[#D4AF37]/40 p-3 z-50 animate-fadeIn">
-                <div className="space-y-1">
-                  <Link
-                    to="/get-involved#volunteer"
-                    className="p-2.5 rounded-xl hover:bg-[#FDF6E2] transition-colors flex items-start space-x-3 group"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#4A0E17] text-[#4A0E17] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
-                      <Users className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-xs text-[#4A0E17]">Volunteer With Us</p>
-                      <p className="text-[10px] text-gray-500 line-clamp-1">Teaching, translation & welfare</p>
-                    </div>
-                  </Link>
-
-                  <Link
-                    to="/get-involved#sponsor"
-                    className="p-2.5 rounded-xl hover:bg-[#FDF6E2] transition-colors flex items-start space-x-3 group"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#4A0E17] text-[#4A0E17] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
-                      <Award className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-xs text-[#4A0E17]">Sponsor a Monk Scholar</p>
-                      <p className="text-[10px] text-gray-500 line-clamp-1">Fund monastic education & care</p>
-                    </div>
-                  </Link>
-
-                  <Link
-                    to="/get-involved#pledge"
-                    className="p-2.5 rounded-xl hover:bg-[#FDF6E2] transition-colors flex items-start space-x-3 group"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#4A0E17] text-[#4A0E17] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
-                      <Heart className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-xs text-[#4A0E17]">Monthly Giving Pledge</p>
-                      <p className="text-[10px] text-gray-500 line-clamp-1">Automatic recurring merit offerings</p>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* RESOURCES */}
+          {/* LEARNING & DHARMA VIDEOS */}
           <Link
-            to="/resources"
+            to="/learning"
             className={`relative py-1.5 transition-all duration-200 hover:text-[#4A0E17] hover:scale-105 group ${
-              isActive('/resources') ? 'text-[#8B1E2F]' : 'text-gray-700'
+              isActive('/learning') ? 'text-[#8B1E2F]' : 'text-gray-700'
             }`}
           >
-            <span>RESOURCES</span>
+            <span>LEARNING</span>
             <span
               className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#8B1E2F] transition-all duration-300 ${
-                isActive('/resources') ? 'w-full' : 'w-0 group-hover:w-full'
+                isActive('/learning') ? 'w-full' : 'w-0 group-hover:w-full'
+              }`}
+            />
+          </Link>
+
+          {/* BLOG */}
+          <Link
+            to="/blog"
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#4A0E17] hover:scale-105 group ${
+              isActive('/blog') ? 'text-[#8B1E2F]' : 'text-gray-700'
+            }`}
+          >
+            <span>BLOG</span>
+            <span
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#8B1E2F] transition-all duration-300 ${
+                isActive('/blog') ? 'w-full' : 'w-0 group-hover:w-full'
+              }`}
+            />
+          </Link>
+
+          {/* GALLERY */}
+          <Link
+            to="/gallery"
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#4A0E17] hover:scale-105 group ${
+              isActive('/gallery') ? 'text-[#8B1E2F]' : 'text-gray-700'
+            }`}
+          >
+            <span>GALLERY</span>
+            <span
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#8B1E2F] transition-all duration-300 ${
+                isActive('/gallery') ? 'w-full' : 'w-0 group-hover:w-full'
               }`}
             />
           </Link>
@@ -426,11 +289,11 @@ export default function Navbar({ onOpenDonate }) {
           {/* User Portal Link or Login Button */}
           {user ? (
             <Link
-              to={isAdmin ? '/admin' : isStudent ? '/student' : '/donor'}
+              to={isAdmin ? '/admin' : '/user'}
               className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-[#FDFBF7] border border-[#D4AF37] text-[#4A0E17] hover:bg-[#FDF6E2] transition-all shadow-sm"
             >
-              {isAdmin ? <ShieldCheck className="w-3.5 h-3.5 text-[#4A0E17]" /> : isStudent ? <GraduationCap className="w-3.5 h-3.5 text-[#4A0E17]" /> : <User className="w-3.5 h-3.5 text-[#4A0E17]" />}
-              <span className="max-w-[80px] sm:max-w-[110px] truncate">{user.fullName || 'My Portal'}</span>
+              {isAdmin ? <ShieldCheck className="w-3.5 h-3.5 text-[#4A0E17]" /> : <User className="w-3.5 h-3.5 text-[#4A0E17]" />}
+              <span className="max-w-[80px] sm:max-w-[110px] truncate">{isAdmin ? 'Admin Portal' : 'User Panel'}</span>
             </Link>
           ) : (
             <Link
@@ -438,7 +301,7 @@ export default function Navbar({ onOpenDonate }) {
               className="hidden sm:inline-flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-semibold text-[#4A0E17] hover:text-[#7E1929] hover:bg-[#FDF6E2] transition-all border border-[#EBE5D8]"
             >
               <User className="w-3.5 h-3.5" />
-              <span>Portals</span>
+              <span>Login</span>
             </Link>
           )}
 
@@ -491,85 +354,34 @@ export default function Navbar({ onOpenDonate }) {
             >
               About Us
             </Link>
-
-            {/* Mobile Accordion: Activities */}
-            <div>
-              <button
-                type="button"
-                onClick={() => setMobileActivitiesOpen(!mobileActivitiesOpen)}
-                className="w-full flex items-center justify-between py-2 px-3.5 rounded-xl hover:bg-gray-50 text-left font-semibold"
-              >
-                <span>Our Activities</span>
-                <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${mobileActivitiesOpen ? 'rotate-180' : ''}`} />
-              </button>
-              {mobileActivitiesOpen && (
-                <div className="pl-4 pr-2 py-1.5 space-y-1 text-xs bg-[#FAF5F0] rounded-xl mt-1">
-                  <Link to="/activities#stupa" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-gray-700 hover:text-[#4A0E17]">
-                    Peace Stupa Construction
-                  </Link>
-                  <Link to="/activities#shedra" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-gray-700 hover:text-[#4A0E17]">
-                    Shedra Monastic University
-                  </Link>
-                  <Link to="/activities#culture" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-gray-700 hover:text-[#4A0E17]">
-                    Cultural Preservation
-                  </Link>
-                  <Link to="/activities#welfare" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-gray-700 hover:text-[#4A0E17]">
-                    Community Welfare
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Mobile Accordion: Programs */}
-            <div>
-              <button
-                type="button"
-                onClick={() => setMobileProgramsOpen(!mobileProgramsOpen)}
-                className="w-full flex items-center justify-between py-2 px-3.5 rounded-xl hover:bg-gray-50 text-left font-semibold"
-              >
-                <span>Programs & LMS</span>
-                <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${mobileProgramsOpen ? 'rotate-180' : ''}`} />
-              </button>
-              {mobileProgramsOpen && (
-                <div className="pl-4 pr-2 py-1.5 space-y-1 text-xs bg-[#FAF5F0] rounded-xl mt-1">
-                  <Link to="/programs#monastic" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-gray-700 hover:text-[#4A0E17]">
-                    Monastic Training (Shedra)
-                  </Link>
-                  <Link to="/programs#philosophy" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-gray-700 hover:text-[#4A0E17]">
-                    Buddhist Philosophy Courses
-                  </Link>
-                  <Link to="/programs#meditation" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-gray-700 hover:text-[#4A0E17]">
-                    Meditation & Retreats
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Mobile Accordion: Get Involved */}
-            <div>
-              <button
-                type="button"
-                onClick={() => setMobileInvolvedOpen(!mobileInvolvedOpen)}
-                className="w-full flex items-center justify-between py-2 px-3.5 rounded-xl hover:bg-gray-50 text-left font-semibold"
-              >
-                <span>Get Involved</span>
-                <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${mobileInvolvedOpen ? 'rotate-180' : ''}`} />
-              </button>
-              {mobileInvolvedOpen && (
-                <div className="pl-4 pr-2 py-1.5 space-y-1 text-xs bg-[#FAF5F0] rounded-xl mt-1">
-                  <Link to="/get-involved#volunteer" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-gray-700 hover:text-[#4A0E17]">
-                    Volunteer With Us
-                  </Link>
-                  <Link to="/get-involved#sponsor" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-gray-700 hover:text-[#4A0E17]">
-                    Sponsor a Monk Scholar
-                  </Link>
-                  <Link to="/get-involved#pledge" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-gray-700 hover:text-[#4A0E17]">
-                    Monthly Giving Pledge
-                  </Link>
-                </div>
-              )}
-            </div>
-
+            <Link
+              to="/activities"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block py-2 px-3.5 rounded-xl ${isActive('/activities') ? 'bg-[#FDF6E2] text-[#4A0E17] font-bold' : 'hover:bg-gray-50'}`}
+            >
+              Activities & Stupa
+            </Link>
+            <Link
+              to="/learning"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block py-2 px-3.5 rounded-xl ${isActive('/learning') ? 'bg-[#FDF6E2] text-[#4A0E17] font-bold' : 'hover:bg-gray-50'}`}
+            >
+              Learning & Videos
+            </Link>
+            <Link
+              to="/blog"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block py-2 px-3.5 rounded-xl ${isActive('/blog') ? 'bg-[#FDF6E2] text-[#4A0E17] font-bold' : 'hover:bg-gray-50'}`}
+            >
+              Blog & Articles
+            </Link>
+            <Link
+              to="/gallery"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block py-2 px-3.5 rounded-xl ${isActive('/gallery') ? 'bg-[#FDF6E2] text-[#4A0E17] font-bold' : 'hover:bg-gray-50'}`}
+            >
+              Photo & Video Gallery
+            </Link>
             <Link
               to="/prayer-request"
               onClick={() => setMobileMenuOpen(false)}
@@ -578,23 +390,6 @@ export default function Navbar({ onOpenDonate }) {
               <Flame className="w-4 h-4 text-[#D4AF37]" />
               <span>Sacred Prayer Request</span>
             </Link>
-
-            <Link
-              to="/news-events"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 px-3.5 rounded-xl hover:bg-gray-50"
-            >
-              News & Announcements
-            </Link>
-
-            <Link
-              to="/gallery"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 px-3.5 rounded-xl hover:bg-gray-50"
-            >
-              Photo Gallery
-            </Link>
-
             <Link
               to="/contact"
               onClick={() => setMobileMenuOpen(false)}
@@ -604,7 +399,7 @@ export default function Navbar({ onOpenDonate }) {
             </Link>
           </div>
 
-          {/* Mobile Portals Quick Switcher */}
+          {/* Mobile Portals Quick Access */}
           <div className="pt-3 border-t border-gray-200">
             {user ? (
               <div className="p-3 bg-[#FAF5F0] rounded-2xl border border-[#EBE5D8] space-y-2">
@@ -622,35 +417,28 @@ export default function Navbar({ onOpenDonate }) {
                   </button>
                 </div>
                 <Link
-                  to={isAdmin ? '/admin' : isStudent ? '/student' : '/donor'}
+                  to={isAdmin ? '/admin' : '/user'}
                   onClick={() => setMobileMenuOpen(false)}
                   className="block w-full text-center py-2 bg-[#4A0E17] text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow"
                 >
-                  Enter {isAdmin ? 'Admin Portal' : isStudent ? 'Student Portal' : 'Donor Portal'}
+                  Enter {isAdmin ? 'Admin Portal' : 'User Panel'}
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-2 text-center text-xs">
+              <div className="grid grid-cols-2 gap-2 text-center text-xs">
                 <Link
-                  to="/admin/login"
+                  to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 rounded-xl bg-gray-100 hover:bg-[#FDF6E2] font-bold text-gray-800"
+                  className="p-2.5 rounded-xl bg-[#4A0E17] text-white font-bold"
                 >
-                  Admin
+                  User Login
                 </Link>
                 <Link
-                  to="/donor/login"
+                  to="/login?portal=admin"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 rounded-xl bg-gray-100 hover:bg-[#FDF6E2] font-bold text-gray-800"
+                  className="p-2.5 rounded-xl bg-gray-100 hover:bg-[#FDF6E2] font-bold text-gray-800"
                 >
-                  Donor
-                </Link>
-                <Link
-                  to="/student/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 rounded-xl bg-gray-100 hover:bg-[#FDF6E2] font-bold text-gray-800"
-                >
-                  Monk/LMS
+                  Admin / Staff
                 </Link>
               </div>
             )}
