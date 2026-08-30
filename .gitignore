@@ -25,7 +25,6 @@ lerna-debug.log*
 # Database Backups & Temporary Uploads
 backups/*.sql
 !backups/.gitkeep
-uploads/temp/
 
 # OS & Editor Files
 .DS_Store
