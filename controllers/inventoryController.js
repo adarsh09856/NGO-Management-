@@ -358,11 +358,58 @@ async function getLocations(req, res) {
   }
 }
 
+// Transactions history
+async function getTransactions(req, res) {
+  try {
+    const [rows] = await pool.query(
+      `SELECT st.*, si.item_name, si.item_code, u.name as unit_name, s.name as supplier_name, sl.name as location_name
+       FROM stock_txn st
+       JOIN store_items si ON st.item_id = si.id
+       JOIN units u ON si.unit_id = u.id
+       LEFT JOIN suppliers s ON st.supplier_id = s.id
+       LEFT JOIN store_locations sl ON st.to_location_id = sl.id
+       ORDER BY st.txn_date DESC, st.id DESC LIMIT 100`
+    );
+    return res.json({ success: true, data: rows });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch inventory transactions' });
+  }
+}
+
+async function getLowStockAlerts(req, res) {
+  try {
+    const [rows] = await pool.query(
+      `SELECT si.*, c.name as category_name, u.symbol as unit_symbol
+       FROM store_items si
+       JOIN categories c ON si.category_id = c.id
+       JOIN units u ON si.unit_id = u.id
+       WHERE si.current_stock <= si.min_stock
+       ORDER BY si.current_stock ASC`
+    );
+    return res.json({ success: true, data: rows });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch low stock alerts' });
+  }
+}
+
+async function createTransaction(req, res) {
+  const { txnType } = req.body;
+  if (txnType === 'stock_out') {
+    return stockOut(req, res);
+  }
+  return stockIn(req, res);
+}
+
 module.exports = {
   getInventoryDashboard,
   getStoreItems,
+  getItems: getStoreItems,
   createStoreItem,
+  createItem: createStoreItem,
   updateStoreItem,
+  getTransactions,
+  createTransaction,
+  getLowStockAlerts,
   stockIn,
   stockOut,
   getCategories,

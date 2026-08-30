@@ -1,7 +1,87 @@
 const { pool, withTransaction } = require('../config/db');
 const { generateReceiptPdf } = require('../services/pdfService');
+const { getNextReceiptNumber, numberToWords } = require('../services/paymentService');
 const { logAudit } = require('../middleware/auditLogger');
 const fs = require('fs');
+
+// Issue New Money Receipt (Manual / 80G Direct Issue)
+async function issueReceipt(req, res) {
+  try {
+    const {
+      donationId,
+      recipientName,
+      recipientEmail,
+      recipientPhone,
+      recipientAddress,
+      recipientPan,
+      amount,
+      currency = 'INR',
+      paymentMethod = 'bank_transfer',
+      transactionNo,
+      purpose = 'Peace Stupa Construction & General Charitable Purpose',
+      receiptDate = new Date().toISOString().slice(0, 10),
+      is80gEligible = true,
+      remarks = ''
+    } = req.body;
+
+    if (!recipientName || !amount || parseFloat(amount) <= 0) {
+      return res.status(400).json({ success: false, message: 'Recipient name and valid amount are required' });
+    }
+
+    const numAmount = parseFloat(amount);
+    const amountInWords = numberToWords(numAmount);
+    const receiptNumber = await getNextReceiptNumber();
+    const issuedByUserId = req.user ? req.user.id : null;
+
+    const result = await withTransaction(async (conn) => {
+      const [rRes] = await conn.query(
+        `INSERT INTO money_receipts 
+         (receipt_number, donation_id, recipient_name, recipient_email, recipient_phone, recipient_address, recipient_pan, amount, amount_in_words, currency, payment_method, transaction_no, purpose, receipt_date, is_80g_eligible, status, issued_by_user_id, remarks)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ISSUED', ?, ?)`,
+        [
+          receiptNumber,
+          donationId || null,
+          recipientName,
+          recipientEmail || null,
+          recipientPhone || null,
+          recipientAddress || null,
+          recipientPan || null,
+          numAmount,
+          amountInWords,
+          currency,
+          paymentMethod,
+          transactionNo || `TXN-${Date.now()}`,
+          purpose,
+          receiptDate,
+          is80gEligible ? 1 : 0,
+          issuedByUserId,
+          remarks || null
+        ]
+      );
+
+      return { id: rRes.insertId, receiptNumber };
+    });
+
+    logAudit({
+      userId: issuedByUserId,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'receipts',
+      action: 'issue',
+      recordId: result.id,
+      details: { receiptNumber: result.receiptNumber, amount: numAmount, recipient: recipientName }
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: `Money receipt ${result.receiptNumber} issued successfully`,
+      data: { id: result.id, receiptNumber: result.receiptNumber }
+    });
+  } catch (error) {
+    console.error('[Issue Receipt Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to issue receipt: ' + error.message });
+  }
+}
 
 // Get All Receipts (Paginated, Searchable)
 async function getReceipts(req, res) {
@@ -179,6 +259,7 @@ async function voidReceipt(req, res) {
 }
 
 module.exports = {
+  issueReceipt,
   getReceipts,
   getReceiptById,
   downloadReceiptPdf,

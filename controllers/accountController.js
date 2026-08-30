@@ -254,13 +254,37 @@ async function getVouchers(req, res) {
   }
 }
 
+// Create Voucher
+async function createVoucher(req, res) {
+  try {
+    const { voucherType = 'payment', voucherDate = new Date().toISOString().slice(0, 10), partyName, amount, currency = 'INR', paymentMode = 'Bank Transfer', bankAccountId, narration } = req.body;
+
+    if (!partyName || !amount || parseFloat(amount) <= 0) {
+      return res.status(400).json({ success: false, message: 'Party name and valid amount are required' });
+    }
+
+    const voucherNo = `VCH-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
+    const [result] = await pool.query(
+      `INSERT INTO vouchers (voucher_no, voucher_type, voucher_date, party_name, amount, currency, payment_mode, bank_account_id, narration, created_by_user_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [voucherNo, voucherType, voucherDate, partyName, parseFloat(amount), currency, paymentMode, bankAccountId || null, narration || null, req.user ? req.user.id : null]
+    );
+
+    return res.status(201).json({ success: true, message: `Voucher ${voucherNo} created successfully`, id: result.insertId, voucherNo });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to create voucher: ' + error.message });
+  }
+}
+
 module.exports = {
   getAccountsDashboard,
   getIncomeLedger,
   getExpenses,
   createExpense,
+  submitExpense: createExpense,
   approveExpense,
   getExpenseCategories,
   getBankAccounts,
-  getVouchers
+  getVouchers,
+  createVoucher
 };

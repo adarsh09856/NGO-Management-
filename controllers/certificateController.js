@@ -96,8 +96,66 @@ async function revokeCertificate(req, res) {
   }
 }
 
+// Verify Certificate Publicly
+async function verifyCertificate(req, res) {
+  try {
+    const { certNumber } = req.params;
+    const [rows] = await pool.query(
+      `SELECT cert.*, 
+              sm.monastic_name, sm.secular_name, sm.roll_number,
+              c.title as course_title, c.course_code
+       FROM certificates cert
+       JOIN students_monks sm ON cert.student_id = sm.id
+       JOIN courses c ON cert.course_id = c.id
+       WHERE cert.certificate_number = ?`,
+      [certNumber]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Invalid or non-existent certificate number' });
+    }
+
+    const cert = rows[0];
+    return res.json({
+      success: true,
+      data: {
+        certificateNumber: cert.certificate_number,
+        studentName: cert.monastic_name || cert.secular_name,
+        courseTitle: cert.course_title,
+        grade: cert.grade,
+        issueDate: cert.issue_date,
+        status: cert.status,
+        isValid: cert.status === 'ACTIVE'
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to verify certificate' });
+  }
+}
+
+// Issue Certificate
+async function issueCertificate(req, res) {
+  try {
+    const { studentId, courseId, grade = 'Distinction', signedBy = 'Khenpo Tashi Dorji', issueDate = new Date().toISOString().slice(0, 10) } = req.body;
+    if (!studentId || !courseId) {
+      return res.status(400).json({ success: false, message: 'Student ID and Course ID are required' });
+    }
+    const certNumber = `CERT-DPL-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
+    const [result] = await pool.query(
+      `INSERT INTO certificates (certificate_number, student_id, course_id, issue_date, grade, signed_by, status)
+       VALUES (?, ?, ?, ?, ?, ?, 'ACTIVE')`,
+      [certNumber, studentId, courseId, issueDate, grade, signedBy]
+    );
+    return res.status(201).json({ success: true, message: 'Certificate issued successfully', id: result.insertId, certNumber });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to issue certificate: ' + error.message });
+  }
+}
+
 module.exports = {
   getCertificates,
   downloadCertificatePdf,
-  revokeCertificate
+  revokeCertificate,
+  verifyCertificate,
+  issueCertificate
 };
