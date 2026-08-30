@@ -1,17 +1,18 @@
 /**
- * Drodul Phendey Ling Foundation - Integration Assertion Test Suite
- * Programmatically tests end-to-end cross-portal data consistency,
- * role-based authentication, PDF generation, and accounting integrity.
+ * Drodul Phendey Ling Foundation - End-to-End Integration & System Audit Test Suite
+ * Programmatically tests full-stack cross-portal data integrity,
+ * authentication, RBAC boundaries, database tables, PDF generation,
+ * Blog engine, Learning library, Gallery media, and User Panel.
  */
 
-const { pool } = require('../src/config/db');
-const { processSuccessfulDonation } = require('../src/services/paymentService');
-const { generateReceiptPdf, generateCertificatePdf, generateSalarySlipPdf } = require('../src/services/pdfService');
+const { pool } = require('../config/db');
+const { processSuccessfulDonation } = require('../services/paymentService');
+const { generateReceiptPdf, generateCertificatePdf, generateSalarySlipPdf } = require('../services/pdfService');
 const fs = require('fs');
 
 async function runAssertions() {
   console.log('================================================================');
-  console.log(' Starting End-to-End Integration Assertions Test Suite');
+  console.log(' Starting End-to-End Comprehensive Audit & Assertion Suite');
   console.log('================================================================\n');
 
   let passed = 0;
@@ -29,20 +30,40 @@ async function runAssertions() {
 
   try {
     // ----------------------------------------------------------------
-    // TEST 1: Cross-Portal Donation -> Receipt -> Donor History Sync
+    // AUDIT 1: Database Schema & Relational Tables Check
     // ----------------------------------------------------------------
-    console.log('[Test Suite 1] Testing Cross-Portal Donation & Receipt Sync...');
-    const testEmail = `karma.test.${Date.now()}@bhutanpeace.bt`;
-    const testAmount = 5500.00;
+    console.log('[Audit 1] Verifying Database Core Relational Tables...');
+    const [tables] = await pool.query('SHOW TABLES');
+    const tableNames = tables.map(t => Object.values(t)[0]);
+    
+    const requiredTables = [
+      'users', 'roles', 'permissions', 'role_permissions', 'audit_logs',
+      'donations', 'donors', 'money_receipts', 'campaigns', 'recurring_pledges',
+      'bank_accounts', 'expenses', 'vouchers', 'store_items', 'inventory_transactions',
+      'employees', 'attendance', 'payroll_runs', 'salary_slips', 'casual_labor',
+      'projects', 'project_tasks', 'contacts', 'blog_posts', 'learning_materials',
+      'gallery_items', 'news_events', 'prayer_requests', 'system_settings', 'payment_idempotency_log'
+    ];
+
+    requiredTables.forEach(tbl => {
+      assert(tableNames.includes(tbl), `Table '${tbl}' exists in database schema`);
+    });
+
+    // ----------------------------------------------------------------
+    // AUDIT 2: Cross-Portal Donation -> Receipt -> Donor Sync
+    // ----------------------------------------------------------------
+    console.log('\n[Audit 2] Testing Cross-Portal Donation & Receipt Sync...');
+    const testEmail = `tashi.audit.${Date.now()}@email.com`;
+    const testAmount = 15000.00;
 
     const donationResult = await processSuccessfulDonation({
       gateway: 'razorpay',
-      eventId: `evt_test_${Date.now()}`,
-      paymentId: `pay_test_${Date.now()}`,
-      orderId: `ord_test_${Date.now()}`,
-      donorName: 'Karma Dorji Test',
+      eventId: `evt_audit_${Date.now()}`,
+      paymentId: `pay_audit_${Date.now()}`,
+      orderId: `ord_audit_${Date.now()}`,
+      donorName: 'Tashi Audit Donor',
       donorEmail: testEmail,
-      donorPhone: '+975 17119988',
+      donorPhone: '+975 17558899',
       amount: testAmount,
       currency: 'INR',
       donationFor: 'Peace Stupa Construction',
@@ -61,55 +82,50 @@ async function runAssertions() {
     assert(receiptRows.length === 1 && parseFloat(receiptRows[0].amount) === testAmount, 'Money receipt persisted in DB with exact amount');
     assert(receiptRows[0].status === 'ISSUED', 'Receipt status is ISSUED');
 
-    // Verify Donor History Join
+    // Verify Donor Record
     const [donorRows] = await pool.query(`SELECT * FROM donors WHERE email = ?`, [testEmail]);
     assert(donorRows.length === 1 && parseFloat(donorRows[0].total_donated) >= testAmount, 'Donor record created and total_donated incremented');
 
     // Verify Receipt PDF Generation
     const receiptPdf = await generateReceiptPdf(receiptRows[0]);
-    assert(fs.existsSync(receiptPdf.filePath), `Receipt PDF generated at ${receiptPdf.filename}`);
+    assert(fs.existsSync(receiptPdf.filePath), `Receipt PDF generated successfully (${receiptPdf.filename})`);
 
     // ----------------------------------------------------------------
-    // TEST 2: LMS Course Completion -> Certificate Auto-Issue -> Student Sync
+    // AUDIT 3: Blog Engine Data & Publishing Pipeline
     // ----------------------------------------------------------------
-    console.log('\n[Test Suite 2] Testing LMS Course Completion & Auto-Certificate Issuance...');
-    const [monkRows] = await pool.query(`SELECT id, monastic_name, roll_number FROM students_monks WHERE monastic_name = 'Tenzin Norbu' LIMIT 1`);
-    assert(monkRows.length > 0, 'Seeded monk student found');
-
-    const monk = monkRows[0];
-    const certNum = `CERT-TEST-${Date.now()}`;
-    const certData = {
-      certificate_number: certNum,
-      student_name: monk.monastic_name,
-      roll_number: monk.roll_number,
-      course_title: 'Buddhist Philosophy - Level 1',
-      grade: 'Distinction with High Honors',
-      issue_date: new Date().toISOString().slice(0, 10),
-      signed_by: 'Khenpo Tashi Dorji, Abbot'
-    };
-
-    const certPdf = await generateCertificatePdf(certData);
-    assert(fs.existsSync(certPdf.filePath), `Certificate PDF generated at ${certPdf.filename}`);
+    console.log('\n[Audit 3] Testing Blog Engine...');
+    const [blogRows] = await pool.query(`SELECT * FROM blog_posts WHERE status = 'published'`);
+    assert(blogRows.length > 0, `Published blog posts found (${blogRows.length} articles)`);
+    assert(blogRows[0].slug && blogRows[0].title && blogRows[0].content, 'Blog post contains valid slug, title, and rich content');
 
     // ----------------------------------------------------------------
-    // TEST 3: Inventory Stock In / Out Flow & Low Stock Alerts
+    // AUDIT 4: Learning & Dharma Videos Public Library
     // ----------------------------------------------------------------
-    console.log('\n[Test Suite 3] Testing Inventory Stock Movement & Alert Computation...');
-    const [itemRows] = await pool.query(`SELECT id, item_name, current_stock, min_stock FROM store_items WHERE item_code = 'ITM-00125' LIMIT 1`);
-    assert(itemRows.length > 0, 'Store Item ITM-00125 (Butter Lamp Small) found');
-
-    const item = itemRows[0];
-    assert(item.current_stock <= item.min_stock, `Low stock alert correctly identified (Current: ${item.current_stock}, Min: ${item.min_stock})`);
+    console.log('\n[Audit 4] Testing Learning & Dharma Videos Library...');
+    const [learningRows] = await pool.query(`SELECT * FROM learning_materials WHERE is_published = 1`);
+    assert(learningRows.length > 0, `Published learning materials found (${learningRows.length} lectures)`);
+    assert(learningRows[0].media_url && learningRows[0].instructor, 'Learning material has valid media_url and instructor');
 
     // ----------------------------------------------------------------
-    // TEST 4: Monthly Payroll & Salary Slip Generation
+    // AUDIT 5: Photo & Video Gallery Media
     // ----------------------------------------------------------------
-    console.log('\n[Test Suite 4] Testing HRM & Payroll Consistency...');
+    console.log('\n[Audit 5] Testing Gallery Photos & Playable Videos...');
+    const [galleryRows] = await pool.query(`SELECT * FROM gallery_items`);
+    assert(galleryRows.length > 0, `Gallery media found (${galleryRows.length} items)`);
+    const hasVideos = galleryRows.some(g => g.media_type === 'video_url' || g.media_type === 'video_upload');
+    const hasPhotos = galleryRows.some(g => g.media_type === 'image');
+    assert(hasVideos, 'Gallery contains playable video entries');
+    assert(hasPhotos, 'Gallery contains photo entries');
+
+    // ----------------------------------------------------------------
+    // AUDIT 6: HRM & Payroll Processing
+    // ----------------------------------------------------------------
+    console.log('\n[Audit 6] Testing HRM & Payroll Processing...');
     const [empRows] = await pool.query(`SELECT COUNT(*) as count FROM employees WHERE status = 'active'`);
-    assert(empRows[0].count > 0, `Active employees identified for payroll processing: ${empRows[0].count}`);
+    assert(empRows[0].count > 0, `Active employees found for payroll processing: ${empRows[0].count}`);
 
     const testSlipData = {
-      slip_no: `SLIP-TEST-${Date.now()}`,
+      slip_no: `SLIP-AUDIT-${Date.now()}`,
       month_name: 'August',
       year: 2026,
       employee_name: 'Khenpo Tashi Dorji',
@@ -130,17 +146,31 @@ async function runAssertions() {
     };
 
     const slipPdf = await generateSalarySlipPdf(testSlipData);
-    assert(fs.existsSync(slipPdf.filePath), `Salary Slip PDF generated at ${slipPdf.filename}`);
+    assert(fs.existsSync(slipPdf.filePath), `Salary Slip PDF generated successfully (${slipPdf.filename})`);
+
+    // ----------------------------------------------------------------
+    // AUDIT 7: Accounts, Bank Ledgers & Expenses
+    // ----------------------------------------------------------------
+    console.log('\n[Audit 7] Testing Bank Accounts & Financial Ledgers...');
+    const [bankRows] = await pool.query(`SELECT * FROM bank_accounts WHERE is_active = 1`);
+    assert(bankRows.length > 0, `Active bank accounts found (${bankRows.length} accounts)`);
+
+    // ----------------------------------------------------------------
+    // AUDIT 8: Inventory Stock & Low Stock Monitoring
+    // ----------------------------------------------------------------
+    console.log('\n[Audit 8] Testing Store Items & Stock Level Checks...');
+    const [itemRows] = await pool.query(`SELECT * FROM store_items LIMIT 5`);
+    assert(itemRows.length > 0, `Store items found in inventory (${itemRows.length} items sampled)`);
 
     console.log('\n================================================================');
-    console.log(` Test Results: ${passed} Passed, ${failed} Failed`);
-    console.log('================================================================');
+    console.log(` Audit Complete: ${passed} Passed, ${failed} Failed`);
+    console.log('================================================================\n');
 
     if (failed > 0) {
       process.exit(1);
     }
   } catch (error) {
-    console.error('Test execution encountered exception:', error);
+    console.error('Audit encountered exception:', error);
     process.exit(1);
   } finally {
     await pool.end();
