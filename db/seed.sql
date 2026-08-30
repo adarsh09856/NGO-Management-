@@ -77,16 +77,15 @@ INSERT IGNORE INTO role_permissions (role_id, permission_id) VALUES
 INSERT IGNORE INTO role_permissions (role_id, permission_id) VALUES
 (6, 17);
 
--- 4. Seed Users (Bcrypt hash for 'password123': $2a$10$3euPcmQFCiblsZeEu5s7p.V1Z.LqXk32U19r1VfXn40XN2yH4U4dO)
--- Note: bcryptjs hash of 'password123'
+-- 4. Seed Users (Bcrypt hash for 'password123': $2a$10$isIc7WblRmmy66MgLlnF8uTuTKbI.B0L5Pswb/YS/gakHy7LMJ4cm)
 INSERT INTO users (id, role_id, full_name, email, password_hash, phone, avatar_url, status, is_verified) VALUES
-(1, 1, 'Admin User', 'admin@drodulphendeyling.org', '$2a$10$U4K3hZgO8XG6vj8/G2eJwe4HkF51l2oV1MvN.0k1JzU1f.gW7gG8y', '+975 17556559', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', 'active', 1),
-(2, 2, 'Sonam Tobgay', 'accountant@drodulphendeyling.org', '$2a$10$U4K3hZgO8XG6vj8/G2eJwe4HkF51l2oV1MvN.0k1JzU1f.gW7gG8y', '+975 17112233', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', 'active', 1),
-(3, 3, 'Dechen Wangmo', 'hr@drodulphendeyling.org', '$2a$10$U4K3hZgO8XG6vj8/G2eJwe4HkF51l2oV1MvN.0k1JzU1f.gW7gG8y', '+975 17445566', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150', 'active', 1),
-(4, 4, 'Karma Choden', 'staff@drodulphendeyling.org', '$2a$10$U4K3hZgO8XG6vj8/G2eJwe4HkF51l2oV1MvN.0k1JzU1f.gW7gG8y', '+975 17778899', 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150', 'active', 1),
-(5, 5, 'Tashi Phuntsho', 'tashi.phuntsho@email.com', '$2a$10$U4K3hZgO8XG6vj8/G2eJwe4HkF51l2oV1MvN.0k1JzU1f.gW7gG8y', '+975 17 55 8899', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150', 'active', 1),
-(6, 6, 'Tenzin Norbu', 'tenzin.norbu@monastery.bt', '$2a$10$U4K3hZgO8XG6vj8/G2eJwe4HkF51l2oV1MvN.0k1JzU1f.gW7gG8y', '+975 17990011', 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150', 'active', 1)
-ON DUPLICATE KEY UPDATE full_name=VALUES(full_name);
+(1, 1, 'Admin User', 'admin@drodulphendeyling.org', '$2a$10$isIc7WblRmmy66MgLlnF8uTuTKbI.B0L5Pswb/YS/gakHy7LMJ4cm', '+975 17556559', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', 'active', 1),
+(2, 2, 'Sonam Tobgay', 'accountant@drodulphendeyling.org', '$2a$10$isIc7WblRmmy66MgLlnF8uTuTKbI.B0L5Pswb/YS/gakHy7LMJ4cm', '+975 17112233', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', 'active', 1),
+(3, 3, 'Dechen Wangmo', 'hr@drodulphendeyling.org', '$2a$10$isIc7WblRmmy66MgLlnF8uTuTKbI.B0L5Pswb/YS/gakHy7LMJ4cm', '+975 17445566', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150', 'active', 1),
+(4, 4, 'Karma Choden', 'staff@drodulphendeyling.org', '$2a$10$isIc7WblRmmy66MgLlnF8uTuTKbI.B0L5Pswb/YS/gakHy7LMJ4cm', '+975 17778899', 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150', 'active', 1),
+(5, 5, 'Tashi Phuntsho', 'tashi.phuntsho@email.com', '$2a$10$isIc7WblRmmy66MgLlnF8uTuTKbI.B0L5Pswb/YS/gakHy7LMJ4cm', '+975 17 55 8899', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150', 'active', 1),
+(6, 6, 'Tenzin Norbu', 'tenzin.norbu@monastery.bt', '$2a$10$isIc7WblRmmy66MgLlnF8uTuTKbI.B0L5Pswb/YS/gakHy7LMJ4cm', '+975 17990011', 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150', 'active', 1)
+ON DUPLICATE KEY UPDATE password_hash=VALUES(password_hash), role_id=VALUES(role_id), status=VALUES(status), full_name=VALUES(full_name);
 
 -- 5. Campaigns
 INSERT INTO campaigns (id, title, slug, description, banner_image, target_amount, raised_amount, currency, start_date, end_date, is_active, is_featured) VALUES
