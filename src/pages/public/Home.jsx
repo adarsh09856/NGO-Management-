@@ -202,8 +202,9 @@ export default function Home() {
               onClick={() => setVideoModalOpen(true)}
             >
               <img
-                src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=600&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=800"
                 alt="Great Druk Wangyel Stupa Story"
+                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800'; }}
                 className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
@@ -268,8 +269,8 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {(recentVideos.length > 0 ? recentVideos : [
-              { id: 1, title: 'Introduction to Four Noble Truths', instructor: 'Khenpo Tashi Dorji', duration: '42 mins', thumbnail_url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800', category: 'Philosophy' },
-              { id: 2, title: 'Shamatha Meditation Guidance', instructor: 'Lopen Karma Samten', duration: '35 mins', thumbnail_url: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800', category: 'Meditation' },
+              { id: 1, title: 'Introduction to Four Noble Truths', instructor: 'Khenpo Tashi Dorji', duration: '42 mins', thumbnail_url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800', category: 'Philosophy' },
+              { id: 2, title: 'Shamatha Meditation Guidance', instructor: 'Lopen Karma Samten', duration: '35 mins', thumbnail_url: 'https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=800', category: 'Meditation' },
               { id: 3, title: 'Bodhicitta & Compassion in Action', instructor: 'Khenpo Tashi Dorji', duration: '55 mins', thumbnail_url: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=800', category: 'Teachings' }
             ]).map((v) => (
               <div key={v.id} className="monastery-card overflow-hidden group monastery-card-hover">
