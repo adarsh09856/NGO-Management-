@@ -214,6 +214,7 @@ router.get('/roles-permissions', authenticateToken, settingsCtrl.getRolesAndPerm
 router.get('/audit-logs', authenticateToken, requireRole('super_admin'), settingsCtrl.getAuditLogs);
 router.post('/backup', authenticateToken, requireRole('super_admin'), settingsCtrl.triggerBackup);
 router.get('/reports', authenticateToken, reportCtrl.getReports);
+router.get('/admin/dashboard', authenticateToken, reportCtrl.getAdminDashboardMetrics);
 router.get('/search', authenticateToken, searchCtrl.globalSearch);
 
 module.exports = router;

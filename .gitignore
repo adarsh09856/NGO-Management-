@@ -41,3 +41,5 @@ Thumbs.db
 PROJECT_TIMELINE.md
 TIMELINE.md
 *.tmp.md
+*.pdf
+scripts/generate-timeline-pdf.js
