@@ -59,8 +59,8 @@ export default function About() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 items-center">
           <div className="rounded-lg overflow-hidden border-2 border-[#D4AF37] max-h-72">
             <img
-              src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600"
-              alt="Monastery Abbot"
+              src="https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=600"
+              alt="Monastery Abbot Khenpo Tashi Dorji"
               onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600'; }}
               className="w-full h-full object-cover"
             />
