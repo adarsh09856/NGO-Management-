@@ -108,10 +108,11 @@ export default function BlogDetail() {
 
           {/* Cover Image */}
           {post.cover_image && (
-            <div className="rounded-xl overflow-hidden shadow-md max-h-[440px]">
+            <div className="rounded-xl overflow-hidden shadow-md max-h-[440px] bg-gray-100">
               <img
                 src={post.cover_image}
                 alt={post.title}
+                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800'; }}
                 className="w-full h-full object-cover"
               />
             </div>

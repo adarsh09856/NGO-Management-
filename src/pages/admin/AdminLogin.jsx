@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Lock, Mail, ShieldCheck, ArrowRight, ShieldAlert, ArrowLeft } from 'lucide-react';
+import { Lock, Mail, ShieldCheck, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
@@ -9,12 +9,17 @@ export default function AdminLogin() {
   const { success, error } = useToast();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('admin@drodulphendeyling.org');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!email || !password) {
+      error('Please enter your official administrator email and password');
+      return;
+    }
+
     try {
       setLoading(true);
       const user = await login(email, password, 'admin');
@@ -54,7 +59,7 @@ export default function AdminLogin() {
             <span>Administrative & Staff Portal</span>
           </div>
           <p className="text-[11px] text-gray-400 max-w-xs mx-auto">
-            Authorized access only for Super Admin, Accountants, and Staff Coordinators. Logins must be issued by the Super Administrator.
+            Authorized access only for Super Admin, Accountants, and Staff Coordinators. Logins are issued by the Super Administrator.
           </p>
         </div>
 
@@ -73,7 +78,8 @@ export default function AdminLogin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 text-xs bg-[#1F0408] border border-[#5A121E] text-white rounded focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
-                  placeholder="admin@drodulphendeyling.org"
+                  placeholder="Enter official email"
+                  autoComplete="email"
                 />
               </div>
             </div>
@@ -90,7 +96,8 @@ export default function AdminLogin() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 text-xs bg-[#1F0408] border border-[#5A121E] text-white rounded focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
-                  placeholder="••••••••"
+                  placeholder="Enter password"
+                  autoComplete="current-password"
                 />
               </div>
             </div>
@@ -104,53 +111,6 @@ export default function AdminLogin() {
               <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
             </button>
           </form>
-
-          {/* Quick Demo Credentials for Testing */}
-          <div className="pt-4 border-t border-[#4E0D19] space-y-2">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider text-center">
-              Quick Test Logins (Password: password123)
-            </p>
-            <div className="grid grid-cols-3 gap-1.5 text-[10px]">
-              <button
-                type="button"
-                onClick={() => setEmail('admin@drodulphendeyling.org')}
-                className={`p-2 rounded text-left border transition-all ${
-                  email === 'admin@drodulphendeyling.org'
-                    ? 'bg-[#4A0E17] border-[#D4AF37] text-white'
-                    : 'bg-[#1F0408] border-[#3E0A12] text-gray-300 hover:border-gray-500'
-                }`}
-              >
-                <p className="font-bold text-[#D4AF37]">Super Admin</p>
-                <p className="text-[9px] text-gray-400">Full Access</p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setEmail('accountant@drodulphendeyling.org')}
-                className={`p-2 rounded text-left border transition-all ${
-                  email === 'accountant@drodulphendeyling.org'
-                    ? 'bg-[#4A0E17] border-[#D4AF37] text-white'
-                    : 'bg-[#1F0408] border-[#3E0A12] text-gray-300 hover:border-gray-500'
-                }`}
-              >
-                <p className="font-bold text-[#D4AF37]">Accountant</p>
-                <p className="text-[9px] text-gray-400">Finance & Slips</p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setEmail('staff@drodulphendeyling.org')}
-                className={`p-2 rounded text-left border transition-all ${
-                  email === 'staff@drodulphendeyling.org'
-                    ? 'bg-[#4A0E17] border-[#D4AF37] text-white'
-                    : 'bg-[#1F0408] border-[#3E0A12] text-gray-300 hover:border-gray-500'
-                }`}
-              >
-                <p className="font-bold text-[#D4AF37]">Staff</p>
-                <p className="text-[9px] text-gray-400">Videos & Store</p>
-              </button>
-            </div>
-          </div>
         </div>
 
         <p className="text-center text-xs text-gray-500">

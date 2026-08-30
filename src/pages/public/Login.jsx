@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Lock, Mail, Heart, ArrowRight, UserCheck } from 'lucide-react';
+import { Lock, Mail, Heart, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
@@ -9,12 +9,17 @@ export default function Login() {
   const { success, error } = useToast();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('tashi.phuntsho@email.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!email || !password) {
+      error('Please enter your email and password');
+      return;
+    }
+
     try {
       setLoading(true);
       const user = await login(email, password, 'user');
@@ -72,7 +77,8 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#7E1929] bg-[#FAF9F5]"
-                  placeholder="devotee@email.com"
+                  placeholder="Enter your registered email"
+                  autoComplete="email"
                 />
               </div>
             </div>
@@ -94,7 +100,8 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#7E1929] bg-[#FAF9F5]"
-                  placeholder="••••••••"
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
                 />
               </div>
             </div>
@@ -108,24 +115,6 @@ export default function Login() {
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </form>
-
-          {/* Quick Demo Login */}
-          <div className="pt-4 border-t border-gray-100 space-y-2">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider text-center">
-              Demo Devotee Login (Password: password123)
-            </p>
-            <button
-              type="button"
-              onClick={() => setEmail('tashi.phuntsho@email.com')}
-              className="w-full p-2 rounded bg-[#FAF9F5] hover:bg-[#FDF6E2] text-left border border-gray-200 flex items-center justify-between"
-            >
-              <div>
-                <p className="font-bold text-xs text-[#4A0E17]">Tashi Phuntsho (Devotee Donor)</p>
-                <p className="text-[10px] text-gray-500">tashi.phuntsho@email.com</p>
-              </div>
-              <UserCheck className="w-4 h-4 text-[#D4AF37]" />
-            </button>
-          </div>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-2 px-1">

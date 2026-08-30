@@ -274,7 +274,12 @@ export default function Home() {
             ]).map((v) => (
               <div key={v.id} className="monastery-card overflow-hidden group monastery-card-hover">
                 <div className="relative h-44 bg-gray-900">
-                  <img src={v.thumbnail_url} alt={v.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90" />
+                  <img
+                    src={v.thumbnail_url}
+                    alt={v.title}
+                    onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800'; }}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90"
+                  />
                   <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                     <div className="w-10 h-10 rounded-full bg-white/90 text-[#4A0E17] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                       <Play className="w-4 h-4 fill-[#4A0E17] ml-0.5" />
@@ -328,12 +333,17 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {(recentBlogs.length > 0 ? recentBlogs : [
               { id: 1, slug: 'spiritual-significance-peace-stupa', title: 'The Spiritual Significance of Great Druk Wangyel Stupa', summary: 'Explore why stupas are regarded as the living mind of the Buddha and radiate blessings.', cover_image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800', published_at: '2026-08-20', author_name: 'Khenpo Tashi Dorji' },
-              { id: 2, slug: 'daily-life-shedra-monastic-university', title: 'Daily Life in the Shedra: Nurturing Compassion & Wisdom', summary: 'A glimpse into the daily schedule, philosophical debates, and meditation practices.', cover_image: 'https://images.unsplash.com/photo-1609137144822-446757b4f535?w=800', published_at: '2026-08-22', author_name: 'Lopen Karma Samten' },
-              { id: 3, slug: 'merit-butter-lamp-offerings', title: 'The Merit of 108 Butter Lamp Offerings for World Peace', summary: 'How the light of butter lamps dispels ignorance and creates universal merit.', cover_image: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800', published_at: '2026-08-25', author_name: 'Dechen Wangmo' }
+              { id: 2, slug: 'daily-life-shedra-monastic-university', title: 'Daily Life in the Shedra: Nurturing Compassion & Wisdom', summary: 'A glimpse into the daily schedule, philosophical debates, and meditation practices.', cover_image: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=800', published_at: '2026-08-22', author_name: 'Lopen Karma Samten' },
+              { id: 3, slug: 'merit-butter-lamp-offerings', title: 'The Merit of 108 Butter Lamp Offerings for World Peace', summary: 'How the light of butter lamps dispels ignorance and creates universal merit.', cover_image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800', published_at: '2026-08-25', author_name: 'Dechen Wangmo' }
             ]).map((b) => (
               <div key={b.id} className="monastery-card overflow-hidden group monastery-card-hover">
-                <div className="relative h-44 overflow-hidden">
-                  <img src={b.cover_image} alt={b.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <div className="relative h-44 overflow-hidden bg-gray-100">
+                  <img
+                    src={b.cover_image}
+                    alt={b.title}
+                    onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800'; }}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
                 </div>
                 <div className="p-4 space-y-2">
                   <p className="text-[10px] text-gray-500">{new Date(b.published_at).toLocaleDateString()}</p>

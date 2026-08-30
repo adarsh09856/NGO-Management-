@@ -41,6 +41,7 @@ export default function NewsDetail() {
           <img
             src={post.banner_image || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1200'}
             alt={post.title}
+            onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1200'; }}
             className="w-full h-full object-cover"
           />
           <div className="absolute top-4 right-4 bg-[#4A0E17] text-[#D4AF37] text-xs font-bold px-3 py-1 rounded shadow">

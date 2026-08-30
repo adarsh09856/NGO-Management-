@@ -135,6 +135,7 @@ export default function Gallery() {
                   <img
                     src={previewImg}
                     alt={item.title}
+                    onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800'; }}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 group-hover:opacity-100"
                   />
 

@@ -131,6 +131,7 @@ export default function Learning() {
                   <img
                     src={item.thumbnail_url || 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800'}
                     alt={item.title}
+                    onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800'; }}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90"
                   />
                   <div className="absolute inset-0 bg-black/35 flex items-center justify-center group-hover:bg-black/20 transition-colors">

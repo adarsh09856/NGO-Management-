@@ -105,6 +105,7 @@ export default function Blog() {
                   <img
                     src={post.cover_image || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800'}
                     alt={post.title}
+                    onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800'; }}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#4A0E17]/90 text-[#D4AF37] backdrop-blur-sm border border-[#D4AF37]/30">

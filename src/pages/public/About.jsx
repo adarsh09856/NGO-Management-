@@ -61,6 +61,7 @@ export default function About() {
             <img
               src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600"
               alt="Monastery Abbot"
+              onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600'; }}
               className="w-full h-full object-cover"
             />
           </div>

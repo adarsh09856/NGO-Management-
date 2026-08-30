@@ -221,6 +221,7 @@ export default function GalleryManager() {
                   <img
                     src={item.thumbnail_url || item.media_url || item.image_url || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400'}
                     alt={item.title}
+                    onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400'; }}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                   />
                   <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold bg-black/75 text-[#D4AF37] flex items-center gap-1">

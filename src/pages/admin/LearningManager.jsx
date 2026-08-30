@@ -239,6 +239,7 @@ export default function LearningManager() {
                 <img
                   src={item.thumbnail_url || 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800'}
                   alt={item.title}
+                  onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800'; }}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform opacity-90"
                 />
                 <button

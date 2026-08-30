@@ -70,6 +70,7 @@ export default function NewsEvents() {
                     <img
                       src={item.banner_image || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600'}
                       alt={item.title}
+                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600'; }}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute top-3 right-3 bg-[#4A0E17] text-[#D4AF37] text-[10px] font-bold px-2.5 py-1 rounded shadow">

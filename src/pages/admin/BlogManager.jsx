@@ -234,6 +234,7 @@ export default function BlogManager() {
                     <img
                       src={p.cover_image || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=100'}
                       alt={p.title}
+                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=100'; }}
                       className="w-12 h-10 object-cover rounded shadow-sm"
                     />
                   </td>
