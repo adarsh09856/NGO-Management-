@@ -110,15 +110,14 @@ export default function Learning() {
             <div className="w-8 h-8 border-2 border-[#7E1929] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
             <p className="text-xs text-gray-500">Loading Dharma lectures...</p>
           </div>
-        ) : materials.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
-            <BookOpen className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-            <h3 className="font-serif-brand font-bold text-base text-gray-700">No Teachings Found</h3>
-            <p className="text-xs text-gray-500 mt-1">Try selecting a different category or search term.</p>
-          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {materials.map((item) => (
+            {(materials.length > 0 ? materials : [
+              { id: 1, title: 'Introduction to Four Noble Truths & Eightfold Path', instructor: 'Khenpo Tashi Dorji', duration: '42 mins', thumbnail_url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800', category: 'Buddhist Philosophy', description: 'A foundational discourse on the core tenets of Buddha Dharma, understanding suffering and liberation.' },
+              { id: 2, title: 'Shamatha Meditation: Cultivating Calm Abiding', instructor: 'Lopen Karma Samten', duration: '35 mins', thumbnail_url: 'https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=800', category: 'Meditation & Retreats', description: 'Practical step-by-step guidance on posture, breath awareness, and pacifying mental turbulence.' },
+              { id: 3, title: 'Bodhicitta: The Awakened Mind of Universal Compassion', instructor: 'Khenpo Tashi Dorji', duration: '55 mins', thumbnail_url: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=800', category: 'Dharma Teachings', description: 'Exploring Shantideva\'s Way of the Bodhisattva and generating unconditional love for all sentient beings.' },
+              { id: 4, title: 'Sacred Bhutanese Monastic Chanting & Mantra Recitation', instructor: 'Sangha Master Choten', duration: '28 mins', thumbnail_url: 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=800', category: 'Monastic Arts', description: 'An immersive audio-visual guide to sacred Chod, Tara, and Chenrezig chanting melodies.' }
+            ]).map((item) => (
               <div
                 key={item.id}
                 className="monastery-card overflow-hidden group monastery-card-hover flex flex-col justify-between"
@@ -129,7 +128,7 @@ export default function Learning() {
                   onClick={() => setActiveVideo(item)}
                 >
                   <img
-                    src={item.thumbnail_url || 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800'}
+                    src={item.thumbnail_url || 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800'}
                     alt={item.title}
                     onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800'; }}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90"

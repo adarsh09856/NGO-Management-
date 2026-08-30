@@ -114,15 +114,16 @@ export default function Gallery() {
             <div className="w-8 h-8 border-2 border-[#7E1929] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
             <p className="text-xs text-gray-500">Loading gallery media...</p>
           </div>
-        ) : items.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
-            <ImageIcon className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-            <h3 className="font-serif-brand font-bold text-base text-gray-700">No Media Found</h3>
-            <p className="text-xs text-gray-500 mt-1">Try choosing another category or filter.</p>
-          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {items.map((item) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+            {(items.length > 0 ? items : [
+              { id: 1, title: 'Great Druk Wangyel Peace Stupa in Morning Light', category: 'Stupa Construction', media_type: 'image', media_url: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800', caption: 'The magnificent stupa rising against the serene foothills of Gelephu, Bhutan.' },
+              { id: 2, title: 'Punakha Dzong Monastic Fortress & Bridge', category: 'Monastic Arts', media_type: 'image', media_url: 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=800', caption: 'Ancient Bhutanese architecture at the sacred confluence of Pho Chhu and Mo Chhu rivers.' },
+              { id: 3, title: 'Paro Taktsang (Tiger\'s Nest) Mountain Sanctuary', category: 'Puja & Ceremonies', media_type: 'image', media_url: 'https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=800', caption: 'Perched sacred cliffside hermitage consecrated by Guru Padmasambhava.' },
+              { id: 4, title: 'Monks Chanting in Shedra Assembly Hall', category: 'Shedra Life', media_type: 'image', media_url: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=800', caption: 'Monastic scholars reciting Buddhist philosophy scriptures.' },
+              { id: 5, title: '1000 Consecrated Butter Lamp Offerings', category: 'Puja & Ceremonies', media_type: 'image', media_url: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800', caption: 'Golden flames dispelling darkness and radiating prayers for universal peace.' },
+              { id: 6, title: 'Traditional Monastery Prayer Wheels', category: 'Monastic Arts', media_type: 'image', media_url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800', caption: 'Master craftsmanship and spinning mantras for all sentient beings.' }
+            ]).map((item) => {
               const video = isVideo(item);
               const previewImg = item.thumbnail_url || (video ? 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800' : item.media_url || item.image_url);
 
