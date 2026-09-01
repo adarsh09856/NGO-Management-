@@ -89,11 +89,11 @@ ON DUPLICATE KEY UPDATE password_hash=VALUES(password_hash), role_id=VALUES(role
 
 -- 5. Campaigns
 INSERT INTO campaigns (id, title, slug, description, banner_image, target_amount, raised_amount, currency, start_date, end_date, is_active, is_featured) VALUES
-(1, 'Great Druk Wangyel Peace Stupa', 'peace-stupa-construction', 'Constructing the monumental Great Druk Wangyel Peace Stupa in Gelephu, Sarpang, fostering world peace, spiritual harmony, and cultural preservation.', 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800', 5000000.00, 3485230.00, 'INR', '2026-01-01', '2026-12-31', 1, 1),
-(2, 'Shedra Monastic University Expansion', 'shedra-university-expansion', 'Building state-of-the-art residential quarters, library, and Dharma study halls for 350+ enrolled Buddhist monks and scholars.', 'https://images.unsplash.com/photo-1609137144822-446757b4f535?w=800', 3000000.00, 1850000.00, 'INR', '2026-02-01', '2026-11-30', 1, 1),
-(3, 'Sangha Daily Food & Medical Fund', 'sangha-food-medical-fund', 'Providing nutritious vegetarian meals, healthcare, and essential robes for resident monks and novices.', 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=800', 1200000.00, 890000.00, 'INR', '2026-01-01', '2026-12-31', 1, 0),
-(4, 'Butter Lamp & World Peace Puja Sponsorship', 'butter-lamp-puja-sponsorship', 'Sponsor 108 butter lamps and prayers for universal peace, longevity, and obstacle clearance.', 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800', 500000.00, 425000.00, 'INR', '2026-01-01', '2026-12-31', 1, 0)
-ON DUPLICATE KEY UPDATE title=VALUES(title);
+(1, 'Great Druk Wangyel Peace Stupa', 'peace-stupa-construction', 'Constructing the monumental Great Druk Wangyel Peace Stupa in Gelephu, Sarpang, fostering world peace, spiritual harmony, and cultural preservation.', 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80', 5000000.00, 3485230.00, 'INR', '2026-01-01', '2026-12-31', 1, 1),
+(2, 'Shedra Monastic University Expansion', 'shedra-university-expansion', 'Building state-of-the-art residential quarters, library, and Dharma study halls for 350+ enrolled Buddhist monks and scholars.', 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80', 3000000.00, 1850000.00, 'INR', '2026-02-01', '2026-11-30', 1, 1),
+(3, 'Sangha Daily Food & Medical Fund', 'sangha-food-medical-fund', 'Providing nutritious vegetarian meals, healthcare, and essential robes for resident monks and novices.', 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?auto=format&fit=crop&w=1200&q=80', 1200000.00, 890000.00, 'INR', '2026-01-01', '2026-12-31', 1, 0),
+(4, 'Butter Lamp & World Peace Puja Sponsorship', 'butter-lamp-puja-sponsorship', 'Sponsor 108 butter lamps and prayers for universal peace, longevity, and obstacle clearance.', 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80', 500000.00, 425000.00, 'INR', '2026-01-01', '2026-12-31', 1, 0)
+ON DUPLICATE KEY UPDATE title=VALUES(title), banner_image=VALUES(banner_image);
 
 -- 6. Donors Directory
 INSERT INTO donors (id, user_id, donor_type, full_name, email, phone, address, city, state, country, postal_code, pan_or_tax_id, total_donated, total_donations_count, first_donation_date, last_donation_date) VALUES
@@ -152,7 +152,7 @@ INSERT INTO income (id, receipt_id, source_category, particulars, amount, curren
 (8, NULL, 'training_fee', 'Monastic Curriculum Enrollment Fees (Term 2)', 115000.00, 'INR', '2026-08-10', 'Bank Transfer', 1, 'BT-SHEDRA-2026', 1),
 (9, NULL, 'prayer_offering', 'Ganachakra Special Puja Offerings', 75500.00, 'INR', '2026-08-18', 'Cash', 3, 'CSH-PUJA-0826', 1),
 (10, NULL, 'misc', 'Monastery Dharma Books & Butter Lamp Oil Sales', 52130.00, 'INR', '2026-08-20', 'Cash', 3, 'CSH-MISC-0826', 1)
-ON DUPLICATE KEY UPDATE particulars=VALUES(particulars);
+ON DUPLICATE KEY UPDATE receipt_id=VALUES(receipt_id);
 
 -- 12. Expense Categories
 INSERT INTO expense_categories (id, name, code, description) VALUES

@@ -63,14 +63,19 @@ export default function NewsEvents() {
           <div className="text-center py-16 text-gray-400">Loading events...</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {items.map(item => (
+            {(items.length > 0 ? items : [
+              { id: 1, slug: 'ganachakra-prayer-ceremony-2026', title: 'Grand Ganachakra Prayer Ceremony', category: 'Ganachakra', event_date: '2026-08-28', event_time: '08:00 AM - 05:00 PM', location: 'Gelephu, Sarpang, Bhutan', banner_image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80', summary: 'Annual Guru Rinpoche sacred feast gathering and blessing for global peace and harmony.' },
+              { id: 2, slug: 'new-moon-prayer-sep-2026', title: 'New Moon Tara & Prajnaparamita Puja', category: 'Puja', event_date: '2026-09-05', event_time: '06:00 AM - 12:00 PM', location: 'Drodul Phendey Ling Main Hall', banner_image: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80', summary: 'Recitation of the Heart Sutra and 21 Praises to Tara for the health and prosperity of all sponsors.' },
+              { id: 3, slug: 'teaching-by-khenpo-rinpoche-sep-2026', title: 'Sacred Bodhicitta Teaching by Khenpo Rinpoche', category: 'Teaching', event_date: '2026-09-12', event_time: '02:00 PM - 04:30 PM', location: 'Shedra Assembly Hall, Gelephu', banner_image: 'https://images.unsplash.com/photo-1560707303-4e980ce876ad?auto=format&fit=crop&w=1200&q=80', summary: 'Special discourse on Shantideva\'s Guide to the Bodhisattva Way of Life and cultivating compassion.' },
+              { id: 4, slug: 'buddha-dharma-class-online-sep-2026', title: 'Buddha Dharma & Meditation Webinar', category: 'Teaching', event_date: '2026-09-20', event_time: '06:30 PM - 08:00 PM', location: 'Online (Zoom Webinar)', banner_image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1200&q=80', summary: 'Interactive digital webinar on Tibetan Buddhist meditation fundamentals and mindful daily living.' }
+            ]).map(item => (
               <article key={item.id} className="monastery-card overflow-hidden flex flex-col justify-between monastery-card-hover group">
                 <div>
                   <div className="relative h-48 overflow-hidden bg-gray-100">
                     <img
-                      src={item.banner_image || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600'}
+                      src={item.banner_image || 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=800'}
                       alt={item.title}
-                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600'; }}
+                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800'; }}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute top-3 right-3 bg-[#4A0E17] text-[#D4AF37] text-[10px] font-bold px-2.5 py-1 rounded shadow">
