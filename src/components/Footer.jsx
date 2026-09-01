@@ -73,24 +73,24 @@ export default function Footer({ onOpenDonate }) {
             </h4>
             <ul className="space-y-2.5 text-xs text-[#D1D5DB]">
               <li>
-                <Link to="/donor/login" className="hover:text-[#D4AF37] flex items-center gap-1.5 transition-colors">
-                  <span className="text-[#D4AF37]">☸</span> Donor Portal (Receipts & History)
+                <Link to="/login" className="hover:text-[#D4AF37] flex items-center gap-1.5 transition-colors">
+                  <span className="text-[#D4AF37]">☸</span> Devotee & Member Portal
                 </Link>
               </li>
               <li>
-                <Link to="/student/login" className="hover:text-[#D4AF37] flex items-center gap-1.5 transition-colors">
-                  <span className="text-[#D4AF37]">☸</span> Student & Monk Portal (LMS & Dues)
+                <Link to="/learning" className="hover:text-[#D4AF37] flex items-center gap-1.5 transition-colors">
+                  <span className="text-[#D4AF37]">☸</span> Open Dharma Video Library
                 </Link>
               </li>
               <li>
                 <Link to="/admin/login" className="hover:text-[#D4AF37] flex items-center gap-1.5 transition-colors">
-                  <span className="text-[#D4AF37]">☸</span> Staff & Administration Portal
+                  <span className="text-[#D4AF37]">☸</span> Staff & Administration Shell
                 </Link>
               </li>
               <li className="pt-2">
                 <button
                   onClick={onOpenDonate}
-                  className="w-full bg-[#7E1929] hover:bg-[#8B1E2F] text-white py-2 rounded text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 border border-[#D4AF37]/50 shadow transition-all"
+                  className="w-full bg-[#7E1929] hover:bg-[#8B1E2F] text-white py-2 rounded-lg text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 border border-[#D4AF37]/50 shadow transition-all"
                 >
                   <Heart className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37]" />
                   <span>Support Our Mission</span>

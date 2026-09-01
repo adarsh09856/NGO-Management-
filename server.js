@@ -66,9 +66,49 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Auto-sync verified Bhutan & Thimphu Monastic Media Assets
+async function autoMigrateBhutanAssets() {
+  try {
+    const { pool } = require('./config/db');
+    // 1. Update Campaigns
+    await pool.query(`UPDATE campaigns SET banner_image = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80' WHERE id = 1`);
+    await pool.query(`UPDATE campaigns SET banner_image = 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80' WHERE id = 2`);
+    await pool.query(`UPDATE campaigns SET banner_image = 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?auto=format&fit=crop&w=1200&q=80' WHERE id = 3`);
+    await pool.query(`UPDATE campaigns SET banner_image = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80' WHERE id = 4`);
+
+    // 2. Update News & Events
+    await pool.query(`UPDATE news_events SET banner_image = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80' WHERE id = 1`);
+    await pool.query(`UPDATE news_events SET banner_image = 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80' WHERE id = 2`);
+    await pool.query(`UPDATE news_events SET banner_image = 'https://images.unsplash.com/photo-1560707303-4e980ce876ad?auto=format&fit=crop&w=1200&q=80' WHERE id = 3`);
+    await pool.query(`UPDATE news_events SET banner_image = 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1200&q=80' WHERE id = 4`);
+
+    // 3. Update Blog Posts
+    await pool.query(`UPDATE blog_posts SET cover_image = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80' WHERE id = 1`);
+    await pool.query(`UPDATE blog_posts SET cover_image = 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80' WHERE id = 2`);
+    await pool.query(`UPDATE blog_posts SET cover_image = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80' WHERE id = 3`);
+
+    // 4. Update Learning Videos
+    await pool.query(`UPDATE learning_materials SET thumbnail_url = 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1200&q=80' WHERE id = 1`);
+    await pool.query(`UPDATE learning_materials SET thumbnail_url = 'https://images.unsplash.com/photo-1560707303-4e980ce876ad?auto=format&fit=crop&w=1200&q=80' WHERE id = 2`);
+    await pool.query(`UPDATE learning_materials SET thumbnail_url = 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80' WHERE id = 3`);
+    await pool.query(`UPDATE learning_materials SET thumbnail_url = 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?auto=format&fit=crop&w=1200&q=80' WHERE id = 4`);
+
+    // 5. Update Gallery Items
+    await pool.query(`UPDATE gallery_items SET media_url = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80', thumbnail_url = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=400&q=80' WHERE id = 1`);
+    await pool.query(`UPDATE gallery_items SET media_url = 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80', thumbnail_url = 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=400&q=80' WHERE id = 2`);
+    await pool.query(`UPDATE gallery_items SET thumbnail_url = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=400&q=80' WHERE id = 3`);
+    await pool.query(`UPDATE gallery_items SET media_url = 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1200&q=80', thumbnail_url = 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=400&q=80' WHERE id = 4`);
+    await pool.query(`UPDATE gallery_items SET thumbnail_url = 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?auto=format&fit=crop&w=400&q=80' WHERE id = 5`);
+    console.log('✅ Automated Bhutanese media assets synchronized into database.');
+  } catch (err) {
+    // Non-fatal if tables don't exist yet
+  }
+}
+
 // Start Server
 async function startServer() {
   await testConnection();
+  await autoMigrateBhutanAssets();
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`=======================================================`);
     console.log(`☸ Drodul Phendey Ling Monastery CRM Server Online`);

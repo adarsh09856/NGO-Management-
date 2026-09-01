@@ -6,6 +6,7 @@ import {
   BookOpen, Sparkles, Building, Landmark, Compass, Award, HandHeart, Newspaper, Video
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import PrayerFlagsRibbon from './PrayerFlagsRibbon';
 
 export default function Navbar({ onOpenDonate }) {
   const { user, logout, isAdmin } = useAuth();
@@ -44,6 +45,9 @@ export default function Navbar({ onOpenDonate }) {
 
   return (
     <header className="w-full z-40 sticky top-0 bg-white shadow-sm border-b border-[#EBE5D8] transition-shadow duration-300">
+      {/* 0. BHUTANESE PRAYER FLAGS RIBBON */}
+      <PrayerFlagsRibbon />
+
       {/* 1. TOP UTILITY BAR */}
       <div className="bg-[#4A0E17] text-[#F3F4F6] text-[11px] sm:text-xs py-1.5 px-3 sm:px-8 border-b border-[#5A121E]">
         <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-y-1 gap-x-3">
