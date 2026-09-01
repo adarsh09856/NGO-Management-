@@ -57,7 +57,7 @@ export default function AdminTopbar({ onToggleSidebar, title = 'Dashboard', brea
   const currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
   return (
-    <header className="sticky top-0 z-20 bg-white border-b border-[#EBE5D8] px-3 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between shadow-sm gap-2">
+    <header className="sticky top-0 z-20 glass-panel border-b border-[#EBE5D8]/80 px-3 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between shadow-sm gap-2 backdrop-blur-md">
       {/* Left: Hamburger & Breadcrumbs */}
       <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
         <button

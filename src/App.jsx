@@ -8,6 +8,7 @@ import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import DonationModal from './components/DonationModal';
+import AmbientAuroraBackground from './components/AmbientAuroraBackground';
 
 // Public Pages
 import Home from './pages/public/Home';
@@ -74,7 +75,8 @@ export default function App() {
   const [donateModalOpen, setDonateModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FDFBF7] text-[#2D1810]">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#1F2937] relative">
+      <AmbientAuroraBackground />
       <Routes>
         {/* ========================================================= */}
         {/* 1. PUBLIC WEBSITE PORTAL                                  */}
