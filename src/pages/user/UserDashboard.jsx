@@ -71,7 +71,7 @@ export default function UserDashboard() {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
         <div className="text-center space-y-2">
-          <div className="w-8 h-8 border-2 border-[#7E1929] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <div className="w-8 h-8 border-2 border-[#E11D48] border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="text-xs text-gray-500">Loading your member dashboard...</p>
         </div>
       </div>
@@ -83,7 +83,7 @@ export default function UserDashboard() {
   return (
     <div className="space-y-6">
       {/* 1. WELCOME BANNER & DONATION CTA */}
-      <div className="bg-gradient-to-r from-[#2C060D] via-[#4A0E17] to-[#1F0408] rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden shadow-lg border border-[#D4AF37]/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <div className="bg-gradient-to-r from-[#0B0F19] via-[#0F172A] to-[#070A12] rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden shadow-lg border border-[#D4AF37]/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="space-y-2 max-w-xl">
           <span className="text-[#D4AF37] font-semibold text-xs uppercase tracking-widest flex items-center gap-1.5">
             <span>☸</span> Tashi Delek & Welcome
@@ -99,7 +99,7 @@ export default function UserDashboard() {
         <div className="flex flex-wrap gap-3">
           <button
             onClick={() => setDonateOpen(true)}
-            className="px-5 py-2.5 bg-[#7E1929] hover:bg-[#8B1E2F] text-white rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-md border border-[#D4AF37]/50"
+            className="px-5 py-2.5 bg-[#E11D48] hover:bg-[#BE123C] text-white rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-md border border-[#D4AF37]/50"
           >
             <Heart className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37]" />
             <span>Make an Offering</span>
@@ -112,10 +112,10 @@ export default function UserDashboard() {
         <div className="monastery-card p-5 space-y-1">
           <span className="text-xs text-gray-500 font-medium">Total Offerings Given</span>
           <div className="flex items-baseline justify-between">
-            <h3 className="font-serif-brand font-extrabold text-2xl text-[#4A0E17]">
+            <h3 className="font-serif-brand font-extrabold text-2xl text-[#0F172A]">
               ₹{(givingStats?.totalDonated || 0).toLocaleString()}
             </h3>
-            <Heart className="w-5 h-5 text-[#8B1E2F]" />
+            <Heart className="w-5 h-5 text-[#BE123C]" />
           </div>
           <p className="text-[11px] text-gray-400">Lifetime contributions</p>
         </div>
@@ -123,7 +123,7 @@ export default function UserDashboard() {
         <div className="monastery-card p-5 space-y-1">
           <span className="text-xs text-gray-500 font-medium">Total Offerings Made</span>
           <div className="flex items-baseline justify-between">
-            <h3 className="font-serif-brand font-extrabold text-2xl text-[#4A0E17]">
+            <h3 className="font-serif-brand font-extrabold text-2xl text-[#0F172A]">
               {givingStats?.totalDonationsCount || 0}
             </h3>
             <CreditCard className="w-5 h-5 text-[#D4AF37]" />
@@ -134,7 +134,7 @@ export default function UserDashboard() {
         <div className="monastery-card p-5 space-y-1">
           <span className="text-xs text-gray-500 font-medium">80G Tax Receipts</span>
           <div className="flex items-baseline justify-between">
-            <h3 className="font-serif-brand font-extrabold text-2xl text-[#4A0E17]">
+            <h3 className="font-serif-brand font-extrabold text-2xl text-[#0F172A]">
               {givingStats?.taxExemptReceiptsCount || receipts.length}
             </h3>
             <ShieldCheck className="w-5 h-5 text-emerald-600" />
@@ -145,7 +145,7 @@ export default function UserDashboard() {
         <div className="monastery-card p-5 space-y-1">
           <span className="text-xs text-gray-500 font-medium">Prayer Dedications</span>
           <div className="flex items-baseline justify-between">
-            <h3 className="font-serif-brand font-extrabold text-2xl text-[#4A0E17]">
+            <h3 className="font-serif-brand font-extrabold text-2xl text-[#0F172A]">
               {prayerRequests.length}
             </h3>
             <Flame className="w-5 h-5 text-[#D4AF37]" />
@@ -155,7 +155,7 @@ export default function UserDashboard() {
       </div>
 
       {/* 3. TABS NAVIGATION */}
-      <div className="flex items-center space-x-2 border-b border-[#EBE5D8] overflow-x-auto pb-1">
+      <div className="flex items-center space-x-2 border-b border-[#E2E8F0] overflow-x-auto pb-1">
         {[
           { id: 'overview', label: 'Overview', icon: CheckCircle2 },
           { id: 'donations', label: 'My Donations & 80G Receipts', icon: FileText },
@@ -170,8 +170,8 @@ export default function UserDashboard() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center space-x-1.5 px-4 py-2.5 text-xs font-bold border-b-2 whitespace-nowrap transition-all ${
                 activeTab === tab.id
-                  ? 'border-[#7E1929] text-[#4A0E17] bg-white rounded-t-lg'
-                  : 'border-transparent text-gray-600 hover:text-[#4A0E17]'
+                  ? 'border-[#E11D48] text-[#0F172A] bg-white rounded-t-lg'
+                  : 'border-transparent text-gray-600 hover:text-[#0F172A]'
               }`}
             >
               <Icon className="w-4 h-4 text-[#D4AF37]" />
@@ -188,12 +188,12 @@ export default function UserDashboard() {
           <div className="lg:col-span-7 space-y-6">
             <div className="monastery-card p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17]">
+                <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">
                   Recent Offerings & Official Receipts
                 </h3>
                 <button
                   onClick={() => setActiveTab('donations')}
-                  className="text-xs font-bold text-[#7E1929] hover:underline"
+                  className="text-xs font-bold text-[#E11D48] hover:underline"
                 >
                   View All ({donations.length})
                 </button>
@@ -204,19 +204,19 @@ export default function UserDashboard() {
               ) : (
                 <div className="space-y-3">
                   {donations.slice(0, 4).map((d) => (
-                    <div key={d.id} className="p-3.5 bg-[#FAF9F5] rounded-xl border border-[#EBE5D8] flex items-center justify-between">
+                    <div key={d.id} className="p-3.5 bg-[#FAF9F5] rounded-xl border border-[#E2E8F0] flex items-center justify-between">
                       <div className="space-y-1">
-                        <p className="font-bold text-xs text-[#4A0E17]">{d.donation_for || d.campaign_title || 'General Monastery Fund'}</p>
+                        <p className="font-bold text-xs text-[#0F172A]">{d.donation_for || d.campaign_title || 'General Monastery Fund'}</p>
                         <p className="text-[10px] text-gray-500">
                           {new Date(d.payment_date).toLocaleDateString()} • {d.payment_method || 'Online'}
                         </p>
                       </div>
                       <div className="text-right space-y-1">
-                        <p className="font-bold text-sm text-[#4A0E17]">₹{parseFloat(d.amount).toLocaleString()}</p>
+                        <p className="font-bold text-sm text-[#0F172A]">₹{parseFloat(d.amount).toLocaleString()}</p>
                         {d.receipt_id && (
                           <button
                             onClick={() => downloadReceipt(d.receipt_id)}
-                            className="text-[10px] font-bold text-[#7E1929] hover:underline flex items-center gap-1 justify-end"
+                            className="text-[10px] font-bold text-[#E11D48] hover:underline flex items-center gap-1 justify-end"
                           >
                             <Download className="w-3 h-3" />
                             <span>80G Receipt</span>
@@ -234,7 +234,7 @@ export default function UserDashboard() {
           <div className="lg:col-span-5 space-y-6">
             {/* Dedicated Prayers */}
             <div className="monastery-card p-6 space-y-4">
-              <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17]">
+              <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">
                 Your Prayer Requests
               </h3>
               {prayerRequests.length === 0 ? (
@@ -242,7 +242,7 @@ export default function UserDashboard() {
                   <p className="text-xs text-gray-500">You have no active prayer dedication requests.</p>
                   <a
                     href="/prayer-request"
-                    className="inline-block px-3 py-1.5 bg-[#FAF5F0] text-[#7E1929] rounded-md text-xs font-bold hover:bg-[#FDF6E2]"
+                    className="inline-block px-3 py-1.5 bg-[#FAF5F0] text-[#E11D48] rounded-md text-xs font-bold hover:bg-[#FEF3C7]"
                   >
                     + Request Butter Lamps
                   </a>
@@ -250,9 +250,9 @@ export default function UserDashboard() {
               ) : (
                 <div className="space-y-2.5">
                   {prayerRequests.slice(0, 3).map((pr) => (
-                    <div key={pr.id} className="p-3 bg-[#FAF9F5] rounded-xl border border-[#EBE5D8] space-y-1">
+                    <div key={pr.id} className="p-3 bg-[#FAF9F5] rounded-xl border border-[#E2E8F0] space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-xs text-[#4A0E17]">{pr.prayer_type}</span>
+                        <span className="font-bold text-xs text-[#0F172A]">{pr.prayer_type}</span>
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                           pr.status === 'dedicated' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
                         }`}>
@@ -270,14 +270,14 @@ export default function UserDashboard() {
             <div className="monastery-card p-5 bg-[#FAF5F0] border border-[#D4AF37]/40 space-y-2">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-emerald-600" />
-                <h4 className="font-serif-brand font-bold text-xs text-[#4A0E17]">80G Tax Exemption Info</h4>
+                <h4 className="font-serif-brand font-bold text-xs text-[#0F172A]">80G Tax Exemption Info</h4>
               </div>
               <p className="text-[11px] text-gray-600 leading-relaxed">
                 All donations to Drodul Phendey Ling Foundation qualify for tax deductions under 80G. Ensure your Tax PAN is updated in your profile for automated digital filing.
               </p>
               <button
                 onClick={() => setActiveTab('profile')}
-                className="text-xs font-bold text-[#7E1929] hover:underline"
+                className="text-xs font-bold text-[#E11D48] hover:underline"
               >
                 Update Tax PAN / CID →
               </button>
@@ -291,7 +291,7 @@ export default function UserDashboard() {
         <div className="monastery-card p-6 space-y-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div>
-              <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
                 Complete Donation History & Tax Receipts
               </h3>
               <p className="text-xs text-gray-500">
@@ -303,7 +303,7 @@ export default function UserDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-[#FAF5F0] border-b border-[#EBE5D8] text-[#4A0E17] font-bold">
+                <tr className="bg-[#FAF5F0] border-b border-[#E2E8F0] text-[#0F172A] font-bold">
                   <th className="p-3">Receipt No</th>
                   <th className="p-3">Date</th>
                   <th className="p-3">Purpose / Campaign</th>
@@ -321,15 +321,15 @@ export default function UserDashboard() {
                   </tr>
                 ) : receipts.map((r) => (
                   <tr key={r.id} className="hover:bg-gray-50">
-                    <td className="p-3 font-mono font-bold text-[#7E1929]">{r.receipt_number}</td>
+                    <td className="p-3 font-mono font-bold text-[#E11D48]">{r.receipt_number}</td>
                     <td className="p-3 text-gray-600">{new Date(r.receipt_date).toLocaleDateString()}</td>
                     <td className="p-3 text-gray-800 font-medium">{r.notes || 'Donation towards Monastery & Stupa'}</td>
                     <td className="p-3 text-gray-600">{r.payment_mode}</td>
-                    <td className="p-3 text-right font-bold text-[#4A0E17]">₹{parseFloat(r.amount).toLocaleString()}</td>
+                    <td className="p-3 text-right font-bold text-[#0F172A]">₹{parseFloat(r.amount).toLocaleString()}</td>
                     <td className="p-3 text-center">
                       <button
                         onClick={() => downloadReceipt(r.id)}
-                        className="px-3 py-1 bg-[#4A0E17] hover:bg-[#5A121E] text-white rounded text-[11px] font-bold flex items-center gap-1 mx-auto shadow-sm"
+                        className="px-3 py-1 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded text-[11px] font-bold flex items-center gap-1 mx-auto shadow-sm"
                       >
                         <Download className="w-3 h-3 text-[#D4AF37]" />
                         <span>PDF</span>
@@ -346,7 +346,7 @@ export default function UserDashboard() {
       {/* TAB: MONTHLY PLEDGES */}
       {activeTab === 'pledges' && (
         <div className="monastery-card p-6 space-y-4">
-          <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+          <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
             Active Recurring Giving Pledges
           </h3>
           <p className="text-xs text-gray-500">
@@ -359,7 +359,7 @@ export default function UserDashboard() {
               <p className="text-xs text-gray-500">You currently have no active monthly recurring pledges.</p>
               <button
                 onClick={() => setDonateOpen(true)}
-                className="px-4 py-2 bg-[#7E1929] text-white rounded-full text-xs font-bold shadow hover:bg-[#8B1E2F]"
+                className="px-4 py-2 bg-[#E11D48] text-white rounded-full text-xs font-bold shadow hover:bg-[#BE123C]"
               >
                 + Setup Monthly Giving
               </button>
@@ -367,14 +367,14 @@ export default function UserDashboard() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {pledges.map((p) => (
-                <div key={p.id} className="p-4 bg-[#FAF9F5] rounded-xl border border-[#EBE5D8] space-y-2">
+                <div key={p.id} className="p-4 bg-[#FAF9F5] rounded-xl border border-[#E2E8F0] space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs text-[#4A0E17]">{p.campaign_title || 'Monthly Sangha Support'}</span>
+                    <span className="font-bold text-xs text-[#0F172A]">{p.campaign_title || 'Monthly Sangha Support'}</span>
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">
                       {p.status}
                     </span>
                   </div>
-                  <p className="text-lg font-bold text-[#4A0E17]">₹{parseFloat(p.amount).toLocaleString()} / month</p>
+                  <p className="text-lg font-bold text-[#0F172A]">₹{parseFloat(p.amount).toLocaleString()} / month</p>
                   <p className="text-[11px] text-gray-500">Started on {new Date(p.created_at).toLocaleDateString()}</p>
                 </div>
               ))}
@@ -388,7 +388,7 @@ export default function UserDashboard() {
         <div className="monastery-card p-6 space-y-4">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
                 Your Sacred Prayer Dedications
               </h3>
               <p className="text-xs text-gray-500">
@@ -397,7 +397,7 @@ export default function UserDashboard() {
             </div>
             <a
               href="/prayer-request"
-              className="px-4 py-1.5 bg-[#4A0E17] text-white rounded-md text-xs font-bold hover:bg-[#5A121E]"
+              className="px-4 py-1.5 bg-[#0F172A] text-white rounded-md text-xs font-bold hover:bg-[#1E293B]"
             >
               + New Prayer Request
             </a>
@@ -407,11 +407,11 @@ export default function UserDashboard() {
             {prayerRequests.length === 0 ? (
               <p className="text-xs text-gray-500 py-8 text-center">No prayer requests on record.</p>
             ) : prayerRequests.map((pr) => (
-              <div key={pr.id} className="p-4 bg-[#FAF9F5] rounded-xl border border-[#EBE5D8] space-y-2">
+              <div key={pr.id} className="p-4 bg-[#FAF9F5] rounded-xl border border-[#E2E8F0] space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Flame className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="font-bold text-xs text-[#4A0E17]">{pr.prayer_type}</span>
+                    <span className="font-bold text-xs text-[#0F172A]">{pr.prayer_type}</span>
                     <span className="text-[11px] text-gray-500">({pr.butter_lamps_count} Butter Lamps)</span>
                   </div>
                   <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
@@ -436,7 +436,7 @@ export default function UserDashboard() {
       {activeTab === 'profile' && (
         <div className="monastery-card p-6 space-y-6 max-w-2xl">
           <div>
-            <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+            <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
               Member Profile & 80G Tax Settings
             </h3>
             <p className="text-xs text-gray-500">
@@ -452,7 +452,7 @@ export default function UserDashboard() {
                 required
                 value={profileName}
                 onChange={(e) => setProfileName(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
               />
             </div>
 
@@ -472,7 +472,7 @@ export default function UserDashboard() {
                 type="text"
                 value={profilePhone}
                 onChange={(e) => setProfilePhone(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
               />
             </div>
 
@@ -483,7 +483,7 @@ export default function UserDashboard() {
                 placeholder="e.g. ABCDE1234F or Bhutan CID"
                 value={panOrTaxId}
                 onChange={(e) => setPanOrTaxId(e.target.value.toUpperCase())}
-                className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none font-mono"
+                className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none font-mono"
               />
               <p className="text-[10px] text-gray-400 mt-1">This will be printed on all future 80G tax exemption receipts.</p>
             </div>
@@ -491,7 +491,7 @@ export default function UserDashboard() {
             <button
               type="submit"
               disabled={savingProfile}
-              className="px-5 py-2.5 bg-[#4A0E17] hover:bg-[#5A121E] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
+              className="px-5 py-2.5 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
             >
               <Save className="w-3.5 h-3.5" />
               <span>{savingProfile ? 'Saving...' : 'Save Settings'}</span>

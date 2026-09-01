@@ -68,7 +68,7 @@ export default function SystemSettings() {
     <div className="space-y-6 max-w-5xl">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
             System Settings & Foundation Configuration
           </h1>
           <p className="text-xs text-gray-500">
@@ -80,7 +80,7 @@ export default function SystemSettings() {
           type="button"
           onClick={handleDatabaseBackup}
           disabled={backingUp}
-          className="px-4 py-2 bg-[#4A0E17] hover:bg-[#5A121E] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
+          className="px-4 py-2 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
         >
           <Database className="w-3.5 h-3.5 text-[#D4AF37]" />
           <span>{backingUp ? 'Exporting SQL Dump...' : 'Create Database Backup'}</span>
@@ -90,7 +90,7 @@ export default function SystemSettings() {
       <form onSubmit={handleSaveSettings} className="space-y-6">
         {/* Foundation Profile */}
         <div className="monastery-card p-6 space-y-4">
-          <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] border-b pb-2 flex items-center gap-2">
+          <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] border-b pb-2 flex items-center gap-2">
             <Globe className="w-4 h-4 text-[#D4AF37]" />
             <span>1. Foundation Legal & Tax Registration</span>
           </h3>
@@ -150,7 +150,7 @@ export default function SystemSettings() {
 
         {/* Payment Gateways */}
         <div className="monastery-card p-6 space-y-4">
-          <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] border-b pb-2 flex items-center gap-2">
+          <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] border-b pb-2 flex items-center gap-2">
             <CreditCard className="w-4 h-4 text-[#D4AF37]" />
             <span>2. Payment Gateways (Razorpay & Stripe)</span>
           </h3>
@@ -183,7 +183,7 @@ export default function SystemSettings() {
           <button
             type="submit"
             disabled={saving}
-            className="w-full sm:w-auto px-6 py-3 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded-md font-bold text-xs uppercase tracking-wider shadow flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 py-3 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded-md font-bold text-xs uppercase tracking-wider shadow flex items-center justify-center gap-2"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'Saving Changes...' : 'Save Configuration'}</span>

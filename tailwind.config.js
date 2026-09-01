@@ -8,18 +8,19 @@ module.exports = {
     extend: {
       colors: {
         monastery: {
-          sidebar: '#3B0A13',
-          maroon: '#4A0E17',
-          wine: '#5A121E',
-          crimson: '#7E1929',
-          gold: '#D4AF37',
-          'gold-light': '#FDF6E2',
-          'gold-dark': '#B89020',
-          cream: '#FDFBF7',
-          sand: '#F8F6F0',
-          border: '#EBE5D8',
-          text: '#2D1810',
-          muted: '#6B5E59'
+          sidebar: '#090D16',
+          maroon: '#0F172A',
+          wine: '#1E293B',
+          crimson: '#E11D48',
+          ruby: '#BE123C',
+          gold: '#F59E0B',
+          'gold-light': '#FEF3C7',
+          'gold-dark': '#D97706',
+          cream: '#F8FAFC',
+          sand: '#F1F5F9',
+          border: '#E2E8F0',
+          text: '#0F172A',
+          muted: '#64748B'
         }
       },
       fontFamily: {

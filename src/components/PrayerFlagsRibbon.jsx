@@ -11,7 +11,7 @@ export default function PrayerFlagsRibbon() {
   ];
 
   return (
-    <div className="w-full overflow-hidden bg-[#2C060D] border-b border-[#5A121E] select-none pointer-events-none py-0.5">
+    <div className="w-full overflow-hidden bg-[#0B0F19] border-b border-[#1E293B] select-none pointer-events-none py-0.5">
       <div className="flex justify-between items-center max-w-7xl mx-auto px-4 opacity-90">
         {Array.from({ length: 6 }).map((_, repeatIndex) => (
           <div key={repeatIndex} className="hidden sm:flex items-center space-x-1.5 flex-1 justify-around">

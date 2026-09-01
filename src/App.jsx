@@ -75,7 +75,7 @@ export default function App() {
   const [donateModalOpen, setDonateModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#1F2937] relative">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-[#1F2937] relative">
       <AmbientAuroraBackground />
       <Routes>
         {/* ========================================================= */}

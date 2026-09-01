@@ -70,7 +70,7 @@ export default function MoneyReceipts() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
             Money Receipts & 80G Certificates
           </h1>
           <p className="text-xs text-gray-500">
@@ -89,7 +89,7 @@ export default function MoneyReceipts() {
             onChange={(e) => setSearch(e.target.value)}
             className="text-xs p-2.5 rounded border border-gray-300 w-full sm:w-80"
           />
-          <button type="submit" className="px-4 py-2 bg-[#4A0E17] text-white text-xs font-bold rounded">
+          <button type="submit" className="px-4 py-2 bg-[#0F172A] text-white text-xs font-bold rounded">
             Search
           </button>
         </form>
@@ -111,7 +111,7 @@ export default function MoneyReceipts() {
       <div className="monastery-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F8F6F0] text-gray-700 font-bold uppercase tracking-wider border-b border-[#EBE5D8]">
+            <thead className="bg-[#F1F5F9] text-gray-700 font-bold uppercase tracking-wider border-b border-[#E2E8F0]">
               <tr>
                 <th className="py-3 px-4">Receipt No</th>
                 <th className="py-3 px-4">Financial Year</th>
@@ -125,8 +125,8 @@ export default function MoneyReceipts() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {receipts.map((r) => (
-                <tr key={r.id} className="hover:bg-[#FDFBF7] transition-colors">
-                  <td className="py-3 px-4 font-mono font-bold text-[#4A0E17]">{r.receipt_number}</td>
+                <tr key={r.id} className="hover:bg-[#F8FAFC] transition-colors">
+                  <td className="py-3 px-4 font-mono font-bold text-[#0F172A]">{r.receipt_number}</td>
                   <td className="py-3 px-4 text-gray-600">{r.financial_year}</td>
                   <td className="py-3 px-4 font-bold text-gray-900">{r.recipient_name}</td>
                   <td className="py-3 px-4 text-gray-600">{new Date(r.receipt_date).toLocaleDateString('en-GB')}</td>
@@ -145,7 +145,7 @@ export default function MoneyReceipts() {
                         href={`/api/receipts/${r.id}/pdf`}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-1.5 bg-[#FAF5F0] hover:bg-[#FDF6E2] text-[#4A0E17] border border-[#D4AF37] rounded font-bold flex items-center gap-1 shadow-sm"
+                        className="p-1.5 bg-[#FAF5F0] hover:bg-[#FEF3C7] text-[#0F172A] border border-[#D4AF37] rounded font-bold flex items-center gap-1 shadow-sm"
                         title="Download PDF Receipt"
                       >
                         <Download className="w-3.5 h-3.5" />

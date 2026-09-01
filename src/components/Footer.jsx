@@ -4,13 +4,13 @@ import { Heart, MapPin, Phone, Mail, Globe, Shield, Sparkles } from 'lucide-reac
 
 export default function Footer({ onOpenDonate }) {
   return (
-    <footer className="bg-[#3B0A13] text-[#F3F4F6] border-t-4 border-[#D4AF37] pt-14 pb-8">
+    <footer className="bg-[#0F172A] text-[#F3F4F6] border-t-4 border-[#D4AF37] pt-14 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-[#5A121E]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-[#1E293B]">
           {/* Col 1: About & Crest */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-[#4A0E17] border-2 border-[#D4AF37] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-[#0F172A] border-2 border-[#D4AF37] flex items-center justify-center">
                 <span className="text-[#D4AF37] text-xl font-serif font-bold">☸</span>
               </div>
               <div>
@@ -26,7 +26,7 @@ export default function Footer({ onOpenDonate }) {
               A registered Buddhist charitable institution dedicated to constructing the Great Druk Wangyel Peace Stupa, establishing the Shedra Monastic University, and nurturing Dharma for global peace and harmony.
             </p>
             <div className="pt-2">
-              <span className="inline-block bg-[#4A0E17] text-[#D4AF37] text-[11px] px-3 py-1 rounded border border-[#D4AF37]/40 font-mono">
+              <span className="inline-block bg-[#0F172A] text-[#D4AF37] text-[11px] px-3 py-1 rounded border border-[#D4AF37]/40 font-mono">
                 Tax Reg: DPL/TAX-EXEMPT/BTN/2026/80G-092
               </span>
             </div>
@@ -34,7 +34,7 @@ export default function Footer({ onOpenDonate }) {
 
           {/* Col 2: Quick Links */}
           <div>
-            <h4 className="font-serif-brand font-bold text-sm text-[#D4AF37] tracking-wider mb-4 border-b border-[#5A121E] pb-2">
+            <h4 className="font-serif-brand font-bold text-sm text-[#D4AF37] tracking-wider mb-4 border-b border-[#1E293B] pb-2">
               QUICK LINKS
             </h4>
             <ul className="space-y-2.5 text-xs text-[#D1D5DB]">
@@ -68,7 +68,7 @@ export default function Footer({ onOpenDonate }) {
 
           {/* Col 3: Monastic Portals */}
           <div>
-            <h4 className="font-serif-brand font-bold text-sm text-[#D4AF37] tracking-wider mb-4 border-b border-[#5A121E] pb-2">
+            <h4 className="font-serif-brand font-bold text-sm text-[#D4AF37] tracking-wider mb-4 border-b border-[#1E293B] pb-2">
               PORTAL ACCESS
             </h4>
             <ul className="space-y-2.5 text-xs text-[#D1D5DB]">
@@ -90,7 +90,7 @@ export default function Footer({ onOpenDonate }) {
               <li className="pt-2">
                 <button
                   onClick={onOpenDonate}
-                  className="w-full bg-[#7E1929] hover:bg-[#8B1E2F] text-white py-2 rounded-lg text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 border border-[#D4AF37]/50 shadow transition-all"
+                  className="w-full gold-gradient-btn text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg transition-all"
                 >
                   <Heart className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37]" />
                   <span>Support Our Mission</span>
@@ -101,7 +101,7 @@ export default function Footer({ onOpenDonate }) {
 
           {/* Col 4: Contact & Location */}
           <div>
-            <h4 className="font-serif-brand font-bold text-sm text-[#D4AF37] tracking-wider mb-4 border-b border-[#5A121E] pb-2">
+            <h4 className="font-serif-brand font-bold text-sm text-[#D4AF37] tracking-wider mb-4 border-b border-[#1E293B] pb-2">
               CONTACT HEADQUARTERS
             </h4>
             <div className="space-y-3 text-xs text-[#D1D5DB]">

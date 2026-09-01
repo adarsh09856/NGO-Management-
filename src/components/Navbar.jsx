@@ -44,12 +44,12 @@ export default function Navbar({ onOpenDonate }) {
   }, []);
 
   return (
-    <header className="w-full z-40 sticky top-0 bg-white shadow-sm border-b border-[#EBE5D8] transition-shadow duration-300">
+    <header className="w-full z-40 sticky top-0 bg-white shadow-sm border-b border-[#E2E8F0] transition-shadow duration-300">
       {/* 0. BHUTANESE PRAYER FLAGS RIBBON */}
       <PrayerFlagsRibbon />
 
       {/* 1. TOP UTILITY BAR */}
-      <div className="bg-[#4A0E17] text-[#F3F4F6] text-[11px] sm:text-xs py-1.5 px-3 sm:px-8 border-b border-[#5A121E]">
+      <div className="bg-[#0F172A] text-[#F3F4F6] text-[11px] sm:text-xs py-1.5 px-3 sm:px-8 border-b border-[#1E293B]">
         <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-y-1 gap-x-3">
           {/* Left contact info */}
           <div className="flex items-center space-x-3 sm:space-x-6 text-[11px] sm:text-xs">
@@ -85,7 +85,7 @@ export default function Navbar({ onOpenDonate }) {
             </Link>
 
             {/* Language Switcher */}
-            <div className="flex items-center space-x-1 text-[#D4AF37] border-l border-[#5A121E] pl-2.5">
+            <div className="flex items-center space-x-1 text-[#D4AF37] border-l border-[#1E293B] pl-2.5">
               <Globe className="w-3.5 h-3.5 flex-shrink-0" />
               <select
                 value={lang}
@@ -104,16 +104,16 @@ export default function Navbar({ onOpenDonate }) {
       <div className="max-w-7xl mx-auto px-3 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-3">
         {/* Brand Crest & Logo */}
         <Link to="/" className="flex items-center space-x-2.5 sm:space-x-3 group min-w-0">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#4A0E17] border-2 border-[#D4AF37] flex items-center justify-center shadow-md group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(212,175,55,0.4)] transition-all flex-shrink-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#0F172A] border-2 border-[#D4AF37] flex items-center justify-center shadow-md group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(212,175,55,0.4)] transition-all flex-shrink-0">
             <span className="text-[#D4AF37] text-xl sm:text-2xl font-serif font-bold group-hover:rotate-180 transition-transform duration-700">
               ☸
             </span>
           </div>
           <div className="min-w-0">
-            <h1 className="font-serif-brand font-bold text-xs sm:text-base md:text-lg text-[#4A0E17] tracking-wider leading-tight truncate">
+            <h1 className="font-serif-brand font-bold text-xs sm:text-base md:text-lg text-[#0F172A] tracking-wider leading-tight truncate">
               DRODUL PHENDEY LING
             </h1>
-            <p className="text-[9px] sm:text-xs text-[#8B1E2F] font-medium tracking-widest uppercase truncate">
+            <p className="text-[9px] sm:text-xs text-[#BE123C] font-medium tracking-widest uppercase truncate">
               Building Peace. Empowering Lives.
             </p>
           </div>
@@ -124,13 +124,13 @@ export default function Navbar({ onOpenDonate }) {
           {/* HOME */}
           <Link
             to="/"
-            className={`relative py-1.5 transition-all duration-200 hover:text-[#4A0E17] hover:scale-105 group ${
-              isActive('/') ? 'text-[#8B1E2F]' : 'text-gray-700'
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#0F172A] hover:scale-105 group ${
+              isActive('/') ? 'text-[#BE123C]' : 'text-gray-700'
             }`}
           >
             <span>HOME</span>
             <span
-              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#8B1E2F] transition-all duration-300 ${
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
                 isActive('/') ? 'w-full' : 'w-0 group-hover:w-full'
               }`}
             />
@@ -139,13 +139,13 @@ export default function Navbar({ onOpenDonate }) {
           {/* ABOUT US */}
           <Link
             to="/about"
-            className={`relative py-1.5 transition-all duration-200 hover:text-[#4A0E17] hover:scale-105 group ${
-              isActive('/about') ? 'text-[#8B1E2F]' : 'text-gray-700'
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#0F172A] hover:scale-105 group ${
+              isActive('/about') ? 'text-[#BE123C]' : 'text-gray-700'
             }`}
           >
             <span>ABOUT US</span>
             <span
-              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#8B1E2F] transition-all duration-300 ${
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
                 isActive('/about') ? 'w-full' : 'w-0 group-hover:w-full'
               }`}
             />
@@ -159,9 +159,9 @@ export default function Navbar({ onOpenDonate }) {
           >
             <button
               type="button"
-              className={`flex items-center gap-1 py-1.5 transition-all duration-200 hover:text-[#4A0E17] hover:scale-105 group ${
+              className={`flex items-center gap-1 py-1.5 transition-all duration-200 hover:text-[#0F172A] hover:scale-105 group ${
                 activeDropdown === 'activities' || location.pathname.startsWith('/activities')
-                  ? 'text-[#8B1E2F]'
+                  ? 'text-[#BE123C]'
                   : 'text-gray-700'
               }`}
             >
@@ -172,7 +172,7 @@ export default function Navbar({ onOpenDonate }) {
                 }`}
               />
               <span
-                className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#8B1E2F] transition-all duration-300 ${
+                className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
                   activeDropdown === 'activities' || location.pathname.startsWith('/activities')
                     ? 'w-full'
                     : 'w-0 group-hover:w-full'
@@ -186,39 +186,39 @@ export default function Navbar({ onOpenDonate }) {
                 <div className="space-y-1">
                   <Link
                     to="/activities#stupa"
-                    className="p-2.5 rounded-xl hover:bg-[#FDF6E2] transition-colors flex items-start space-x-3 group"
+                    className="p-2.5 rounded-xl hover:bg-[#FEF3C7] transition-colors flex items-start space-x-3 group"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#4A0E17] text-[#4A0E17] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#0F172A] text-[#0F172A] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
                       <Building className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="font-bold text-xs text-[#4A0E17]">Peace Stupa Construction</p>
+                      <p className="font-bold text-xs text-[#0F172A]">Peace Stupa Construction</p>
                       <p className="text-[10px] text-gray-500 line-clamp-1">108ft Great Druk Wangyel monument</p>
                     </div>
                   </Link>
 
                   <Link
                     to="/activities#shedra"
-                    className="p-2.5 rounded-xl hover:bg-[#FDF6E2] transition-colors flex items-start space-x-3 group"
+                    className="p-2.5 rounded-xl hover:bg-[#FEF3C7] transition-colors flex items-start space-x-3 group"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#4A0E17] text-[#4A0E17] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#0F172A] text-[#0F172A] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
                       <GraduationCap className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="font-bold text-xs text-[#4A0E17]">Shedra Monastic University</p>
+                      <p className="font-bold text-xs text-[#0F172A]">Shedra Monastic University</p>
                       <p className="text-[10px] text-gray-500 line-clamp-1">Higher Buddhist philosophy degrees</p>
                     </div>
                   </Link>
 
                   <Link
                     to="/activities#culture"
-                    className="p-2.5 rounded-xl hover:bg-[#FDF6E2] transition-colors flex items-start space-x-3 group"
+                    className="p-2.5 rounded-xl hover:bg-[#FEF3C7] transition-colors flex items-start space-x-3 group"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#4A0E17] text-[#4A0E17] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#0F172A] text-[#0F172A] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
                       <Sparkles className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="font-bold text-xs text-[#4A0E17]">Cultural Preservation</p>
+                      <p className="font-bold text-xs text-[#0F172A]">Cultural Preservation</p>
                       <p className="text-[10px] text-gray-500 line-clamp-1">Sacred scriptures, thangka & arts</p>
                     </div>
                   </Link>
@@ -230,13 +230,13 @@ export default function Navbar({ onOpenDonate }) {
           {/* LEARNING & DHARMA VIDEOS */}
           <Link
             to="/learning"
-            className={`relative py-1.5 transition-all duration-200 hover:text-[#4A0E17] hover:scale-105 group ${
-              isActive('/learning') ? 'text-[#8B1E2F]' : 'text-gray-700'
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#0F172A] hover:scale-105 group ${
+              isActive('/learning') ? 'text-[#BE123C]' : 'text-gray-700'
             }`}
           >
             <span>LEARNING</span>
             <span
-              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#8B1E2F] transition-all duration-300 ${
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
                 isActive('/learning') ? 'w-full' : 'w-0 group-hover:w-full'
               }`}
             />
@@ -245,13 +245,13 @@ export default function Navbar({ onOpenDonate }) {
           {/* BLOG */}
           <Link
             to="/blog"
-            className={`relative py-1.5 transition-all duration-200 hover:text-[#4A0E17] hover:scale-105 group ${
-              isActive('/blog') ? 'text-[#8B1E2F]' : 'text-gray-700'
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#0F172A] hover:scale-105 group ${
+              isActive('/blog') ? 'text-[#BE123C]' : 'text-gray-700'
             }`}
           >
             <span>BLOG</span>
             <span
-              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#8B1E2F] transition-all duration-300 ${
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
                 isActive('/blog') ? 'w-full' : 'w-0 group-hover:w-full'
               }`}
             />
@@ -260,13 +260,13 @@ export default function Navbar({ onOpenDonate }) {
           {/* GALLERY */}
           <Link
             to="/gallery"
-            className={`relative py-1.5 transition-all duration-200 hover:text-[#4A0E17] hover:scale-105 group ${
-              isActive('/gallery') ? 'text-[#8B1E2F]' : 'text-gray-700'
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#0F172A] hover:scale-105 group ${
+              isActive('/gallery') ? 'text-[#BE123C]' : 'text-gray-700'
             }`}
           >
             <span>GALLERY</span>
             <span
-              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#8B1E2F] transition-all duration-300 ${
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
                 isActive('/gallery') ? 'w-full' : 'w-0 group-hover:w-full'
               }`}
             />
@@ -275,13 +275,13 @@ export default function Navbar({ onOpenDonate }) {
           {/* CONTACT */}
           <Link
             to="/contact"
-            className={`relative py-1.5 transition-all duration-200 hover:text-[#4A0E17] hover:scale-105 group ${
-              isActive('/contact') ? 'text-[#8B1E2F]' : 'text-gray-700'
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#0F172A] hover:scale-105 group ${
+              isActive('/contact') ? 'text-[#BE123C]' : 'text-gray-700'
             }`}
           >
             <span>CONTACT</span>
             <span
-              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#8B1E2F] transition-all duration-300 ${
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
                 isActive('/contact') ? 'w-full' : 'w-0 group-hover:w-full'
               }`}
             />
@@ -294,15 +294,15 @@ export default function Navbar({ onOpenDonate }) {
           {user ? (
             <Link
               to={isAdmin ? '/admin' : '/user'}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-[#FDFBF7] border border-[#D4AF37] text-[#4A0E17] hover:bg-[#FDF6E2] transition-all shadow-sm"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-[#F8FAFC] border border-[#D4AF37] text-[#0F172A] hover:bg-[#FEF3C7] transition-all shadow-sm"
             >
-              {isAdmin ? <ShieldCheck className="w-3.5 h-3.5 text-[#4A0E17]" /> : <User className="w-3.5 h-3.5 text-[#4A0E17]" />}
+              {isAdmin ? <ShieldCheck className="w-3.5 h-3.5 text-[#0F172A]" /> : <User className="w-3.5 h-3.5 text-[#0F172A]" />}
               <span className="max-w-[80px] sm:max-w-[110px] truncate">{isAdmin ? 'Admin Portal' : 'User Panel'}</span>
             </Link>
           ) : (
             <Link
               to="/login"
-              className="hidden sm:inline-flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-semibold text-[#4A0E17] hover:text-[#7E1929] hover:bg-[#FDF6E2] transition-all border border-[#EBE5D8]"
+              className="hidden sm:inline-flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-semibold text-[#0F172A] hover:text-[#E11D48] hover:bg-[#FEF3C7] transition-all border border-[#E2E8F0]"
             >
               <User className="w-3.5 h-3.5" />
               <span>Login</span>
@@ -312,7 +312,7 @@ export default function Navbar({ onOpenDonate }) {
           {/* Shimmering Golden & Burgundy DONATE CTA Button */}
           <button
             onClick={onOpenDonate || (() => navigate('/donate'))}
-            className="relative group overflow-hidden flex items-center space-x-1.5 sm:space-x-2 bg-gradient-to-r from-[#7E1929] via-[#8B1E2F] to-[#5A121E] hover:from-[#8B1E2F] hover:to-[#4A0E17] text-white px-4 sm:px-5 py-2 rounded-full font-bold text-[11px] sm:text-xs tracking-wider uppercase shadow-[0_4px_15px_rgba(126,25,41,0.35)] hover:shadow-[0_6px_25px_rgba(212,175,55,0.45)] hover:scale-105 transition-all duration-300 flex-shrink-0 border border-[#D4AF37]/50"
+            className="relative group overflow-hidden flex items-center space-x-1.5 sm:space-x-2 bg-gradient-to-r from-[#E11D48] via-[#BE123C] to-[#1E293B] hover:from-[#BE123C] hover:to-[#0F172A] text-white px-4 sm:px-5 py-2 rounded-full font-bold text-[11px] sm:text-xs tracking-wider uppercase shadow-[0_4px_15px_rgba(126,25,41,0.35)] hover:shadow-[0_6px_25px_rgba(212,175,55,0.45)] hover:scale-105 transition-all duration-300 flex-shrink-0 border border-[#D4AF37]/50"
           >
             {/* Shimmering Light-Sweep Effect */}
             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
@@ -327,7 +327,7 @@ export default function Navbar({ onOpenDonate }) {
             className="xl:hidden p-2 rounded-full text-gray-700 hover:text-gray-900 hover:bg-gray-100 border border-gray-200 transition-colors shadow-sm"
             aria-label="Toggle Navigation Menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5 text-[#4A0E17]" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-5 h-5 text-[#0F172A]" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
@@ -335,61 +335,61 @@ export default function Navbar({ onOpenDonate }) {
       {/* 3. DYNAMIC GOLDEN SILK SCROLL PROGRESS RIBBON */}
       <div className="w-full bg-[#F3EAD8] h-[2.5px] overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-[#D4AF37] via-[#FDF6E2] to-[#B89020] transition-all duration-150 ease-out shadow-[0_0_10px_rgba(212,175,55,0.8)]"
+          className="h-full bg-gradient-to-r from-[#D4AF37] via-[#FEF3C7] to-[#B89020] transition-all duration-150 ease-out shadow-[0_0_10px_rgba(212,175,55,0.8)]"
           style={{ width: `${scrollProgress}%` }}
         />
       </div>
 
       {/* 4. MOBILE EXPANDABLE MENU */}
       {mobileMenuOpen && (
-        <div className="xl:hidden bg-white/98 backdrop-blur-xl border-t border-[#EBE5D8] px-4 sm:px-8 py-4 space-y-3 max-h-[85vh] overflow-y-auto animate-fadeIn shadow-2xl">
+        <div className="xl:hidden bg-white/98 backdrop-blur-xl border-t border-[#E2E8F0] px-4 sm:px-8 py-4 space-y-3 max-h-[85vh] overflow-y-auto animate-fadeIn shadow-2xl">
           <div className="space-y-1 text-sm font-semibold text-gray-800">
             <Link
               to="/"
               onClick={() => setMobileMenuOpen(false)}
-              className={`block py-2 px-3.5 rounded-xl ${isActive('/') ? 'bg-[#FDF6E2] text-[#4A0E17] font-bold' : 'hover:bg-gray-50'}`}
+              className={`block py-2 px-3.5 rounded-xl ${isActive('/') ? 'bg-[#FEF3C7] text-[#0F172A] font-bold' : 'hover:bg-gray-50'}`}
             >
               Home
             </Link>
             <Link
               to="/about"
               onClick={() => setMobileMenuOpen(false)}
-              className={`block py-2 px-3.5 rounded-xl ${isActive('/about') ? 'bg-[#FDF6E2] text-[#4A0E17] font-bold' : 'hover:bg-gray-50'}`}
+              className={`block py-2 px-3.5 rounded-xl ${isActive('/about') ? 'bg-[#FEF3C7] text-[#0F172A] font-bold' : 'hover:bg-gray-50'}`}
             >
               About Us
             </Link>
             <Link
               to="/activities"
               onClick={() => setMobileMenuOpen(false)}
-              className={`block py-2 px-3.5 rounded-xl ${isActive('/activities') ? 'bg-[#FDF6E2] text-[#4A0E17] font-bold' : 'hover:bg-gray-50'}`}
+              className={`block py-2 px-3.5 rounded-xl ${isActive('/activities') ? 'bg-[#FEF3C7] text-[#0F172A] font-bold' : 'hover:bg-gray-50'}`}
             >
               Activities & Stupa
             </Link>
             <Link
               to="/learning"
               onClick={() => setMobileMenuOpen(false)}
-              className={`block py-2 px-3.5 rounded-xl ${isActive('/learning') ? 'bg-[#FDF6E2] text-[#4A0E17] font-bold' : 'hover:bg-gray-50'}`}
+              className={`block py-2 px-3.5 rounded-xl ${isActive('/learning') ? 'bg-[#FEF3C7] text-[#0F172A] font-bold' : 'hover:bg-gray-50'}`}
             >
               Learning & Videos
             </Link>
             <Link
               to="/blog"
               onClick={() => setMobileMenuOpen(false)}
-              className={`block py-2 px-3.5 rounded-xl ${isActive('/blog') ? 'bg-[#FDF6E2] text-[#4A0E17] font-bold' : 'hover:bg-gray-50'}`}
+              className={`block py-2 px-3.5 rounded-xl ${isActive('/blog') ? 'bg-[#FEF3C7] text-[#0F172A] font-bold' : 'hover:bg-gray-50'}`}
             >
               Blog & Articles
             </Link>
             <Link
               to="/gallery"
               onClick={() => setMobileMenuOpen(false)}
-              className={`block py-2 px-3.5 rounded-xl ${isActive('/gallery') ? 'bg-[#FDF6E2] text-[#4A0E17] font-bold' : 'hover:bg-gray-50'}`}
+              className={`block py-2 px-3.5 rounded-xl ${isActive('/gallery') ? 'bg-[#FEF3C7] text-[#0F172A] font-bold' : 'hover:bg-gray-50'}`}
             >
               Photo & Video Gallery
             </Link>
             <Link
               to="/prayer-request"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 px-3.5 rounded-xl text-[#4A0E17] font-bold bg-[#FDF6E2] border border-[#D4AF37]/50 flex items-center gap-1.5"
+              className="block py-2 px-3.5 rounded-xl text-[#0F172A] font-bold bg-[#FEF3C7] border border-[#D4AF37]/50 flex items-center gap-1.5"
             >
               <Flame className="w-4 h-4 text-[#D4AF37]" />
               <span>Sacred Prayer Request</span>
@@ -406,10 +406,10 @@ export default function Navbar({ onOpenDonate }) {
           {/* Mobile Portals Quick Access */}
           <div className="pt-3 border-t border-gray-200">
             {user ? (
-              <div className="p-3 bg-[#FAF5F0] rounded-2xl border border-[#EBE5D8] space-y-2">
+              <div className="p-3 bg-[#FAF5F0] rounded-2xl border border-[#E2E8F0] space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="text-xs">
-                    <p className="font-bold text-[#4A0E17]">{user.fullName}</p>
+                    <p className="font-bold text-[#0F172A]">{user.fullName}</p>
                     <p className="text-[10px] text-gray-500 capitalize">{user.role?.name}</p>
                   </div>
                   <button
@@ -423,7 +423,7 @@ export default function Navbar({ onOpenDonate }) {
                 <Link
                   to={isAdmin ? '/admin' : '/user'}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block w-full text-center py-2 bg-[#4A0E17] text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow"
+                  className="block w-full text-center py-2 bg-[#0F172A] text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow"
                 >
                   Enter {isAdmin ? 'Admin Portal' : 'User Panel'}
                 </Link>
@@ -433,14 +433,14 @@ export default function Navbar({ onOpenDonate }) {
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-2.5 rounded-xl bg-[#4A0E17] text-white font-bold"
+                  className="p-2.5 rounded-xl bg-[#0F172A] text-white font-bold"
                 >
                   User Login
                 </Link>
                 <Link
                   to="/login?portal=admin"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-2.5 rounded-xl bg-gray-100 hover:bg-[#FDF6E2] font-bold text-gray-800"
+                  className="p-2.5 rounded-xl bg-gray-100 hover:bg-[#FEF3C7] font-bold text-gray-800"
                 >
                   Admin / Staff
                 </Link>

@@ -56,13 +56,13 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 1. HERO SECTION & FLOATING GLASS DONATION WIDGET         */}
       {/* ========================================================= */}
-      <section className="relative min-h-[680px] bg-gradient-to-r from-[#20040A] via-[#3D0A13] to-[#1A0307] text-white overflow-hidden py-16 px-4 sm:px-8 flex items-center">
+      <section className="relative min-h-[680px] bg-gradient-to-r from-[#070A14] via-[#0F172A] to-[#0B0F19] text-white overflow-hidden py-16 px-4 sm:px-8 flex items-center">
         {/* Background Dochula Peace Stupas */}
         <div
           className="absolute inset-0 opacity-25 mix-blend-luminosity bg-cover bg-center pointer-events-none scale-105 transition-transform duration-1000"
           style={{ backgroundImage: `url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1600&q=80')` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#20040A] via-transparent to-[#1A0307]/80 opacity-90 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#070A14] via-transparent to-[#0B0F19]/80 opacity-90 pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center w-full z-10">
           {/* Left Hero Content */}
@@ -107,7 +107,7 @@ export default function Home() {
             <div className="glass-panel text-gray-900 rounded-3xl p-6 sm:p-7 shadow-[0_25px_60px_rgba(0,0,0,0.4)] border border-white/80 max-w-md w-full animate-fadeIn">
               <div className="flex items-center justify-between border-b border-gray-200/60 pb-3 mb-4">
                 <div>
-                  <h3 className="font-serif-brand font-bold text-base text-[#4A0E17] uppercase tracking-wider flex items-center gap-1.5">
+                  <h3 className="font-serif-brand font-bold text-base text-[#0F172A] uppercase tracking-wider flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4 text-[#D4AF37]" />
                     <span>DEDICATE YOUR MERIT</span>
                   </h3>
@@ -127,8 +127,8 @@ export default function Home() {
                   onClick={() => setDonateFrequency('one_time')}
                   className={`py-1.5 rounded-lg transition-all ${
                     donateFrequency === 'one_time'
-                      ? 'bg-[#4A0E17] text-white shadow-md'
-                      : 'text-gray-700 hover:text-[#4A0E17]'
+                      ? 'bg-[#0F172A] text-white shadow-md'
+                      : 'text-gray-700 hover:text-[#0F172A]'
                   }`}
                 >
                   One-Time Offering
@@ -138,8 +138,8 @@ export default function Home() {
                   onClick={() => setDonateFrequency('monthly')}
                   className={`py-1.5 rounded-lg transition-all ${
                     donateFrequency === 'monthly'
-                      ? 'bg-[#4A0E17] text-white shadow-md'
-                      : 'text-gray-700 hover:text-[#4A0E17]'
+                      ? 'bg-[#0F172A] text-white shadow-md'
+                      : 'text-gray-700 hover:text-[#0F172A]'
                   }`}
                 >
                   Monthly Pledge
@@ -155,7 +155,7 @@ export default function Home() {
                     onClick={() => setDonateAmount(amt)}
                     className={`py-2 rounded-xl text-xs font-bold border transition-all ${
                       donateAmount === amt
-                        ? 'bg-[#4A0E17] text-[#D4AF37] border-[#D4AF37] shadow-md scale-105'
+                        ? 'bg-[#0F172A] text-[#D4AF37] border-[#D4AF37] shadow-md scale-105'
                         : 'bg-white/80 text-gray-800 border-gray-200 hover:border-[#D4AF37]'
                     }`}
                   >
@@ -217,7 +217,7 @@ export default function Home() {
               <Landmark className="w-6 h-6 text-amber-600" />
             </div>
             <div>
-              <div className="font-serif-brand font-extrabold text-2xl sm:text-3xl text-[#4A0E17]">
+              <div className="font-serif-brand font-extrabold text-2xl sm:text-3xl text-[#0F172A]">
                 108 <span className="text-amber-600 text-lg">FT</span>
               </div>
               <p className="text-xs font-bold text-gray-700">Great Peace Stupa</p>
@@ -231,7 +231,7 @@ export default function Home() {
               <GraduationCap className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <div className="font-serif-brand font-extrabold text-2xl sm:text-3xl text-[#4A0E17]">
+              <div className="font-serif-brand font-extrabold text-2xl sm:text-3xl text-[#0F172A]">
                 350<span className="text-blue-600">+</span>
               </div>
               <p className="text-xs font-bold text-gray-700">Monk Scholars</p>
@@ -245,7 +245,7 @@ export default function Home() {
               <Flame className="w-6 h-6 text-rose-600" />
             </div>
             <div>
-              <div className="font-serif-brand font-extrabold text-2xl sm:text-3xl text-[#4A0E17]">
+              <div className="font-serif-brand font-extrabold text-2xl sm:text-3xl text-[#0F172A]">
                 108 <span className="text-rose-600 text-lg">DAILY</span>
               </div>
               <p className="text-xs font-bold text-gray-700">Butter Lamp Offerings</p>
@@ -287,7 +287,7 @@ export default function Home() {
 
               {/* Glowing Play Button */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-16 h-16 rounded-full bg-[#4A0E17]/90 text-[#D4AF37] border-2 border-[#D4AF37] flex items-center justify-center shadow-2xl animate-gold-pulse group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 rounded-full bg-[#0F172A]/90 text-[#D4AF37] border-2 border-[#D4AF37] flex items-center justify-center shadow-2xl animate-gold-pulse group-hover:scale-110 transition-transform">
                   <Play className="w-7 h-7 fill-[#D4AF37] ml-1" />
                 </div>
               </div>
@@ -310,7 +310,7 @@ export default function Home() {
                 <span>Monastery Documentary & Vision</span>
               </div>
 
-              <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#4A0E17] leading-snug">
+              <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#0F172A] leading-snug">
                 From Sacred Lineage to Global World Peace
               </h2>
 
@@ -346,7 +346,7 @@ export default function Home() {
           <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
             Our Noble Mission
           </span>
-          <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#4A0E17]">
+          <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#0F172A]">
             Four Pillars of Sacred Merit
           </h2>
           <p className="text-xs sm:text-sm text-gray-600">
@@ -361,7 +361,7 @@ export default function Home() {
               <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-700">
                 <Landmark className="w-6 h-6" />
               </div>
-              <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
                 World Peace Stupa
               </h3>
               <p className="text-xs text-gray-600 leading-relaxed">
@@ -383,7 +383,7 @@ export default function Home() {
               <div className="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-700">
                 <BookOpen className="w-6 h-6" />
               </div>
-              <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
                 Shedra Monastic University
               </h3>
               <p className="text-xs text-gray-600 leading-relaxed">
@@ -405,7 +405,7 @@ export default function Home() {
               <div className="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-700">
                 <Flame className="w-6 h-6" />
               </div>
-              <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
                 108 Butter Lamp Offerings
               </h3>
               <p className="text-xs text-gray-600 leading-relaxed">
@@ -427,7 +427,7 @@ export default function Home() {
               <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-700">
                 <Heart className="w-6 h-6" />
               </div>
-              <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
                 Sangha Care & Welfare
               </h3>
               <p className="text-xs text-gray-600 leading-relaxed">
@@ -454,13 +454,13 @@ export default function Home() {
             <span className="glow-pill-sapphire px-3 py-1 rounded-full text-xs font-bold">
               Digital Dharma Library
             </span>
-            <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#4A0E17] mt-1">
+            <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#0F172A] mt-1">
               Open Video Discourses & Teachings
             </h2>
           </div>
           <Link
             to="/learning"
-            className="text-xs font-bold text-[#8B1E2F] hover:text-[#4A0E17] flex items-center gap-1 group"
+            className="text-xs font-bold text-[#BE123C] hover:text-[#0F172A] flex items-center gap-1 group"
           >
             <span>View All Lectures</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -493,7 +493,7 @@ export default function Home() {
                   <p className="text-[11px] text-amber-700 font-bold uppercase tracking-wider">
                     {video.instructor}
                   </p>
-                  <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] leading-snug group-hover:text-[#8B1E2F] transition-colors">
+                  <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] leading-snug group-hover:text-[#BE123C] transition-colors">
                     {video.title}
                   </h3>
                 </div>
@@ -517,7 +517,7 @@ export default function Home() {
       {/* 6. SACRED BUTTER LAMP INVOCATION BANNER (WARM GOLD GLASS) */}
       {/* ========================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-8">
-        <div className="bg-gradient-to-r from-[#2A0810] via-[#4A0E17] to-[#20040A] rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/50">
+        <div className="bg-gradient-to-r from-[#0B0F19] via-[#1E1B4B] to-[#0F172A] rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/50">
           <div
             className="absolute inset-0 opacity-20 bg-cover bg-center pointer-events-none mix-blend-luminosity"
             style={{ backgroundImage: `url('https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80')` }}
@@ -560,13 +560,13 @@ export default function Home() {
             <span className="glow-pill-ruby px-3 py-1 rounded-full text-xs font-bold">
               Monastery Publications
             </span>
-            <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#4A0E17] mt-1">
+            <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#0F172A] mt-1">
               Wisdom Articles & Spiritual Insights
             </h2>
           </div>
           <Link
             to="/blog"
-            className="text-xs font-bold text-[#8B1E2F] hover:text-[#4A0E17] flex items-center gap-1 group"
+            className="text-xs font-bold text-[#BE123C] hover:text-[#0F172A] flex items-center gap-1 group"
           >
             <span>Read All Articles</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -600,7 +600,7 @@ export default function Home() {
                     </span>
                   </div>
 
-                  <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] leading-snug group-hover:text-[#8B1E2F] transition-colors line-clamp-2">
+                  <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] leading-snug group-hover:text-[#BE123C] transition-colors line-clamp-2">
                     <Link to={`/blog/${blog.slug}`}>
                       {blog.title}
                     </Link>
@@ -615,7 +615,7 @@ export default function Home() {
               <div className="p-5 pt-0">
                 <Link
                   to={`/blog/${blog.slug}`}
-                  className="text-xs font-bold text-[#8B1E2F] hover:text-[#4A0E17] flex items-center gap-1 group/link"
+                  className="text-xs font-bold text-[#BE123C] hover:text-[#0F172A] flex items-center gap-1 group/link"
                 >
                   <span>Read Article</span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37] group-hover/link:translate-x-1 transition-transform" />
@@ -632,7 +632,7 @@ export default function Home() {
           <div className="relative w-full max-w-4xl bg-gray-950 rounded-2xl overflow-hidden border border-[#D4AF37]/50 shadow-2xl">
             <button
               onClick={() => setVideoModalOpen(false)}
-              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#8B1E2F] transition-colors"
+              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#BE123C] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>

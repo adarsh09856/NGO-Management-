@@ -183,7 +183,7 @@ export default function LearningManager() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
             Learning & Training Videos Manager
           </h1>
           <p className="text-xs text-gray-500">
@@ -194,7 +194,7 @@ export default function LearningManager() {
         <button
           type="button"
           onClick={handleOpenCreate}
-          className="px-4 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
+          className="px-4 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
         >
           <Plus className="w-4 h-4" />
           <span>Upload / Add Video</span>
@@ -202,7 +202,7 @@ export default function LearningManager() {
       </div>
 
       {/* Search & Stats */}
-      <div className="bg-white p-4 rounded-lg border border-[#EBE5D8] flex items-center justify-between gap-4 shadow-sm">
+      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] flex items-center justify-between gap-4 shadow-sm">
         <div className="relative w-full max-w-sm">
           <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
           <input
@@ -210,7 +210,7 @@ export default function LearningManager() {
             placeholder="Search teachings by title, instructor..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#7E1929]"
+            className="w-full pl-9 pr-3 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#E11D48]"
           />
         </div>
         <span className="text-xs text-gray-500 font-medium">
@@ -221,7 +221,7 @@ export default function LearningManager() {
       {/* Videos List Grid */}
       {loading ? (
         <div className="text-center py-20 bg-white rounded-xl border border-gray-200">
-          <div className="w-8 h-8 border-2 border-[#7E1929] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+          <div className="w-8 h-8 border-2 border-[#E11D48] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
           <p className="text-xs text-gray-500">Loading learning library...</p>
         </div>
       ) : filtered.length === 0 ? (
@@ -246,11 +246,11 @@ export default function LearningManager() {
                   onClick={() => setActivePreviewVideo(item)}
                   className="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/20 transition-colors"
                 >
-                  <div className="w-11 h-11 rounded-full bg-white/95 text-[#4A0E17] flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-                    <Play className="w-5 h-5 fill-[#4A0E17] ml-0.5" />
+                  <div className="w-11 h-11 rounded-full bg-white/95 text-[#0F172A] flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                    <Play className="w-5 h-5 fill-[#0F172A] ml-0.5" />
                   </div>
                 </button>
-                <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold bg-[#4A0E17]/90 text-[#D4AF37]">
+                <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold bg-[#0F172A]/90 text-[#D4AF37]">
                   {item.category}
                 </span>
                 <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold bg-black/80 text-white">
@@ -261,7 +261,7 @@ export default function LearningManager() {
               {/* Body */}
               <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
                 <div className="space-y-1">
-                  <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] line-clamp-2 leading-snug">
+                  <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] line-clamp-2 leading-snug">
                     {item.title}
                   </h3>
                   <p className="text-xs text-gray-500 line-clamp-2">
@@ -300,8 +300,8 @@ export default function LearningManager() {
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-[#D4AF37]/40 animate-fadeIn">
-            <div className="p-5 bg-[#FAF5F0] border-b border-[#EBE5D8] flex items-center justify-between">
-              <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+            <div className="p-5 bg-[#FAF5F0] border-b border-[#E2E8F0] flex items-center justify-between">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
                 {editingItem ? 'Edit Learning Video' : 'Add New Learning Video'}
               </h3>
               <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600">
@@ -318,7 +318,7 @@ export default function LearningManager() {
                   placeholder="e.g. Introduction to the Four Noble Truths"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                 />
               </div>
 
@@ -330,7 +330,7 @@ export default function LearningManager() {
                     type="button"
                     onClick={() => setMediaType('video_url')}
                     className={`flex-1 py-2 rounded border text-xs font-bold flex items-center justify-center gap-1.5 ${
-                      mediaType === 'video_url' ? 'bg-[#4A0E17] text-white border-[#4A0E17]' : 'bg-gray-50 text-gray-700'
+                      mediaType === 'video_url' ? 'bg-[#0F172A] text-white border-[#0F172A]' : 'bg-gray-50 text-gray-700'
                     }`}
                   >
                     <LinkIcon className="w-3.5 h-3.5" />
@@ -340,7 +340,7 @@ export default function LearningManager() {
                     type="button"
                     onClick={() => setMediaType('video_upload')}
                     className={`flex-1 py-2 rounded border text-xs font-bold flex items-center justify-center gap-1.5 ${
-                      mediaType === 'video_upload' ? 'bg-[#4A0E17] text-white border-[#4A0E17]' : 'bg-gray-50 text-gray-700'
+                      mediaType === 'video_upload' ? 'bg-[#0F172A] text-white border-[#0F172A]' : 'bg-gray-50 text-gray-700'
                     }`}
                   >
                     <UploadCloud className="w-3.5 h-3.5" />
@@ -355,7 +355,7 @@ export default function LearningManager() {
                     placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/..."
                     value={mediaUrl}
                     onChange={(e) => setMediaUrl(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none font-mono text-[11px]"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none font-mono text-[11px]"
                   />
                 ) : (
                   <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center space-y-2 bg-[#FAF9F5]">
@@ -363,7 +363,7 @@ export default function LearningManager() {
                     <p className="text-xs text-gray-600">
                       {mediaUrl ? `Uploaded: ${mediaUrl}` : 'Upload video file (.mp4, .webm, max 100MB)'}
                     </p>
-                    <label className="inline-block px-4 py-1.5 bg-[#4A0E17] text-white rounded cursor-pointer font-bold hover:bg-[#5A121E]">
+                    <label className="inline-block px-4 py-1.5 bg-[#0F172A] text-white rounded cursor-pointer font-bold hover:bg-[#1E293B]">
                       <span>{uploading ? 'Uploading Video...' : 'Choose File'}</span>
                       <input type="file" accept="video/*" onChange={handleVideoUpload} className="hidden" />
                     </label>
@@ -378,7 +378,7 @@ export default function LearningManager() {
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                   >
                     <option value="Buddhist Philosophy">Buddhist Philosophy</option>
                     <option value="Meditation & Retreats">Meditation & Retreats</option>
@@ -393,7 +393,7 @@ export default function LearningManager() {
                     type="text"
                     value={instructor}
                     onChange={(e) => setInstructor(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                   />
                 </div>
                 <div>
@@ -403,7 +403,7 @@ export default function LearningManager() {
                     placeholder="e.g. 45 mins"
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                   />
                 </div>
               </div>
@@ -416,7 +416,7 @@ export default function LearningManager() {
                   placeholder="https://images.unsplash.com/..."
                   value={thumbnailUrl}
                   onChange={(e) => setThumbnailUrl(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none font-mono text-[11px]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none font-mono text-[11px]"
                 />
               </div>
 
@@ -428,7 +428,7 @@ export default function LearningManager() {
                   placeholder="Summary of the philosophical discourse or meditation topic..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                 />
               </div>
 
@@ -443,7 +443,7 @@ export default function LearningManager() {
                 <button
                   type="submit"
                   disabled={saving || uploading}
-                  className="px-5 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
+                  className="px-5 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>{saving ? 'Saving...' : editingItem ? 'Update Video' : 'Publish Video'}</span>
@@ -457,8 +457,8 @@ export default function LearningManager() {
       {/* Video Preview Modal */}
       {activePreviewVideo && (
         <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4">
-          <div className="bg-[#1F0408] border border-[#D4AF37]/40 rounded-2xl overflow-hidden max-w-3xl w-full shadow-2xl animate-fadeIn">
-            <div className="p-4 bg-[#2C060D] border-b border-[#5A121E] flex items-center justify-between text-white">
+          <div className="bg-[#070A12] border border-[#D4AF37]/40 rounded-2xl overflow-hidden max-w-3xl w-full shadow-2xl animate-fadeIn">
+            <div className="p-4 bg-[#0B0F19] border-b border-[#1E293B] flex items-center justify-between text-white">
               <h3 className="font-serif-brand font-bold text-sm text-white">{activePreviewVideo.title}</h3>
               <button onClick={() => setActivePreviewVideo(null)} className="text-white hover:text-gray-300">
                 <X className="w-5 h-5" />

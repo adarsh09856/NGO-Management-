@@ -33,10 +33,10 @@ export default function Blog() {
   const allTags = ['All', 'Peace Stupa', 'Buddhism', 'Philosophy', 'Shedra', 'Monastic Life', 'Puja', 'Merit'];
 
   return (
-    <div className="w-full bg-[#FDFBF7] min-h-screen py-10 px-4 sm:px-8">
+    <div className="w-full bg-[#F8FAFC] min-h-screen py-10 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header Banner */}
-        <div className="bg-gradient-to-r from-[#2C060D] via-[#4A0E17] to-[#1F0408] rounded-2xl p-8 sm:p-10 text-white relative overflow-hidden shadow-xl border border-[#D4AF37]/30">
+        <div className="bg-gradient-to-r from-[#0B0F19] via-[#0F172A] to-[#070A12] rounded-2xl p-8 sm:p-10 text-white relative overflow-hidden shadow-xl border border-[#D4AF37]/30">
           <div className="relative z-10 max-w-3xl space-y-3">
             <span className="text-[#D4AF37] font-semibold text-xs uppercase tracking-widest flex items-center gap-1.5">
               <span>☸</span> Drodul Phendey Ling Journal
@@ -51,7 +51,7 @@ export default function Blog() {
         </div>
 
         {/* Controls: Search & Tags */}
-        <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 bg-white p-4 rounded-xl border border-[#EBE5D8] shadow-sm">
+        <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-sm">
           {/* Tag Pills */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-thin">
             {allTags.map((tag) => (
@@ -60,8 +60,8 @@ export default function Blog() {
                 onClick={() => setSelectedTag(tag === 'All' ? '' : tag)}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
                   (tag === 'All' && !selectedTag) || selectedTag === tag
-                    ? 'bg-[#4A0E17] text-white shadow'
-                    : 'bg-[#F8F6F0] text-gray-700 hover:bg-[#FDF6E2] hover:text-[#4A0E17]'
+                    ? 'bg-[#0F172A] text-white shadow'
+                    : 'bg-[#F1F5F9] text-gray-700 hover:bg-[#FEF3C7] hover:text-[#0F172A]'
                 }`}
               >
                 {tag}
@@ -77,7 +77,7 @@ export default function Blog() {
               placeholder="Search articles & stories..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#7E1929] bg-[#FAF9F5]"
+              className="w-full pl-9 pr-4 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#E11D48] bg-[#FAF9F5]"
             />
           </div>
         </div>
@@ -85,7 +85,7 @@ export default function Blog() {
         {/* Articles Grid */}
         {loading ? (
           <div className="text-center py-20">
-            <div className="w-8 h-8 border-2 border-[#7E1929] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+            <div className="w-8 h-8 border-2 border-[#E11D48] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
             <p className="text-xs text-gray-500">Loading monastery articles...</p>
           </div>
         ) : (
@@ -106,7 +106,7 @@ export default function Blog() {
                     onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800'; }}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#4A0E17]/90 text-[#D4AF37] backdrop-blur-sm border border-[#D4AF37]/30">
+                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#0F172A]/90 text-[#D4AF37] backdrop-blur-sm border border-[#D4AF37]/30">
                     {post.tags?.split(',')[0] || 'Dharma'}
                   </span>
                 </div>
@@ -124,7 +124,7 @@ export default function Blog() {
                       </span>
                     </div>
 
-                    <h2 className="font-serif-brand font-bold text-base text-[#4A0E17] group-hover:text-[#7E1929] transition-colors leading-snug line-clamp-2">
+                    <h2 className="font-serif-brand font-bold text-base text-[#0F172A] group-hover:text-[#E11D48] transition-colors leading-snug line-clamp-2">
                       <Link to={`/blog/${post.slug}`}>
                         {post.title}
                       </Link>
@@ -138,7 +138,7 @@ export default function Blog() {
                   <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
                     <Link
                       to={`/blog/${post.slug}`}
-                      className="text-xs font-bold text-[#7E1929] hover:text-[#4A0E17] flex items-center gap-1 group/link"
+                      className="text-xs font-bold text-[#E11D48] hover:text-[#0F172A] flex items-center gap-1 group/link"
                     >
                       <span>Read Full Article</span>
                       <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37] group-hover/link:translate-x-1 transition-transform" />

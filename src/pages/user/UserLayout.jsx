@@ -16,21 +16,21 @@ export default function UserLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] flex flex-col">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
       {/* Top Bar for User Panel */}
-      <header className="bg-white border-b border-[#EBE5D8] sticky top-0 z-30 shadow-sm">
+      <header className="bg-white border-b border-[#E2E8F0] sticky top-0 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Link to="/" className="flex items-center space-x-2 text-xs font-semibold text-gray-500 hover:text-[#4A0E17]">
+            <Link to="/" className="flex items-center space-x-2 text-xs font-semibold text-gray-500 hover:text-[#0F172A]">
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Website</span>
             </Link>
             <span className="text-gray-300">|</span>
             <div className="flex items-center space-x-2">
-              <div className="w-7 h-7 rounded-full bg-[#4A0E17] text-[#D4AF37] flex items-center justify-center font-bold text-xs">
+              <div className="w-7 h-7 rounded-full bg-[#0F172A] text-[#D4AF37] flex items-center justify-center font-bold text-xs">
                 ☸
               </div>
-              <span className="font-serif-brand font-bold text-sm text-[#4A0E17]">
+              <span className="font-serif-brand font-bold text-sm text-[#0F172A]">
                 User & Member Portal
               </span>
             </div>
@@ -38,7 +38,7 @@ export default function UserLayout() {
 
           <div className="flex items-center space-x-4">
             <div className="text-right hidden sm:block">
-              <p className="text-xs font-bold text-[#4A0E17]">{user?.fullName || 'Devotee Member'}</p>
+              <p className="text-xs font-bold text-[#0F172A]">{user?.fullName || 'Devotee Member'}</p>
               <p className="text-[10px] text-gray-500">{user?.email}</p>
             </div>
             <button
@@ -58,7 +58,7 @@ export default function UserLayout() {
       </main>
 
       {/* User Panel Footer */}
-      <footer className="bg-white border-t border-[#EBE5D8] py-4 px-6 text-center text-xs text-gray-500">
+      <footer className="bg-white border-t border-[#E2E8F0] py-4 px-6 text-center text-xs text-gray-500">
         <p>© 2026 Drodul Phendey Ling Foundation. All tax exemption certificates are issued under 80G approval DPL/TAX-EXEMPT/BTN/2026/80G-092.</p>
       </footer>
     </div>

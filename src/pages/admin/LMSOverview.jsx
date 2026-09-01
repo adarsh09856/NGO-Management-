@@ -61,7 +61,7 @@ export default function LMSOverview() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
             Training & LMS (Monastic Academy)
           </h1>
           <p className="text-xs text-gray-500">
@@ -76,12 +76,12 @@ export default function LMSOverview() {
           <div key={c.id} className="monastery-card p-4 space-y-3 flex flex-col justify-between">
             <div>
               <div className="flex justify-between items-start">
-                <span className="text-[10px] font-bold bg-[#FDF6E2] text-[#4A0E17] border border-[#D4AF37] px-2 py-0.5 rounded font-mono">
+                <span className="text-[10px] font-bold bg-[#FEF3C7] text-[#0F172A] border border-[#D4AF37] px-2 py-0.5 rounded font-mono">
                   {c.course_code}
                 </span>
                 <span className="text-[10px] font-bold text-gray-500">{c.level}</span>
               </div>
-              <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] mt-1.5">{c.title}</h3>
+              <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] mt-1.5">{c.title}</h3>
               <p className="text-[11px] text-gray-500 line-clamp-2 mt-1">{c.description}</p>
             </div>
 
@@ -95,15 +95,15 @@ export default function LMSOverview() {
 
       {/* Monastic Scholars Enrollment Table */}
       <div className="monastery-card overflow-hidden">
-        <div className="p-4 border-b border-[#EBE5D8] flex justify-between items-center">
-          <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17]">
+        <div className="p-4 border-b border-[#E2E8F0] flex justify-between items-center">
+          <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">
             Student Monk Enrollments & Progress Tracking
           </h3>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F8F6F0] text-gray-700 font-bold uppercase tracking-wider border-b border-[#EBE5D8]">
+            <thead className="bg-[#F1F5F9] text-gray-700 font-bold uppercase tracking-wider border-b border-[#E2E8F0]">
               <tr>
                 <th className="py-3 px-4">Scholar Name</th>
                 <th className="py-3 px-4">Roll / Sangha No</th>
@@ -116,14 +116,14 @@ export default function LMSOverview() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {enrollments.map((e) => (
-                <tr key={e.id} className="hover:bg-[#FDFBF7] transition-colors">
+                <tr key={e.id} className="hover:bg-[#F8FAFC] transition-colors">
                   <td className="py-3 px-4 font-bold text-gray-900">{e.monastic_name || e.secular_name}</td>
                   <td className="py-3 px-4 font-mono text-gray-600">{e.roll_number}</td>
                   <td className="py-3 px-4 font-semibold text-gray-800">{e.course_title}</td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
                       <div className="w-20 bg-gray-200 rounded-full h-2">
-                        <div className="bg-[#4A0E17] h-2 rounded-full" style={{ width: `${e.progress_percent || 0}%` }}></div>
+                        <div className="bg-[#0F172A] h-2 rounded-full" style={{ width: `${e.progress_percent || 0}%` }}></div>
                       </div>
                       <span className="font-mono text-[11px] font-bold">{e.progress_percent || 0}%</span>
                     </div>
@@ -159,7 +159,7 @@ export default function LMSOverview() {
                         setGradeVal(e.grade || 'Distinction');
                         setModalOpen(true);
                       }}
-                      className="px-2.5 py-1 bg-[#FAF5F0] hover:bg-[#FDF6E2] text-[#4A0E17] border border-[#D4AF37] rounded text-[11px] font-bold"
+                      className="px-2.5 py-1 bg-[#FAF5F0] hover:bg-[#FEF3C7] text-[#0F172A] border border-[#D4AF37] rounded text-[11px] font-bold"
                     >
                       Update Progress
                     </button>
@@ -175,7 +175,7 @@ export default function LMSOverview() {
       {modalOpen && selectedEnrollment && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-md w-full space-y-4">
-            <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+            <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
               Update Enrollment Progress
             </h3>
             <p className="text-xs text-gray-500">
@@ -245,7 +245,7 @@ export default function LMSOverview() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 bg-[#4A0E17] hover:bg-[#5A121E] text-white rounded font-bold shadow"
+                  className="flex-1 py-2 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded font-bold shadow"
                 >
                   Save Progress
                 </button>

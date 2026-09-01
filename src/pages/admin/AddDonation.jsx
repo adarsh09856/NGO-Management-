@@ -146,7 +146,7 @@ export default function AddDonation() {
       {/* Top Header & Actions (Matching image 1) */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
             Add New Donation
           </h1>
           <p className="text-xs text-gray-500">
@@ -166,7 +166,7 @@ export default function AddDonation() {
             type="button"
             onClick={() => handleSave(false)}
             disabled={loading}
-            className="px-5 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
+            className="px-5 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
           >
             <Save className="w-3.5 h-3.5" />
             <span>{loading ? 'Saving...' : 'Save Donation'}</span>
@@ -180,7 +180,7 @@ export default function AddDonation() {
         <div className="lg:col-span-8 space-y-6">
           {/* Section 1: Donor Information */}
           <div className="monastery-card p-6 space-y-4">
-            <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] border-b border-gray-100 pb-2">
+            <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] border-b border-gray-100 pb-2">
               1. Donor Information
             </h3>
 
@@ -195,7 +195,7 @@ export default function AddDonation() {
                     value="individual"
                     checked={donorType === 'individual'}
                     onChange={(e) => setDonorType(e.target.value)}
-                    className="text-[#7E1929] focus:ring-[#D4AF37]"
+                    className="text-[#E11D48] focus:ring-[#D4AF37]"
                   />
                   <span>Individual</span>
                 </label>
@@ -206,7 +206,7 @@ export default function AddDonation() {
                     value="organization"
                     checked={donorType === 'organization'}
                     onChange={(e) => setDonorType(e.target.value)}
-                    className="text-[#7E1929] focus:ring-[#D4AF37]"
+                    className="text-[#E11D48] focus:ring-[#D4AF37]"
                   />
                   <span>Organization</span>
                 </label>
@@ -217,7 +217,7 @@ export default function AddDonation() {
                     value="anonymous"
                     checked={donorType === 'anonymous'}
                     onChange={(e) => setDonorType(e.target.value)}
-                    className="text-[#7E1929] focus:ring-[#D4AF37]"
+                    className="text-[#E11D48] focus:ring-[#D4AF37]"
                   />
                   <span>Anonymous</span>
                 </label>
@@ -249,7 +249,7 @@ export default function AddDonation() {
                     setPhone('');
                     setAddress('');
                   }}
-                  className="px-3 py-2 bg-white border border-[#7E1929] text-[#7E1929] hover:bg-[#FDF6E2] rounded text-xs font-bold flex items-center gap-1"
+                  className="px-3 py-2 bg-white border border-[#E11D48] text-[#E11D48] hover:bg-[#FEF3C7] rounded text-xs font-bold flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>New Donor</span>
@@ -304,7 +304,7 @@ export default function AddDonation() {
 
           {/* Section 2: Donation Details */}
           <div className="monastery-card p-6 space-y-4">
-            <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] border-b border-gray-100 pb-2">
+            <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] border-b border-gray-100 pb-2">
               2. Donation Details
             </h3>
 
@@ -348,7 +348,7 @@ export default function AddDonation() {
                       value="one_time"
                       checked={donationType === 'one_time'}
                       onChange={(e) => setDonationType(e.target.value)}
-                      className="text-[#7E1929] focus:ring-[#D4AF37]"
+                      className="text-[#E11D48] focus:ring-[#D4AF37]"
                     />
                     <span>One Time</span>
                   </label>
@@ -359,7 +359,7 @@ export default function AddDonation() {
                       value="recurring"
                       checked={donationType === 'recurring'}
                       onChange={(e) => setDonationType(e.target.value)}
-                      className="text-[#7E1929] focus:ring-[#D4AF37]"
+                      className="text-[#E11D48] focus:ring-[#D4AF37]"
                     />
                     <span>Recurring</span>
                   </label>
@@ -376,7 +376,7 @@ export default function AddDonation() {
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="25000"
-                    className="w-full pl-7 pr-3 py-2.5 rounded border border-gray-300 font-bold text-[#4A0E17] focus:ring-2 focus:ring-[#D4AF37]"
+                    className="w-full pl-7 pr-3 py-2.5 rounded border border-gray-300 font-bold text-[#0F172A] focus:ring-2 focus:ring-[#D4AF37]"
                   />
                 </div>
               </div>
@@ -408,7 +408,7 @@ export default function AddDonation() {
 
           {/* Section 3: Payment Information */}
           <div className="monastery-card p-6 space-y-4">
-            <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] border-b border-gray-100 pb-2">
+            <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] border-b border-gray-100 pb-2">
               3. Payment Information
             </h3>
 
@@ -432,11 +432,11 @@ export default function AddDonation() {
                       onClick={() => setPaymentMethod(m.id)}
                       className={`p-2.5 rounded-lg border text-center flex flex-col items-center justify-center transition-all ${
                         selected
-                          ? 'border-[#7E1929] bg-[#FDF2E9] ring-2 ring-[#7E1929] text-[#7E1929] font-bold'
+                          ? 'border-[#E11D48] bg-[#FDF2E9] ring-2 ring-[#E11D48] text-[#E11D48] font-bold'
                           : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
                       }`}
                     >
-                      <Icon className="w-5 h-5 mb-1 text-[#7E1929]" />
+                      <Icon className="w-5 h-5 mb-1 text-[#E11D48]" />
                       <span className="text-[11px] leading-tight block">{m.label}</span>
                       <span className="text-[9px] text-gray-500 block">{m.sub}</span>
                     </button>
@@ -512,7 +512,7 @@ export default function AddDonation() {
                   id="sendReceiptCheckbox"
                   checked={sendReceipt}
                   onChange={(e) => setSendReceipt(e.target.checked)}
-                  className="rounded border-gray-300 text-[#7E1929] focus:ring-[#D4AF37]"
+                  className="rounded border-gray-300 text-[#E11D48] focus:ring-[#D4AF37]"
                 />
                 <label htmlFor="sendReceiptCheckbox" className="font-semibold text-gray-700 cursor-pointer">
                   Send Thank You Email / Receipt to Donor
@@ -526,7 +526,7 @@ export default function AddDonation() {
         <div className="lg:col-span-4 space-y-6">
           {/* Donation Summary Card */}
           <div className="monastery-card p-5 space-y-4">
-            <h3 className="font-serif-brand font-bold text-sm text-[#7E1929] border-b border-gray-100 pb-2">
+            <h3 className="font-serif-brand font-bold text-sm text-[#E11D48] border-b border-gray-100 pb-2">
               Donation Summary
             </h3>
 
@@ -588,7 +588,7 @@ export default function AddDonation() {
 
           {/* Quick Actions Card (Matching image 1 bottom right) */}
           <div className="monastery-card p-5 space-y-2.5 text-xs">
-            <h4 className="font-serif-brand font-bold text-xs text-[#4A0E17] uppercase tracking-wider mb-2">
+            <h4 className="font-serif-brand font-bold text-xs text-[#0F172A] uppercase tracking-wider mb-2">
               Quick Actions
             </h4>
 
@@ -596,10 +596,10 @@ export default function AddDonation() {
               type="button"
               onClick={() => handleSave(true)}
               disabled={loading}
-              className="w-full p-2.5 bg-[#FAF5F0] hover:bg-[#FDF6E2] border border-[#EBE5D8] rounded-md font-semibold text-gray-800 flex items-center justify-between transition-colors"
+              className="w-full p-2.5 bg-[#FAF5F0] hover:bg-[#FEF3C7] border border-[#E2E8F0] rounded-md font-semibold text-gray-800 flex items-center justify-between transition-colors"
             >
               <div className="flex items-center gap-2">
-                <Printer className="w-4 h-4 text-[#7E1929]" />
+                <Printer className="w-4 h-4 text-[#E11D48]" />
                 <span>Save & Print Receipt</span>
               </div>
               <span className="text-gray-400">⎙</span>
@@ -613,10 +613,10 @@ export default function AddDonation() {
                 setTransactionRef(`TXN${Date.now()}`);
               }}
               disabled={loading}
-              className="w-full p-2.5 bg-[#FAF5F0] hover:bg-[#FDF6E2] border border-[#EBE5D8] rounded-md font-semibold text-gray-800 flex items-center justify-between transition-colors"
+              className="w-full p-2.5 bg-[#FAF5F0] hover:bg-[#FEF3C7] border border-[#E2E8F0] rounded-md font-semibold text-gray-800 flex items-center justify-between transition-colors"
             >
               <div className="flex items-center gap-2">
-                <Plus className="w-4 h-4 text-[#7E1929]" />
+                <Plus className="w-4 h-4 text-[#E11D48]" />
                 <span>Save & Add Another</span>
               </div>
               <span className="text-gray-400">+</span>
@@ -625,10 +625,10 @@ export default function AddDonation() {
             <button
               type="button"
               onClick={() => selectedDonorId && navigate(`/admin/donors`)}
-              className="w-full p-2.5 bg-[#FAF5F0] hover:bg-[#FDF6E2] border border-[#EBE5D8] rounded-md font-semibold text-gray-800 flex items-center justify-between transition-colors"
+              className="w-full p-2.5 bg-[#FAF5F0] hover:bg-[#FEF3C7] border border-[#E2E8F0] rounded-md font-semibold text-gray-800 flex items-center justify-between transition-colors"
             >
               <div className="flex items-center gap-2">
-                <User className="w-4 h-4 text-[#7E1929]" />
+                <User className="w-4 h-4 text-[#E11D48]" />
                 <span>View Donor Profile</span>
               </div>
               <span className="text-gray-400">👤</span>
@@ -637,10 +637,10 @@ export default function AddDonation() {
             <button
               type="button"
               onClick={() => navigate('/admin/donations')}
-              className="w-full p-2.5 bg-[#FAF5F0] hover:bg-[#FDF6E2] border border-[#EBE5D8] rounded-md font-semibold text-gray-800 flex items-center justify-between transition-colors"
+              className="w-full p-2.5 bg-[#FAF5F0] hover:bg-[#FEF3C7] border border-[#E2E8F0] rounded-md font-semibold text-gray-800 flex items-center justify-between transition-colors"
             >
               <div className="flex items-center gap-2">
-                <List className="w-4 h-4 text-[#7E1929]" />
+                <List className="w-4 h-4 text-[#E11D48]" />
                 <span>Go to All Donations</span>
               </div>
               <span className="text-gray-400">☰</span>

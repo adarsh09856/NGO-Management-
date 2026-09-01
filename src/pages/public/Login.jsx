@@ -38,14 +38,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#FDFBF7]">
+    <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#F8FAFC]">
       <div className="max-w-md w-full space-y-6">
         {/* Brand Crest */}
         <div className="text-center space-y-2">
-          <div className="w-14 h-14 rounded-full bg-[#4A0E17] border-2 border-[#D4AF37] flex items-center justify-center mx-auto shadow-md">
+          <div className="w-14 h-14 rounded-full bg-[#0F172A] border-2 border-[#D4AF37] flex items-center justify-center mx-auto shadow-md">
             <span className="text-[#D4AF37] text-2xl font-serif font-bold">☸</span>
           </div>
-          <h1 className="font-serif-brand font-extrabold text-2xl text-[#4A0E17] tracking-wider uppercase">
+          <h1 className="font-serif-brand font-extrabold text-2xl text-[#0F172A] tracking-wider uppercase">
             DRODUL PHENDEY LING
           </h1>
           <p className="text-xs text-gray-500 font-medium">
@@ -56,7 +56,7 @@ export default function Login() {
         {/* Login Form Card */}
         <div className="monastery-card p-6 sm:p-8 space-y-6 shadow-md">
           <div className="space-y-1">
-            <h2 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+            <h2 className="font-serif-brand font-bold text-base text-[#0F172A]">
               Sign In to Your User Panel
             </h2>
             <p className="text-xs text-gray-500">
@@ -76,7 +76,7 @@ export default function Login() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#7E1929] bg-[#FAF9F5]"
+                  className="w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#E11D48] bg-[#FAF9F5]"
                   placeholder="Enter your registered email"
                   autoComplete="email"
                 />
@@ -88,7 +88,7 @@ export default function Login() {
                 <label className="text-xs font-semibold text-gray-700">
                   Password
                 </label>
-                <Link to="/forgot-password" className="text-[11px] text-[#7E1929] hover:underline">
+                <Link to="/forgot-password" className="text-[11px] text-[#E11D48] hover:underline">
                   Forgot?
                 </Link>
               </div>
@@ -99,7 +99,7 @@ export default function Login() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#7E1929] bg-[#FAF9F5]"
+                  className="w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#E11D48] bg-[#FAF9F5]"
                   placeholder="Enter your password"
                   autoComplete="current-password"
                 />
@@ -109,7 +109,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#7E1929] hover:bg-[#5A121E] text-white py-2.5 rounded font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-1.5 shadow transition-all"
+              className="w-full bg-[#E11D48] hover:bg-[#1E293B] text-white py-2.5 rounded font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-1.5 shadow transition-all"
             >
               <span>{loading ? 'Authenticating...' : 'Sign In to User Panel'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -120,11 +120,11 @@ export default function Login() {
         <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-2 px-1">
           <p>
             New devotee?{' '}
-            <Link to="/register" className="text-[#7E1929] font-bold hover:underline">
+            <Link to="/register" className="text-[#E11D48] font-bold hover:underline">
               Create an Account
             </Link>
           </p>
-          <Link to="/admin/login" className="text-gray-400 hover:text-[#4A0E17] font-medium">
+          <Link to="/admin/login" className="text-gray-400 hover:text-[#0F172A] font-medium">
             Staff / Admin Login →
           </Link>
         </div>

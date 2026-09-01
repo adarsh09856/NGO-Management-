@@ -165,7 +165,7 @@ export default function BlogManager() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
             Blog & Articles Manager
           </h1>
           <p className="text-xs text-gray-500">
@@ -176,7 +176,7 @@ export default function BlogManager() {
         <button
           type="button"
           onClick={handleOpenCreate}
-          className="px-4 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
+          className="px-4 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
         >
           <Plus className="w-4 h-4" />
           <span>New Article</span>
@@ -184,7 +184,7 @@ export default function BlogManager() {
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="bg-white p-4 rounded-lg border border-[#EBE5D8] flex items-center justify-between gap-4 shadow-sm">
+      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] flex items-center justify-between gap-4 shadow-sm">
         <div className="relative w-full max-w-sm">
           <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
           <input
@@ -192,7 +192,7 @@ export default function BlogManager() {
             placeholder="Search articles by title or tag..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#7E1929]"
+            className="w-full pl-9 pr-3 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#E11D48]"
           />
         </div>
         <span className="text-xs text-gray-500 font-medium whitespace-nowrap">
@@ -205,7 +205,7 @@ export default function BlogManager() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-[#FAF5F0] border-b border-[#EBE5D8] text-[#4A0E17] font-bold">
+              <tr className="bg-[#FAF5F0] border-b border-[#E2E8F0] text-[#0F172A] font-bold">
                 <th className="p-3.5">Cover</th>
                 <th className="p-3.5">Article Title</th>
                 <th className="p-3.5">Author</th>
@@ -238,7 +238,7 @@ export default function BlogManager() {
                       className="w-12 h-10 object-cover rounded shadow-sm"
                     />
                   </td>
-                  <td className="p-3 font-semibold text-[#4A0E17] max-w-xs">
+                  <td className="p-3 font-semibold text-[#0F172A] max-w-xs">
                     <p className="line-clamp-1">{p.title}</p>
                     <p className="text-[10px] text-gray-400 font-normal line-clamp-1">{p.summary}</p>
                   </td>
@@ -258,7 +258,7 @@ export default function BlogManager() {
                         href={`/blog/${p.slug}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-1 text-gray-500 hover:text-[#4A0E17]"
+                        className="p-1 text-gray-500 hover:text-[#0F172A]"
                         title="View Public Post"
                       >
                         <Eye className="w-3.5 h-3.5" />
@@ -290,8 +290,8 @@ export default function BlogManager() {
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-[#D4AF37]/40 animate-fadeIn">
-            <div className="p-5 bg-[#FAF5F0] border-b border-[#EBE5D8] flex items-center justify-between">
-              <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+            <div className="p-5 bg-[#FAF5F0] border-b border-[#E2E8F0] flex items-center justify-between">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
                 {editingPost ? 'Edit Blog Article' : 'Create New Blog Article'}
               </h3>
               <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600">
@@ -308,7 +308,7 @@ export default function BlogManager() {
                   placeholder="e.g. The Spiritual Significance of the Great Druk Wangyel Stupa"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                 />
               </div>
 
@@ -319,7 +319,7 @@ export default function BlogManager() {
                   placeholder="Brief 1-2 sentence overview of the article..."
                   value={summary}
                   onChange={(e) => setSummary(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                 />
               </div>
 
@@ -332,7 +332,7 @@ export default function BlogManager() {
                     placeholder="https://images.unsplash.com/..."
                     value={coverImage}
                     onChange={(e) => setCoverImage(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none font-mono text-[11px]"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none font-mono text-[11px]"
                   />
                   <label className="px-3 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded cursor-pointer font-bold text-gray-700 flex items-center gap-1">
                     <ImageIcon className="w-3.5 h-3.5" />
@@ -353,7 +353,7 @@ export default function BlogManager() {
                     type="text"
                     value={authorName}
                     onChange={(e) => setAuthorName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                   />
                 </div>
                 <div>
@@ -363,7 +363,7 @@ export default function BlogManager() {
                     placeholder="Peace Stupa, Buddhism, Bhutan"
                     value={tags}
                     onChange={(e) => setTags(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                   />
                 </div>
               </div>
@@ -377,7 +377,7 @@ export default function BlogManager() {
                   placeholder="Write the full article content here with paragraphs <p>...</p> and headings <h3>...</h3>"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none font-mono text-xs leading-relaxed"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none font-mono text-xs leading-relaxed"
                 />
               </div>
 
@@ -387,7 +387,7 @@ export default function BlogManager() {
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                 >
                   <option value="published">Published (Visible to Public)</option>
                   <option value="draft">Draft (Hidden)</option>
@@ -406,7 +406,7 @@ export default function BlogManager() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
+                  className="px-5 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>{saving ? 'Saving...' : editingPost ? 'Update Article' : 'Publish Article'}</span>

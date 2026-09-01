@@ -64,7 +64,7 @@ export default function Learning() {
     <div className="w-full min-h-screen py-10 px-4 sm:px-8 relative z-10">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header Banner */}
-        <div className="bg-gradient-to-r from-[#20040A] via-[#4A0E17] to-[#1A0307] rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40">
+        <div className="bg-gradient-to-r from-[#090D16] via-[#0F172A] to-[#05070D] rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40">
           <div className="relative z-10 max-w-3xl space-y-3">
             <span className="glow-pill-gold px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5">
               <span>☸</span> Open Monastic Dharma Education
@@ -88,8 +88,8 @@ export default function Learning() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
                   selectedCategory === cat
-                    ? 'bg-[#4A0E17] text-[#D4AF37] border border-[#D4AF37]/60 shadow-md'
-                    : 'bg-white/80 text-gray-700 hover:bg-white hover:text-[#4A0E17] border border-gray-200'
+                    ? 'bg-[#0F172A] text-[#D4AF37] border border-[#D4AF37]/60 shadow-md'
+                    : 'bg-white/80 text-gray-700 hover:bg-white hover:text-[#0F172A] border border-gray-200'
                 }`}
               >
                 {cat}
@@ -113,7 +113,7 @@ export default function Learning() {
         {/* Video Grid */}
         {loading ? (
           <div className="text-center py-20">
-            <div className="w-8 h-8 border-2 border-[#7E1929] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            <div className="w-8 h-8 border-2 border-[#E11D48] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
             <p className="text-xs text-gray-500">Loading Dharma lectures...</p>
           </div>
         ) : (
@@ -137,7 +137,7 @@ export default function Learning() {
 
                     {/* Play Overlay */}
                     <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                      <div className="w-12 h-12 rounded-full bg-[#4A0E17]/90 text-[#D4AF37] border-2 border-[#D4AF37] flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                      <div className="w-12 h-12 rounded-full bg-[#0F172A]/90 text-[#D4AF37] border-2 border-[#D4AF37] flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
                         <Play className="w-5 h-5 fill-[#D4AF37] ml-0.5" />
                       </div>
                     </div>
@@ -161,7 +161,7 @@ export default function Learning() {
                       </span>
                     </div>
 
-                    <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] leading-snug group-hover:text-[#8B1E2F] transition-colors">
+                    <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] leading-snug group-hover:text-[#BE123C] transition-colors">
                       {item.title}
                     </h3>
 
@@ -192,7 +192,7 @@ export default function Learning() {
           <div className="relative w-full max-w-4xl bg-gray-950 rounded-2xl overflow-hidden border border-[#D4AF37]/60 shadow-2xl">
             <button
               onClick={() => setActiveVideo(null)}
-              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#8B1E2F] transition-colors"
+              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#BE123C] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>

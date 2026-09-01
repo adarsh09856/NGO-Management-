@@ -89,7 +89,7 @@ export default function PayrollRuns() {
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
             HRM & Monthly Payroll Operations
           </h1>
           <p className="text-xs text-gray-500">
@@ -108,7 +108,7 @@ export default function PayrollRuns() {
             type="button"
             onClick={handleGeneratePayroll}
             disabled={generating}
-            className="px-4 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
+            className="px-4 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
           >
             <Play className="w-3.5 h-3.5 fill-white" />
             <span>{generating ? 'Processing...' : 'Run Monthly Payroll'}</span>
@@ -118,15 +118,15 @@ export default function PayrollRuns() {
 
       {/* Salary Slips Table */}
       <div className="monastery-card overflow-hidden">
-        <div className="p-4 border-b border-[#EBE5D8] flex justify-between items-center">
-          <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17]">
+        <div className="p-4 border-b border-[#E2E8F0] flex justify-between items-center">
+          <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">
             Employee Salary Slips ({selectedMonth})
           </h3>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F8F6F0] text-gray-700 font-bold uppercase tracking-wider border-b border-[#EBE5D8]">
+            <thead className="bg-[#F1F5F9] text-gray-700 font-bold uppercase tracking-wider border-b border-[#E2E8F0]">
               <tr>
                 <th className="py-3 px-4">Slip No</th>
                 <th className="py-3 px-4">Employee Name</th>
@@ -147,8 +147,8 @@ export default function PayrollRuns() {
                 </tr>
               ) : (
                 salarySlips.map((s) => (
-                  <tr key={s.id} className="hover:bg-[#FDFBF7] transition-colors">
-                    <td className="py-3 px-4 font-mono font-bold text-[#4A0E17]">{s.slip_number}</td>
+                  <tr key={s.id} className="hover:bg-[#F8FAFC] transition-colors">
+                    <td className="py-3 px-4 font-mono font-bold text-[#0F172A]">{s.slip_number}</td>
                     <td className="py-3 px-4 font-bold text-gray-900">{s.full_name}</td>
                     <td className="py-3 px-4 font-mono">₹{parseFloat(s.basic_salary).toLocaleString('en-IN')}</td>
                     <td className="py-3 px-4 font-mono text-emerald-700">+₹{parseFloat(s.allowances || 0).toLocaleString('en-IN')}</td>
@@ -164,9 +164,9 @@ export default function PayrollRuns() {
                         href={`/api/payroll/salary-slips/${s.id}/pdf`}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] font-bold text-[#4A0E17] bg-[#FAF5F0] hover:bg-[#FDF6E2] border border-[#D4AF37] px-2.5 py-1 rounded shadow-sm"
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0F172A] bg-[#FAF5F0] hover:bg-[#FEF3C7] border border-[#D4AF37] px-2.5 py-1 rounded shadow-sm"
                       >
-                        <Download className="w-3 h-3 text-[#4A0E17]" />
+                        <Download className="w-3 h-3 text-[#0F172A]" />
                         <span>PDF</span>
                       </a>
                     </td>
@@ -180,9 +180,9 @@ export default function PayrollRuns() {
 
       {/* Casual Labor & Daily Wages Section */}
       <div className="monastery-card overflow-hidden">
-        <div className="p-4 border-b border-[#EBE5D8] flex justify-between items-center">
+        <div className="p-4 border-b border-[#E2E8F0] flex justify-between items-center">
           <div>
-            <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17]">
+            <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">
               Casual Labor & Daily Wage Disbursements
             </h3>
             <p className="text-[11px] text-gray-500">Stupa construction masons, carpenters, and helpers</p>
@@ -191,7 +191,7 @@ export default function PayrollRuns() {
           <button
             type="button"
             onClick={() => setCasualModalOpen(true)}
-            className="px-3.5 py-1.5 bg-[#4A0E17] hover:bg-[#5A121E] text-white rounded text-xs font-bold flex items-center gap-1.5"
+            className="px-3.5 py-1.5 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded text-xs font-bold flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Record Daily Wage</span>
@@ -200,7 +200,7 @@ export default function PayrollRuns() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F8F6F0] text-gray-700 font-bold uppercase tracking-wider border-b border-[#EBE5D8]">
+            <thead className="bg-[#F1F5F9] text-gray-700 font-bold uppercase tracking-wider border-b border-[#E2E8F0]">
               <tr>
                 <th className="py-3 px-4">Date</th>
                 <th className="py-3 px-4">Worker Name</th>
@@ -213,7 +213,7 @@ export default function PayrollRuns() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {casualWorkers.map((w) => (
-                <tr key={w.id} className="hover:bg-[#FDFBF7] transition-colors">
+                <tr key={w.id} className="hover:bg-[#F8FAFC] transition-colors">
                   <td className="py-3 px-4 text-gray-600">{new Date(w.work_date).toLocaleDateString('en-GB')}</td>
                   <td className="py-3 px-4 font-bold text-gray-900">{w.worker_name}</td>
                   <td className="py-3 px-4 text-gray-600">{w.work_description}</td>
@@ -236,7 +236,7 @@ export default function PayrollRuns() {
       {casualModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-md w-full space-y-4">
-            <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+            <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
               Record Casual Labor Wage Payment
             </h3>
 
@@ -297,7 +297,7 @@ export default function PayrollRuns() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 bg-[#4A0E17] text-white rounded font-bold hover:bg-[#5A121E]"
+                  className="flex-1 py-2 bg-[#0F172A] text-white rounded font-bold hover:bg-[#1E293B]"
                 >
                   Confirm Wage & Settle
                 </button>

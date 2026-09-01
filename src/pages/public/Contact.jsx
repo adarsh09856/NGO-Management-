@@ -42,10 +42,10 @@ export default function Contact() {
   };
 
   return (
-    <div className="py-12 px-4 sm:px-8 bg-[#FDFBF7] min-h-[80vh]">
+    <div className="py-12 px-4 sm:px-8 bg-[#F8FAFC] min-h-[80vh]">
       <div className="max-w-7xl mx-auto space-y-12">
         <div className="text-center space-y-2 max-w-2xl mx-auto">
-          <h1 className="font-serif-brand font-extrabold text-3xl sm:text-4xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-extrabold text-3xl sm:text-4xl text-[#0F172A]">
             Contact Drodul Phendey Ling
           </h1>
           <p className="text-xs sm:text-sm text-gray-600">
@@ -57,7 +57,7 @@ export default function Contact() {
           {/* Contact Details */}
           <div className="lg:col-span-5 space-y-6">
             <div className="monastery-card p-6 space-y-4">
-              <h3 className="font-serif-brand font-bold text-base text-[#4A0E17] uppercase tracking-wider">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A] uppercase tracking-wider">
                 Monastery Headquarters
               </h3>
               <div className="space-y-3.5 text-xs text-gray-700">
@@ -102,20 +102,20 @@ export default function Contact() {
               {submitted ? (
                 <div className="text-center py-12 space-y-4">
                   <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
-                  <h3 className="font-serif-brand font-bold text-xl text-[#4A0E17]">Tashi Delek! Message Sent</h3>
+                  <h3 className="font-serif-brand font-bold text-xl text-[#0F172A]">Tashi Delek! Message Sent</h3>
                   <p className="text-xs text-gray-600 max-w-sm mx-auto">
                     We have received your message. Our monastery office coordinator will reply shortly.
                   </p>
                   <button
                     onClick={() => { setSubmitted(false); setMessage(''); }}
-                    className="bg-[#4A0E17] text-white text-xs font-bold py-2 px-4 rounded"
+                    className="bg-[#0F172A] text-white text-xs font-bold py-2 px-4 rounded"
                   >
                     Send Another Inquiry
                   </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-                  <h3 className="font-serif-brand font-bold text-base text-[#4A0E17] uppercase tracking-wider mb-2">
+                  <h3 className="font-serif-brand font-bold text-base text-[#0F172A] uppercase tracking-wider mb-2">
                     Send An Inquiry
                   </h3>
 
@@ -182,7 +182,7 @@ export default function Contact() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-[#4A0E17] hover:bg-[#5A121E] text-white py-3 rounded-md font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow transition-all"
+                    className="w-full bg-[#0F172A] hover:bg-[#1E293B] text-white py-3 rounded-md font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow transition-all"
                   >
                     <Send className="w-4 h-4 text-[#D4AF37]" />
                     <span>{loading ? 'Sending Message...' : 'Send Message'}</span>

@@ -71,7 +71,7 @@ export default function Gallery() {
           <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold">
             Sacred Moments
           </span>
-          <h1 className="font-serif-brand font-extrabold text-3xl sm:text-4xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-extrabold text-3xl sm:text-4xl text-[#0F172A]">
             Monastery Photo & Video Gallery
           </h1>
           <p className="text-xs sm:text-sm text-gray-600 font-light">
@@ -89,8 +89,8 @@ export default function Gallery() {
                 onClick={() => setMediaTypeFilter(t)}
                 className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
                   mediaTypeFilter === t
-                    ? 'bg-[#4A0E17] text-[#D4AF37] shadow-sm'
-                    : 'text-gray-700 hover:text-[#4A0E17]'
+                    ? 'bg-[#0F172A] text-[#D4AF37] shadow-sm'
+                    : 'text-gray-700 hover:text-[#0F172A]'
                 }`}
               >
                 {t}
@@ -106,8 +106,8 @@ export default function Gallery() {
                 onClick={() => setCategory(cat)}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
                   category === cat
-                    ? 'bg-[#4A0E17] text-white shadow'
-                    : 'bg-white/80 text-gray-700 hover:bg-white hover:text-[#4A0E17] border border-gray-200'
+                    ? 'bg-[#0F172A] text-white shadow'
+                    : 'bg-white/80 text-gray-700 hover:bg-white hover:text-[#0F172A] border border-gray-200'
                 }`}
               >
                 {cat}
@@ -119,7 +119,7 @@ export default function Gallery() {
         {/* Masonry / Grid */}
         {loading ? (
           <div className="text-center py-20">
-            <div className="w-8 h-8 border-2 border-[#7E1929] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            <div className="w-8 h-8 border-2 border-[#E11D48] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
             <p className="text-xs text-gray-500">Loading gallery...</p>
           </div>
         ) : (
@@ -145,7 +145,7 @@ export default function Gallery() {
 
                   {/* Video / Zoom Icon */}
                   <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-full bg-[#4A0E17]/90 text-[#D4AF37] border-2 border-[#D4AF37] flex items-center justify-center shadow-xl">
+                    <div className="w-12 h-12 rounded-full bg-[#0F172A]/90 text-[#D4AF37] border-2 border-[#D4AF37] flex items-center justify-center shadow-xl">
                       {isVideo(item) ? (
                         <Play className="w-5 h-5 fill-[#D4AF37] ml-0.5" />
                       ) : (
@@ -156,7 +156,7 @@ export default function Gallery() {
                 </div>
 
                 <div className="p-4 space-y-1">
-                  <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] group-hover:text-[#8B1E2F] transition-colors leading-snug">
+                  <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] group-hover:text-[#BE123C] transition-colors leading-snug">
                     {item.title}
                   </h3>
                   <p className="text-xs text-gray-600 line-clamp-2">
@@ -175,7 +175,7 @@ export default function Gallery() {
           <div className="relative w-full max-w-4xl bg-gray-950 rounded-2xl overflow-hidden border border-[#D4AF37]/50 shadow-2xl">
             <button
               onClick={() => setLightboxItem(null)}
-              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#8B1E2F] transition-colors"
+              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#BE123C] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>

@@ -76,7 +76,7 @@ export default function Donate() {
   return (
     <div className="py-12 px-4 sm:px-8 min-h-[85vh] space-y-12 relative z-10 max-w-7xl mx-auto">
       {/* 1. Header Hero Banner */}
-      <div className="bg-gradient-to-r from-[#20040A] via-[#4A0E17] to-[#1A0307] rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40">
+      <div className="bg-gradient-to-r from-[#090D16] via-[#0F172A] to-[#05070D] rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40">
         <div
           className="absolute inset-0 opacity-20 bg-cover bg-center pointer-events-none mix-blend-luminosity"
           style={{ backgroundImage: `url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80')` }}
@@ -113,7 +113,7 @@ export default function Donate() {
           <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold">
             Active Campaigns
           </span>
-          <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#4A0E17]">
+          <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#0F172A]">
             Featured Sacred Causes & Funds
           </h2>
           <p className="text-xs sm:text-sm text-gray-600">
@@ -143,9 +143,9 @@ export default function Donate() {
                   </div>
 
                   <div className="p-5 space-y-3">
-                    <div className="flex items-center space-x-2 text-[#4A0E17]">
+                    <div className="flex items-center space-x-2 text-[#0F172A]">
                       <Icon className="w-4 h-4 text-[#D4AF37]" />
-                      <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] leading-snug">
+                      <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] leading-snug">
                         {c.title}
                       </h3>
                     </div>
@@ -161,7 +161,7 @@ export default function Donate() {
                       </div>
                       <div className="w-full h-2 bg-gray-200/80 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-[#7E1929] to-[#D4AF37] rounded-full transition-all duration-1000"
+                          className="h-full bg-gradient-to-r from-[#E11D48] to-[#D4AF37] rounded-full transition-all duration-1000"
                           style={{ width: `${c.percent}%` }}
                         />
                       </div>

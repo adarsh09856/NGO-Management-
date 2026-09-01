@@ -41,14 +41,14 @@ export default function AdminSidebar({ isOpen, onClose }) {
       )}
 
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-40 w-64 bg-[#3B0A13] text-gray-200 flex flex-col border-r border-[#4A0E17] shadow-2xl transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-40 w-64 bg-[#0F172A] text-gray-200 flex flex-col border-r border-[#0F172A] shadow-2xl transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Brand Crest Header */}
-        <div className="p-4 border-b border-[#4E0D19] flex items-center justify-between">
+        <div className="p-4 border-b border-[#1E293B] flex items-center justify-between">
           <div className="flex items-center space-x-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-[#4A0E17] border-2 border-[#D4AF37] flex items-center justify-center flex-shrink-0 shadow">
+            <div className="w-8 h-8 rounded-full bg-[#0F172A] border-2 border-[#D4AF37] flex items-center justify-center flex-shrink-0 shadow">
               <span className="text-[#D4AF37] text-base font-serif font-bold">☸</span>
             </div>
             <div className="min-w-0">
@@ -63,7 +63,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
 
           <button
             onClick={onClose}
-            className="lg:hidden p-1.5 rounded-md text-gray-400 hover:text-white hover:bg-[#4E0D19] transition-colors"
+            className="lg:hidden p-1.5 rounded-md text-gray-400 hover:text-white hover:bg-[#1E293B] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -77,8 +77,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
             onClick={handleNavClick}
             className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors ${
               isActive('/admin')
-                ? 'bg-[#5A121E] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                : 'text-gray-300 hover:bg-[#4A0E17] hover:text-white'
+                ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                : 'text-gray-300 hover:bg-[#0F172A] hover:text-white'
             }`}
           >
             <LayoutDashboard className="w-4 h-4 text-[#D4AF37]" />
@@ -91,7 +91,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
               <button
                 type="button"
                 onClick={() => setDonationOpen(!donationOpen)}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-300 hover:bg-[#4A0E17] hover:text-white transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-300 hover:bg-[#0F172A] hover:text-white transition-colors"
               >
                 <div className="flex items-center space-x-2.5">
                   <HeartHandshake className="w-4 h-4 text-[#D4AF37]" />
@@ -106,7 +106,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/donations/new"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/donations/new') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/donations/new') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • Add New Donation
@@ -115,7 +115,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/donations"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/donations') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/donations') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • All Donations List
@@ -124,7 +124,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/receipts"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/receipts') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/receipts') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • Money Receipts (80G)
@@ -133,7 +133,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/donors"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/donors') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/donors') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • Donors Directory
@@ -142,7 +142,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/campaigns"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/campaigns') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/campaigns') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • Campaigns & Causes
@@ -159,8 +159,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
               onClick={handleNavClick}
               className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors ${
                 isActive('/admin/learning')
-                  ? 'bg-[#5A121E] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                  : 'text-gray-300 hover:bg-[#4A0E17] hover:text-white'
+                  ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                  : 'text-gray-300 hover:bg-[#0F172A] hover:text-white'
               }`}
             >
               <Video className="w-4 h-4 text-[#D4AF37]" />
@@ -175,8 +175,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
               onClick={handleNavClick}
               className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors ${
                 isActive('/admin/blog')
-                  ? 'bg-[#5A121E] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                  : 'text-gray-300 hover:bg-[#4A0E17] hover:text-white'
+                  ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                  : 'text-gray-300 hover:bg-[#0F172A] hover:text-white'
               }`}
             >
               <Newspaper className="w-4 h-4 text-[#D4AF37]" />
@@ -191,8 +191,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
               onClick={handleNavClick}
               className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors ${
                 isActive('/admin/gallery')
-                  ? 'bg-[#5A121E] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                  : 'text-gray-300 hover:bg-[#4A0E17] hover:text-white'
+                  ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                  : 'text-gray-300 hover:bg-[#0F172A] hover:text-white'
               }`}
             >
               <ImageIcon className="w-4 h-4 text-[#D4AF37]" />
@@ -206,7 +206,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
               <button
                 type="button"
                 onClick={() => setAccountsOpen(!accountsOpen)}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-300 hover:bg-[#4A0E17] hover:text-white transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-300 hover:bg-[#0F172A] hover:text-white transition-colors"
               >
                 <div className="flex items-center space-x-2.5">
                   <Landmark className="w-4 h-4 text-[#D4AF37]" />
@@ -221,7 +221,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/accounts"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/accounts') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/accounts') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • Finance Dashboard
@@ -230,7 +230,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/accounts/expenses"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/accounts/expenses') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/accounts/expenses') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • Expenses & Claims
@@ -239,7 +239,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/accounts/vouchers"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/accounts/vouchers') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/accounts/vouchers') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • Payment Vouchers
@@ -255,7 +255,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
               <button
                 type="button"
                 onClick={() => setInventoryOpen(!inventoryOpen)}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-300 hover:bg-[#4A0E17] hover:text-white transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-300 hover:bg-[#0F172A] hover:text-white transition-colors"
               >
                 <div className="flex items-center space-x-2.5">
                   <Warehouse className="w-4 h-4 text-[#D4AF37]" />
@@ -270,7 +270,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/inventory"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/inventory') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/inventory') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • Store Stock Items
@@ -279,7 +279,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/inventory/stock-in"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/inventory/stock-in') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/inventory/stock-in') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • Inward Stock Entry
@@ -288,7 +288,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/inventory/stock-out"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/inventory/stock-out') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/inventory/stock-out') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • Issue / Consume Stock
@@ -304,7 +304,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
               <button
                 type="button"
                 onClick={() => setHrmOpen(!hrmOpen)}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-300 hover:bg-[#4A0E17] hover:text-white transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-300 hover:bg-[#0F172A] hover:text-white transition-colors"
               >
                 <div className="flex items-center space-x-2.5">
                   <UserCheck className="w-4 h-4 text-[#D4AF37]" />
@@ -319,7 +319,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/hrm/employees"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/hrm/employees') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/hrm/employees') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • Employee Directory
@@ -328,7 +328,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/hrm/attendance"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/hrm/attendance') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/hrm/attendance') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • Daily Attendance
@@ -337,7 +337,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/payroll"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/payroll') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/payroll') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • Payroll Runs & Slips
@@ -346,7 +346,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     to="/admin/payroll/casual-labor"
                     onClick={handleNavClick}
                     className={`block py-1 px-2 rounded hover:text-white ${
-                      isActive('/admin/payroll/casual-labor') ? 'text-[#D4AF37] font-bold bg-[#4A0E17]' : 'text-gray-400'
+                      isActive('/admin/payroll/casual-labor') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
                     }`}
                   >
                     • Casual / Daily Labor
@@ -363,8 +363,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
               onClick={handleNavClick}
               className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors ${
                 isActive('/admin/projects')
-                  ? 'bg-[#5A121E] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                  : 'text-gray-300 hover:bg-[#4A0E17] hover:text-white'
+                  ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                  : 'text-gray-300 hover:bg-[#0F172A] hover:text-white'
               }`}
             >
               <FolderKanban className="w-4 h-4 text-[#D4AF37]" />
@@ -379,8 +379,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
               onClick={handleNavClick}
               className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors ${
                 isActive('/admin/crm')
-                  ? 'bg-[#5A121E] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                  : 'text-gray-300 hover:bg-[#4A0E17] hover:text-white'
+                  ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                  : 'text-gray-300 hover:bg-[#0F172A] hover:text-white'
               }`}
             >
               <MessageSquareShare className="w-4 h-4 text-[#D4AF37]" />
@@ -395,8 +395,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
               onClick={handleNavClick}
               className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors ${
                 isActive('/admin/prayer-requests')
-                  ? 'bg-[#5A121E] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                  : 'text-gray-300 hover:bg-[#4A0E17] hover:text-white'
+                  ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                  : 'text-gray-300 hover:bg-[#0F172A] hover:text-white'
               }`}
             >
               <Flame className="w-4 h-4 text-[#D4AF37]" />
@@ -411,8 +411,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
               onClick={handleNavClick}
               className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors ${
                 isActive('/admin/reports')
-                  ? 'bg-[#5A121E] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                  : 'text-gray-300 hover:bg-[#4A0E17] hover:text-white'
+                  ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                  : 'text-gray-300 hover:bg-[#0F172A] hover:text-white'
               }`}
             >
               <BarChart3 className="w-4 h-4 text-[#D4AF37]" />
@@ -432,8 +432,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
                 onClick={handleNavClick}
                 className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors ${
                   isActive('/admin/users')
-                    ? 'bg-[#5A121E] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                    : 'text-gray-300 hover:bg-[#4A0E17] hover:text-white'
+                    ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                    : 'text-gray-300 hover:bg-[#0F172A] hover:text-white'
                 }`}
               >
                 <UserCog className="w-4 h-4 text-[#D4AF37]" />
@@ -445,8 +445,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
                 onClick={handleNavClick}
                 className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors ${
                   isActive('/admin/audit-logs')
-                    ? 'bg-[#5A121E] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                    : 'text-gray-300 hover:bg-[#4A0E17] hover:text-white'
+                    ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                    : 'text-gray-300 hover:bg-[#0F172A] hover:text-white'
                 }`}
               >
                 <ClipboardList className="w-4 h-4 text-[#D4AF37]" />
@@ -458,8 +458,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
                 onClick={handleNavClick}
                 className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors ${
                   isActive('/admin/settings')
-                    ? 'bg-[#5A121E] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                    : 'text-gray-300 hover:bg-[#4A0E17] hover:text-white'
+                    ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                    : 'text-gray-300 hover:bg-[#0F172A] hover:text-white'
                 }`}
               >
                 <Settings className="w-4 h-4 text-[#D4AF37]" />
@@ -470,9 +470,9 @@ export default function AdminSidebar({ isOpen, onClose }) {
         </nav>
 
         {/* Footer User Info */}
-        <div className="p-3 border-t border-[#4E0D19] bg-[#2E070F] flex items-center justify-between text-xs">
+        <div className="p-3 border-t border-[#1E293B] bg-[#2E070F] flex items-center justify-between text-xs">
           <div className="flex items-center space-x-2 min-w-0">
-            <div className="w-7 h-7 rounded-full bg-[#4A0E17] border border-[#D4AF37] text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0">
+            <div className="w-7 h-7 rounded-full bg-[#0F172A] border border-[#D4AF37] text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0">
               {user?.fullName?.charAt(0) || 'A'}
             </div>
             <div className="min-w-0">

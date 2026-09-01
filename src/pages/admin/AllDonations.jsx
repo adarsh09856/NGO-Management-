@@ -45,7 +45,7 @@ export default function AllDonations() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
             All Donations Record
           </h1>
           <p className="text-xs text-gray-500">
@@ -56,7 +56,7 @@ export default function AllDonations() {
         <div className="flex items-center space-x-3">
           <Link
             to="/admin/donations/add"
-            className="px-4 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
+            className="px-4 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Donation</span>
@@ -74,7 +74,7 @@ export default function AllDonations() {
             onChange={(e) => setSearch(e.target.value)}
             className="text-xs p-2 rounded border border-gray-300 w-full"
           />
-          <button type="submit" className="px-3 py-2 bg-[#4A0E17] text-white text-xs font-bold rounded">
+          <button type="submit" className="px-3 py-2 bg-[#0F172A] text-white text-xs font-bold rounded">
             Search
           </button>
         </form>
@@ -84,7 +84,7 @@ export default function AllDonations() {
       <div className="monastery-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F8F6F0] text-gray-700 font-bold uppercase tracking-wider border-b border-[#EBE5D8]">
+            <thead className="bg-[#F1F5F9] text-gray-700 font-bold uppercase tracking-wider border-b border-[#E2E8F0]">
               <tr>
                 <th className="py-3 px-4">Receipt</th>
                 <th className="py-3 px-4">Donor Name</th>
@@ -98,8 +98,8 @@ export default function AllDonations() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {donations.map((d) => (
-                <tr key={d.id} className="hover:bg-[#FDFBF7] transition-colors">
-                  <td className="py-3 px-4 font-mono font-bold text-[#4A0E17]">{d.receipt_number || `RC-${d.id}`}</td>
+                <tr key={d.id} className="hover:bg-[#F8FAFC] transition-colors">
+                  <td className="py-3 px-4 font-mono font-bold text-[#0F172A]">{d.receipt_number || `RC-${d.id}`}</td>
                   <td className="py-3 px-4 font-bold text-gray-900">{d.donor_name || 'Anonymous'}</td>
                   <td className="py-3 px-4 font-semibold text-gray-700">{d.donation_for}</td>
                   <td className="py-3 px-4 text-gray-600">{new Date(d.payment_date).toLocaleDateString('en-GB')}</td>
@@ -117,7 +117,7 @@ export default function AllDonations() {
                           href={`/api/receipts/${d.receipt_id}/pdf`}
                           target="_blank"
                           rel="noreferrer"
-                          className="p-1 text-[#4A0E17] hover:bg-[#FDF6E2] rounded"
+                          className="p-1 text-[#0F172A] hover:bg-[#FEF3C7] rounded"
                           title="Download Receipt PDF"
                         >
                           <Download className="w-3.5 h-3.5" />

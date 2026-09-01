@@ -7,7 +7,7 @@ export default function AdminLayout({ breadcrumbs }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] flex">
+    <div className="min-h-screen bg-[#F8FAFC] flex">
       {/* Sidebar */}
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
@@ -25,7 +25,7 @@ export default function AdminLayout({ breadcrumbs }) {
         </main>
 
         {/* Admin Footer */}
-        <footer className="px-6 py-4 bg-white border-t border-[#EBE5D8] text-[11px] text-gray-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <footer className="px-6 py-4 bg-white border-t border-[#E2E8F0] text-[11px] text-gray-500 flex flex-col sm:flex-row justify-between items-center gap-2">
           <div>
             © 2026 Drodul Phendey Ling Foundation. All Rights Reserved.
           </div>

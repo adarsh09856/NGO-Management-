@@ -30,7 +30,7 @@ export default function AuditLog() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+        <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
           System Audit Logs
         </h1>
         <p className="text-xs text-gray-500">
@@ -48,7 +48,7 @@ export default function AuditLog() {
             onChange={(e) => setSearch(e.target.value)}
             className="text-xs p-2 rounded border border-gray-300 w-full"
           />
-          <button type="submit" className="px-3 py-2 bg-[#4A0E17] text-white text-xs font-bold rounded">
+          <button type="submit" className="px-3 py-2 bg-[#0F172A] text-white text-xs font-bold rounded">
             Search
           </button>
         </form>
@@ -70,7 +70,7 @@ export default function AuditLog() {
       <div className="monastery-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F8F6F0] text-gray-700 font-bold uppercase tracking-wider border-b border-[#EBE5D8]">
+            <thead className="bg-[#F1F5F9] text-gray-700 font-bold uppercase tracking-wider border-b border-[#E2E8F0]">
               <tr>
                 <th className="py-3 px-4">Timestamp</th>
                 <th className="py-3 px-4">User</th>
@@ -82,7 +82,7 @@ export default function AuditLog() {
             </thead>
             <tbody className="divide-y divide-gray-100 font-mono">
               {logs.map((l) => (
-                <tr key={l.id} className="hover:bg-[#FDFBF7] transition-colors">
+                <tr key={l.id} className="hover:bg-[#F8FAFC] transition-colors">
                   <td className="py-3 px-4 text-gray-600 font-sans">{new Date(l.created_at).toLocaleString('en-GB')}</td>
                   <td className="py-3 px-4 font-bold font-sans text-gray-900">{l.user_name || 'System / Guest'}</td>
                   <td className="py-3 px-4">

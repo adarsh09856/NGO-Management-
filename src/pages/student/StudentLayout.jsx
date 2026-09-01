@@ -15,11 +15,11 @@ export default function StudentLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] flex flex-col">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
       {/* Header */}
-      <header className="bg-[#4A0E17] text-white border-b-2 border-[#D4AF37] px-4 sm:px-8 py-3 flex justify-between items-center shadow-md">
+      <header className="bg-[#0F172A] text-white border-b-2 border-[#D4AF37] px-4 sm:px-8 py-3 flex justify-between items-center shadow-md">
         <Link to="/" className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-full bg-[#5A121E] border border-[#D4AF37] flex items-center justify-center">
+          <div className="w-9 h-9 rounded-full bg-[#1E293B] border border-[#D4AF37] flex items-center justify-center">
             <GraduationCap className="w-4 h-4 text-[#D4AF37]" />
           </div>
           <div>
@@ -34,7 +34,7 @@ export default function StudentLayout() {
           <span className="hidden sm:inline text-gray-300">Scholar: <strong>{user?.fullName}</strong></span>
           <button
             onClick={logout}
-            className="flex items-center space-x-1 px-3 py-1 rounded bg-[#5A121E] hover:bg-[#7E1929] border border-[#D4AF37]/50 text-white font-semibold transition-all"
+            className="flex items-center space-x-1 px-3 py-1 rounded bg-[#1E293B] hover:bg-[#E11D48] border border-[#D4AF37]/50 text-white font-semibold transition-all"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Logout</span>
@@ -43,7 +43,7 @@ export default function StudentLayout() {
       </header>
 
       {/* Subnav */}
-      <div className="bg-white border-b border-[#EBE5D8] px-4 sm:px-8 shadow-sm">
+      <div className="bg-white border-b border-[#E2E8F0] px-4 sm:px-8 shadow-sm">
         <div className="max-w-7xl mx-auto flex space-x-6 overflow-x-auto text-xs font-semibold">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -54,11 +54,11 @@ export default function StudentLayout() {
                 to={item.path}
                 className={`py-3.5 flex items-center space-x-2 border-b-2 transition-all whitespace-nowrap ${
                   active
-                    ? 'border-[#4A0E17] text-[#4A0E17] font-bold'
+                    ? 'border-[#0F172A] text-[#0F172A] font-bold'
                     : 'border-transparent text-gray-500 hover:text-gray-900'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${active ? 'text-[#4A0E17]' : 'text-gray-400'}`} />
+                <Icon className={`w-4 h-4 ${active ? 'text-[#0F172A]' : 'text-gray-400'}`} />
                 <span>{item.label}</span>
               </Link>
             );

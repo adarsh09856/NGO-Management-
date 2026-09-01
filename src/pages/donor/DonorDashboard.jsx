@@ -33,9 +33,9 @@ export default function DonorDashboard() {
   return (
     <div className="space-y-8">
       {/* Welcome Banner */}
-      <div className="bg-white rounded-xl p-6 border border-[#EBE5D8] shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-white rounded-xl p-6 border border-[#E2E8F0] shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="font-serif-brand font-bold text-xl text-[#4A0E17]">
+          <h2 className="font-serif-brand font-bold text-xl text-[#0F172A]">
             Tashi Delek, {donor.full_name || 'Noble Devotee'}!
           </h2>
           <p className="text-xs text-gray-600 mt-1">
@@ -44,7 +44,7 @@ export default function DonorDashboard() {
         </div>
         <Link
           to="/donate"
-          className="bg-[#7E1929] hover:bg-[#5A121E] text-white px-5 py-2.5 rounded-md font-bold text-xs uppercase tracking-wider flex items-center space-x-2 shadow"
+          className="bg-[#E11D48] hover:bg-[#1E293B] text-white px-5 py-2.5 rounded-md font-bold text-xs uppercase tracking-wider flex items-center space-x-2 shadow"
         >
           <Heart className="w-4 h-4 text-[#D4AF37] fill-[#D4AF37]" />
           <span>Make New Donation</span>
@@ -55,7 +55,7 @@ export default function DonorDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="monastery-card p-5">
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Donated</p>
-          <h3 className="font-serif-brand font-bold text-2xl text-[#4A0E17] mt-1">
+          <h3 className="font-serif-brand font-bold text-2xl text-[#0F172A] mt-1">
             ₹ {parseFloat(donor.total_donated || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </h3>
           <p className="text-[11px] text-emerald-600 font-semibold mt-1 flex items-center gap-1">
@@ -90,11 +90,11 @@ export default function DonorDashboard() {
 
       {/* Recent Donations Table */}
       <div className="monastery-card overflow-hidden">
-        <div className="p-5 border-b border-[#EBE5D8] flex justify-between items-center">
-          <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+        <div className="p-5 border-b border-[#E2E8F0] flex justify-between items-center">
+          <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
             Recent Donation History
           </h3>
-          <Link to="/donor/donations" className="text-xs font-bold text-[#8B1E2F] hover:underline flex items-center gap-1">
+          <Link to="/donor/donations" className="text-xs font-bold text-[#BE123C] hover:underline flex items-center gap-1">
             <span>View All</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -102,7 +102,7 @@ export default function DonorDashboard() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F8F6F0] text-gray-700 font-bold uppercase tracking-wider border-b border-[#EBE5D8]">
+            <thead className="bg-[#F1F5F9] text-gray-700 font-bold uppercase tracking-wider border-b border-[#E2E8F0]">
               <tr>
                 <th className="py-3 px-4">Receipt No</th>
                 <th className="py-3 px-4">Donation For</th>
@@ -122,8 +122,8 @@ export default function DonorDashboard() {
                 </tr>
               ) : (
                 recentDonations.map((d) => (
-                  <tr key={d.id} className="hover:bg-[#FDFBF7] transition-colors">
-                    <td className="py-3 px-4 font-mono font-bold text-[#4A0E17]">{d.receipt_number || `RC-${d.id}`}</td>
+                  <tr key={d.id} className="hover:bg-[#F8FAFC] transition-colors">
+                    <td className="py-3 px-4 font-mono font-bold text-[#0F172A]">{d.receipt_number || `RC-${d.id}`}</td>
                     <td className="py-3 px-4 font-semibold text-gray-900">{d.donation_for}</td>
                     <td className="py-3 px-4 text-gray-600">{new Date(d.payment_date).toLocaleDateString('en-GB')}</td>
                     <td className="py-3 px-4 font-mono font-bold text-emerald-700">₹ {parseFloat(d.amount).toLocaleString('en-IN')}</td>
@@ -139,9 +139,9 @@ export default function DonorDashboard() {
                           href={`/api/receipts/${d.receipt_id}/pdf`}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-[11px] font-bold text-[#4A0E17] bg-[#FDF6E2] hover:bg-[#FDF2E9] border border-[#D4AF37] px-2.5 py-1 rounded shadow-sm"
+                          className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0F172A] bg-[#FEF3C7] hover:bg-[#FDF2E9] border border-[#D4AF37] px-2.5 py-1 rounded shadow-sm"
                         >
-                          <Download className="w-3 h-3 text-[#4A0E17]" />
+                          <Download className="w-3 h-3 text-[#0F172A]" />
                           <span>PDF</span>
                         </a>
                       ) : (

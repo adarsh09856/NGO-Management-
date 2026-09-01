@@ -80,16 +80,16 @@ export default function AccountsDashboard() {
     <div className="space-y-6">
       {/* Top Bar (Matching image 3 top) */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+        <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
           Accounts & Finance
         </h1>
         <div className="flex items-center space-x-3">
-          <span className="text-xs text-gray-500 font-medium px-3 py-1.5 bg-white border border-[#EBE5D8] rounded">
+          <span className="text-xs text-gray-500 font-medium px-3 py-1.5 bg-white border border-[#E2E8F0] rounded">
             25 Aug 2026
           </span>
           <Link
             to="/admin/accounts/expenses"
-            className="bg-[#7E1929] hover:bg-[#5A121E] text-white px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
+            className="bg-[#E11D48] hover:bg-[#1E293B] text-white px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
           >
             <PlusCircle className="w-3.5 h-3.5" />
             <span>New Transaction</span>
@@ -148,7 +148,7 @@ export default function AccountsDashboard() {
         <div className="lg:col-span-8 monastery-card p-5 space-y-4">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17]">Income vs Expense Overview</h3>
+              <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">Income vs Expense Overview</h3>
               <p className="text-[11px] text-gray-500">Consolidated monthly financial cashflow</p>
             </div>
             <select className="text-xs border rounded px-2.5 py-1 bg-white text-gray-700">
@@ -176,8 +176,8 @@ export default function AccountsDashboard() {
         {/* Bank Accounts List (Matching image 3 top right) */}
         <div className="lg:col-span-4 monastery-card p-5 space-y-3 flex flex-col justify-between">
           <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-            <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17]">Bank Accounts</h3>
-            <span className="text-[11px] font-bold text-[#8B1E2F]">View All</span>
+            <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">Bank Accounts</h3>
+            <span className="text-[11px] font-bold text-[#BE123C]">View All</span>
           </div>
 
           <div className="space-y-3 text-xs">
@@ -197,7 +197,7 @@ export default function AccountsDashboard() {
           <div className="pt-2">
             <Link
               to="/admin/accounts/ledger"
-              className="w-full bg-[#FAF5F0] hover:bg-[#FDF6E2] border border-[#EBE5D8] text-[#4A0E17] py-2 rounded text-xs font-bold text-center block"
+              className="w-full bg-[#FAF5F0] hover:bg-[#FEF3C7] border border-[#E2E8F0] text-[#0F172A] py-2 rounded text-xs font-bold text-center block"
             >
               View Full General Ledger
             </Link>
@@ -207,16 +207,16 @@ export default function AccountsDashboard() {
 
       {/* 3. Recent Transactions Table (Matching image 3 top) */}
       <div className="monastery-card overflow-hidden">
-        <div className="p-4 border-b border-[#EBE5D8] flex justify-between items-center">
-          <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17]">Recent Transactions</h3>
-          <Link to="/admin/accounts/ledger" className="text-xs font-bold text-[#8B1E2F] hover:underline">
+        <div className="p-4 border-b border-[#E2E8F0] flex justify-between items-center">
+          <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">Recent Transactions</h3>
+          <Link to="/admin/accounts/ledger" className="text-xs font-bold text-[#BE123C] hover:underline">
             View All Transactions
           </Link>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F8F6F0] text-gray-700 font-bold uppercase tracking-wider border-b border-[#EBE5D8]">
+            <thead className="bg-[#F1F5F9] text-gray-700 font-bold uppercase tracking-wider border-b border-[#E2E8F0]">
               <tr>
                 <th className="py-2.5 px-4">Date</th>
                 <th className="py-2.5 px-4">Particulars</th>
@@ -228,10 +228,10 @@ export default function AccountsDashboard() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {recentTransactions.map((tx, idx) => (
-                <tr key={idx} className="hover:bg-[#FDFBF7] transition-colors">
+                <tr key={idx} className="hover:bg-[#F8FAFC] transition-colors">
                   <td className="py-2.5 px-4 text-gray-600">{new Date(tx.voucher_date).toLocaleDateString('en-GB')}</td>
                   <td className="py-2.5 px-4 font-semibold text-gray-900">{tx.particulars}</td>
-                  <td className="py-2.5 px-4 font-mono font-medium text-[#4A0E17]">{tx.voucher_no}</td>
+                  <td className="py-2.5 px-4 font-mono font-medium text-[#0F172A]">{tx.voucher_no}</td>
                   <td className="py-2.5 px-4">
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold capitalize ${
                       tx.voucher_type === 'receipt' ? 'bg-emerald-100 text-emerald-800' :
@@ -257,36 +257,36 @@ export default function AccountsDashboard() {
 
       {/* 4. Bottom Action Bar (Matching image 3 top) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 text-center text-xs">
-        <Link to="/admin/receipts" className="p-3 bg-white border border-[#EBE5D8] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <Receipt className="w-4 h-4 text-[#8B1E2F]" />
+        <Link to="/admin/receipts" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
+          <Receipt className="w-4 h-4 text-[#BE123C]" />
           <span>Add Receipt</span>
         </Link>
-        <Link to="/admin/accounts/expenses" className="p-3 bg-white border border-[#EBE5D8] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <CreditCard className="w-4 h-4 text-[#8B1E2F]" />
+        <Link to="/admin/accounts/expenses" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
+          <CreditCard className="w-4 h-4 text-[#BE123C]" />
           <span>Add Payment</span>
         </Link>
-        <Link to="/admin/accounts/vouchers" className="p-3 bg-white border border-[#EBE5D8] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <FileText className="w-4 h-4 text-[#8B1E2F]" />
+        <Link to="/admin/accounts/vouchers" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
+          <FileText className="w-4 h-4 text-[#BE123C]" />
           <span>Journal Voucher</span>
         </Link>
-        <Link to="/admin/accounts/banks" className="p-3 bg-white border border-[#EBE5D8] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <Building2 className="w-4 h-4 text-[#8B1E2F]" />
+        <Link to="/admin/accounts/banks" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
+          <Building2 className="w-4 h-4 text-[#BE123C]" />
           <span>Bank Transfer</span>
         </Link>
-        <Link to="/admin/accounts/expenses" className="p-3 bg-white border border-[#EBE5D8] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <DollarSign className="w-4 h-4 text-[#8B1E2F]" />
+        <Link to="/admin/accounts/expenses" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
+          <DollarSign className="w-4 h-4 text-[#BE123C]" />
           <span>Expense Claim</span>
         </Link>
-        <Link to="/admin/accounts/ledger" className="p-3 bg-white border border-[#EBE5D8] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <FileText className="w-4 h-4 text-[#8B1E2F]" />
+        <Link to="/admin/accounts/ledger" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
+          <FileText className="w-4 h-4 text-[#BE123C]" />
           <span>Create Invoice</span>
         </Link>
-        <Link to="/admin/accounts/ledger" className="p-3 bg-white border border-[#EBE5D8] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <BookOpen className="w-4 h-4 text-[#8B1E2F]" />
+        <Link to="/admin/accounts/ledger" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
+          <BookOpen className="w-4 h-4 text-[#BE123C]" />
           <span>Chart of Accounts</span>
         </Link>
-        <Link to="/admin/reports" className="p-3 bg-white border border-[#EBE5D8] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <BarChart3 className="w-4 h-4 text-[#8B1E2F]" />
+        <Link to="/admin/reports" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
+          <BarChart3 className="w-4 h-4 text-[#BE123C]" />
           <span>Financial Reports</span>
         </Link>
       </div>

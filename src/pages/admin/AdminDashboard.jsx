@@ -53,7 +53,7 @@ export default function AdminDashboard() {
       {/* Top Banner Action Bar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 glass-panel p-5 rounded-2xl border border-white/80 shadow-md">
         <div>
-          <h1 className="font-serif-brand font-bold text-lg sm:text-xl text-[#4A0E17] flex items-center gap-2">
+          <h1 className="font-serif-brand font-bold text-lg sm:text-xl text-[#0F172A] flex items-center gap-2">
             <span>Monastery & Foundation Overview</span>
             <span className="glow-pill-emerald text-[11px] px-2.5 py-0.5 rounded-full font-sans font-bold">
               Live Database Connected
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
             className="glass-panel hover:bg-white text-gray-700 px-3.5 py-2 rounded-xl text-xs font-semibold border border-gray-200 flex items-center space-x-1.5 transition-all shadow-sm"
             title="Refresh Live Metrics"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#8B1E2F]' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#BE123C]' : ''}`} />
             <span>Refresh</span>
           </button>
           <Link
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="mt-3">
-            <div className="font-serif-brand font-bold text-xl text-[#4A0E17]">
+            <div className="font-serif-brand font-bold text-xl text-[#0F172A]">
               ₹ {Number(metrics.totalDonationsMonth || 0).toLocaleString()}
             </div>
             <p className="text-[10px] text-gray-500 mt-0.5">
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="mt-3">
-            <div className="font-serif-brand font-bold text-xl text-[#4A0E17]">
+            <div className="font-serif-brand font-bold text-xl text-[#0F172A]">
               {metrics.totalDonors || 0}
             </div>
             <p className="text-[10px] text-emerald-600 font-bold mt-0.5">Active Sangha Patrons</p>
@@ -127,7 +127,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="mt-3">
-            <div className="font-serif-brand font-bold text-xl text-[#4A0E17]">
+            <div className="font-serif-brand font-bold text-xl text-[#0F172A]">
               {metrics.totalStudentsMonks || 350}
             </div>
             <p className="text-[10px] text-gray-500 mt-0.5">Shedra & Novice Classes</p>
@@ -143,7 +143,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="mt-3">
-            <div className="font-serif-brand font-bold text-xl text-[#4A0E17]">
+            <div className="font-serif-brand font-bold text-xl text-[#0F172A]">
               ₹ {Number(metrics.totalReceiptsValue || 0).toLocaleString()}
             </div>
             <p className="text-[10px] text-gray-500 mt-0.5">
@@ -161,7 +161,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="mt-3">
-            <div className="font-serif-brand font-bold text-xl text-[#4A0E17]">
+            <div className="font-serif-brand font-bold text-xl text-[#0F172A]">
               ₹ {Number(metrics.totalCashBalance || 0).toLocaleString()}
             </div>
             <p className="text-[10px] text-gray-500 mt-0.5">BOB + HDFC + Cash Vault</p>
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
         <div className="lg:col-span-7 glass-panel p-6 rounded-2xl border border-white/80 shadow-md flex flex-col justify-between">
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
                 Monthly Financial Inflow Trends
               </h3>
               <p className="text-xs text-gray-500">Calculated from verified donations and money receipts</p>
@@ -205,7 +205,7 @@ export default function AdminDashboard() {
                 <defs>
                   <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#D4AF37" stopOpacity={0.9} />
-                    <stop offset="100%" stopColor="#7E1929" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="#E11D48" stopOpacity={0.9} />
                   </linearGradient>
                 </defs>
               </BarChart>
@@ -217,34 +217,34 @@ export default function AdminDashboard() {
         <div className="lg:col-span-5 space-y-6">
           {/* Quick Admin Actions */}
           <div className="glass-panel p-5 rounded-2xl border border-white/80 shadow-md">
-            <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] mb-3">
+            <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] mb-3">
               Quick Management Shortcuts
             </h3>
             <div className="grid grid-cols-2 gap-2 text-xs font-semibold">
               <Link
                 to="/admin/donations/new"
-                className="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-gray-200 text-[#4A0E17] flex items-center space-x-2 transition-all hover:border-[#D4AF37] shadow-sm"
+                className="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-gray-200 text-[#0F172A] flex items-center space-x-2 transition-all hover:border-[#D4AF37] shadow-sm"
               >
                 <PlusCircle className="w-4 h-4 text-[#D4AF37]" />
                 <span>Add Donation</span>
               </Link>
               <Link
                 to="/admin/receipts/new"
-                className="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-gray-200 text-[#4A0E17] flex items-center space-x-2 transition-all hover:border-[#D4AF37] shadow-sm"
+                className="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-gray-200 text-[#0F172A] flex items-center space-x-2 transition-all hover:border-[#D4AF37] shadow-sm"
               >
                 <Receipt className="w-4 h-4 text-[#D4AF37]" />
                 <span>Issue Receipt</span>
               </Link>
               <Link
                 to="/admin/cms/news"
-                className="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-gray-200 text-[#4A0E17] flex items-center space-x-2 transition-all hover:border-[#D4AF37] shadow-sm"
+                className="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-gray-200 text-[#0F172A] flex items-center space-x-2 transition-all hover:border-[#D4AF37] shadow-sm"
               >
                 <Calendar className="w-4 h-4 text-[#D4AF37]" />
                 <span>Publish Event</span>
               </Link>
               <Link
                 to="/admin/cms/gallery"
-                className="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-gray-200 text-[#4A0E17] flex items-center space-x-2 transition-all hover:border-[#D4AF37] shadow-sm"
+                className="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-gray-200 text-[#0F172A] flex items-center space-x-2 transition-all hover:border-[#D4AF37] shadow-sm"
               >
                 <FolderPlus className="w-4 h-4 text-[#D4AF37]" />
                 <span>Upload Media</span>
@@ -255,11 +255,11 @@ export default function AdminDashboard() {
           {/* Low Stock Alerts */}
           <div className="glass-panel p-5 rounded-2xl border border-white/80 shadow-md">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] flex items-center gap-1.5">
+              <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] flex items-center gap-1.5">
                 <AlertTriangle className="w-4 h-4 text-amber-600" />
                 <span>Inventory & Store Alerts</span>
               </h3>
-              <Link to="/admin/inventory" className="text-[11px] text-[#8B1E2F] font-bold hover:underline">
+              <Link to="/admin/inventory" className="text-[11px] text-[#BE123C] font-bold hover:underline">
                 View Store →
               </Link>
             </div>

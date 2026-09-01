@@ -65,7 +65,7 @@ export default function StudentsMonks() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
             Students & Monastic Sangha
           </h1>
           <p className="text-xs text-gray-500">
@@ -76,7 +76,7 @@ export default function StudentsMonks() {
         <button
           type="button"
           onClick={() => setShowAddModal(true)}
-          className="px-4 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
+          className="px-4 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Register New Monk</span>
@@ -93,7 +93,7 @@ export default function StudentsMonks() {
             onChange={(e) => setSearch(e.target.value)}
             className="text-xs p-2 rounded border border-gray-300 w-full"
           />
-          <button type="submit" className="px-3 py-2 bg-[#4A0E17] text-white text-xs font-bold rounded">
+          <button type="submit" className="px-3 py-2 bg-[#0F172A] text-white text-xs font-bold rounded">
             Search
           </button>
         </form>
@@ -103,7 +103,7 @@ export default function StudentsMonks() {
       <div className="monastery-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F8F6F0] text-gray-700 font-bold uppercase tracking-wider border-b border-[#EBE5D8]">
+            <thead className="bg-[#F1F5F9] text-gray-700 font-bold uppercase tracking-wider border-b border-[#E2E8F0]">
               <tr>
                 <th className="py-3 px-4">Sangha / Roll No</th>
                 <th className="py-3 px-4">Monastic Ordination Name</th>
@@ -116,12 +116,12 @@ export default function StudentsMonks() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {students.map((s) => (
-                <tr key={s.id} className="hover:bg-[#FDFBF7] transition-colors">
-                  <td className="py-3 px-4 font-mono font-bold text-[#4A0E17]">{s.roll_number}</td>
+                <tr key={s.id} className="hover:bg-[#F8FAFC] transition-colors">
+                  <td className="py-3 px-4 font-mono font-bold text-[#0F172A]">{s.roll_number}</td>
                   <td className="py-3 px-4 font-bold text-gray-900">{s.monastic_name || 'N/A'}</td>
                   <td className="py-3 px-4 text-gray-600">{s.secular_name}</td>
                   <td className="py-3 px-4 capitalize">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FDF6E2] text-[#4A0E17] border border-[#D4AF37]">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FEF3C7] text-[#0F172A] border border-[#D4AF37]">
                       {s.monk_status?.replace('_', ' ')}
                     </span>
                   </td>
@@ -142,7 +142,7 @@ export default function StudentsMonks() {
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-md w-full space-y-4">
-            <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+            <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
               Register New Monk Scholar
             </h3>
 
@@ -228,7 +228,7 @@ export default function StudentsMonks() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 bg-[#4A0E17] text-white rounded font-bold hover:bg-[#5A121E]"
+                  className="flex-1 py-2 bg-[#0F172A] text-white rounded font-bold hover:bg-[#1E293B]"
                 >
                   Register Monk
                 </button>

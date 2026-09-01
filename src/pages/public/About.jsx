@@ -12,7 +12,7 @@ export default function About() {
           <span>• Sacred History</span>
         </div>
 
-        <h1 className="font-serif-brand font-extrabold text-3xl sm:text-5xl text-[#4A0E17]">
+        <h1 className="font-serif-brand font-extrabold text-3xl sm:text-5xl text-[#0F172A]">
           About Drodul Phendey Ling Foundation
         </h1>
 
@@ -27,7 +27,7 @@ export default function About() {
           <div className="w-13 h-13 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-700 flex items-center justify-center p-3 shadow-sm">
             <Award className="w-6 h-6" />
           </div>
-          <h3 className="font-serif-brand font-bold text-lg text-[#4A0E17]">Sacred Lineage & Vision</h3>
+          <h3 className="font-serif-brand font-bold text-lg text-[#0F172A]">Sacred Lineage & Vision</h3>
           <p className="text-xs text-gray-600 leading-relaxed">
             Rooted in authentic Vajrayana and Mahayana traditions, our mission is to create a living sanctuary where monks and lay devotees can study the profound Dharma and realize genuine inner peace.
           </p>
@@ -37,7 +37,7 @@ export default function About() {
           <div className="w-13 h-13 rounded-2xl bg-blue-500/15 border border-blue-500/30 text-blue-700 flex items-center justify-center p-3 shadow-sm">
             <BookOpen className="w-6 h-6" />
           </div>
-          <h3 className="font-serif-brand font-bold text-lg text-[#4A0E17]">Shedra Monastic University</h3>
+          <h3 className="font-serif-brand font-bold text-lg text-[#0F172A]">Shedra Monastic University</h3>
           <p className="text-xs text-gray-600 leading-relaxed">
             Providing full residential scholarships, classical Tibetan linguistics, Abhidharma, Madhyamaka, and epistemology curricula for 350+ resident monks and international scholars.
           </p>
@@ -47,7 +47,7 @@ export default function About() {
           <div className="w-13 h-13 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-700 flex items-center justify-center p-3 shadow-sm">
             <Landmark className="w-6 h-6" />
           </div>
-          <h3 className="font-serif-brand font-bold text-lg text-[#4A0E17]">World Peace Stupa</h3>
+          <h3 className="font-serif-brand font-bold text-lg text-[#0F172A]">World Peace Stupa</h3>
           <p className="text-xs text-gray-600 leading-relaxed">
             The monumental 108-foot Great Druk Wangyel Peace Stupa serves as a beacon of harmony, pacifying conflicts, environmental distress, and inspiring peace across the globe.
           </p>
@@ -60,7 +60,7 @@ export default function About() {
           <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold">
             Monastic Leadership
           </span>
-          <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#4A0E17]">
+          <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#0F172A]">
             Venerable Spiritual Guidance
           </h2>
         </div>
@@ -77,7 +77,7 @@ export default function About() {
 
           <div className="space-y-4">
             <div>
-              <h3 className="font-serif-brand font-bold text-2xl text-[#4A0E17]">Khenpo Tashi Dorji</h3>
+              <h3 className="font-serif-brand font-bold text-2xl text-[#0F172A]">Khenpo Tashi Dorji</h3>
               <p className="text-xs font-bold text-amber-600 uppercase tracking-widest mt-0.5">Abbot & Executive Principal</p>
             </div>
 

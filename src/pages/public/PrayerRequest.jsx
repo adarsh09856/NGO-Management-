@@ -58,7 +58,7 @@ export default function PrayerRequest() {
           <Flame className="w-4 h-4 text-amber-500" />
           <span>Dedicated Sangha Pujas & Butter Lamps</span>
         </div>
-        <h1 className="font-serif-brand font-extrabold text-2xl sm:text-4xl text-[#4A0E17]">
+        <h1 className="font-serif-brand font-extrabold text-2xl sm:text-4xl text-[#0F172A]">
           Sacred Prayer Request & Offerings
         </h1>
         <p className="text-xs sm:text-sm text-gray-600 max-w-xl mx-auto font-light leading-relaxed">
@@ -71,7 +71,7 @@ export default function PrayerRequest() {
           <div className="w-16 h-16 bg-emerald-500/15 border-2 border-emerald-500 rounded-full flex items-center justify-center mx-auto text-emerald-600">
             <CheckCircle2 className="w-10 h-10" />
           </div>
-          <h3 className="font-serif-brand font-bold text-xl text-[#4A0E17]">Tashi Delek! Prayer Received</h3>
+          <h3 className="font-serif-brand font-bold text-xl text-[#0F172A]">Tashi Delek! Prayer Received</h3>
           <p className="text-xs text-gray-600 leading-relaxed">
             Your prayer intention for <strong>{devoteeName}</strong> and <strong>{butterLampsCount} butter lamps</strong> has been placed before the sacred shrine. May boundless merit and peace be yours.
           </p>
@@ -87,7 +87,7 @@ export default function PrayerRequest() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Devotee Info */}
             <div>
-              <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] uppercase tracking-wider mb-3 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-amber-500" />
                 <span>1. Devotee Information</span>
               </h3>
@@ -137,7 +137,7 @@ export default function PrayerRequest() {
 
             {/* Prayer Details */}
             <div className="border-t border-gray-200/60 pt-6">
-              <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] uppercase tracking-wider mb-3 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-rose-500" />
                 <span>2. Prayer Category & Dedication</span>
               </h3>
@@ -184,7 +184,7 @@ export default function PrayerRequest() {
 
             {/* Butter Lamps & Offering */}
             <div className="border-t border-gray-200/60 pt-6">
-              <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17] uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] uppercase tracking-wider mb-3 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-amber-500" />
                 <span>3. Butter Lamp Illumination</span>
               </h3>
@@ -205,7 +205,7 @@ export default function PrayerRequest() {
                     }}
                     className={`p-3 rounded-2xl text-center border transition-all ${
                       butterLampsCount === tier.count
-                        ? 'bg-[#4A0E17] text-white border-[#D4AF37] shadow-lg scale-105'
+                        ? 'bg-[#0F172A] text-white border-[#D4AF37] shadow-lg scale-105'
                         : 'bg-white/70 text-gray-800 border-gray-200 hover:border-[#D4AF37]'
                     }`}
                   >

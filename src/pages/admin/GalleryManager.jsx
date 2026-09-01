@@ -164,7 +164,7 @@ export default function GalleryManager() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
             Gallery Manager (Photos & Videos)
           </h1>
           <p className="text-xs text-gray-500">
@@ -175,7 +175,7 @@ export default function GalleryManager() {
         <button
           type="button"
           onClick={handleOpenCreate}
-          className="px-4 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
+          className="px-4 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
         >
           <Plus className="w-4 h-4" />
           <span>Add Photo / Video</span>
@@ -183,7 +183,7 @@ export default function GalleryManager() {
       </div>
 
       {/* Search & Stats */}
-      <div className="bg-white p-4 rounded-lg border border-[#EBE5D8] flex items-center justify-between gap-4 shadow-sm">
+      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] flex items-center justify-between gap-4 shadow-sm">
         <div className="relative w-full max-w-sm">
           <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
           <input
@@ -191,7 +191,7 @@ export default function GalleryManager() {
             placeholder="Search gallery by title, category..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#7E1929]"
+            className="w-full pl-9 pr-3 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#E11D48]"
           />
         </div>
         <span className="text-xs text-gray-500 font-medium">
@@ -202,7 +202,7 @@ export default function GalleryManager() {
       {/* Grid */}
       {loading ? (
         <div className="text-center py-20 bg-white rounded-xl border border-gray-200">
-          <div className="w-8 h-8 border-2 border-[#7E1929] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+          <div className="w-8 h-8 border-2 border-[#E11D48] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
           <p className="text-xs text-gray-500">Loading gallery...</p>
         </div>
       ) : filtered.length === 0 ? (
@@ -232,8 +232,8 @@ export default function GalleryManager() {
 
                 <div className="p-3.5 space-y-2 flex-1 flex flex-col justify-between">
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#8B1E2F]">{item.category}</span>
-                    <h3 className="font-serif-brand font-bold text-xs text-[#4A0E17] line-clamp-1">{item.title}</h3>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#BE123C]">{item.category}</span>
+                    <h3 className="font-serif-brand font-bold text-xs text-[#0F172A] line-clamp-1">{item.title}</h3>
                     {item.caption && <p className="text-[10px] text-gray-500 line-clamp-1 mt-0.5">{item.caption}</p>}
                   </div>
 
@@ -267,8 +267,8 @@ export default function GalleryManager() {
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-[#D4AF37]/40 animate-fadeIn">
-            <div className="p-5 bg-[#FAF5F0] border-b border-[#EBE5D8] flex items-center justify-between">
-              <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+            <div className="p-5 bg-[#FAF5F0] border-b border-[#E2E8F0] flex items-center justify-between">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
                 {editingItem ? 'Edit Gallery Media' : 'Add Gallery Media'}
               </h3>
               <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600">
@@ -285,7 +285,7 @@ export default function GalleryManager() {
                   placeholder="e.g. Great Druk Wangyel Peace Stupa in Morning Light"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                 />
               </div>
 
@@ -294,7 +294,7 @@ export default function GalleryManager() {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                 >
                   <option value="Stupa Construction">Stupa Construction</option>
                   <option value="Puja & Ceremonies">Puja & Ceremonies</option>
@@ -318,7 +318,7 @@ export default function GalleryManager() {
                       type="button"
                       onClick={() => setMediaType(t.id)}
                       className={`py-1.5 rounded text-xs font-bold border transition-all ${
-                        mediaType === t.id ? 'bg-[#4A0E17] text-white border-[#4A0E17]' : 'bg-gray-50 text-gray-700'
+                        mediaType === t.id ? 'bg-[#0F172A] text-white border-[#0F172A]' : 'bg-gray-50 text-gray-700'
                       }`}
                     >
                       {t.label}
@@ -392,7 +392,7 @@ export default function GalleryManager() {
                 <button
                   type="submit"
                   disabled={saving || uploading}
-                  className="px-5 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
+                  className="px-5 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>{saving ? 'Saving...' : editingItem ? 'Update Media' : 'Add Media'}</span>

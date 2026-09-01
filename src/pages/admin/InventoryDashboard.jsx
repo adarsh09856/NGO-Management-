@@ -74,7 +74,7 @@ export default function InventoryDashboard() {
     <div className="space-y-6">
       {/* Top Bar (Matching image 3 bottom) */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+        <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
           Inventory & Store
         </h1>
         <div className="flex items-center space-x-3">
@@ -83,13 +83,13 @@ export default function InventoryDashboard() {
             onClick={() => success('Stock Transfer workflow initiated')}
             className="px-3.5 py-2 bg-white border border-gray-300 rounded text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center gap-1.5 shadow-sm"
           >
-            <ArrowLeftRight className="w-3.5 h-3.5 text-[#7E1929]" />
+            <ArrowLeftRight className="w-3.5 h-3.5 text-[#E11D48]" />
             <span>Stock Transfer</span>
           </button>
           <button
             type="button"
             onClick={() => setShowAddModal(true)}
-            className="px-4 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
+            className="px-4 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add New Item</span>
@@ -140,7 +140,7 @@ export default function InventoryDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Stock Status Overview */}
         <div className="monastery-card p-5 space-y-3">
-          <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17]">Stock Status Overview</h3>
+          <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">Stock Status Overview</h3>
           <div className="h-40 w-full flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -164,8 +164,8 @@ export default function InventoryDashboard() {
         {/* Top Categories (Matching image 3 bottom) */}
         <div className="monastery-card p-5 space-y-3">
           <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-            <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17]">Top Categories</h3>
-            <span className="text-[11px] font-bold text-[#8B1E2F]">View All</span>
+            <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">Top Categories</h3>
+            <span className="text-[11px] font-bold text-[#BE123C]">View All</span>
           </div>
           <div className="space-y-2.5 text-xs">
             {[
@@ -186,8 +186,8 @@ export default function InventoryDashboard() {
         {/* Recent Stock In (Matching image 3 bottom) */}
         <div className="monastery-card p-5 space-y-3">
           <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-            <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17]">Recent Stock In</h3>
-            <span className="text-[11px] font-bold text-[#8B1E2F]">View All Stock In</span>
+            <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">Recent Stock In</h3>
+            <span className="text-[11px] font-bold text-[#BE123C]">View All Stock In</span>
           </div>
           <div className="space-y-2.5 text-xs">
             <div className="p-2 bg-gray-50 rounded flex justify-between items-center">
@@ -218,12 +218,12 @@ export default function InventoryDashboard() {
       {/* 3. Items Table with Tabs (Matching image 3 bottom) */}
       <div className="monastery-card overflow-hidden">
         {/* Table Tabs */}
-        <div className="p-4 border-b border-[#EBE5D8] flex flex-wrap justify-between items-center gap-3">
+        <div className="p-4 border-b border-[#E2E8F0] flex flex-wrap justify-between items-center gap-3">
           <div className="flex space-x-2">
             <button
               onClick={() => setActiveTab('all')}
               className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
-                activeTab === 'all' ? 'bg-[#7E1929] text-white shadow' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                activeTab === 'all' ? 'bg-[#E11D48] text-white shadow' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               All Items
@@ -231,7 +231,7 @@ export default function InventoryDashboard() {
             <button
               onClick={() => setActiveTab('low_stock')}
               className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
-                activeTab === 'low_stock' ? 'bg-[#7E1929] text-white shadow' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                activeTab === 'low_stock' ? 'bg-[#E11D48] text-white shadow' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               Low Stock (23)
@@ -239,7 +239,7 @@ export default function InventoryDashboard() {
             <button
               onClick={() => setActiveTab('out_of_stock')}
               className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
-                activeTab === 'out_of_stock' ? 'bg-[#7E1929] text-white shadow' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                activeTab === 'out_of_stock' ? 'bg-[#E11D48] text-white shadow' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               Out of Stock (7)
@@ -250,7 +250,7 @@ export default function InventoryDashboard() {
         {/* Table Content */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F8F6F0] text-gray-700 font-bold uppercase tracking-wider border-b border-[#EBE5D8]">
+            <thead className="bg-[#F1F5F9] text-gray-700 font-bold uppercase tracking-wider border-b border-[#E2E8F0]">
               <tr>
                 <th className="py-3 px-4">Item Code</th>
                 <th className="py-3 px-4">Item Name</th>
@@ -265,8 +265,8 @@ export default function InventoryDashboard() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {items.map((item) => (
-                <tr key={item.id} className="hover:bg-[#FDFBF7] transition-colors">
-                  <td className="py-3 px-4 font-mono font-bold text-[#4A0E17]">{item.item_code}</td>
+                <tr key={item.id} className="hover:bg-[#F8FAFC] transition-colors">
+                  <td className="py-3 px-4 font-mono font-bold text-[#0F172A]">{item.item_code}</td>
                   <td className="py-3 px-4 font-bold text-gray-900">{item.item_name}</td>
                   <td className="py-3 px-4 text-gray-600">{item.category_name}</td>
                   <td className="py-3 px-4 text-gray-500">{item.unit_symbol || item.unit_name}</td>
@@ -321,7 +321,7 @@ export default function InventoryDashboard() {
       {showStockInModal && selectedItemForStock && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-md w-full space-y-4">
-            <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+            <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
               Stock In: {selectedItemForStock.item_name}
             </h3>
             <p className="text-xs text-gray-500">Current Stock: {selectedItemForStock.current_stock} {selectedItemForStock.unit_symbol}</p>
@@ -358,7 +358,7 @@ export default function InventoryDashboard() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 bg-[#4A0E17] text-white rounded font-bold hover:bg-[#5A121E]"
+                  className="flex-1 py-2 bg-[#0F172A] text-white rounded font-bold hover:bg-[#1E293B]"
                 >
                   Confirm Stock In
                 </button>

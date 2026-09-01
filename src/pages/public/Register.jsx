@@ -39,13 +39,13 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#FDFBF7]">
+    <div className="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#F8FAFC]">
       <div className="max-w-md w-full space-y-6">
         <div className="text-center space-y-2">
-          <div className="w-14 h-14 rounded-full bg-[#4A0E17] border-2 border-[#D4AF37] flex items-center justify-center mx-auto shadow-md">
+          <div className="w-14 h-14 rounded-full bg-[#0F172A] border-2 border-[#D4AF37] flex items-center justify-center mx-auto shadow-md">
             <span className="text-[#D4AF37] text-2xl font-serif font-bold">☸</span>
           </div>
-          <h2 className="font-serif-brand font-extrabold text-2xl text-[#4A0E17] tracking-wider uppercase">
+          <h2 className="font-serif-brand font-extrabold text-2xl text-[#0F172A] tracking-wider uppercase">
             Create Portal Account
           </h2>
           <p className="text-xs text-gray-500">
@@ -53,14 +53,14 @@ export default function Register() {
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-xl border border-[#EBE5D8] overflow-hidden">
+        <div className="bg-white rounded-xl shadow-xl border border-[#E2E8F0] overflow-hidden">
           {/* Account Type Selector */}
-          <div className="grid grid-cols-2 bg-[#F8F6F0] p-1.5 border-b border-[#EBE5D8] text-xs font-semibold">
+          <div className="grid grid-cols-2 bg-[#F1F5F9] p-1.5 border-b border-[#E2E8F0] text-xs font-semibold">
             <button
               type="button"
               onClick={() => setAccountType('donor')}
               className={`py-2 px-1 rounded-md flex items-center justify-center gap-1.5 transition-all ${
-                accountType === 'donor' ? 'bg-[#4A0E17] text-white shadow' : 'text-gray-600'
+                accountType === 'donor' ? 'bg-[#0F172A] text-white shadow' : 'text-gray-600'
               }`}
             >
               <Heart className="w-3.5 h-3.5 text-[#D4AF37]" />
@@ -70,7 +70,7 @@ export default function Register() {
               type="button"
               onClick={() => setAccountType('student')}
               className={`py-2 px-1 rounded-md flex items-center justify-center gap-1.5 transition-all ${
-                accountType === 'student' ? 'bg-[#4A0E17] text-white shadow' : 'text-gray-600'
+                accountType === 'student' ? 'bg-[#0F172A] text-white shadow' : 'text-gray-600'
               }`}
             >
               <GraduationCap className="w-3.5 h-3.5" />
@@ -142,7 +142,7 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#4A0E17] hover:bg-[#5A121E] text-white font-bold py-3 rounded-md text-xs uppercase tracking-wider shadow mt-4 flex items-center justify-center gap-2"
+              className="w-full bg-[#0F172A] hover:bg-[#1E293B] text-white font-bold py-3 rounded-md text-xs uppercase tracking-wider shadow mt-4 flex items-center justify-center gap-2"
             >
               <span>{loading ? 'Creating Account...' : 'Register Account'}</span>
               <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
@@ -151,7 +151,7 @@ export default function Register() {
 
           <div className="px-6 py-3 bg-gray-50 border-t border-gray-100 text-center text-xs text-gray-600">
             Already have an account?{' '}
-            <Link to="/login" className="font-bold text-[#8B1E2F] hover:underline">
+            <Link to="/login" className="font-bold text-[#BE123C] hover:underline">
               Log In
             </Link>
           </div>

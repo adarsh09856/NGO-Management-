@@ -95,11 +95,11 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-white w-full max-w-xl rounded-xl shadow-2xl border border-[#EBE5D8] overflow-hidden">
+      <div className="bg-white w-full max-w-xl rounded-xl shadow-2xl border border-[#E2E8F0] overflow-hidden">
         {/* Modal Header */}
-        <div className="bg-[#4A0E17] text-white p-5 flex items-center justify-between border-b-2 border-[#D4AF37]">
+        <div className="bg-[#0F172A] text-white p-5 flex items-center justify-between border-b-2 border-[#D4AF37]">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-full bg-[#5A121E] border border-[#D4AF37] flex items-center justify-center">
+            <div className="w-9 h-9 rounded-full bg-[#1E293B] border border-[#D4AF37] flex items-center justify-center">
               <Heart className="w-5 h-5 text-[#D4AF37] fill-[#D4AF37]" />
             </div>
             <div>
@@ -120,12 +120,12 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
         {step === 'form' && (
           <form onSubmit={handleCheckout} className="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
             {/* Frequency Tabs */}
-            <div className="grid grid-cols-2 gap-2 bg-[#F8F6F0] p-1.5 rounded-lg border border-[#EBE5D8]">
+            <div className="grid grid-cols-2 gap-2 bg-[#F1F5F9] p-1.5 rounded-lg border border-[#E2E8F0]">
               <button
                 type="button"
                 onClick={() => setFrequency('one_time')}
                 className={`py-2 text-xs font-bold rounded-md transition-all ${
-                  frequency === 'one_time' ? 'bg-[#4A0E17] text-white shadow' : 'text-gray-700 hover:text-black'
+                  frequency === 'one_time' ? 'bg-[#0F172A] text-white shadow' : 'text-gray-700 hover:text-black'
                 }`}
               >
                 One-Time Gift
@@ -134,7 +134,7 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
                 type="button"
                 onClick={() => setFrequency('recurring')}
                 className={`py-2 text-xs font-bold rounded-md transition-all ${
-                  frequency === 'recurring' ? 'bg-[#4A0E17] text-white shadow' : 'text-gray-700 hover:text-black'
+                  frequency === 'recurring' ? 'bg-[#0F172A] text-white shadow' : 'text-gray-700 hover:text-black'
                 }`}
               >
                 Monthly Giving (Pledge)
@@ -149,7 +149,7 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
               <select
                 value={donationFor}
                 onChange={(e) => setDonationFor(e.target.value)}
-                className="w-full text-xs font-semibold p-2.5 rounded-md border border-gray-300 bg-white focus:ring-2 focus:ring-[#D4AF37] focus:border-[#4A0E17]"
+                className="w-full text-xs font-semibold p-2.5 rounded-md border border-gray-300 bg-white focus:ring-2 focus:ring-[#D4AF37] focus:border-[#0F172A]"
               >
                 <option value="Peace Stupa Construction">Great Druk Wangyel Peace Stupa Construction</option>
                 <option value="Shedra Monastic University">Shedra Monastic University & Library</option>
@@ -165,9 +165,9 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
                   Select Amount ({currency})
                 </label>
                 <div className="flex items-center space-x-2 text-xs">
-                  <span className={currency === 'INR' ? 'font-bold text-[#4A0E17]' : 'text-gray-400'}>INR (₹)</span>
+                  <span className={currency === 'INR' ? 'font-bold text-[#0F172A]' : 'text-gray-400'}>INR (₹)</span>
                   <span className="text-gray-300">|</span>
-                  <span className={currency === 'USD' ? 'font-bold text-[#4A0E17]' : 'text-gray-400'}>USD ($)</span>
+                  <span className={currency === 'USD' ? 'font-bold text-[#0F172A]' : 'text-gray-400'}>USD ($)</span>
                 </div>
               </div>
 
@@ -179,7 +179,7 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
                     onClick={() => handlePresetClick(amt)}
                     className={`py-2.5 text-xs font-bold rounded-md border transition-all ${
                       selectedPreset === amt && !customAmount
-                        ? 'bg-[#FDF6E2] border-[#D4AF37] text-[#4A0E17] ring-2 ring-[#D4AF37]'
+                        ? 'bg-[#FEF3C7] border-[#D4AF37] text-[#0F172A] ring-2 ring-[#D4AF37]'
                         : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
                     }`}
                   >
@@ -196,13 +196,13 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
                   setCustomAmount(e.target.value);
                   setSelectedPreset(null);
                 }}
-                className="w-full text-xs p-2.5 rounded-md border border-gray-300 focus:ring-2 focus:ring-[#D4AF37] focus:border-[#4A0E17]"
+                className="w-full text-xs p-2.5 rounded-md border border-gray-300 focus:ring-2 focus:ring-[#D4AF37] focus:border-[#0F172A]"
               />
             </div>
 
             {/* Donor Info Grid */}
             <div className="space-y-3 pt-2 border-t border-gray-200">
-              <h4 className="text-xs font-bold text-[#4A0E17] uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-[#0F172A] uppercase tracking-wider">
                 Donor Information (for 80G Tax Receipt)
               </h4>
 
@@ -271,7 +271,7 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
                   id="modal80g"
                   checked={is80g}
                   onChange={(e) => setIs80g(e.target.checked)}
-                  className="rounded border-gray-300 text-[#4A0E17] focus:ring-[#D4AF37]"
+                  className="rounded border-gray-300 text-[#0F172A] focus:ring-[#D4AF37]"
                 />
                 <label htmlFor="modal80g" className="text-xs text-gray-600">
                   Email official 80G tax receipt PDF immediately after payment
@@ -283,7 +283,7 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
             <div className="pt-3">
               <button
                 type="submit"
-                className="w-full bg-[#7E1929] hover:bg-[#5A121E] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2 uppercase tracking-wider text-xs"
+                className="w-full bg-[#E11D48] hover:bg-[#1E293B] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2 uppercase tracking-wider text-xs"
               >
                 <Lock className="w-4 h-4 text-[#D4AF37]" />
                 <span>Complete Offering · {currency === 'INR' ? '₹' : '$'}{currentAmount ? currentAmount.toLocaleString() : '0'}</span>
@@ -300,7 +300,7 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
         {step === 'processing' && (
           <div className="p-12 text-center space-y-4">
             <div className="w-14 h-14 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <h4 className="font-serif-brand font-bold text-lg text-[#4A0E17]">
+            <h4 className="font-serif-brand font-bold text-lg text-[#0F172A]">
               Communicating with Payment Gateway...
             </h4>
             <p className="text-xs text-gray-500 max-w-sm mx-auto">
@@ -317,7 +317,7 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
             </div>
 
             <div>
-              <h4 className="font-serif-brand font-bold text-xl text-[#4A0E17]">
+              <h4 className="font-serif-brand font-bold text-xl text-[#0F172A]">
                 Tashi Delek! Donation Received
               </h4>
               <p className="text-xs text-gray-600 mt-1">
@@ -329,7 +329,7 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
             <div className="bg-[#FAF5F0] border border-[#D4AF37] rounded-lg p-4 max-w-sm mx-auto text-left text-xs space-y-2">
               <div className="flex justify-between">
                 <span className="text-gray-500 font-medium">Receipt No:</span>
-                <span className="font-bold text-[#4A0E17] font-mono">{completedDonation?.receiptNumber}</span>
+                <span className="font-bold text-[#0F172A] font-mono">{completedDonation?.receiptNumber}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500 font-medium">Amount Received:</span>
@@ -349,7 +349,7 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
               <button
                 onClick={handleDownloadPdf}
-                className="bg-[#4A0E17] hover:bg-[#5A121E] text-white px-5 py-2.5 rounded-md font-semibold text-xs flex items-center justify-center gap-2 shadow"
+                className="bg-[#0F172A] hover:bg-[#1E293B] text-white px-5 py-2.5 rounded-md font-semibold text-xs flex items-center justify-center gap-2 shadow"
               >
                 <Download className="w-4 h-4 text-[#D4AF37]" />
                 <span>Download Official PDF Receipt</span>

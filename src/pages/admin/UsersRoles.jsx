@@ -76,7 +76,7 @@ export default function UsersRoles() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
             Users & Roles Management (RBAC)
           </h1>
           <p className="text-xs text-gray-500">
@@ -87,7 +87,7 @@ export default function UsersRoles() {
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="px-4 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
+          className="px-4 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
         >
           <Plus className="w-4 h-4" />
           <span>Create Staff / Admin Login</span>
@@ -96,15 +96,15 @@ export default function UsersRoles() {
 
       {/* Users Table */}
       <div className="monastery-card overflow-hidden">
-        <div className="p-4 border-b border-[#EBE5D8] flex justify-between items-center bg-[#FAF9F5]">
-          <h3 className="font-serif-brand font-bold text-sm text-[#4A0E17]">
+        <div className="p-4 border-b border-[#E2E8F0] flex justify-between items-center bg-[#FAF9F5]">
+          <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">
             Registered System Accounts ({users.length})
           </h3>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-[#FAF5F0] text-gray-700 font-bold uppercase tracking-wider border-b border-[#EBE5D8]">
+            <thead className="bg-[#FAF5F0] text-gray-700 font-bold uppercase tracking-wider border-b border-[#E2E8F0]">
               <tr>
                 <th className="py-3 px-4">User</th>
                 <th className="py-3 px-4">Email</th>
@@ -125,8 +125,8 @@ export default function UsersRoles() {
                 const isAdminRole = ['super_admin', 'accountant', 'hr_manager', 'staff'].includes(u.role_slug);
                 return (
                   <tr key={u.id} className="hover:bg-gray-50">
-                    <td className="py-3 px-4 font-semibold text-[#4A0E17] flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-[#4A0E17] text-[#D4AF37] flex items-center justify-center font-bold text-xs shadow-sm">
+                    <td className="py-3 px-4 font-semibold text-[#0F172A] flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-[#0F172A] text-[#D4AF37] flex items-center justify-center font-bold text-xs shadow-sm">
                         {u.full_name?.charAt(0)}
                       </div>
                       <span>{u.full_name}</span>
@@ -168,10 +168,10 @@ export default function UsersRoles() {
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-[#D4AF37]/40 animate-fadeIn overflow-hidden">
-            <div className="p-5 bg-[#FAF5F0] border-b border-[#EBE5D8] flex items-center justify-between">
+            <div className="p-5 bg-[#FAF5F0] border-b border-[#E2E8F0] flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-5 h-5 text-[#4A0E17]" />
-                <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+                <ShieldCheck className="w-5 h-5 text-[#0F172A]" />
+                <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
                   Create Staff / Admin Account
                 </h3>
               </div>
@@ -191,7 +191,7 @@ export default function UsersRoles() {
                     placeholder="e.g. Sonam Tobgay"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                   />
                 </div>
               </div>
@@ -206,7 +206,7 @@ export default function UsersRoles() {
                     placeholder="accountant@drodulphendeyling.org"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                   />
                 </div>
               </div>
@@ -216,7 +216,7 @@ export default function UsersRoles() {
                 <select
                   value={roleId}
                   onChange={(e) => setRoleId(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none font-medium"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none font-medium"
                 >
                   {roles.filter(r => ['super_admin', 'accountant', 'hr_manager', 'staff'].includes(r.slug)).map((r) => (
                     <option key={r.id} value={r.id}>
@@ -239,7 +239,7 @@ export default function UsersRoles() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                   />
                 </div>
               </div>
@@ -253,7 +253,7 @@ export default function UsersRoles() {
                     placeholder="+975 17 11 2233"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#7E1929] focus:outline-none"
+                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#E11D48] focus:outline-none"
                   />
                 </div>
               </div>
@@ -269,7 +269,7 @@ export default function UsersRoles() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
+                  className="px-5 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>{saving ? 'Creating Account...' : 'Create Account'}</span>

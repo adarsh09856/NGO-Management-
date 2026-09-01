@@ -29,11 +29,11 @@ export default function NewsEvents() {
   const categories = ['All', 'News', 'Teaching', 'Ganachakra', 'Puja'];
 
   return (
-    <div className="min-h-[80vh] py-12 px-4 sm:px-8 bg-[#FDFBF7]">
+    <div className="min-h-[80vh] py-12 px-4 sm:px-8 bg-[#F8FAFC]">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Banner */}
         <div className="text-center space-y-2 max-w-2xl mx-auto">
-          <h1 className="font-serif-brand font-extrabold text-3xl sm:text-4xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-extrabold text-3xl sm:text-4xl text-[#0F172A]">
             News, Teachings & Auspicious Events
           </h1>
           <p className="text-xs sm:text-sm text-gray-600">
@@ -49,8 +49,8 @@ export default function NewsEvents() {
               onClick={() => setCategory(cat)}
               className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
                 category === cat
-                  ? 'bg-[#4A0E17] text-white shadow'
-                  : 'bg-white text-gray-700 border border-[#EBE5D8] hover:border-[#D4AF37]'
+                  ? 'bg-[#0F172A] text-white shadow'
+                  : 'bg-white text-gray-700 border border-[#E2E8F0] hover:border-[#D4AF37]'
               }`}
             >
               {cat}
@@ -78,7 +78,7 @@ export default function NewsEvents() {
                       onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800'; }}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute top-3 right-3 bg-[#4A0E17] text-[#D4AF37] text-[10px] font-bold px-2.5 py-1 rounded shadow">
+                    <div className="absolute top-3 right-3 bg-[#0F172A] text-[#D4AF37] text-[10px] font-bold px-2.5 py-1 rounded shadow">
                       {item.category}
                     </div>
                   </div>
@@ -99,7 +99,7 @@ export default function NewsEvents() {
                       )}
                     </div>
 
-                    <h3 className="font-serif-brand font-bold text-base text-[#4A0E17] group-hover:text-[#7E1929] transition-colors leading-snug">
+                    <h3 className="font-serif-brand font-bold text-base text-[#0F172A] group-hover:text-[#E11D48] transition-colors leading-snug">
                       {item.title}
                     </h3>
 
@@ -119,7 +119,7 @@ export default function NewsEvents() {
                 <div className="p-5 pt-0">
                   <Link
                     to={`/news-events/${item.slug}`}
-                    className="inline-flex items-center text-xs font-bold text-[#8B1E2F] hover:text-[#4A0E17] gap-1 group-hover:translate-x-1 transition-transform"
+                    className="inline-flex items-center text-xs font-bold text-[#BE123C] hover:text-[#0F172A] gap-1 group-hover:translate-x-1 transition-transform"
                   >
                     <span>Read Full Details</span>
                     <ArrowRight className="w-3.5 h-3.5" />

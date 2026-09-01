@@ -46,7 +46,7 @@ export default function Certificates() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
             Monastic Certificates Directory
           </h1>
           <p className="text-xs text-gray-500">
@@ -65,7 +65,7 @@ export default function Certificates() {
             onChange={(e) => setSearch(e.target.value)}
             className="text-xs p-2 rounded border border-gray-300 w-full"
           />
-          <button type="submit" className="px-3 py-2 bg-[#4A0E17] text-white text-xs font-bold rounded">
+          <button type="submit" className="px-3 py-2 bg-[#0F172A] text-white text-xs font-bold rounded">
             Search
           </button>
         </form>
@@ -75,7 +75,7 @@ export default function Certificates() {
       <div className="monastery-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F8F6F0] text-gray-700 font-bold uppercase tracking-wider border-b border-[#EBE5D8]">
+            <thead className="bg-[#F1F5F9] text-gray-700 font-bold uppercase tracking-wider border-b border-[#E2E8F0]">
               <tr>
                 <th className="py-3 px-4">Certificate No</th>
                 <th className="py-3 px-4">Scholar Name</th>
@@ -88,8 +88,8 @@ export default function Certificates() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {certificates.map((c) => (
-                <tr key={c.id} className="hover:bg-[#FDFBF7] transition-colors">
-                  <td className="py-3 px-4 font-mono font-bold text-[#4A0E17]">{c.certificate_number}</td>
+                <tr key={c.id} className="hover:bg-[#F8FAFC] transition-colors">
+                  <td className="py-3 px-4 font-mono font-bold text-[#0F172A]">{c.certificate_number}</td>
                   <td className="py-3 px-4 font-bold text-gray-900">{c.monastic_name || c.secular_name}</td>
                   <td className="py-3 px-4 font-semibold text-gray-800">{c.course_title}</td>
                   <td className="py-3 px-4 text-gray-600">{new Date(c.issue_date).toLocaleDateString('en-GB')}</td>
@@ -107,9 +107,9 @@ export default function Certificates() {
                         href={`/api/certificates/${c.id}/pdf`}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] font-bold text-[#4A0E17] bg-[#FAF5F0] hover:bg-[#FDF6E2] border border-[#D4AF37] px-2.5 py-1 rounded shadow-sm"
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0F172A] bg-[#FAF5F0] hover:bg-[#FEF3C7] border border-[#D4AF37] px-2.5 py-1 rounded shadow-sm"
                       >
-                        <Download className="w-3 h-3 text-[#4A0E17]" />
+                        <Download className="w-3 h-3 text-[#0F172A]" />
                         <span>PDF</span>
                       </a>
 

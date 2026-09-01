@@ -57,7 +57,7 @@ export default function Campaigns() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
             Fundraising Campaigns
           </h1>
           <p className="text-xs text-gray-500">
@@ -68,7 +68,7 @@ export default function Campaigns() {
         <button
           type="button"
           onClick={() => setShowAddModal(true)}
-          className="px-4 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
+          className="px-4 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Create Campaign</span>
@@ -95,7 +95,7 @@ export default function Campaigns() {
                   </span>
                 </div>
 
-                <h3 className="font-serif-brand font-bold text-base text-[#4A0E17] mt-3">{c.title}</h3>
+                <h3 className="font-serif-brand font-bold text-base text-[#0F172A] mt-3">{c.title}</h3>
                 <p className="text-xs text-gray-600 line-clamp-2 mt-1">{c.description}</p>
               </div>
 
@@ -108,7 +108,7 @@ export default function Campaigns() {
                 {/* Progress Bar */}
                 <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-[#D4AF37] to-[#4A0E17] h-2.5 rounded-full transition-all duration-500"
+                    className="bg-gradient-to-r from-[#D4AF37] to-[#0F172A] h-2.5 rounded-full transition-all duration-500"
                     style={{ width: `${percent}%` }}
                   ></div>
                 </div>
@@ -127,7 +127,7 @@ export default function Campaigns() {
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-md w-full space-y-4">
-            <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+            <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
               Create New Fundraising Campaign
             </h3>
 
@@ -199,7 +199,7 @@ export default function Campaigns() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 bg-[#4A0E17] text-white rounded font-bold hover:bg-[#5A121E]"
+                  className="flex-1 py-2 bg-[#0F172A] text-white rounded font-bold hover:bg-[#1E293B]"
                 >
                   Create Campaign
                 </button>

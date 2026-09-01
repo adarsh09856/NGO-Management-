@@ -81,7 +81,7 @@ export default function CMSManager() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#4A0E17]">
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
             Website & CMS Content Management
           </h1>
           <p className="text-xs text-gray-500">
@@ -93,7 +93,7 @@ export default function CMSManager() {
           <button
             type="button"
             onClick={() => setShowNewsModal(true)}
-            className="px-4 py-2 bg-[#7E1929] hover:bg-[#5A121E] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
+            className="px-4 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Publish New Event</span>
@@ -102,11 +102,11 @@ export default function CMSManager() {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex space-x-2 border-b border-[#EBE5D8] pb-3">
+      <div className="flex space-x-2 border-b border-[#E2E8F0] pb-3">
         <button
           onClick={() => setActiveTab('prayers')}
           className={`px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 ${
-            activeTab === 'prayers' ? 'bg-[#4A0E17] text-white shadow' : 'bg-white text-gray-700 border hover:border-[#D4AF37]'
+            activeTab === 'prayers' ? 'bg-[#0F172A] text-white shadow' : 'bg-white text-gray-700 border hover:border-[#D4AF37]'
           }`}
         >
           <Flame className="w-3.5 h-3.5 text-[#D4AF37]" />
@@ -116,7 +116,7 @@ export default function CMSManager() {
         <button
           onClick={() => setActiveTab('news')}
           className={`px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 ${
-            activeTab === 'news' ? 'bg-[#4A0E17] text-white shadow' : 'bg-white text-gray-700 border hover:border-[#D4AF37]'
+            activeTab === 'news' ? 'bg-[#0F172A] text-white shadow' : 'bg-white text-gray-700 border hover:border-[#D4AF37]'
           }`}
         >
           <Calendar className="w-3.5 h-3.5" />
@@ -126,7 +126,7 @@ export default function CMSManager() {
         <button
           onClick={() => setActiveTab('gallery')}
           className={`px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 ${
-            activeTab === 'gallery' ? 'bg-[#4A0E17] text-white shadow' : 'bg-white text-gray-700 border hover:border-[#D4AF37]'
+            activeTab === 'gallery' ? 'bg-[#0F172A] text-white shadow' : 'bg-white text-gray-700 border hover:border-[#D4AF37]'
           }`}
         >
           <Image className="w-3.5 h-3.5" />
@@ -139,7 +139,7 @@ export default function CMSManager() {
         <div className="monastery-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#F8F6F0] text-gray-700 font-bold uppercase tracking-wider border-b border-[#EBE5D8]">
+              <thead className="bg-[#F1F5F9] text-gray-700 font-bold uppercase tracking-wider border-b border-[#E2E8F0]">
                 <tr>
                   <th className="py-3 px-4">Devotee Name</th>
                   <th className="py-3 px-4">Prayer Type</th>
@@ -152,12 +152,12 @@ export default function CMSManager() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {prayerRequests.map((p) => (
-                  <tr key={p.id} className="hover:bg-[#FDFBF7] transition-colors">
+                  <tr key={p.id} className="hover:bg-[#F8FAFC] transition-colors">
                     <td className="py-3 px-4 font-bold text-gray-900">
                       <div>{p.devotee_name}</div>
                       <div className="text-[10px] text-gray-400">{p.country}</div>
                     </td>
-                    <td className="py-3 px-4 font-semibold text-[#4A0E17]">{p.prayer_type}</td>
+                    <td className="py-3 px-4 font-semibold text-[#0F172A]">{p.prayer_type}</td>
                     <td className="py-3 px-4 text-gray-600 max-w-xs">{p.intention_text}</td>
                     <td className="py-3 px-4 font-mono font-bold text-[#D4AF37]">{p.butter_lamps_count} Lamps</td>
                     <td className="py-3 px-4 font-mono font-bold text-emerald-700">₹{parseFloat(p.offering_amount || 0).toLocaleString('en-IN')}</td>
@@ -173,7 +173,7 @@ export default function CMSManager() {
                         <button
                           type="button"
                           onClick={() => handleDedicatePrayer(p.id)}
-                          className="px-2.5 py-1 bg-[#FDF6E2] hover:bg-[#FDF2E9] text-[#4A0E17] border border-[#D4AF37] rounded font-bold text-[11px]"
+                          className="px-2.5 py-1 bg-[#FEF3C7] hover:bg-[#FDF2E9] text-[#0F172A] border border-[#D4AF37] rounded font-bold text-[11px]"
                         >
                           Mark Dedicated
                         </button>
@@ -192,10 +192,10 @@ export default function CMSManager() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {newsList.map((n) => (
             <div key={n.id} className="monastery-card p-4 space-y-2 text-xs">
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FDF6E2] text-[#4A0E17] border border-[#D4AF37]">
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FEF3C7] text-[#0F172A] border border-[#D4AF37]">
                 {n.category}
               </span>
-              <h4 className="font-serif-brand font-bold text-sm text-[#4A0E17]">{n.title}</h4>
+              <h4 className="font-serif-brand font-bold text-sm text-[#0F172A]">{n.title}</h4>
               <p className="text-gray-500 text-[11px]">{n.event_date ? new Date(n.event_date).toLocaleDateString('en-GB') : 'Announcement'}</p>
               <p className="text-gray-600 line-clamp-3">{n.content}</p>
             </div>
@@ -222,7 +222,7 @@ export default function CMSManager() {
       {showNewsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-md w-full space-y-4">
-            <h3 className="font-serif-brand font-bold text-base text-[#4A0E17]">
+            <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
               Publish News & Auspicious Event
             </h3>
 
@@ -287,7 +287,7 @@ export default function CMSManager() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 bg-[#4A0E17] text-white rounded font-bold hover:bg-[#5A121E]"
+                  className="flex-1 py-2 bg-[#0F172A] text-white rounded font-bold hover:bg-[#1E293B]"
                 >
                   Publish Announcement
                 </button>
