@@ -36,6 +36,37 @@ async function createProject(req, res) {
 }
 
 // Project Tasks
+async function getAllTasks(req, res) {
+  try {
+    const [tasks] = await pool.query(
+      `SELECT pt.*, p.title as project_title 
+       FROM project_tasks pt
+       LEFT JOIN projects p ON pt.project_id = p.id
+       ORDER BY pt.id DESC`
+    );
+    return res.json({ success: true, data: tasks });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch tasks: ' + error.message });
+  }
+}
+
+async function createTask(req, res) {
+  try {
+    const { projectId, title, assignedTo, priority = 'medium', status = 'pending', dueDate } = req.body;
+    if (!projectId || !title) {
+      return res.status(400).json({ success: false, message: 'Project and Task title are required' });
+    }
+    const [result] = await pool.query(
+      `INSERT INTO project_tasks (project_id, title, assigned_to, priority, status, due_date)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [projectId, title, assignedTo || 'Monastery Site Team', priority, status, dueDate || null]
+    );
+    return res.status(201).json({ success: true, message: 'Task created successfully', id: result.insertId });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to create task: ' + error.message });
+  }
+}
+
 async function getTasksByProject(req, res) {
   try {
     const { id } = req.params;
@@ -56,7 +87,7 @@ async function getTasksByProject(req, res) {
 async function updateTaskStatus(req, res) {
   try {
     const { taskId } = req.params;
-    const { status } = req.body; // 'todo', 'in_progress', 'review', 'completed'
+    const { status } = req.body; // 'pending', 'in_progress', 'completed'
 
     await pool.query(
       `UPDATE project_tasks 
@@ -111,6 +142,8 @@ async function getNotices(req, res) {
 module.exports = {
   getProjects,
   createProject,
+  getAllTasks,
+  createTask,
   getTasksByProject,
   updateTaskStatus,
   getDocuments,

@@ -99,6 +99,7 @@ router.post('/receipts/:id/void', authenticateToken, requirePermission('receipts
 // ==========================================
 router.get('/accounts/dashboard', authenticateToken, requirePermission('accounts:view'), accountCtrl.getAccountsDashboard);
 router.get('/accounts/banks', authenticateToken, accountCtrl.getBankAccounts);
+router.get('/accounts/categories', authenticateToken, accountCtrl.getExpenseCategories);
 router.get('/accounts/expenses', authenticateToken, accountCtrl.getExpenses);
 router.post('/accounts/expenses', authenticateToken, requirePermission('accounts:expenses_submit'), accountCtrl.submitExpense);
 router.post('/accounts/expenses/:id/approve', authenticateToken, requirePermission('accounts:expenses_approve'), accountCtrl.approveExpense);
@@ -121,6 +122,19 @@ router.get('/certificates/verify/:certNumber', certCtrl.verifyCertificate);
 router.get('/certificates', authenticateToken, certCtrl.getCertificates);
 router.post('/certificates/issue', authenticateToken, certCtrl.issueCertificate);
 router.get('/certificates/:id/pdf', certCtrl.downloadCertificatePdf);
+router.post('/certificates/:id/revoke', authenticateToken, requireRole('super_admin'), certCtrl.revokeCertificate);
+
+// ==========================================
+// 10.1. SHEDRA MONASTIC ACADEMY & LMS
+// ==========================================
+router.get('/lms/overview', authenticateToken, lmsCtrl.getLmsOverview);
+router.get('/lms/courses', authenticateToken, lmsCtrl.getCourses);
+router.post('/lms/courses', authenticateToken, lmsCtrl.createCourse);
+router.get('/lms/batches', authenticateToken, lmsCtrl.getBatches);
+router.get('/lms/enrollments', authenticateToken, lmsCtrl.getEnrollments);
+router.put('/lms/enrollments/:id/progress', authenticateToken, lmsCtrl.updateEnrollmentProgress);
+router.get('/lms/students', authenticateToken, lmsCtrl.getStudents);
+router.post('/lms/students', authenticateToken, lmsCtrl.createStudent);
 
 // ==========================================
 // 11. HRM & ATTENDANCE
@@ -157,6 +171,8 @@ router.post('/crm/campaigns/broadcast', authenticateToken, requirePermission('cr
 // ==========================================
 router.get('/projects', projectCtrl.getProjects);
 router.post('/projects', authenticateToken, requirePermission('projects:manage'), projectCtrl.createProject);
+router.get('/projects/tasks', authenticateToken, projectCtrl.getAllTasks);
+router.post('/projects/tasks', authenticateToken, requirePermission('projects:manage'), projectCtrl.createTask);
 router.get('/projects/:id/tasks', authenticateToken, projectCtrl.getTasksByProject);
 router.put('/projects/tasks/:taskId', authenticateToken, projectCtrl.updateTaskStatus);
 router.get('/documents', authenticateToken, projectCtrl.getDocuments);
@@ -214,6 +230,7 @@ router.get('/roles-permissions', authenticateToken, settingsCtrl.getRolesAndPerm
 router.get('/audit-logs', authenticateToken, requireRole('super_admin'), settingsCtrl.getAuditLogs);
 router.post('/backup', authenticateToken, requireRole('super_admin'), settingsCtrl.triggerBackup);
 router.get('/reports', authenticateToken, reportCtrl.getReports);
+router.get('/reports/:module/export', authenticateToken, reportCtrl.getReports);
 router.get('/admin/dashboard', authenticateToken, reportCtrl.getAdminDashboardMetrics);
 router.get('/search', authenticateToken, searchCtrl.globalSearch);
 

@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, HeartHandshake, Video, Newspaper, Image as ImageIcon,
   Landmark, Warehouse, UserCheck, FolderKanban, MessageSquareShare,
-  BarChart3, UserCog, Settings, ClipboardList, ChevronDown, ChevronRight, X, Flame
+  BarChart3, UserCog, Settings, ClipboardList, ChevronDown, ChevronRight, X, Flame,
+  GraduationCap, Award, BookOpen
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -19,6 +20,9 @@ export default function AdminSidebar({ isOpen, onClose }) {
   // Collapsible menu states
   const [donationOpen, setDonationOpen] = useState(
     location.pathname.startsWith('/admin/donations') || location.pathname.startsWith('/admin/campaigns') || location.pathname.startsWith('/admin/receipts')
+  );
+  const [shedraOpen, setShedraOpen] = useState(
+    location.pathname.startsWith('/admin/monks') || location.pathname.startsWith('/admin/lms') || location.pathname.startsWith('/admin/certificates')
   );
   const [accountsOpen, setAccountsOpen] = useState(location.pathname.startsWith('/admin/accounts'));
   const [inventoryOpen, setInventoryOpen] = useState(location.pathname.startsWith('/admin/inventory'));
@@ -199,6 +203,53 @@ export default function AdminSidebar({ isOpen, onClose }) {
               <span>Gallery (Photos & Videos)</span>
             </Link>
           )}
+
+          {/* 5.1. SHEDRA MONASTIC SANGHA & ACADEMY */}
+          <div>
+            <button
+              type="button"
+              onClick={() => setShedraOpen(!shedraOpen)}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-300 hover:bg-[#0F172A] hover:text-white transition-colors"
+            >
+              <div className="flex items-center space-x-2.5">
+                <GraduationCap className="w-4 h-4 text-[#D4AF37]" />
+                <span>Shedra & Monastic Sangha</span>
+              </div>
+              {shedraOpen ? <ChevronDown className="w-3.5 h-3.5 text-gray-400" /> : <ChevronRight className="w-3.5 h-3.5 text-gray-400" />}
+            </button>
+
+            {shedraOpen && (
+              <div className="pl-8 pr-2 py-1 space-y-1 text-[11px]">
+                <Link
+                  to="/admin/monks"
+                  onClick={handleNavClick}
+                  className={`block py-1 px-2 rounded hover:text-white ${
+                    isActive('/admin/monks') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
+                  }`}
+                >
+                  • Monastic Scholars Directory
+                </Link>
+                <Link
+                  to="/admin/lms"
+                  onClick={handleNavClick}
+                  className={`block py-1 px-2 rounded hover:text-white ${
+                    isActive('/admin/lms') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
+                  }`}
+                >
+                  • Shedra Curriculum & LMS
+                </Link>
+                <Link
+                  to="/admin/certificates"
+                  onClick={handleNavClick}
+                  className={`block py-1 px-2 rounded hover:text-white ${
+                    isActive('/admin/certificates') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
+                  }`}
+                >
+                  • Monastic Certificates
+                </Link>
+              </div>
+            )}
+          </div>
 
           {/* 6. ACCOUNTS & EXPENSES (Super Admin & Accountant) */}
           {(isSuperAdmin || isAccountant) && (
@@ -470,7 +521,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
         </nav>
 
         {/* Footer User Info */}
-        <div className="p-3 border-t border-[#1E293B] bg-[#2E070F] flex items-center justify-between text-xs">
+        <div className="p-3 border-t border-[#1E293B] bg-[#090D16] flex items-center justify-between text-xs">
           <div className="flex items-center space-x-2 min-w-0">
             <div className="w-7 h-7 rounded-full bg-[#0F172A] border border-[#D4AF37] text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0">
               {user?.fullName?.charAt(0) || 'A'}

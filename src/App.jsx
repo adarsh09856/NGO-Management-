@@ -55,6 +55,9 @@ import UsersRoles from './pages/admin/UsersRoles';
 import AuditLog from './pages/admin/AuditLog';
 import SystemSettings from './pages/admin/SystemSettings';
 import ReportsHub from './pages/admin/ReportsHub';
+import StudentsMonks from './pages/admin/StudentsMonks';
+import LMSOverview from './pages/admin/LMSOverview';
+import Certificates from './pages/admin/Certificates';
 
 // Protected Route Helpers
 function RequireAdmin({ children }) {
@@ -174,6 +177,11 @@ export default function App() {
 
           {/* Gallery (Photos & Videos) */}
           <Route path="gallery" element={<GalleryManager />} />
+
+          {/* Shedra Monastic Sangha & LMS */}
+          <Route path="monks" element={<StudentsMonks />} />
+          <Route path="lms" element={<LMSOverview />} />
+          <Route path="certificates" element={<Certificates />} />
 
           {/* HRM & Payroll */}
           <Route path="hrm/employees" element={<HRMEmployees />} />

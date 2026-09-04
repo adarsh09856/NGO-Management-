@@ -3,214 +3,271 @@ import { Link } from 'react-router-dom';
 import {
   Wallet, TrendingUp, TrendingDown, Landmark, Receipt, FileText,
   PlusCircle, ArrowUpRight, ArrowDownRight, DollarSign, CreditCard,
-  Building2, BookOpen, BarChart3, RefreshCw
+  Building2, BookOpen, BarChart3, RefreshCw, X, CheckCircle2
 } from 'lucide-react';
 import {
   BarChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer, ComposedChart
 } from 'recharts';
 import api from '../../services/api';
+import { useToast } from '../../context/ToastContext';
 
 export default function AccountsDashboard() {
+  const { success, error } = useToast();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchDashboard() {
-      try {
-        setLoading(true);
-        const res = await api.get('/accounts/dashboard');
-        if (res.data.success) {
-          setData(res.data.data);
+  // New Voucher Modal
+  const [showVoucherModal, setShowVoucherModal] = useState(false);
+  const [voucherNo, setVoucherNo] = useState(`PV-2026-${String(Math.floor(Math.random() * 900 + 100))}`);
+  const [voucherDate, setVoucherDate] = useState(new Date().toISOString().slice(0, 10));
+  const [voucherType, setVoucherType] = useState('payment');
+  const [particulars, setParticulars] = useState('');
+  const [totalAmount, setTotalAmount] = useState('');
+  const [paymentMode, setPaymentMode] = useState('Bank Transfer');
+  const [bankAccountId, setBankAccountId] = useState('');
+  const [submittingVoucher, setSubmittingVoucher] = useState(false);
+
+  async function fetchDashboard() {
+    try {
+      setLoading(true);
+      const res = await api.get('/accounts/dashboard');
+      if (res.data.success) {
+        setData(res.data.data);
+        if (res.data.data.bankAccounts?.length > 0 && !bankAccountId) {
+          setBankAccountId(res.data.data.bankAccounts[0].id);
         }
-      } catch (err) {
-        console.error('Failed to load accounts dashboard:', err);
-      } finally {
-        setLoading(false);
       }
+    } catch (err) {
+      console.error('Failed to load accounts dashboard:', err);
+    } finally {
+      setLoading(false);
     }
+  }
+
+  useEffect(() => {
     fetchDashboard();
   }, []);
 
-  const stats = data?.stats || {
-    totalIncome: 548230,
-    incomeGrowth: 18.6,
-    totalExpenses: 271890,
-    expenseGrowth: 10.2,
-    netSurplus: 276340,
-    surplusGrowth: 28.4,
-    totalReceivables: 125600,
-    overdueInvoicesCount: 2,
-    totalPayables: 87450,
-    overdueBillsCount: 1,
-    cashInHand: 92350
+  const handleCreateVoucher = async (e) => {
+    e.preventDefault();
+    try {
+      setSubmittingVoucher(true);
+      const res = await api.post('/accounts/vouchers', {
+        voucherNo,
+        voucherDate,
+        voucherType,
+        particulars,
+        totalAmount: parseFloat(totalAmount),
+        paymentMode,
+        bankAccountId: bankAccountId ? parseInt(bankAccountId, 10) : null
+      });
+      if (res.data.success) {
+        success('Payment voucher created and ledger updated!');
+        setShowVoucherModal(false);
+        setParticulars('');
+        setTotalAmount('');
+        setVoucherNo(`PV-2026-${String(Math.floor(Math.random() * 900 + 100))}`);
+        fetchDashboard();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to create voucher');
+    } finally {
+      setSubmittingVoucher(false);
+    }
   };
 
-  const monthlySeries = data?.monthlySeries || [
-    { month: 'Jan', income: 420000, expense: 210000, net: 210000 },
-    { month: 'Feb', income: 460000, expense: 230000, net: 230000 },
-    { month: 'Mar', income: 510000, expense: 250000, net: 260000 },
-    { month: 'Apr', income: 480000, expense: 220000, net: 260000 },
-    { month: 'May', income: 530000, expense: 260000, net: 270000 },
-    { month: 'Jun', income: 590000, expense: 280000, net: 310000 },
-    { month: 'Jul', income: 640000, expense: 290000, net: 350000 },
-    { month: 'Aug', income: 548230, expense: 271890, net: 276340 },
-    { month: 'Sep', income: 490000, expense: 240000, net: 250000 },
-    { month: 'Oct', income: 520000, expense: 250000, net: 270000 },
-    { month: 'Nov', income: 470000, expense: 230000, net: 240000 },
-    { month: 'Dec', income: 580000, expense: 270000, net: 310000 }
-  ];
+  const stats = data?.stats || {
+    totalIncome: 0,
+    incomeGrowth: 0,
+    totalExpenses: 0,
+    expenseGrowth: 0,
+    netSurplus: 0,
+    surplusGrowth: 0,
+    totalReceivables: 0,
+    overdueInvoicesCount: 0,
+    totalPayables: 0,
+    overdueBillsCount: 0,
+    cashInHand: 0
+  };
 
-  const recentTransactions = data?.recentTransactions || [
-    { voucher_date: '2026-08-25', particulars: 'Donation Received - Tashi Phuntsho', voucher_no: 'RC-2026-105', voucher_type: 'receipt', total_amount: 25000, status: 'posted' },
-    { voucher_date: '2026-08-25', particulars: 'Construction Material Purchase', voucher_no: 'PV-2026-089', voucher_type: 'payment', total_amount: 18500, status: 'posted' },
-    { voucher_date: '2026-08-24', particulars: 'Training Fee - Group of Monks', voucher_no: 'RC-2026-104', voucher_type: 'receipt', total_amount: 10000, status: 'posted' },
-    { voucher_date: '2026-08-24', particulars: 'Staff Salary - Aug 2026', voucher_no: 'JV-2026-088', voucher_type: 'journal', total_amount: 65000, status: 'posted' },
-    { voucher_date: '2026-08-23', particulars: 'Electricity Bill - Monastery', voucher_no: 'PV-2026-087', voucher_type: 'payment', total_amount: 8750, status: 'posted' }
-  ];
-
-  const bankAccounts = data?.bankAccounts || [
-    { account_name: 'BOB - Main Account', account_number: 'A/c No. 123456789000', current_balance: 425680 },
-    { account_name: 'HDFC - Donation Account', account_number: 'A/c No. 50200012345678', current_balance: 215430 },
-    { account_name: 'Cash Account', account_number: 'Cash in Hand', current_balance: 92350 },
-    { account_name: 'Petty Cash', account_number: 'Petty Cash Account', current_balance: 12870 }
-  ];
+  const monthlySeries = data?.monthlySeries || [];
+  const recentTransactions = data?.recentTransactions || [];
+  const bankAccounts = data?.bankAccounts || [];
 
   return (
     <div className="space-y-6">
-      {/* Top Bar (Matching image 3 top) */}
+      {/* Top Bar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
-          Accounts & Finance
-        </h1>
+        <div>
+          <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
+            Accounts & Financial Ledger
+          </h1>
+          <p className="text-xs text-gray-500">
+            Real-time income receipts, expense vouchers, and bank ledger balances.
+          </p>
+        </div>
         <div className="flex items-center space-x-3">
-          <span className="text-xs text-gray-500 font-medium px-3 py-1.5 bg-white border border-[#E2E8F0] rounded">
-            25 Aug 2026
-          </span>
-          <Link
-            to="/admin/accounts/expenses"
+          <button
+            onClick={fetchDashboard}
+            className="p-2 bg-white border border-[#E2E8F0] rounded text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center gap-1.5 shadow-sm"
+            title="Refresh Ledger"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#E11D48]' : ''}`} />
+            <span>Refresh</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowVoucherModal(true)}
             className="bg-[#E11D48] hover:bg-[#1E293B] text-white px-4 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow"
           >
             <PlusCircle className="w-3.5 h-3.5" />
-            <span>New Transaction</span>
-          </Link>
+            <span>New Voucher</span>
+          </button>
         </div>
       </div>
 
-      {/* 1. Stat Cards Strip (Matching image 3 top) */}
+      {/* 1. Stat Cards Strip (100% Real Live Computed from MySQL) */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
         <div className="monastery-card p-3.5">
-          <p className="text-[10px] font-bold text-gray-500 uppercase">Total Income (This Month)</p>
-          <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">₹ 5,48,230</h3>
-          <p className="text-[10px] text-emerald-600 font-semibold flex items-center mt-0.5">
-            <ArrowUpRight className="w-3 h-3 mr-0.5" /> 18.6% vs last month
+          <p className="text-[10px] font-bold text-gray-500 uppercase">Income (This Month)</p>
+          <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">
+            ₹ {Number(stats.totalIncome || 0).toLocaleString('en-IN')}
+          </h3>
+          <p className={`text-[10px] font-semibold flex items-center mt-0.5 ${stats.incomeGrowth >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+            {stats.incomeGrowth >= 0 ? <ArrowUpRight className="w-3 h-3 mr-0.5" /> : <ArrowDownRight className="w-3 h-3 mr-0.5" />}
+            {Math.abs(stats.incomeGrowth)}% vs last month
           </p>
         </div>
 
         <div className="monastery-card p-3.5">
-          <p className="text-[10px] font-bold text-gray-500 uppercase">Total Expenses (This Month)</p>
-          <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">₹ 2,71,890</h3>
-          <p className="text-[10px] text-emerald-600 font-semibold flex items-center mt-0.5">
-            <ArrowUpRight className="w-3 h-3 mr-0.5" /> 10.2% vs last month
+          <p className="text-[10px] font-bold text-gray-500 uppercase">Expenses (This Month)</p>
+          <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">
+            ₹ {Number(stats.totalExpenses || 0).toLocaleString('en-IN')}
+          </h3>
+          <p className={`text-[10px] font-semibold flex items-center mt-0.5 ${stats.expenseGrowth <= 0 ? 'text-emerald-600' : 'text-amber-600'}`}>
+            {stats.expenseGrowth >= 0 ? <ArrowUpRight className="w-3 h-3 mr-0.5" /> : <ArrowDownRight className="w-3 h-3 mr-0.5" />}
+            {Math.abs(stats.expenseGrowth)}% vs last month
           </p>
         </div>
 
         <div className="monastery-card p-3.5">
-          <p className="text-[10px] font-bold text-gray-500 uppercase">Net Surplus (This Month)</p>
-          <h3 className="font-serif-brand font-bold text-lg text-emerald-700 mt-1">₹ 2,76,340</h3>
-          <p className="text-[10px] text-emerald-600 font-semibold flex items-center mt-0.5">
-            <ArrowUpRight className="w-3 h-3 mr-0.5" /> 28.4% vs last month
+          <p className="text-[10px] font-bold text-gray-500 uppercase">Net Surplus (Month)</p>
+          <h3 className={`font-serif-brand font-bold text-lg mt-1 ${stats.netSurplus >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
+            ₹ {Number(stats.netSurplus || 0).toLocaleString('en-IN')}
+          </h3>
+          <p className="text-[10px] text-gray-500 font-semibold mt-0.5">
+            Operational Margin
           </p>
         </div>
 
         <div className="monastery-card p-3.5">
           <p className="text-[10px] font-bold text-gray-500 uppercase">Total Receivables</p>
-          <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">₹ 1,25,600</h3>
-          <p className="text-[10px] text-amber-600 font-medium mt-0.5">2 Invoices Overdue</p>
+          <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">
+            ₹ {Number(stats.totalReceivables || 0).toLocaleString('en-IN')}
+          </h3>
+          <p className="text-[10px] text-gray-500 font-medium mt-0.5">Pending Invoices</p>
         </div>
 
         <div className="monastery-card p-3.5">
-          <p className="text-[10px] font-bold text-gray-500 uppercase">Total Payables</p>
-          <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">₹ 87,450</h3>
-          <p className="text-[10px] text-amber-600 font-medium mt-0.5">1 Bill Overdue</p>
+          <p className="text-[10px] font-bold text-gray-500 uppercase">Pending Payables</p>
+          <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">
+            ₹ {Number(stats.totalPayables || 0).toLocaleString('en-IN')}
+          </h3>
+          <p className="text-[10px] text-amber-600 font-medium mt-0.5">
+            {stats.overdueBillsCount} Pending Claims
+          </p>
         </div>
 
         <div className="monastery-card p-3.5">
-          <p className="text-[10px] font-bold text-gray-500 uppercase">Cash in Hand</p>
-          <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">₹ 92,350</h3>
-          <p className="text-[10px] text-gray-400 mt-0.5">Vault Balance</p>
+          <p className="text-[10px] font-bold text-gray-500 uppercase">Total Cash & Bank</p>
+          <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">
+            ₹ {Number(stats.cashInHand || 0).toLocaleString('en-IN')}
+          </h3>
+          <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">
+            Active Vault & Bank
+          </p>
         </div>
       </div>
 
-      {/* 2. Middle Section: Chart & Recent Transactions & Bank Accounts */}
+      {/* 2. Main Analytics & Bank Accounts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Income vs Expense Overview Chart (Matching image 3 top) */}
-        <div className="lg:col-span-8 monastery-card p-5 space-y-4">
-          <div className="flex justify-between items-center">
+        {/* Left: Monthly Trend Composed Chart (7 Cols) */}
+        <div className="lg:col-span-8 monastery-card p-5 flex flex-col justify-between">
+          <div className="flex justify-between items-center mb-4">
             <div>
-              <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">Income vs Expense Overview</h3>
-              <p className="text-[11px] text-gray-500">Consolidated monthly financial cashflow</p>
+              <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">
+                Income vs Expenses (Monthly Performance)
+              </h3>
+              <p className="text-xs text-gray-500">Live dual-entry transactions ledger</p>
             </div>
-            <select className="text-xs border rounded px-2.5 py-1 bg-white text-gray-700">
-              <option>This Year</option>
-              <option>Previous Year</option>
-            </select>
+            <div className="flex items-center space-x-3 text-xs">
+              <span className="flex items-center gap-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span> Income
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444]"></span> Expense
+              </span>
+            </div>
           </div>
 
-          <div className="h-64 w-full">
+          <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={monthlySeries} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#6B7280' }} />
-                <YAxis tick={{ fontSize: 11, fill: '#6B7280' }} />
-                <Tooltip formatter={(val) => `₹ ${val.toLocaleString()}`} />
-                <Legend wrapperStyle={{ fontSize: '11px' }} />
-                <Bar dataKey="income" name="Income (₹)" fill="#059669" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="expense" name="Expense (₹)" fill="#DC2626" radius={[3, 3, 0, 0]} />
-                <Line type="monotone" dataKey="net" name="Net (₹)" stroke="#2563EB" strokeWidth={2} dot={{ r: 3 }} />
+              <ComposedChart data={monthlySeries}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+                <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748B' }} />
+                <YAxis tick={{ fontSize: 11, fill: '#64748B' }} />
+                <Tooltip
+                  formatter={(val) => [`₹ ${Number(val).toLocaleString('en-IN')}`, '']}
+                  contentStyle={{ backgroundColor: '#0F172A', borderColor: '#D4AF37', borderRadius: '8px', color: '#FFF' }}
+                />
+                <Bar dataKey="income" fill="#10B981" radius={[4, 4, 0, 0]} name="Income" />
+                <Bar dataKey="expense" fill="#EF4444" radius={[4, 4, 0, 0]} name="Expense" />
+                <Line type="monotone" dataKey="net" stroke="#F59E0B" strokeWidth={2.5} dot={{ r: 3 }} name="Net Surplus" />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Bank Accounts List (Matching image 3 top right) */}
-        <div className="lg:col-span-4 monastery-card p-5 space-y-3 flex flex-col justify-between">
-          <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-            <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">Bank Accounts</h3>
-            <span className="text-[11px] font-bold text-[#BE123C]">View All</span>
+        {/* Right: Bank Accounts Overview (4 Cols) */}
+        <div className="lg:col-span-4 monastery-card p-5 space-y-4">
+          <div className="flex justify-between items-center border-b border-[#E2E8F0] pb-3">
+            <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] flex items-center gap-2">
+              <Landmark className="w-4 h-4 text-[#D4AF37]" />
+              <span>Bank & Cash Balances</span>
+            </h3>
+            <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded border border-emerald-200">
+              Active
+            </span>
           </div>
 
-          <div className="space-y-3 text-xs">
-            {bankAccounts.map((b, idx) => (
-              <div key={idx} className="flex justify-between items-center p-2.5 bg-gray-50 rounded-lg">
+          <div className="space-y-3">
+            {bankAccounts.map((acc) => (
+              <div key={acc.id} className="p-3 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] flex justify-between items-center">
                 <div>
-                  <p className="font-bold text-gray-900 leading-tight">{b.account_name}</p>
-                  <p className="text-[10px] text-gray-500">{b.account_number}</p>
+                  <p className="font-bold text-xs text-[#0F172A]">{acc.account_name}</p>
+                  <p className="text-[10px] text-gray-500 font-mono">{acc.account_number}</p>
                 </div>
-                <p className="font-serif-brand font-bold text-gray-900 font-mono">
-                  ₹ {parseFloat(b.current_balance).toLocaleString('en-IN')}
-                </p>
+                <div className="text-right">
+                  <p className="font-mono font-bold text-xs text-[#0F172A]">
+                    ₹ {Number(acc.current_balance || 0).toLocaleString('en-IN')}
+                  </p>
+                  <span className="text-[9px] text-gray-400 uppercase font-semibold">{acc.currency || 'INR'}</span>
+                </div>
               </div>
             ))}
-          </div>
-
-          <div className="pt-2">
-            <Link
-              to="/admin/accounts/ledger"
-              className="w-full bg-[#FAF5F0] hover:bg-[#FEF3C7] border border-[#E2E8F0] text-[#0F172A] py-2 rounded text-xs font-bold text-center block"
-            >
-              View Full General Ledger
-            </Link>
           </div>
         </div>
       </div>
 
-      {/* 3. Recent Transactions Table (Matching image 3 top) */}
+      {/* 3. Recent Vouchers & Transactions */}
       <div className="monastery-card overflow-hidden">
         <div className="p-4 border-b border-[#E2E8F0] flex justify-between items-center">
-          <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">Recent Transactions</h3>
-          <Link to="/admin/accounts/ledger" className="text-xs font-bold text-[#BE123C] hover:underline">
-            View All Transactions
+          <h3 className="font-serif-brand font-bold text-sm text-[#0F172A]">
+            Recent Ledger Transactions & Vouchers
+          </h3>
+          <Link to="/admin/accounts/expenses" className="text-xs text-[#E11D48] hover:underline font-bold">
+            View All Expenses →
           </Link>
         </div>
 
@@ -218,34 +275,39 @@ export default function AccountsDashboard() {
           <table className="w-full text-left text-xs">
             <thead className="bg-[#F1F5F9] text-gray-700 font-bold uppercase tracking-wider border-b border-[#E2E8F0]">
               <tr>
-                <th className="py-2.5 px-4">Date</th>
-                <th className="py-2.5 px-4">Particulars</th>
-                <th className="py-2.5 px-4">Voucher No.</th>
-                <th className="py-2.5 px-4">Type</th>
-                <th className="py-2.5 px-4">Amount (₹)</th>
-                <th className="py-2.5 px-4">Status</th>
+                <th className="py-3 px-4">Date</th>
+                <th className="py-3 px-4">Voucher No</th>
+                <th className="py-3 px-4">Type</th>
+                <th className="py-3 px-4">Particulars</th>
+                <th className="py-3 px-4">Amount</th>
+                <th className="py-3 px-4">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {recentTransactions.map((tx, idx) => (
-                <tr key={idx} className="hover:bg-[#F8FAFC] transition-colors">
-                  <td className="py-2.5 px-4 text-gray-600">{new Date(tx.voucher_date).toLocaleDateString('en-GB')}</td>
-                  <td className="py-2.5 px-4 font-semibold text-gray-900">{tx.particulars}</td>
-                  <td className="py-2.5 px-4 font-mono font-medium text-[#0F172A]">{tx.voucher_no}</td>
-                  <td className="py-2.5 px-4">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold capitalize ${
-                      tx.voucher_type === 'receipt' ? 'bg-emerald-100 text-emerald-800' :
-                      tx.voucher_type === 'payment' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
+              {recentTransactions.map((t, idx) => (
+                <tr key={t.id || idx} className="hover:bg-[#F8FAFC] transition-colors">
+                  <td className="py-3 px-4 text-gray-600">
+                    {t.voucher_date ? new Date(t.voucher_date).toLocaleDateString('en-GB') : '-'}
+                  </td>
+                  <td className="py-3 px-4 font-mono font-bold text-[#0F172A]">
+                    {t.voucher_no || `TXN-${idx + 1}`}
+                  </td>
+                  <td className="py-3 px-4 capitalize">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                      t.voucher_type === 'receipt' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
                     }`}>
-                      {tx.voucher_type}
+                      {t.voucher_type}
                     </span>
                   </td>
-                  <td className={`py-2.5 px-4 font-mono font-bold ${tx.voucher_type === 'receipt' ? 'text-emerald-700' : 'text-red-700'}`}>
-                    {tx.voucher_type === 'receipt' ? '+' : '-'}₹{parseFloat(tx.total_amount).toLocaleString('en-IN')}
+                  <td className="py-3 px-4 font-semibold text-gray-800">
+                    {t.particulars}
                   </td>
-                  <td className="py-2.5 px-4">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      Completed
+                  <td className={`py-3 px-4 font-mono font-bold ${t.voucher_type === 'receipt' ? 'text-emerald-700' : 'text-red-700'}`}>
+                    {t.voucher_type === 'receipt' ? '+' : '-'}₹ {Number(t.total_amount || 0).toLocaleString('en-IN')}
+                  </td>
+                  <td className="py-3 px-4 uppercase">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-700">
+                      {t.status || 'posted'}
                     </span>
                   </td>
                 </tr>
@@ -255,41 +317,130 @@ export default function AccountsDashboard() {
         </div>
       </div>
 
-      {/* 4. Bottom Action Bar (Matching image 3 top) */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 text-center text-xs">
-        <Link to="/admin/receipts" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <Receipt className="w-4 h-4 text-[#BE123C]" />
-          <span>Add Receipt</span>
-        </Link>
-        <Link to="/admin/accounts/expenses" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <CreditCard className="w-4 h-4 text-[#BE123C]" />
-          <span>Add Payment</span>
-        </Link>
-        <Link to="/admin/accounts/vouchers" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <FileText className="w-4 h-4 text-[#BE123C]" />
-          <span>Journal Voucher</span>
-        </Link>
-        <Link to="/admin/accounts/banks" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <Building2 className="w-4 h-4 text-[#BE123C]" />
-          <span>Bank Transfer</span>
-        </Link>
-        <Link to="/admin/accounts/expenses" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <DollarSign className="w-4 h-4 text-[#BE123C]" />
-          <span>Expense Claim</span>
-        </Link>
-        <Link to="/admin/accounts/ledger" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <FileText className="w-4 h-4 text-[#BE123C]" />
-          <span>Create Invoice</span>
-        </Link>
-        <Link to="/admin/accounts/ledger" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <BookOpen className="w-4 h-4 text-[#BE123C]" />
-          <span>Chart of Accounts</span>
-        </Link>
-        <Link to="/admin/reports" className="p-3 bg-white border border-[#E2E8F0] hover:border-[#D4AF37] rounded-lg font-semibold text-gray-800 flex flex-col items-center gap-1 shadow-sm">
-          <BarChart3 className="w-4 h-4 text-[#BE123C]" />
-          <span>Financial Reports</span>
-        </Link>
-      </div>
+      {/* New Voucher Modal */}
+      {showVoucherModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl border p-6 max-w-md w-full space-y-4">
+            <div className="flex justify-between items-center border-b pb-3">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
+                Issue Payment / Receipt Voucher
+              </h3>
+              <button onClick={() => setShowVoucherModal(false)} className="text-gray-400 hover:text-gray-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateVoucher} className="space-y-3 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Voucher No *</label>
+                  <input
+                    type="text"
+                    required
+                    value={voucherNo}
+                    onChange={(e) => setVoucherNo(e.target.value)}
+                    className="w-full p-2.5 rounded border border-gray-300 font-mono font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Voucher Type *</label>
+                  <select
+                    value={voucherType}
+                    onChange={(e) => setVoucherType(e.target.value)}
+                    className="w-full p-2.5 rounded border border-gray-300 bg-white font-semibold"
+                  >
+                    <option value="payment">Payment Voucher</option>
+                    <option value="receipt">Receipt Voucher</option>
+                    <option value="journal">Journal Voucher</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Date *</label>
+                  <input
+                    type="date"
+                    required
+                    value={voucherDate}
+                    onChange={(e) => setVoucherDate(e.target.value)}
+                    className="w-full p-2.5 rounded border border-gray-300"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Amount (₹) *</label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    step="0.01"
+                    value={totalAmount}
+                    onChange={(e) => setTotalAmount(e.target.value)}
+                    placeholder="e.g. 15000"
+                    className="w-full p-2.5 rounded border border-gray-300 font-mono font-bold"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Particulars / Description *</label>
+                <input
+                  type="text"
+                  required
+                  value={particulars}
+                  onChange={(e) => setParticulars(e.target.value)}
+                  placeholder="e.g. Stupa stone cutting contractor payment"
+                  className="w-full p-2.5 rounded border border-gray-300"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Payment Mode</label>
+                  <select
+                    value={paymentMode}
+                    onChange={(e) => setPaymentMode(e.target.value)}
+                    className="w-full p-2.5 rounded border border-gray-300 bg-white"
+                  >
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Cheque">Cheque</option>
+                    <option value="Cash">Cash</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Bank Account</label>
+                  <select
+                    value={bankAccountId}
+                    onChange={(e) => setBankAccountId(e.target.value)}
+                    className="w-full p-2.5 rounded border border-gray-300 bg-white"
+                  >
+                    {bankAccounts.map(b => (
+                      <option key={b.id} value={b.id}>{b.account_name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-3 flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setShowVoucherModal(false)}
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded font-semibold hover:bg-gray-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingVoucher}
+                  className="px-4 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded font-bold flex items-center gap-1.5 shadow"
+                >
+                  {submittingVoucher ? 'Posting...' : 'Post Voucher to Ledger'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

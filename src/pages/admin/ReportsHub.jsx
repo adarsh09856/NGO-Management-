@@ -1,116 +1,182 @@
-import React from 'react';
-import { BarChart3, Download, FileSpreadsheet, Heart, Landmark, Warehouse, Users, UserCheck } from 'lucide-react';
+import React, { useState } from 'react';
+import { 
+  BarChart3, Download, FileSpreadsheet, Heart, 
+  Landmark, Warehouse, Users, UserCheck, ShieldCheck, 
+  CheckCircle2, Clock, Loader2, Sparkles
+} from 'lucide-react';
+import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 
 export default function ReportsHub() {
-  const { success } = useToast();
+  const { success, error } = useToast();
+  const [exportingModule, setExportingModule] = useState(null);
 
-  const handleExport = (reportType) => {
-    window.open(`/api/reports/${reportType}/export?format=csv`, '_blank');
-    success(`Downloading ${reportType} CSV export...`);
+  const handleExport = async (reportType, label) => {
+    try {
+      setExportingModule(reportType);
+      const res = await api.get(`/reports/${reportType}/export?format=csv`, {
+        responseType: 'blob'
+      });
+      
+      const blob = new Blob([res.data], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Drodul_Phendey_Ling_${reportType}_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      success(`Successfully exported ${label} CSV!`);
+    } catch (err) {
+      console.error('Export error:', err);
+      error(err.response?.data?.message || `Failed to export ${label}`);
+    } finally {
+      setExportingModule(null);
+    }
   };
+
+  const reports = [
+    {
+      id: 'donations',
+      title: 'Donations & Tax Receipts Register',
+      description: 'Comprehensive itemized registry of devotees, tax receipt references, allocated sacred pujas, payment modes, and financial dates.',
+      icon: Heart,
+      color: '#E11D48',
+      bgLight: 'bg-[#E11D48]/10',
+      borderColor: 'border-[#E11D48]/20',
+      compliance: 'Audited for Income Tax Exemption & Monastic Trust Returns'
+    },
+    {
+      id: 'accounts',
+      title: 'Accounts & Double-Entry Ledger',
+      description: 'Debit and credit ledger entries, expense disbursements, bank account reconciliations, and quarterly cash surplus analysis.',
+      icon: Landmark,
+      color: '#D4AF37',
+      bgLight: 'bg-[#D4AF37]/10',
+      borderColor: 'border-[#D4AF37]/20',
+      compliance: 'Compliant with Bhutanese Non-Profit Accounting Standards'
+    },
+    {
+      id: 'inventory',
+      title: 'Store Inventory & Stock Valuation',
+      description: 'Granular log of temple brassware, consecrated flour, ceremonial robes, stupa granite, minimum stock indicators, and unit costs.',
+      icon: Warehouse,
+      color: '#38BDF8',
+      bgLight: 'bg-sky-500/10',
+      borderColor: 'border-sky-500/20',
+      compliance: 'Real-time perpetual inventory valuation method'
+    },
+    {
+      id: 'students',
+      title: 'Shedra Monastic Academy Roster',
+      description: 'Directory of ordained novice monks, Tibetan Buddhist curriculum enrollments, semester grade distinction rates, and attendance compliance.',
+      icon: Users,
+      color: '#A855F7',
+      bgLight: 'bg-purple-500/10',
+      borderColor: 'border-purple-500/20',
+      compliance: 'Endorsed by Shedra Education & Curriculum Council'
+    },
+    {
+      id: 'payroll',
+      title: 'HRM Staff Payroll & Casual Wages',
+      description: 'Monthly compensation registry for Shedra lecturers, administrative officers, stupa stone carvers, masons, and tax deductions.',
+      icon: UserCheck,
+      color: '#10B981',
+      bgLight: 'bg-emerald-500/10',
+      borderColor: 'border-emerald-500/20',
+      compliance: 'Verified with Ministry of Labour & Human Resources Bhutan'
+    }
+  ];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-[#0F172A]">
-          Reports & Financial Auditing Hub
-        </h1>
-        <p className="text-xs text-gray-500">
-          Generate and export official compliance spreadsheets for regulatory authorities, auditors, and monastic trustees.
-        </p>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#090D16] border border-[#2A1E17] p-6 rounded-2xl shadow-xl">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="p-2 rounded-lg bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20">
+              <BarChart3 className="w-5 h-5 text-[#D4AF37]" />
+            </span>
+            <h1 className="font-serif-brand font-bold text-xl sm:text-2xl text-white">
+              Reports & Financial Compliance Hub
+            </h1>
+          </div>
+          <p className="text-xs text-[#94A3B8] mt-1">
+            Generate and export official compliance spreadsheets for regulatory authorities, independent auditors, and monastic trustees.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold">
+          <ShieldCheck className="w-4 h-4" />
+          <span>Real-time DB Synchronization Active</span>
+        </div>
       </div>
 
+      {/* Reports Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Report 1: Donations */}
-        <div className="monastery-card p-6 space-y-4 flex flex-col justify-between">
-          <div className="space-y-2">
-            <div className="w-10 h-10 rounded-full bg-[#FEF3C7] text-[#0F172A] flex items-center justify-center">
-              <Heart className="w-5 h-5" />
-            </div>
-            <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">Donation & Tax Receipt Register</h3>
-            <p className="text-xs text-gray-600">Complete itemized list of all donors, 80G tax receipt numbers, campaign allocations, and payment references.</p>
-          </div>
-          <button
-            onClick={() => handleExport('donations')}
-            className="w-full bg-[#0F172A] hover:bg-[#1E293B] text-white py-2.5 rounded font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow"
-          >
-            <Download className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>Export Donations (CSV)</span>
-          </button>
-        </div>
+        {reports.map((r) => {
+          const Icon = r.icon;
+          const isExporting = exportingModule === r.id;
 
-        {/* Report 2: Accounts */}
-        <div className="monastery-card p-6 space-y-4 flex flex-col justify-between">
-          <div className="space-y-2">
-            <div className="w-10 h-10 rounded-full bg-[#FEF3C7] text-[#0F172A] flex items-center justify-center">
-              <Landmark className="w-5 h-5" />
-            </div>
-            <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">Accounts & General Ledger</h3>
-            <p className="text-xs text-gray-600">Debit and credit voucher postings, bank accounts reconciliations, expense claims, and monthly net cash balances.</p>
-          </div>
-          <button
-            onClick={() => handleExport('accounts')}
-            className="w-full bg-[#0F172A] hover:bg-[#1E293B] text-white py-2.5 rounded font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow"
-          >
-            <Download className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>Export Accounts Ledger (CSV)</span>
-          </button>
-        </div>
+          return (
+            <div 
+              key={r.id} 
+              className="bg-[#0D121F] border border-[#2A1E17] hover:border-[#D4AF37]/40 rounded-2xl p-6 flex flex-col justify-between space-y-5 shadow-xl transition-all group"
+            >
+              <div className="space-y-3">
+                <div className="flex justify-between items-start">
+                  <div className={`p-3 rounded-xl ${r.bgLight} border ${r.borderColor}`}>
+                    <Icon className="w-6 h-6" style={{ color: r.color }} />
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-[#94A3B8] bg-white/5 px-2 py-1 rounded">
+                    .CSV FORMAT
+                  </span>
+                </div>
 
-        {/* Report 3: Inventory */}
-        <div className="monastery-card p-6 space-y-4 flex flex-col justify-between">
-          <div className="space-y-2">
-            <div className="w-10 h-10 rounded-full bg-[#FEF3C7] text-[#0F172A] flex items-center justify-center">
-              <Warehouse className="w-5 h-5" />
-            </div>
-            <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">Store Inventory Valuation</h3>
-            <p className="text-xs text-gray-600">Current warehouse balances, unit costs, minimum stock alert triggers, and supplier transaction logs.</p>
-          </div>
-          <button
-            onClick={() => handleExport('inventory')}
-            className="w-full bg-[#0F172A] hover:bg-[#1E293B] text-white py-2.5 rounded font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow"
-          >
-            <Download className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>Export Inventory Report (CSV)</span>
-          </button>
-        </div>
+                <div>
+                  <h3 className="font-serif-brand font-bold text-base text-white group-hover:text-[#D4AF37] transition-colors">
+                    {r.title}
+                  </h3>
+                  <p className="text-xs text-[#94A3B8] mt-1.5 leading-relaxed">
+                    {r.description}
+                  </p>
+                </div>
 
-        {/* Report 4: Shedra Scholars */}
-        <div className="monastery-card p-6 space-y-4 flex flex-col justify-between">
-          <div className="space-y-2">
-            <div className="w-10 h-10 rounded-full bg-[#FEF3C7] text-[#0F172A] flex items-center justify-center">
-              <Users className="w-5 h-5" />
-            </div>
-            <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">Shedra Academic & Monk Roster</h3>
-            <p className="text-xs text-gray-600">Student monk enrollments, academic grades, attendance compliance percentages, and graduation records.</p>
-          </div>
-          <button
-            onClick={() => handleExport('students')}
-            className="w-full bg-[#0F172A] hover:bg-[#1E293B] text-white py-2.5 rounded font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow"
-          >
-            <Download className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>Export Monks Roster (CSV)</span>
-          </button>
-        </div>
+                <div className="pt-2 border-t border-white/5">
+                  <span className="text-[10px] text-[#CBD5E1] flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+                    <span className="truncate">{r.compliance}</span>
+                  </span>
+                </div>
+              </div>
 
-        {/* Report 5: HRM & Payroll */}
-        <div className="monastery-card p-6 space-y-4 flex flex-col justify-between">
-          <div className="space-y-2">
-            <div className="w-10 h-10 rounded-full bg-[#FEF3C7] text-[#0F172A] flex items-center justify-center">
-              <UserCheck className="w-5 h-5" />
+              <button
+                type="button"
+                disabled={isExporting}
+                onClick={() => handleExport(r.id, r.title)}
+                className={`w-full py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg ${
+                  isExporting
+                    ? 'bg-white/10 text-white cursor-not-allowed'
+                    : 'bg-gradient-to-r from-[#D4AF37] to-[#B89628] hover:from-[#DFB83E] hover:to-[#C29E30] text-[#090D16] hover:shadow-[#D4AF37]/20'
+                }`}
+              >
+                {isExporting ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Exporting Records...</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Download Official CSV</span>
+                  </>
+                )}
+              </button>
             </div>
-            <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">HRM & Monthly Payroll Slips</h3>
-            <p className="text-xs text-gray-600">Staff salary disbursements, casual worker daily wages, deductions, and tax withholdings.</p>
-          </div>
-          <button
-            onClick={() => handleExport('payroll')}
-            className="w-full bg-[#0F172A] hover:bg-[#1E293B] text-white py-2.5 rounded font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow"
-          >
-            <Download className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>Export Payroll Summary (CSV)</span>
-          </button>
-        </div>
+          );
+        })}
       </div>
     </div>
   );

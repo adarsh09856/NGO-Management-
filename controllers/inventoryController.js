@@ -10,23 +10,40 @@ async function getInventoryDashboard(req, res) {
     const [outOfStockRow] = await pool.query(`SELECT COUNT(*) as count FROM store_items WHERE current_stock = 0`);
     const [totalValueRow] = await pool.query(`SELECT COALESCE(SUM(current_stock * unit_cost), 0) as total_val FROM store_items`);
 
-    const totalItems = totalItemsRow[0].count || 356;
-    const lowStockItems = lowStockRow[0].count || 23;
-    const outOfStockItems = outOfStockRow[0].count || 7;
-    const totalStockValue = parseFloat(totalValueRow[0].total_val) || 872450.00;
+    const totalItems = totalItemsRow[0].count || 0;
+    const lowStockItems = lowStockRow[0].count || 0;
+    const outOfStockItems = outOfStockRow[0].count || 0;
+    const inStockItems = Math.max(0, totalItems - lowStockItems - outOfStockItems);
+    const totalStockValue = parseFloat(totalValueRow[0].total_val) || 0;
+
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
 
     // Monthly Stock In & Out
-    const stockInThisMonth = 235600.00;
-    const stockInEntries = 12;
-    const stockOutThisMonth = 148900.00;
-    const stockOutEntries = 18;
+    const [stockInRow] = await pool.query(
+      `SELECT COALESCE(SUM(total_cost), 0) as total_val, COUNT(*) as count 
+       FROM stock_txn 
+       WHERE txn_type = 'stock_in' AND MONTH(txn_date) = ? AND YEAR(txn_date) = ?`,
+      [currentMonth, currentYear]
+    );
+    const stockInThisMonth = parseFloat(stockInRow[0].total_val) || 0;
+    const stockInEntries = stockInRow[0].count || 0;
+
+    const [stockOutRow] = await pool.query(
+      `SELECT COALESCE(SUM(total_cost), 0) as total_val, COUNT(*) as count 
+       FROM stock_txn 
+       WHERE txn_type = 'stock_out' AND MONTH(txn_date) = ? AND YEAR(txn_date) = ?`,
+      [currentMonth, currentYear]
+    );
+    const stockOutThisMonth = parseFloat(stockOutRow[0].total_val) || 0;
+    const stockOutEntries = stockOutRow[0].count || 0;
 
     // Stock Status Distribution
     const stockStatus = {
-      inStock: 296,
-      lowStock: 23,
-      outOfStock: 7,
-      discontinued: 30
+      inStock: inStockItems,
+      lowStock: lowStockItems,
+      outOfStock: outOfStockItems,
+      discontinued: 0
     };
 
     // Top Categories

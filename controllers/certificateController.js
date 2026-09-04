@@ -68,7 +68,7 @@ async function downloadCertificatePdf(req, res) {
 async function revokeCertificate(req, res) {
   try {
     const { id } = req.params;
-    const { revocationReason } = req.body;
+    const revocationReason = req.body.revocationReason || req.body.reason;
 
     await pool.query(
       `UPDATE certificates 
