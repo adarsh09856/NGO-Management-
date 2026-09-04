@@ -83,6 +83,9 @@ export default function Navbar({ onOpenDonate }) {
             <Link to="/gallery" className="hover:text-[#D4AF37] transition-colors hidden md:inline">
               Gallery
             </Link>
+            <Link to="/student" className="text-[#D4AF37] hover:text-white font-semibold transition-colors hidden sm:inline">
+              ☸ Shedra Monk Portal
+            </Link>
 
             {/* Language Switcher */}
             <div className="flex items-center space-x-1 text-[#D4AF37] border-l border-[#1E293B] pl-2.5">
@@ -293,11 +296,13 @@ export default function Navbar({ onOpenDonate }) {
           {/* User Portal Link or Login Button */}
           {user ? (
             <Link
-              to={isAdmin ? '/admin' : '/user'}
+              to={isAdmin ? '/admin' : (user?.role?.slug === 'student_monk' ? '/student' : '/user')}
               className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-[#F8FAFC] border border-[#D4AF37] text-[#0F172A] hover:bg-[#FEF3C7] transition-all shadow-sm"
             >
               {isAdmin ? <ShieldCheck className="w-3.5 h-3.5 text-[#0F172A]" /> : <User className="w-3.5 h-3.5 text-[#0F172A]" />}
-              <span className="max-w-[80px] sm:max-w-[110px] truncate">{isAdmin ? 'Admin Portal' : 'User Panel'}</span>
+              <span className="max-w-[80px] sm:max-w-[110px] truncate">
+                {isAdmin ? 'Admin Portal' : (user?.role?.slug === 'student_monk' ? 'Monk Portal' : 'User Panel')}
+              </span>
             </Link>
           ) : (
             <Link

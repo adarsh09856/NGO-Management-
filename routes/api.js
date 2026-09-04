@@ -129,12 +129,25 @@ router.post('/certificates/:id/revoke', authenticateToken, requireRole('super_ad
 // ==========================================
 router.get('/lms/overview', authenticateToken, lmsCtrl.getLmsOverview);
 router.get('/lms/courses', authenticateToken, lmsCtrl.getCourses);
+router.get('/lms/courses/:id', authenticateToken, lmsCtrl.getCourseById);
 router.post('/lms/courses', authenticateToken, lmsCtrl.createCourse);
 router.get('/lms/batches', authenticateToken, lmsCtrl.getBatches);
+router.post('/lms/batches', authenticateToken, lmsCtrl.createBatch);
 router.get('/lms/enrollments', authenticateToken, lmsCtrl.getEnrollments);
+router.post('/lms/enrollments', authenticateToken, lmsCtrl.createEnrollment);
 router.put('/lms/enrollments/:id/progress', authenticateToken, lmsCtrl.updateEnrollmentProgress);
 router.get('/lms/students', authenticateToken, lmsCtrl.getStudents);
 router.post('/lms/students', authenticateToken, lmsCtrl.createStudent);
+
+// ==========================================
+// 10.2. MONASTIC STUDENT & SCHOLAR PORTAL
+// ==========================================
+router.get('/student/dashboard', authenticateToken, lmsCtrl.getStudentDashboard);
+router.get('/student/courses', authenticateToken, lmsCtrl.getStudentCourses);
+router.get('/student/courses/:id', authenticateToken, lmsCtrl.getStudentCourseById);
+router.post('/student/enroll', authenticateToken, lmsCtrl.studentSelfEnroll);
+router.post('/student/courses/:id/progress', authenticateToken, lmsCtrl.updateStudentLessonProgress);
+router.get('/student/certificates', authenticateToken, lmsCtrl.getStudentCertificates);
 
 // ==========================================
 // 11. HRM & ATTENDANCE

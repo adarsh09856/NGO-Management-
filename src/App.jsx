@@ -59,6 +59,13 @@ import StudentsMonks from './pages/admin/StudentsMonks';
 import LMSOverview from './pages/admin/LMSOverview';
 import Certificates from './pages/admin/Certificates';
 
+// Dedicated Student / Monk Portal
+import StudentLayout from './pages/student/StudentLayout';
+import StudentDashboard from './pages/student/StudentDashboard';
+import StudentCourses from './pages/student/StudentCourses';
+import StudentCourseDetail from './pages/student/StudentCourseDetail';
+import StudentCertificates from './pages/student/StudentCertificates';
+
 // Protected Route Helpers
 function RequireAdmin({ children }) {
   const { user, loading, isAdmin } = useAuth();
@@ -69,6 +76,13 @@ function RequireAdmin({ children }) {
 
 function RequireUser({ children }) {
   const { user, loading } = useAuth();
+  if (loading) return <div className="p-8 text-center text-gray-500">Authenticating...</div>;
+  if (!user) return <Navigate to="/login" replace />;
+  return children;
+}
+
+function RequireStudent({ children }) {
+  const { user, loading, isStudent } = useAuth();
   if (loading) return <div className="p-8 text-center text-gray-500">Authenticating...</div>;
   if (!user) return <Navigate to="/login" replace />;
   return children;
@@ -135,9 +149,22 @@ export default function App() {
           <Route path="profile" element={<UserDashboard />} />
         </Route>
 
-        {/* Backward Compatibility Redirects for old separate portals */}
-        <Route path="/donor/*" element={<Navigate to="/user" replace />} />
-        <Route path="/student/*" element={<Navigate to="/learning" replace />} />
+        {/* ========================================================= */}
+        {/* 3.1. DEDICATED MONASTIC STUDENT / SCHOLAR PORTAL          */}
+        {/* ========================================================= */}
+        <Route
+          path="/student/*"
+          element={
+            <RequireStudent>
+              <StudentLayout />
+            </RequireStudent>
+          }
+        >
+          <Route index element={<StudentDashboard />} />
+          <Route path="courses" element={<StudentCourses />} />
+          <Route path="courses/:id" element={<StudentCourseDetail />} />
+          <Route path="certificates" element={<StudentCertificates />} />
+        </Route>
 
         {/* ========================================================= */}
         {/* 4. ADMIN & STAFF ROLE-RESTRICTED PORTAL                   */}

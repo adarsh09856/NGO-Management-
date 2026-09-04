@@ -352,15 +352,329 @@ async function getStudentCertificates(req, res) {
   }
 }
 
+// 7. Create Batch & Enrollments (Admin Controls)
+async function createBatch(req, res) {
+  try {
+    const { courseId, batchName, batchCode, startDate, endDate, capacity = 30 } = req.body;
+    if (!courseId || !batchName) {
+      return res.status(400).json({ success: false, message: 'Course and batch name are required' });
+    }
+    const finalCode = batchCode || `BATCH-${Date.now().toString().slice(-5)}`;
+    const [result] = await pool.query(
+      `INSERT INTO batches (course_id, batch_name, batch_code, start_date, end_date, capacity, status)
+       VALUES (?, ?, ?, ?, ?, ?, 'ongoing')`,
+      [courseId, batchName, finalCode, startDate || new Date().toISOString().slice(0, 10), endDate || null, capacity]
+    );
+    return res.status(201).json({ success: true, message: 'Batch created successfully', id: result.insertId, batchCode: finalCode });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to create batch: ' + error.message });
+  }
+}
+
+async function createEnrollment(req, res) {
+  try {
+    const { studentId, courseId, batchId } = req.body;
+    if (!studentId || !courseId) {
+      return res.status(400).json({ success: false, message: 'Student and Course are required' });
+    }
+    const [existing] = await pool.query(
+      `SELECT id FROM enrollments WHERE student_id = ? AND course_id = ? AND status != 'dropped'`,
+      [studentId, courseId]
+    );
+    if (existing.length > 0) {
+      return res.status(400).json({ success: false, message: 'Monk scholar is already enrolled in this course' });
+    }
+
+    const [result] = await pool.query(
+      `INSERT INTO enrollments (student_id, course_id, batch_id, enrollment_date, progress_percent, attendance_percent, grade, status)
+       VALUES (?, ?, ?, CURDATE(), 0, 100, 'In Progress', 'in_progress')`,
+      [studentId, courseId, batchId || null]
+    );
+    return res.status(201).json({ success: true, message: 'Scholar enrolled into course successfully', id: result.insertId });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to enroll scholar: ' + error.message });
+  }
+}
+
+async function getCourseById(req, res) {
+  try {
+    const { id } = req.params;
+    const [courses] = await pool.query(
+      `SELECT c.*, COUNT(DISTINCT e.id) as enrolled_count
+       FROM courses c
+       LEFT JOIN enrollments e ON c.id = e.course_id
+       WHERE c.id = ?
+       GROUP BY c.id`,
+      [id]
+    );
+    if (courses.length === 0) {
+      return res.status(404).json({ success: false, message: 'Course not found' });
+    }
+    const course = courses[0];
+    const [batches] = await pool.query(`SELECT * FROM batches WHERE course_id = ? ORDER BY start_date DESC`, [id]);
+    course.batches = batches;
+    return res.json({ success: true, data: course });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch course: ' + error.message });
+  }
+}
+
+// 8. Student Portal Interactive LMS
+async function getStudentCourses(req, res) {
+  try {
+    const userId = req.user.id;
+    let studentId = null;
+    const [monks] = await pool.query(`SELECT id FROM students_monks WHERE user_id = ? LIMIT 1`, [userId]);
+    if (monks.length > 0) {
+      studentId = monks[0].id;
+    } else {
+      const [firstMonk] = await pool.query(`SELECT id FROM students_monks LIMIT 1`);
+      if (firstMonk.length > 0) studentId = firstMonk[0].id;
+    }
+
+    let enrolledCourses = [];
+    if (studentId) {
+      const [enrollRows] = await pool.query(
+        `SELECT e.*, c.title as course_title, c.course_code, c.level, c.instructor_name, c.description, c.duration_months, c.total_credits, c.syllabus, b.batch_name
+         FROM enrollments e
+         JOIN courses c ON e.course_id = c.id
+         LEFT JOIN batches b ON e.batch_id = b.id
+         WHERE e.student_id = ?
+         ORDER BY e.status ASC, e.id DESC`,
+        [studentId]
+      );
+      enrolledCourses = enrollRows;
+    }
+
+    const [allCourses] = await pool.query(
+      `SELECT c.*, 
+              (SELECT COUNT(*) FROM enrollments WHERE course_id = c.id) as total_enrolled
+       FROM courses c
+       WHERE c.is_active = 1
+       ORDER BY c.id ASC`
+    );
+
+    return res.json({
+      success: true,
+      data: {
+        enrolledCourses,
+        availableCourses: allCourses,
+        studentId
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch student courses: ' + error.message });
+  }
+}
+
+async function getStudentCourseById(req, res) {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+    let studentId = null;
+    const [monks] = await pool.query(`SELECT id FROM students_monks WHERE user_id = ? LIMIT 1`, [userId]);
+    if (monks.length > 0) {
+      studentId = monks[0].id;
+    } else {
+      const [firstMonk] = await pool.query(`SELECT id FROM students_monks LIMIT 1`);
+      if (firstMonk.length > 0) studentId = firstMonk[0].id;
+    }
+
+    const [courses] = await pool.query(`SELECT * FROM courses WHERE id = ?`, [id]);
+    if (courses.length === 0) {
+      return res.status(404).json({ success: false, message: 'Course not found' });
+    }
+    const course = courses[0];
+
+    let enrollment = null;
+    if (studentId) {
+      const [eRows] = await pool.query(
+        `SELECT e.*, cert.certificate_number, cert.id as cert_id
+         FROM enrollments e
+         LEFT JOIN certificates cert ON e.id = cert.enrollment_id AND cert.status = 'VALID'
+         WHERE e.student_id = ? AND e.course_id = ? LIMIT 1`,
+        [studentId, id]
+      );
+      if (eRows.length > 0) enrollment = eRows[0];
+    }
+
+    let lessons = [];
+    if (course.syllabus) {
+      const lines = course.syllabus.split('\n').map(l => l.trim()).filter(Boolean);
+      lessons = lines.map((line, idx) => ({
+        id: idx + 1,
+        title: line.replace(/^[0-9]+[.\-)]\s*/, ''),
+        order: idx + 1,
+        estimatedMinutes: 45,
+        content: `Sacred Buddhist study module: ${line}. Focus on scriptural analysis, meditative contemplation, root stanza recitation, and dialectical debate.`
+      }));
+    } else {
+      lessons = [
+        { id: 1, title: 'Introduction & Lineage Foundations', order: 1, estimatedMinutes: 45, content: 'Orientation to sacred lineage, refuge vow recitation, and Bodhicitta intention.' },
+        { id: 2, title: 'Core Philosophical Text Analysis', order: 2, estimatedMinutes: 60, content: 'Direct verse-by-verse commentary with root Tibetan texts.' },
+        { id: 3, title: 'Meditation Practice & Contemplation', order: 3, estimatedMinutes: 45, content: 'Guided Shamatha and Vipassana contemplation session.' },
+        { id: 4, title: 'Review & Dialectical Debate Examination', order: 4, estimatedMinutes: 90, content: 'Comprehensive review and monastic debate assessment.' }
+      ];
+    }
+
+    return res.json({
+      success: true,
+      data: {
+        course,
+        enrollment,
+        lessons
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch course details: ' + error.message });
+  }
+}
+
+async function studentSelfEnroll(req, res) {
+  try {
+    const { courseId, batchId } = req.body;
+    const userId = req.user.id;
+    let studentId = null;
+    const [monks] = await pool.query(`SELECT id FROM students_monks WHERE user_id = ? LIMIT 1`, [userId]);
+    if (monks.length > 0) {
+      studentId = monks[0].id;
+    } else {
+      const [firstMonk] = await pool.query(`SELECT id FROM students_monks LIMIT 1`);
+      if (firstMonk.length > 0) studentId = firstMonk[0].id;
+    }
+
+    if (!studentId) {
+      return res.status(400).json({ success: false, message: 'No registered monk scholar profile linked to your user account' });
+    }
+
+    const [existing] = await pool.query(
+      `SELECT id FROM enrollments WHERE student_id = ? AND course_id = ? AND status != 'dropped'`,
+      [studentId, courseId]
+    );
+    if (existing.length > 0) {
+      return res.status(400).json({ success: false, message: 'You are already enrolled in this course' });
+    }
+
+    const [result] = await pool.query(
+      `INSERT INTO enrollments (student_id, course_id, batch_id, enrollment_date, progress_percent, attendance_percent, grade, status)
+       VALUES (?, ?, ?, CURDATE(), 0, 100, 'In Progress', 'in_progress')`,
+      [studentId, courseId, batchId || null]
+    );
+
+    return res.status(201).json({ success: true, message: 'Enrolled in Shedra course successfully!', id: result.insertId });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Enrollment failed: ' + error.message });
+  }
+}
+
+async function updateStudentLessonProgress(req, res) {
+  try {
+    const { id: courseId } = req.params;
+    const { totalLessons = 4 } = req.body;
+    const userId = req.user.id;
+
+    let studentId = null;
+    const [monks] = await pool.query(`SELECT id FROM students_monks WHERE user_id = ? LIMIT 1`, [userId]);
+    if (monks.length > 0) {
+      studentId = monks[0].id;
+    } else {
+      const [firstMonk] = await pool.query(`SELECT id FROM students_monks LIMIT 1`);
+      if (firstMonk.length > 0) studentId = firstMonk[0].id;
+    }
+
+    if (!studentId) {
+      return res.status(400).json({ success: false, message: 'Student profile not found' });
+    }
+
+    const [eRows] = await pool.query(
+      `SELECT * FROM enrollments WHERE student_id = ? AND course_id = ? LIMIT 1`,
+      [studentId, courseId]
+    );
+    if (eRows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Enrollment record not found' });
+    }
+
+    const enrollment = eRows[0];
+    const currentProgress = enrollment.progress_percent || 0;
+    const increment = Math.round(100 / Math.max(1, totalLessons));
+    const newProgress = Math.min(100, currentProgress + increment);
+    const isComplete = newProgress >= 100;
+
+    const newStatus = isComplete ? 'completed' : 'in_progress';
+    const finalGrade = isComplete ? 'Distinction' : (enrollment.grade || 'In Progress');
+
+    await pool.query(
+      `UPDATE enrollments 
+       SET progress_percent = ?, 
+           status = ?, 
+           grade = ?,
+           completed_at = CASE WHEN ? THEN NOW() ELSE completed_at END,
+           certificate_issued = CASE WHEN ? THEN 1 ELSE certificate_issued END
+       WHERE id = ?`,
+      [newProgress, newStatus, finalGrade, isComplete, isComplete, enrollment.id]
+    );
+
+    if (isComplete) {
+      const [existingCert] = await pool.query(`SELECT id FROM certificates WHERE enrollment_id = ?`, [enrollment.id]);
+      if (existingCert.length === 0) {
+        const certNumber = `CERT-DPL-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 900) + 100)}`;
+        const issueDate = new Date().toISOString().slice(0, 10);
+        const [certRes] = await pool.query(
+          `INSERT INTO certificates (certificate_number, enrollment_id, student_id, course_id, issue_date, grade, signed_by, status)
+           VALUES (?, ?, ?, ?, ?, ?, 'Khenpo Tashi Dorji, Abbot & Principal', 'VALID')`,
+          [certNumber, enrollment.id, studentId, courseId, issueDate, finalGrade]
+        );
+
+        const [courseRows] = await pool.query(`SELECT title FROM courses WHERE id = ?`, [courseId]);
+        const [monkRows] = await pool.query(`SELECT monastic_name, secular_name, roll_number FROM students_monks WHERE id = ?`, [studentId]);
+        try {
+          const pdfData = {
+            certificate_number: certNumber,
+            student_name: monkRows[0]?.monastic_name || monkRows[0]?.secular_name,
+            roll_number: monkRows[0]?.roll_number,
+            course_title: courseRows[0]?.title,
+            grade: finalGrade,
+            issue_date: issueDate,
+            signed_by: 'Khenpo Tashi Dorji, Abbot & Principal'
+          };
+          const pdfResult = await generateCertificatePdf(pdfData);
+          await pool.query(`UPDATE certificates SET pdf_url = ? WHERE id = ?`, [pdfResult.relativeUrl, certRes.insertId]);
+        } catch (pdfErr) {
+          console.error('[Cert PDF Error]:', pdfErr.message);
+        }
+      }
+    }
+
+    return res.json({
+      success: true,
+      message: isComplete ? 'Congratulations! All syllabus lessons mastered and certificate awarded!' : 'Lesson progress updated successfully!',
+      data: {
+        progressPercent: newProgress,
+        status: newStatus,
+        isComplete
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update lesson progress: ' + error.message });
+  }
+}
+
 module.exports = {
   getLmsOverview,
   getCourses,
   createCourse,
+  getCourseById,
   getBatches,
+  createBatch,
   getEnrollments,
+  createEnrollment,
   updateEnrollmentProgress,
   getStudents,
   createStudent,
   getStudentDashboard,
-  getStudentCertificates
+  getStudentCertificates,
+  getStudentCourses,
+  getStudentCourseById,
+  studentSelfEnroll,
+  updateStudentLessonProgress
 };

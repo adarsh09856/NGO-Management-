@@ -27,6 +27,8 @@ export default function Login() {
 
       if (['super_admin', 'accountant', 'staff', 'hr_manager'].includes(user.role?.slug)) {
         navigate('/admin');
+      } else if (user.role?.slug === 'student_monk') {
+        navigate('/student');
       } else {
         navigate('/user');
       }
