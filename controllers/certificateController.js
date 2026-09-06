@@ -140,15 +140,107 @@ async function issueCertificate(req, res) {
     if (!studentId || !courseId) {
       return res.status(400).json({ success: false, message: 'Student ID and Course ID are required' });
     }
+
+    // Ensure enrollment exists
+    let enrollmentId = null;
+    const [enrRows] = await pool.query('SELECT id FROM enrollments WHERE student_id = ? AND course_id = ?', [studentId, courseId]);
+    if (enrRows.length > 0) {
+      enrollmentId = enrRows[0].id;
+    } else {
+      const [newEnr] = await pool.query(
+        'INSERT INTO enrollments (student_id, course_id, enrollment_date, status, certificate_issued) VALUES (?, ?, CURDATE(), "completed", 1)',
+        [studentId, courseId]
+      );
+      enrollmentId = newEnr.insertId;
+    }
+
     const certNumber = `CERT-DPL-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
     const [result] = await pool.query(
-      `INSERT INTO certificates (certificate_number, student_id, course_id, issue_date, grade, signed_by, status)
-       VALUES (?, ?, ?, ?, ?, ?, 'ACTIVE')`,
-      [certNumber, studentId, courseId, issueDate, grade, signedBy]
+      `INSERT INTO certificates (certificate_number, enrollment_id, student_id, course_id, issue_date, grade, signed_by, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'VALID')`,
+      [certNumber, enrollmentId, studentId, courseId, issueDate, grade, signedBy]
     );
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'certificates',
+      action: 'create',
+      recordId: result.insertId,
+      details: { certNumber, studentId, courseId, grade, signedBy }
+    });
+
     return res.status(201).json({ success: true, message: 'Certificate issued successfully', id: result.insertId, certNumber });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to issue certificate: ' + error.message });
+  }
+}
+
+// Update Certificate
+async function updateCertificate(req, res) {
+  try {
+    const { id } = req.params;
+    const { grade, signed_by, signedBy, issue_date, issueDate } = req.body;
+    const finalSignedBy = signed_by || signedBy;
+    const finalIssueDate = issue_date || issueDate;
+
+    const [existing] = await pool.query('SELECT * FROM certificates WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Certificate not found' });
+    }
+
+    await pool.query(
+      `UPDATE certificates 
+       SET grade = COALESCE(?, grade),
+           signed_by = COALESCE(?, signed_by),
+           issue_date = COALESCE(?, issue_date)
+       WHERE id = ?`,
+      [grade || null, finalSignedBy || null, finalIssueDate || null, id]
+    );
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'certificates',
+      action: 'update',
+      recordId: id,
+      details: { grade, signed_by: finalSignedBy, issue_date: finalIssueDate }
+    });
+
+    return res.json({ success: true, message: 'Certificate updated successfully' });
+  } catch (error) {
+    console.error('[Update Certificate Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to update certificate: ' + error.message });
+  }
+}
+
+// Delete Certificate
+async function deleteCertificate(req, res) {
+  try {
+    const { id } = req.params;
+    const [existing] = await pool.query('SELECT * FROM certificates WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Certificate not found' });
+    }
+
+    await pool.query('DELETE FROM certificates WHERE id = ?', [id]);
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'certificates',
+      action: 'delete',
+      recordId: id,
+      details: { certNumber: existing[0].certificate_number }
+    });
+
+    return res.json({ success: true, message: 'Certificate deleted successfully' });
+  } catch (error) {
+    console.error('[Delete Certificate Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to delete certificate' });
   }
 }
 
@@ -157,5 +249,7 @@ module.exports = {
   downloadCertificatePdf,
   revokeCertificate,
   verifyCertificate,
-  issueCertificate
+  issueCertificate,
+  updateCertificate,
+  deleteCertificate
 };

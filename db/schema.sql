@@ -594,7 +594,7 @@ CREATE TABLE IF NOT EXISTS payroll_runs (
   total_net_payroll DECIMAL(15,2) DEFAULT 0.00,
   total_casual_labor_cost DECIMAL(15,2) DEFAULT 0.00,
   grand_total DECIMAL(15,2) DEFAULT 0.00,
-  status ENUM('draft', 'processed', 'paid') DEFAULT 'processed',
+  status ENUM('draft', 'processed', 'paid', 'void') DEFAULT 'processed',
   processed_by INT NULL,
   processed_at DATETIME NULL,
   notes TEXT,

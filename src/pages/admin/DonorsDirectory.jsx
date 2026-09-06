@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, Mail, Phone, MapPin, Heart, Search } from 'lucide-react';
+import { Users, Plus, Mail, Phone, MapPin, Heart, Search, Edit2, Trash2, X, AlertCircle } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 
@@ -16,6 +16,24 @@ export default function DonorsDirectory() {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [panTaxId, setPanTaxId] = useState('');
+
+  // Edit Donor Modal
+  const [editingDonor, setEditingDonor] = useState(null);
+  const [editFullName, setEditFullName] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [editAddress, setEditAddress] = useState('');
+  const [editCity, setEditCity] = useState('');
+  const [editState, setEditState] = useState('');
+  const [editCountry, setEditCountry] = useState('Bhutan');
+  const [editPostalCode, setEditPostalCode] = useState('');
+  const [editPanTaxId, setEditPanTaxId] = useState('');
+  const [editDonorType, setEditDonorType] = useState('individual');
+  const [editNotes, setEditNotes] = useState('');
+
+  // Delete Confirmation Modal
+  const [deletingDonor, setDeletingDonor] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchDonors = async () => {
     try {
@@ -55,6 +73,65 @@ export default function DonorsDirectory() {
       }
     } catch (err) {
       error(err.response?.data?.message || 'Failed to create donor');
+    }
+  };
+
+  const openEditModal = (donor) => {
+    setEditingDonor(donor);
+    setEditFullName(donor.full_name || '');
+    setEditEmail(donor.email || '');
+    setEditPhone(donor.phone || '');
+    setEditAddress(donor.address || '');
+    setEditCity(donor.city || '');
+    setEditState(donor.state || '');
+    setEditCountry(donor.country || 'Bhutan');
+    setEditPostalCode(donor.postal_code || '');
+    setEditPanTaxId(donor.pan_or_tax_id || '');
+    setEditDonorType(donor.donor_type || 'individual');
+    setEditNotes(donor.notes || '');
+  };
+
+  const handleUpdateDonor = async (e) => {
+    e.preventDefault();
+    if (!editingDonor) return;
+    try {
+      const res = await api.put(`/donors/${editingDonor.id}`, {
+        fullName: editFullName,
+        email: editEmail,
+        phone: editPhone,
+        address: editAddress,
+        city: editCity,
+        state: editState,
+        country: editCountry,
+        postalCode: editPostalCode,
+        panOrTaxId: editPanTaxId,
+        donorType: editDonorType,
+        notes: editNotes
+      });
+      if (res.data.success) {
+        success('Donor record updated successfully!');
+        setEditingDonor(null);
+        fetchDonors();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to update donor');
+    }
+  };
+
+  const handleDeleteDonor = async () => {
+    if (!deletingDonor) return;
+    try {
+      setIsDeleting(true);
+      const res = await api.delete(`/donors/${deletingDonor.id}`);
+      if (res.data.success) {
+        success('Donor record deleted successfully!');
+        setDeletingDonor(null);
+        fetchDonors();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Cannot delete donor');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -126,9 +203,27 @@ export default function DonorsDirectory() {
                       <p className="text-[10px] text-gray-500 capitalize">{d.donor_type} Donor</p>
                     </div>
                   </div>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                    {d.total_donations_count || 0} Gifts
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                      {d.total_donations_count || 0} Gifts
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => openEditModal(d)}
+                      title="Edit Donor"
+                      className="p-1 rounded text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeletingDonor(d)}
+                      title="Delete Donor"
+                      className="p-1 rounded text-rose-500 hover:text-rose-700 hover:bg-rose-50 transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="space-y-1 text-xs text-gray-600 pt-2 border-t">
@@ -246,6 +341,173 @@ export default function DonorsDirectory() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Donor Modal */}
+      {editingDonor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-md w-full space-y-4">
+            <div className="flex justify-between items-center border-b pb-2">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
+                Edit Donor Profile
+              </h3>
+              <button onClick={() => setEditingDonor(null)} className="text-gray-400 hover:text-gray-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateDonor} className="space-y-3 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Donor Type</label>
+                  <select
+                    value={editDonorType}
+                    onChange={(e) => setEditDonorType(e.target.value)}
+                    className="w-full p-2.5 rounded border border-gray-300 bg-white"
+                  >
+                    <option value="individual">Individual</option>
+                    <option value="organization">Organization</option>
+                    <option value="anonymous">Anonymous</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Full Legal Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editFullName}
+                    onChange={(e) => setEditFullName(e.target.value)}
+                    className="w-full p-2.5 rounded border border-gray-300"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    className="w-full p-2 rounded border border-gray-300"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Phone</label>
+                  <input
+                    type="tel"
+                    value={editPhone}
+                    onChange={(e) => setEditPhone(e.target.value)}
+                    className="w-full p-2 rounded border border-gray-300"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Street Address</label>
+                <input
+                  type="text"
+                  value={editAddress}
+                  onChange={(e) => setEditAddress(e.target.value)}
+                  className="w-full p-2 rounded border border-gray-300"
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">City</label>
+                  <input
+                    type="text"
+                    value={editCity}
+                    onChange={(e) => setEditCity(e.target.value)}
+                    className="w-full p-2 rounded border border-gray-300"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Country</label>
+                  <input
+                    type="text"
+                    value={editCountry}
+                    onChange={(e) => setEditCountry(e.target.value)}
+                    className="w-full p-2 rounded border border-gray-300"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">PAN / Tax ID</label>
+                  <input
+                    type="text"
+                    value={editPanTaxId}
+                    onChange={(e) => setEditPanTaxId(e.target.value)}
+                    className="w-full p-2 rounded border border-gray-300"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Monastic Notes</label>
+                <textarea
+                  rows={2}
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
+                  className="w-full p-2 rounded border border-gray-300"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingDonor(null)}
+                  className="flex-1 py-2 bg-gray-100 rounded text-gray-700 font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2 bg-[#E11D48] text-white rounded font-bold hover:bg-[#BE123C]"
+                >
+                  Update Donor
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Donor Confirmation Modal */}
+      {deletingDonor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-sm w-full space-y-4 text-center">
+            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
+                Delete Donor Record?
+              </h3>
+              <p className="text-xs text-gray-500 mt-1">
+                Are you sure you want to remove <span className="font-bold text-gray-900">{deletingDonor.full_name}</span>? Donors with recorded donation history cannot be deleted.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => setDeletingDonor(null)}
+                className="flex-1 py-2 bg-gray-100 rounded text-gray-700 font-bold text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleDeleteDonor}
+                className="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded font-bold text-xs"
+              >
+                {isDeleting ? 'Deleting...' : 'Confirm Delete'}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -130,9 +130,83 @@ async function broadcastCampaign(req, res) {
   }
 }
 
+// 4. Update Contact
+async function updateContact(req, res) {
+  try {
+    const { id } = req.params;
+    const { contactType, fullName, organizationName, email, phone, address, city, country, tags, lifetimeValue } = req.body;
+
+    const [existing] = await pool.query('SELECT * FROM contacts WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Contact not found' });
+    }
+
+    await pool.query(
+      `UPDATE contacts 
+       SET contact_type = COALESCE(?, contact_type),
+           full_name = COALESCE(?, full_name),
+           organization_name = COALESCE(?, organization_name),
+           email = COALESCE(?, email),
+           phone = COALESCE(?, phone),
+           address = COALESCE(?, address),
+           city = COALESCE(?, city),
+           country = COALESCE(?, country),
+           tags = COALESCE(?, tags),
+           lifetime_value = COALESCE(?, lifetime_value),
+           updated_at = NOW()
+       WHERE id = ?`,
+      [contactType || null, fullName || null, organizationName || null, email || null, phone || null, address || null, city || null, country || null, tags || null, lifetimeValue !== undefined ? lifetimeValue : null, id]
+    );
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'crm',
+      action: 'update_contact',
+      recordId: id,
+      details: { fullName, email, contactType }
+    });
+
+    return res.json({ success: true, message: 'Contact updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update contact: ' + error.message });
+  }
+}
+
+// 5. Delete Contact
+async function deleteContact(req, res) {
+  try {
+    const { id } = req.params;
+    const [existing] = await pool.query('SELECT * FROM contacts WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Contact not found' });
+    }
+
+    await pool.query('DELETE FROM contact_communications WHERE contact_id = ?', [id]);
+    await pool.query('DELETE FROM contacts WHERE id = ?', [id]);
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'crm',
+      action: 'delete_contact',
+      recordId: id,
+      details: { fullName: existing[0].full_name, email: existing[0].email }
+    });
+
+    return res.json({ success: true, message: 'Contact deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to delete contact: ' + error.message });
+  }
+}
+
 module.exports = {
   getContacts,
   createContact,
+  updateContact,
+  deleteContact,
   getCommunicationsByContact,
   addCommunication,
   broadcastCampaign

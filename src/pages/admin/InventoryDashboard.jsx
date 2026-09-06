@@ -34,6 +34,31 @@ export default function InventoryDashboard() {
   const [stockInQty, setStockInQty] = useState(10);
   const [stockInRemarks, setStockInRemarks] = useState('');
 
+  // Edit Item Modal
+  const [editingItem, setEditingItem] = useState(null);
+  const [editItemName, setEditItemName] = useState('');
+  const [editCategoryId, setEditCategoryId] = useState('1');
+  const [editCurrentStock, setEditCurrentStock] = useState('0');
+  const [editMinStock, setEditMinStock] = useState('10');
+  const [editUnitCost, setEditUnitCost] = useState('0');
+  const [editDescription, setEditDescription] = useState('');
+  const [updatingItem, setUpdatingItem] = useState(false);
+
+  // Delete Item State
+  const [deletingItem, setDeletingItem] = useState(null);
+  const [isDeletingItem, setIsDeletingItem] = useState(false);
+
+  // Store Configuration Lookups Modal (Categories, Units, Suppliers, Locations)
+  const [showSetupModal, setShowSetupModal] = useState(false);
+  const [setupTab, setSetupTab] = useState('categories'); // 'categories' | 'units' | 'suppliers' | 'locations'
+  const [categoriesList, setCategoriesList] = useState([]);
+  const [unitsList, setUnitsList] = useState([]);
+  const [suppliersList, setSuppliersList] = useState([]);
+  const [locationsList, setLocationsList] = useState([]);
+  const [newLookupName, setNewLookupName] = useState('');
+  const [newLookupExtra, setNewLookupExtra] = useState(''); // symbol or code or contact
+  const [newLookupDesc, setNewLookupDesc] = useState('');
+
   // Fetch Inventory Dashboard & Items
   async function loadData() {
     try {
@@ -121,6 +146,119 @@ export default function InventoryDashboard() {
     }
   };
 
+  const openEditItem = (item) => {
+    setEditingItem(item);
+    setEditItemName(item.item_name || '');
+    setEditCategoryId(String(item.category_id || '1'));
+    setEditCurrentStock(String(item.current_stock || '0'));
+    setEditMinStock(String(item.min_stock || '10'));
+    setEditUnitCost(String(item.unit_cost || '0'));
+    setEditDescription(item.description || '');
+  };
+
+  const handleUpdateItemSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingItem) return;
+    try {
+      setUpdatingItem(true);
+      const res = await api.put(`/inventory/items/${editingItem.id}`, {
+        itemName: editItemName,
+        categoryId: parseInt(editCategoryId, 10),
+        currentStock: parseFloat(editCurrentStock),
+        minStock: parseFloat(editMinStock),
+        unitCost: parseFloat(editUnitCost),
+        description: editDescription
+      });
+      if (res.data.success) {
+        success('Store item updated successfully');
+        setEditingItem(null);
+        loadData();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to update store item');
+    } finally {
+      setUpdatingItem(false);
+    }
+  };
+
+  const handleDeleteItemSubmit = async () => {
+    if (!deletingItem) return;
+    try {
+      setIsDeletingItem(true);
+      const res = await api.delete(`/inventory/items/${deletingItem.id}`);
+      if (res.data.success) {
+        success('Store item deleted successfully');
+        setDeletingItem(null);
+        loadData();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to delete store item');
+    } finally {
+      setIsDeletingItem(false);
+    }
+  };
+
+  const loadLookups = async () => {
+    try {
+      const [cRes, uRes, sRes, lRes] = await Promise.all([
+        api.get('/inventory/categories'),
+        api.get('/inventory/units'),
+        api.get('/inventory/suppliers'),
+        api.get('/inventory/locations')
+      ]);
+      if (cRes.data.success) setCategoriesList(cRes.data.data || []);
+      if (uRes.data.success) setUnitsList(uRes.data.data || []);
+      if (sRes.data.success) setSuppliersList(sRes.data.data || []);
+      if (lRes.data.success) setLocationsList(lRes.data.data || []);
+    } catch (err) {
+      console.error('Failed to load store lookups:', err);
+    }
+  };
+
+  const handleOpenSetupModal = () => {
+    loadLookups();
+    setShowSetupModal(true);
+  };
+
+  const handleCreateLookup = async (e) => {
+    e.preventDefault();
+    try {
+      if (setupTab === 'categories') {
+        const res = await api.post('/inventory/categories', { name: newLookupName, description: newLookupDesc });
+        if (res.data.success) success('Category added');
+      } else if (setupTab === 'units') {
+        const res = await api.post('/inventory/units', { name: newLookupName, symbol: newLookupExtra || 'Unit' });
+        if (res.data.success) success('Measurement unit added');
+      } else if (setupTab === 'suppliers') {
+        const res = await api.post('/inventory/suppliers', { name: newLookupName, contactPerson: newLookupExtra, address: newLookupDesc });
+        if (res.data.success) success('Supplier added');
+      } else if (setupTab === 'locations') {
+        const res = await api.post('/inventory/locations', { name: newLookupName, code: newLookupExtra || 'LOC', description: newLookupDesc });
+        if (res.data.success) success('Store location added');
+      }
+      setNewLookupName('');
+      setNewLookupExtra('');
+      setNewLookupDesc('');
+      loadLookups();
+      loadData();
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to add item');
+    }
+  };
+
+  const handleDeleteLookup = async (tab, id) => {
+    try {
+      const res = await api.delete(`/inventory/${tab}/${id}`);
+      if (res.data.success) {
+        success('Record deleted successfully');
+        loadLookups();
+        loadData();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to delete record');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Bar */}
@@ -134,6 +272,14 @@ export default function InventoryDashboard() {
           </p>
         </div>
         <div className="flex items-center space-x-3">
+          <button
+            type="button"
+            onClick={handleOpenSetupModal}
+            className="px-3.5 py-2 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
+          >
+            <Boxes className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span>Store Configuration</span>
+          </button>
           <button
             onClick={loadData}
             className="p-2 bg-white border border-gray-300 rounded text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center gap-1.5 shadow-sm"
@@ -351,13 +497,29 @@ export default function InventoryDashboard() {
                     </span>
                   </td>
                   <td className="py-3 px-4 text-right">
-                    <button
-                      onClick={() => { setSelectedItemForStock(item); setShowStockInModal(true); }}
-                      className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold flex items-center gap-1 ml-auto"
-                    >
-                      <PackagePlus className="w-3 h-3" />
-                      <span>Stock In</span>
-                    </button>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => openEditItem(item)}
+                        title="Edit Item"
+                        className="p-1 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setDeletingItem(item)}
+                        title="Delete Item"
+                        className="p-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => { setSelectedItemForStock(item); setShowStockInModal(true); }}
+                        className="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold flex items-center gap-1"
+                      >
+                        <PackagePlus className="w-3 h-3" />
+                        <span>Stock In</span>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -547,6 +709,284 @@ export default function InventoryDashboard() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Store Item Modal */}
+      {editingItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl border p-6 max-w-md w-full space-y-4">
+            <div className="flex justify-between items-center border-b pb-3">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
+                Edit Store Item: {editingItem.item_code}
+              </h3>
+              <button onClick={() => setEditingItem(null)} className="text-gray-400 hover:text-gray-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateItemSubmit} className="space-y-3 text-xs">
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Item Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={editItemName}
+                  onChange={(e) => setEditItemName(e.target.value)}
+                  className="w-full p-2.5 rounded border border-gray-300"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Category</label>
+                  <select
+                    value={editCategoryId}
+                    onChange={(e) => setEditCategoryId(e.target.value)}
+                    className="w-full p-2.5 rounded border border-gray-300 bg-white"
+                  >
+                    <option value="1">Stupa Construction</option>
+                    <option value="2">Monastic Altar & Puja</option>
+                    <option value="3">Kitchen & Provisions</option>
+                    <option value="4">Sacred Arts & Statues</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Unit Cost (₹)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editUnitCost}
+                    onChange={(e) => setEditUnitCost(e.target.value)}
+                    className="w-full p-2.5 rounded border border-gray-300 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Current Stock Balance</label>
+                  <input
+                    type="number"
+                    value={editCurrentStock}
+                    onChange={(e) => setEditCurrentStock(e.target.value)}
+                    className="w-full p-2.5 rounded border border-gray-300 font-mono font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Min Threshold Alert</label>
+                  <input
+                    type="number"
+                    value={editMinStock}
+                    onChange={(e) => setEditMinStock(e.target.value)}
+                    className="w-full p-2.5 rounded border border-gray-300 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Description / Location</label>
+                <input
+                  type="text"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  className="w-full p-2.5 rounded border border-gray-300"
+                />
+              </div>
+
+              <div className="pt-3 flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingItem(null)}
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded font-semibold hover:bg-gray-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={updatingItem}
+                  className="px-4 py-2 bg-[#E11D48] hover:bg-[#BE123C] text-white rounded font-bold shadow"
+                >
+                  {updatingItem ? 'Saving...' : 'Update Item'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Item Confirmation Modal */}
+      {deletingItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-sm w-full space-y-4 text-center">
+            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
+                Delete Store Item?
+              </h3>
+              <p className="text-xs text-gray-500 mt-1">
+                Are you sure you want to delete <span className="font-bold text-gray-900">{deletingItem.item_name}</span> ({deletingItem.item_code})?
+              </p>
+              <p className="text-[11px] text-amber-700 bg-amber-50 p-2 rounded mt-2 border border-amber-200 text-left">
+                <strong>Audit Rule:</strong> Items with recorded stock transactions cannot be deleted.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                disabled={isDeletingItem}
+                onClick={() => setDeletingItem(null)}
+                className="flex-1 py-2 bg-gray-100 rounded text-gray-700 font-bold text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeletingItem}
+                onClick={handleDeleteItemSubmit}
+                className="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded font-bold text-xs"
+              >
+                {isDeletingItem ? 'Deleting...' : 'Confirm Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Store Configuration Manager Modal (Categories, Units, Suppliers, Locations) */}
+      {showSetupModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl border p-6 max-w-2xl w-full space-y-4 max-h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center border-b pb-3">
+              <div className="flex items-center gap-2">
+                <Boxes className="w-5 h-5 text-[#E11D48]" />
+                <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
+                  Store Master Configuration
+                </h3>
+              </div>
+              <button onClick={() => setShowSetupModal(false)} className="text-gray-400 hover:text-gray-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex space-x-1 border-b pb-2 text-xs font-bold">
+              {[
+                { id: 'categories', label: 'Item Categories', count: categoriesList.length },
+                { id: 'units', label: 'Units of Measure', count: unitsList.length },
+                { id: 'suppliers', label: 'Registered Suppliers', count: suppliersList.length },
+                { id: 'locations', label: 'Store Locations', count: locationsList.length }
+              ].map(t => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setSetupTab(t.id)}
+                  className={`px-3 py-1.5 rounded transition-colors ${
+                    setupTab === t.id ? 'bg-[#0F172A] text-white' : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  {t.label} ({t.count})
+                </button>
+              ))}
+            </div>
+
+            {/* Add New Form */}
+            <form onSubmit={handleCreateLookup} className="p-3 bg-gray-50 rounded-lg space-y-2 text-xs">
+              <div className="grid grid-cols-3 gap-2">
+                <input
+                  type="text"
+                  required
+                  value={newLookupName}
+                  onChange={(e) => setNewLookupName(e.target.value)}
+                  placeholder={setupTab === 'categories' ? 'Category Name' : setupTab === 'units' ? 'Unit Name' : setupTab === 'suppliers' ? 'Supplier Name' : 'Location Name'}
+                  className="p-2 rounded border border-gray-300"
+                />
+                <input
+                  type="text"
+                  value={newLookupExtra}
+                  onChange={(e) => setNewLookupExtra(e.target.value)}
+                  placeholder={setupTab === 'units' ? 'Symbol (e.g. Kg, Pcs)' : setupTab === 'locations' ? 'Code (e.g. LOC-01)' : 'Contact / Slug'}
+                  className="p-2 rounded border border-gray-300"
+                />
+                <button
+                  type="submit"
+                  className="py-2 bg-[#E11D48] text-white rounded font-bold hover:bg-[#BE123C] flex items-center justify-center gap-1"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add New</span>
+                </button>
+              </div>
+            </form>
+
+            {/* List */}
+            <div className="overflow-y-auto flex-1 divide-y divide-gray-100 text-xs">
+              {setupTab === 'categories' && categoriesList.map(c => (
+                <div key={c.id} className="py-2 flex justify-between items-center">
+                  <div>
+                    <span className="font-bold text-gray-900">{c.name}</span>
+                    <span className="text-[10px] text-gray-400 font-mono ml-2">slug: {c.slug}</span>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteLookup('categories', c.id)}
+                    className="p-1 text-rose-500 hover:text-rose-700"
+                    title="Delete Category"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+
+              {setupTab === 'units' && unitsList.map(u => (
+                <div key={u.id} className="py-2 flex justify-between items-center">
+                  <div>
+                    <span className="font-bold text-gray-900">{u.name}</span>
+                    <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded font-mono ml-2">{u.symbol}</span>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteLookup('units', u.id)}
+                    className="p-1 text-rose-500 hover:text-rose-700"
+                    title="Delete Unit"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+
+              {setupTab === 'suppliers' && suppliersList.map(s => (
+                <div key={s.id} className="py-2 flex justify-between items-center">
+                  <div>
+                    <span className="font-bold text-gray-900">{s.name}</span>
+                    {s.contact_person && <span className="text-[10px] text-gray-500 ml-2">({s.contact_person})</span>}
+                  </div>
+                  <button
+                    onClick={() => handleDeleteLookup('suppliers', s.id)}
+                    className="p-1 text-rose-500 hover:text-rose-700"
+                    title="Delete Supplier"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+
+              {setupTab === 'locations' && locationsList.map(l => (
+                <div key={l.id} className="py-2 flex justify-between items-center">
+                  <div>
+                    <span className="font-bold text-gray-900">{l.name}</span>
+                    <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded font-mono ml-2">{l.code}</span>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteLookup('locations', l.id)}
+                    className="p-1 text-rose-500 hover:text-rose-700"
+                    title="Delete Location"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

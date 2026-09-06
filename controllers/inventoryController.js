@@ -417,6 +417,204 @@ async function createTransaction(req, res) {
   return stockIn(req, res);
 }
 
+// Delete Store Item
+async function deleteStoreItem(req, res) {
+  try {
+    const { id } = req.params;
+    const [itemCheck] = await pool.query(`SELECT * FROM store_items WHERE id = ?`, [id]);
+    if (itemCheck.length === 0) {
+      return res.status(404).json({ success: false, message: 'Store item not found' });
+    }
+
+    const [txnCount] = await pool.query(`SELECT COUNT(*) as count FROM stock_txn WHERE item_id = ?`, [id]);
+    if (txnCount[0].count > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot delete store item with ${txnCount[0].count} transaction record(s). Inventory movements must be auditable.`
+      });
+    }
+
+    await pool.query(`DELETE FROM store_items WHERE id = ?`, [id]);
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'inventory',
+      action: 'delete_item',
+      recordId: id,
+      details: { itemName: itemCheck[0].item_name, itemCode: itemCheck[0].item_code }
+    });
+
+    return res.json({ success: true, message: 'Store item deleted successfully' });
+  } catch (error) {
+    console.error('[Delete Store Item Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to delete store item: ' + error.message });
+  }
+}
+
+// --- Categories CRUD ---
+async function createCategory(req, res) {
+  try {
+    const { name, description } = req.body;
+    if (!name) return res.status(400).json({ success: false, message: 'Category name is required' });
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString().slice(-4);
+    const [result] = await pool.query(`INSERT INTO categories (name, slug, description) VALUES (?, ?, ?)`, [name, slug, description || null]);
+    return res.status(201).json({ success: true, message: 'Category created', id: result.insertId, name, slug });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to create category: ' + error.message });
+  }
+}
+
+async function updateCategory(req, res) {
+  try {
+    const { id } = req.params;
+    const { name, description } = req.body;
+    if (!name) return res.status(400).json({ success: false, message: 'Category name is required' });
+    await pool.query(`UPDATE categories SET name = ?, description = ? WHERE id = ?`, [name, description || null, id]);
+    return res.json({ success: true, message: 'Category updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update category: ' + error.message });
+  }
+}
+
+async function deleteCategory(req, res) {
+  try {
+    const { id } = req.params;
+    const [itemCount] = await pool.query(`SELECT COUNT(*) as count FROM store_items WHERE category_id = ?`, [id]);
+    if (itemCount[0].count > 0) {
+      return res.status(400).json({ success: false, message: `Cannot delete category: linked to ${itemCount[0].count} item(s).` });
+    }
+    await pool.query(`DELETE FROM categories WHERE id = ?`, [id]);
+    return res.json({ success: true, message: 'Category deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to delete category: ' + error.message });
+  }
+}
+
+// --- Units CRUD ---
+async function createUnit(req, res) {
+  try {
+    const { name, symbol } = req.body;
+    if (!name || !symbol) return res.status(400).json({ success: false, message: 'Unit name and symbol are required' });
+    const [result] = await pool.query(`INSERT INTO units (name, symbol) VALUES (?, ?)`, [name, symbol]);
+    return res.status(201).json({ success: true, message: 'Unit created', id: result.insertId, name, symbol });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to create unit: ' + error.message });
+  }
+}
+
+async function updateUnit(req, res) {
+  try {
+    const { id } = req.params;
+    const { name, symbol } = req.body;
+    if (!name || !symbol) return res.status(400).json({ success: false, message: 'Unit name and symbol are required' });
+    await pool.query(`UPDATE units SET name = ?, symbol = ? WHERE id = ?`, [name, symbol, id]);
+    return res.json({ success: true, message: 'Unit updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update unit: ' + error.message });
+  }
+}
+
+async function deleteUnit(req, res) {
+  try {
+    const { id } = req.params;
+    const [itemCount] = await pool.query(`SELECT COUNT(*) as count FROM store_items WHERE unit_id = ?`, [id]);
+    if (itemCount[0].count > 0) {
+      return res.status(400).json({ success: false, message: `Cannot delete unit: linked to ${itemCount[0].count} item(s).` });
+    }
+    await pool.query(`DELETE FROM units WHERE id = ?`, [id]);
+    return res.json({ success: true, message: 'Unit deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to delete unit: ' + error.message });
+  }
+}
+
+// --- Suppliers CRUD ---
+async function createSupplier(req, res) {
+  try {
+    const { name, contactPerson, phone, email, address, city, country = 'Bhutan', taxNumber } = req.body;
+    if (!name) return res.status(400).json({ success: false, message: 'Supplier name is required' });
+    const [result] = await pool.query(
+      `INSERT INTO suppliers (name, contact_person, phone, email, address, city, country, tax_number, is_active)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+      [name, contactPerson || null, phone || null, email || null, address || null, city || null, country, taxNumber || null]
+    );
+    return res.status(201).json({ success: true, message: 'Supplier created', id: result.insertId });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to create supplier: ' + error.message });
+  }
+}
+
+async function updateSupplier(req, res) {
+  try {
+    const { id } = req.params;
+    const { name, contactPerson, phone, email, address, city, country, taxNumber, isActive } = req.body;
+    if (!name) return res.status(400).json({ success: false, message: 'Supplier name is required' });
+    await pool.query(
+      `UPDATE suppliers 
+       SET name = ?, contact_person = ?, phone = ?, email = ?, address = ?, city = ?, country = COALESCE(?, country), tax_number = ?, is_active = COALESCE(?, is_active)
+       WHERE id = ?`,
+      [name, contactPerson || null, phone || null, email || null, address || null, city || null, country, taxNumber || null, isActive !== undefined ? isActive : 1, id]
+    );
+    return res.json({ success: true, message: 'Supplier updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update supplier: ' + error.message });
+  }
+}
+
+async function deleteSupplier(req, res) {
+  try {
+    const { id } = req.params;
+    const [txnCount] = await pool.query(`SELECT COUNT(*) as count FROM stock_txn WHERE supplier_id = ?`, [id]);
+    if (txnCount[0].count > 0) {
+      return res.status(400).json({ success: false, message: `Cannot delete supplier: referenced in ${txnCount[0].count} stock transaction(s).` });
+    }
+    await pool.query(`DELETE FROM suppliers WHERE id = ?`, [id]);
+    return res.json({ success: true, message: 'Supplier deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to delete supplier: ' + error.message });
+  }
+}
+
+// --- Locations CRUD ---
+async function createLocation(req, res) {
+  try {
+    const { name, code, description } = req.body;
+    if (!name || !code) return res.status(400).json({ success: false, message: 'Location name and code are required' });
+    const [result] = await pool.query(`INSERT INTO store_locations (name, code, description) VALUES (?, ?, ?)`, [name, code, description || null]);
+    return res.status(201).json({ success: true, message: 'Location created', id: result.insertId });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to create location: ' + error.message });
+  }
+}
+
+async function updateLocation(req, res) {
+  try {
+    const { id } = req.params;
+    const { name, code, description } = req.body;
+    if (!name || !code) return res.status(400).json({ success: false, message: 'Location name and code are required' });
+    await pool.query(`UPDATE store_locations SET name = ?, code = ?, description = ? WHERE id = ?`, [name, code, description || null, id]);
+    return res.json({ success: true, message: 'Location updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update location: ' + error.message });
+  }
+}
+
+async function deleteLocation(req, res) {
+  try {
+    const { id } = req.params;
+    const [itemCount] = await pool.query(`SELECT COUNT(*) as count FROM store_items WHERE location_id = ?`, [id]);
+    if (itemCount[0].count > 0) {
+      return res.status(400).json({ success: false, message: `Cannot delete location: linked to ${itemCount[0].count} item(s).` });
+    }
+    await pool.query(`DELETE FROM store_locations WHERE id = ?`, [id]);
+    return res.json({ success: true, message: 'Location deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to delete location: ' + error.message });
+  }
+}
+
 module.exports = {
   getInventoryDashboard,
   getStoreItems,
@@ -424,13 +622,26 @@ module.exports = {
   createStoreItem,
   createItem: createStoreItem,
   updateStoreItem,
+  deleteStoreItem,
   getTransactions,
   createTransaction,
   getLowStockAlerts,
   stockIn,
   stockOut,
   getCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
   getUnits,
+  createUnit,
+  updateUnit,
+  deleteUnit,
   getSuppliers,
-  getLocations
+  createSupplier,
+  updateSupplier,
+  deleteSupplier,
+  getLocations,
+  createLocation,
+  updateLocation,
+  deleteLocation
 };

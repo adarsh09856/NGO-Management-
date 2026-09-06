@@ -418,6 +418,88 @@ async function updatePledgeStatus(req, res) {
   }
 }
 
+// 5.1 Delete Campaign (Strict Zero-Corruption Policy)
+async function deleteCampaign(req, res) {
+  try {
+    const { id } = req.params;
+
+    const [campaignRows] = await pool.query(`SELECT * FROM campaigns WHERE id = ?`, [id]);
+    if (campaignRows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Campaign not found' });
+    }
+
+    // Check if any donations are linked to this campaign
+    const [donationCount] = await pool.query(`SELECT COUNT(*) as count FROM donations WHERE campaign_id = ?`, [id]);
+    if (donationCount[0].count > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot delete campaign with ${donationCount[0].count} recorded donation(s). Historical donation audit trail must be preserved. Please deactivate the campaign instead.`
+      });
+    }
+
+    // Check if any recurring pledges are linked
+    const [pledgeCount] = await pool.query(`SELECT COUNT(*) as count FROM recurring_pledges WHERE campaign_id = ?`, [id]);
+    if (pledgeCount[0].count > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot delete campaign with linked recurring pledges. Please deactivate the campaign instead.'
+      });
+    }
+
+    await pool.query(`DELETE FROM campaigns WHERE id = ?`, [id]);
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'donations',
+      action: 'delete_campaign',
+      recordId: id,
+      details: { title: campaignRows[0].title }
+    });
+
+    return res.json({ success: true, message: 'Campaign deleted successfully' });
+  } catch (error) {
+    console.error('[Delete Campaign Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to delete campaign: ' + error.message });
+  }
+}
+
+// 5.2 Toggle Campaign Active Status
+async function toggleCampaignStatus(req, res) {
+  try {
+    const { id } = req.params;
+    const { isActive } = req.body;
+
+    const [campaignRows] = await pool.query(`SELECT * FROM campaigns WHERE id = ?`, [id]);
+    if (campaignRows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Campaign not found' });
+    }
+
+    const newStatus = isActive !== undefined ? (isActive ? 1 : 0) : (campaignRows[0].is_active ? 0 : 1);
+    await pool.query(`UPDATE campaigns SET is_active = ? WHERE id = ?`, [newStatus, id]);
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'donations',
+      action: 'toggle_campaign_status',
+      recordId: id,
+      details: { title: campaignRows[0].title, is_active: newStatus }
+    });
+
+    return res.json({
+      success: true,
+      message: `Campaign ${newStatus === 1 ? 'activated' : 'deactivated/archived'} successfully`,
+      isActive: newStatus === 1
+    });
+  } catch (error) {
+    console.error('[Toggle Campaign Status Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to update campaign status' });
+  }
+}
+
 module.exports = {
   addDonation,
   getAllDonations,
@@ -426,6 +508,8 @@ module.exports = {
   getCampaigns,
   createCampaign,
   updateCampaign,
+  deleteCampaign,
+  toggleCampaignStatus,
   getRecurringPledges,
   updatePledgeStatus
 };

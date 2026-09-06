@@ -215,10 +215,164 @@ async function createCasualLabor(req, res) {
   }
 }
 
+// 5. Void Payroll Run
+async function voidPayrollRun(req, res) {
+  try {
+    const { id } = req.params;
+    const runId = parseInt(id, 10);
+
+    const [runs] = await pool.query('SELECT * FROM payroll_runs WHERE id = ?', [runId]);
+    if (runs.length === 0) {
+      return res.status(404).json({ success: false, message: 'Payroll run not found' });
+    }
+
+    const run = runs[0];
+    if (run.status === 'void') {
+      return res.status(400).json({ success: false, message: 'Payroll run is already voided' });
+    }
+
+    await withTransaction(async (conn) => {
+      // Mark run as void
+      await conn.query(`UPDATE payroll_runs SET status = 'void' WHERE id = ?`, [runId]);
+
+      // Revert salary slips payment status to pending
+      await conn.query(`UPDATE salary_slips SET payment_status = 'pending' WHERE payroll_run_id = ?`, [runId]);
+
+      // Release any casual labor linked to this run
+      await conn.query(`UPDATE casual_labor SET payroll_run_id = NULL, payment_status = 'pending' WHERE payroll_run_id = ?`, [runId]);
+    });
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'payroll',
+      action: 'void_run',
+      recordId: String(runId),
+      details: { runCode: run.run_code, month: run.month, year: run.year }
+    });
+
+    return res.json({ success: true, message: `Payroll run ${run.run_code} has been voided successfully` });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to void payroll run: ' + error.message });
+  }
+}
+
+// 6. Update Salary Slip
+async function updateSalarySlip(req, res) {
+  try {
+    const { id } = req.params;
+    const slipId = parseInt(id, 10);
+    const {
+      basicSalary,
+      housingAllowance,
+      monasticStipend,
+      medicalAllowance,
+      pfDeduction,
+      taxDeduction,
+      otherDeductions,
+      paymentStatus,
+      paymentMethod
+    } = req.body;
+
+    const [slips] = await pool.query('SELECT * FROM salary_slips WHERE id = ?', [slipId]);
+    if (slips.length === 0) {
+      return res.status(404).json({ success: false, message: 'Salary slip not found' });
+    }
+
+    const slip = slips[0];
+
+    // Recalculate earnings and deductions
+    const basic = basicSalary !== undefined ? parseFloat(basicSalary) : parseFloat(slip.basic_salary);
+    const housing = housingAllowance !== undefined ? parseFloat(housingAllowance) : parseFloat(slip.housing_allowance);
+    const monastic = monasticStipend !== undefined ? parseFloat(monasticStipend) : parseFloat(slip.monastic_stipend);
+    const medical = medicalAllowance !== undefined ? parseFloat(medicalAllowance) : parseFloat(slip.medical_allowance);
+    const totalEarnings = basic + housing + monastic + medical;
+
+    const pf = pfDeduction !== undefined ? parseFloat(pfDeduction) : parseFloat(slip.pf_deduction);
+    const tax = taxDeduction !== undefined ? parseFloat(taxDeduction) : parseFloat(slip.tax_deduction);
+    const other = otherDeductions !== undefined ? parseFloat(otherDeductions) : parseFloat(slip.other_deductions);
+    const totalDeductions = pf + tax + other;
+
+    const netSalary = totalEarnings - totalDeductions;
+
+    await withTransaction(async (conn) => {
+      await conn.query(
+        `UPDATE salary_slips
+         SET basic_salary = ?,
+             housing_allowance = ?,
+             monastic_stipend = ?,
+             medical_allowance = ?,
+             total_earnings = ?,
+             pf_deduction = ?,
+             tax_deduction = ?,
+             other_deductions = ?,
+             total_deductions = ?,
+             net_salary = ?,
+             payment_status = COALESCE(?, payment_status),
+             payment_method = COALESCE(?, payment_method)
+         WHERE id = ?`,
+        [basic, housing, monastic, medical, totalEarnings, pf, tax, other, totalDeductions, netSalary, paymentStatus || null, paymentMethod || null, slipId]
+      );
+
+      // Recalculate parent payroll run totals
+      const [sumRows] = await conn.query(
+        `SELECT SUM(basic_salary) as tot_basic,
+                SUM(housing_allowance + monastic_stipend + medical_allowance) as tot_allowances,
+                SUM(total_deductions) as tot_deductions,
+                SUM(net_salary) as tot_net
+         FROM salary_slips
+         WHERE payroll_run_id = ?`,
+        [slip.payroll_run_id]
+      );
+
+      const totBasic = parseFloat(sumRows[0]?.tot_basic) || 0;
+      const totAllowances = parseFloat(sumRows[0]?.tot_allowances) || 0;
+      const totDeductions = parseFloat(sumRows[0]?.tot_deductions) || 0;
+      const totNet = parseFloat(sumRows[0]?.tot_net) || 0;
+
+      const [runRow] = await conn.query('SELECT total_casual_labor_cost FROM payroll_runs WHERE id = ?', [slip.payroll_run_id]);
+      const casualCost = parseFloat(runRow[0]?.total_casual_labor_cost) || 0;
+      const grandTotal = totNet + casualCost;
+
+      await conn.query(
+        `UPDATE payroll_runs
+         SET total_basic = ?,
+             total_allowances = ?,
+             total_deductions = ?,
+             total_net_payroll = ?,
+             grand_total = ?
+         WHERE id = ?`,
+        [totBasic, totAllowances, totDeductions, totNet, grandTotal, slip.payroll_run_id]
+      );
+    });
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'payroll',
+      action: 'update_salary_slip',
+      recordId: String(slipId),
+      details: { slipNo: slip.slip_no, oldNet: slip.net_salary, newNet: netSalary }
+    });
+
+    return res.json({
+      success: true,
+      message: `Salary slip ${slip.slip_no} adjusted successfully`,
+      data: { id: slipId, netSalary, totalEarnings, totalDeductions }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update salary slip: ' + error.message });
+  }
+}
+
 module.exports = {
   getPayrollRuns,
   generatePayrollRun,
+  voidPayrollRun,
   getSalarySlipsByRun,
+  updateSalarySlip,
   downloadSalarySlipPdf,
   getCasualLabor,
   createCasualLabor

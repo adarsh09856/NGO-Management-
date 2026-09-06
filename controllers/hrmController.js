@@ -144,9 +144,82 @@ async function approveLeaveRequest(req, res) {
   }
 }
 
+async function updateEmployee(req, res) {
+  try {
+    const { id } = req.params;
+    const { employeeCode, fullName, email, phone, designation, department, employmentType, basicSalary, status, bankAccountNo, bankName, emergencyContact } = req.body;
+
+    const [existing] = await pool.query('SELECT * FROM employees WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Employee not found' });
+    }
+
+    await pool.query(
+      `UPDATE employees 
+       SET employee_code = COALESCE(?, employee_code),
+           full_name = COALESCE(?, full_name),
+           email = COALESCE(?, email),
+           phone = COALESCE(?, phone),
+           designation = COALESCE(?, designation),
+           department = COALESCE(?, department),
+           employment_type = COALESCE(?, employment_type),
+           basic_salary = COALESCE(?, basic_salary),
+           status = COALESCE(?, status),
+           bank_account_no = COALESCE(?, bank_account_no),
+           bank_name = COALESCE(?, bank_name),
+           emergency_contact = COALESCE(?, emergency_contact),
+           updated_at = NOW()
+       WHERE id = ?`,
+      [employeeCode || null, fullName || null, email || null, phone || null, designation || null, department || null, employmentType || null, basicSalary !== undefined ? basicSalary : null, status || null, bankAccountNo || null, bankName || null, emergencyContact || null, id]
+    );
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'hrm',
+      action: 'update_employee',
+      recordId: id,
+      details: { fullName, designation, department, status }
+    });
+
+    return res.json({ success: true, message: 'Employee profile updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update employee: ' + error.message });
+  }
+}
+
+async function deleteEmployee(req, res) {
+  try {
+    const { id } = req.params;
+    const [existing] = await pool.query('SELECT * FROM employees WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Employee not found' });
+    }
+
+    await pool.query(`UPDATE employees SET status = 'terminated', updated_at = NOW() WHERE id = ?`, [id]);
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'hrm',
+      action: 'terminate_employee',
+      recordId: id,
+      details: { fullName: existing[0].full_name, employeeCode: existing[0].employee_code }
+    });
+
+    return res.json({ success: true, message: 'Employee status changed to terminated' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to terminate employee: ' + error.message });
+  }
+}
+
 module.exports = {
   getEmployees,
   createEmployee,
+  updateEmployee,
+  deleteEmployee,
   getAttendance,
   markAttendance,
   getLeaveRequests,

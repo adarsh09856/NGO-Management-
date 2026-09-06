@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   UserCheck, Plus, Mail, Phone, Building2, Search, 
   Calendar, CheckCircle2, XCircle, Clock, AlertTriangle, 
-  Users, Save, Filter, X, Briefcase
+  Users, Save, Filter, X, Briefcase, Edit2, Trash2, UserX
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
@@ -31,6 +31,27 @@ export default function HRMEmployees() {
   const [basicSalary, setBasicSalary] = useState(25000);
   const [bankAccountNo, setBankAccountNo] = useState('');
   const [bankName, setBankName] = useState('Bank of Bhutan');
+
+  // Edit Employee Modal
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState(null);
+  const [editEmployeeCode, setEditEmployeeCode] = useState('');
+  const [editFullName, setEditFullName] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [editDepartment, setEditDepartment] = useState('Monastic Affairs');
+  const [editDesignation, setEditDesignation] = useState('');
+  const [editEmploymentType, setEditEmploymentType] = useState('Full-Time');
+  const [editBasicSalary, setEditBasicSalary] = useState(0);
+  const [editStatus, setEditStatus] = useState('active');
+  const [editBankAccountNo, setEditBankAccountNo] = useState('');
+  const [editBankName, setEditBankName] = useState('Bank of Bhutan');
+  const [editEmergencyContact, setEditEmergencyContact] = useState('');
+  const [submittingEdit, setSubmittingEdit] = useState(false);
+
+  // Deactivate Modal
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [deactivatingEmployee, setDeactivatingEmployee] = useState(null);
 
   const fetchEmployees = async () => {
     try {
@@ -108,6 +129,70 @@ export default function HRMEmployees() {
       }
     } catch (err) {
       error(err.response?.data?.message || 'Failed to add employee');
+    }
+  };
+
+  const handleOpenEdit = (emp) => {
+    setEditingEmployee(emp);
+    setEditEmployeeCode(emp.employee_code || '');
+    setEditFullName(emp.full_name || '');
+    setEditEmail(emp.email || '');
+    setEditPhone(emp.phone || '');
+    setEditDepartment(emp.department || 'Monastic Affairs');
+    setEditDesignation(emp.designation || '');
+    setEditEmploymentType(emp.employment_type || 'Full-Time');
+    setEditBasicSalary(emp.basic_salary || 0);
+    setEditStatus(emp.status || 'active');
+    setEditBankAccountNo(emp.bank_account_no || '');
+    setEditBankName(emp.bank_name || 'Bank of Bhutan');
+    setEditEmergencyContact(emp.emergency_contact || '');
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = async (e) => {
+    e.preventDefault();
+    if (!editingEmployee) return;
+    try {
+      setSubmittingEdit(true);
+      const res = await api.put(`/hrm/employees/${editingEmployee.id}`, {
+        employeeCode: editEmployeeCode,
+        fullName: editFullName,
+        email: editEmail,
+        phone: editPhone,
+        department: editDepartment,
+        designation: editDesignation,
+        employmentType: editEmploymentType,
+        basicSalary: parseFloat(editBasicSalary) || 0,
+        status: editStatus,
+        bankAccountNo: editBankAccountNo,
+        bankName: editBankName,
+        emergencyContact: editEmergencyContact
+      });
+      if (res.data.success) {
+        success('Employee record updated successfully');
+        setShowEditModal(false);
+        setEditingEmployee(null);
+        fetchEmployees();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to update employee');
+    } finally {
+      setSubmittingEdit(false);
+    }
+  };
+
+  const handleDeactivate = async () => {
+    if (!deactivatingEmployee) return;
+    try {
+      const res = await api.delete(`/hrm/employees/${deactivatingEmployee.id}`);
+      if (res.data.success) {
+        success('Employee record deactivated');
+        setShowDeactivateModal(false);
+        setDeactivatingEmployee(null);
+        fetchEmployees();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to deactivate employee');
     }
   };
 
@@ -320,13 +405,14 @@ export default function HRMEmployees() {
                     <th className="py-3.5 px-4">Designation</th>
                     <th className="py-3.5 px-4">Contact Info</th>
                     <th className="py-3.5 px-4">Bank & Basic Pay</th>
-                    <th className="py-3.5 px-5 text-right">Status</th>
+                    <th className="py-3.5 px-4 text-center">Status</th>
+                    <th className="py-3.5 px-5 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
                   {filteredEmployees.length === 0 ? (
                     <tr>
-                      <td colSpan="7" className="py-8 text-center text-[#94A3B8]">
+                      <td colSpan="8" className="py-8 text-center text-[#94A3B8]">
                         No staff members found matching criteria.
                       </td>
                     </tr>
@@ -350,7 +436,7 @@ export default function HRMEmployees() {
                           <div className="font-mono font-bold text-emerald-400">₹{parseFloat(emp.basic_salary).toLocaleString('en-IN')}</div>
                           <div className="text-[10px] text-[#94A3B8]">{emp.bank_name || 'Bank of Bhutan'}</div>
                         </td>
-                        <td className="py-3.5 px-5 text-right">
+                        <td className="py-3.5 px-4 text-center">
                           <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
                             emp.status === 'active'
                               ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
@@ -358,6 +444,31 @@ export default function HRMEmployees() {
                           }`}>
                             {emp.status || 'ACTIVE'}
                           </span>
+                        </td>
+                        <td className="py-3.5 px-5 text-right">
+                          <div className="inline-flex items-center gap-1.5 justify-end">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEdit(emp)}
+                              className="p-1.5 rounded-lg bg-white/5 hover:bg-[#D4AF37]/20 text-[#94A3B8] hover:text-[#D4AF37] border border-white/10 transition-all"
+                              title="Edit Employee Profile"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            {emp.status === 'active' && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setDeactivatingEmployee(emp);
+                                  setShowDeactivateModal(true);
+                                }}
+                                className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-[#94A3B8] hover:text-red-400 border border-white/10 transition-all"
+                                title="Deactivate Employee"
+                              >
+                                <UserX className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -671,6 +782,217 @@ export default function HRMEmployees() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Employee Modal */}
+      {showEditModal && editingEmployee && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#0D121F] border border-[#2A1E17] rounded-2xl shadow-2xl p-6 max-w-lg w-full space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="p-1.5 rounded-lg bg-[#D4AF37]/10 text-[#D4AF37]">
+                  <Edit2 className="w-5 h-5" />
+                </span>
+                <h3 className="font-serif-brand font-bold text-base text-white">Edit Employee Profile</h3>
+              </div>
+              <button type="button" onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-3.5 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Employee Code *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editEmployeeCode}
+                    onChange={(e) => setEditEmployeeCode(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Full Legal Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editFullName}
+                    onChange={(e) => setEditFullName(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Department *</label>
+                  <select
+                    value={editDepartment}
+                    onChange={(e) => setEditDepartment(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                  >
+                    <option value="Monastic Academic">Monastic Academic</option>
+                    <option value="Admin & Finance">Admin & Finance</option>
+                    <option value="Stupa Maintenance">Stupa Maintenance</option>
+                    <option value="Kitchen & Caretaking">Kitchen & Caretaking</option>
+                    <option value="Security">Security</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Designation *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editDesignation}
+                    onChange={(e) => setEditDesignation(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Employment Type</label>
+                  <select
+                    value={editEmploymentType}
+                    onChange={(e) => setEditEmploymentType(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                  >
+                    <option value="Full-Time">Full-Time</option>
+                    <option value="Part-Time">Part-Time</option>
+                    <option value="Monastic Sangha">Monastic Sangha</option>
+                    <option value="Contract">Contract</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Basic Salary (₹)</label>
+                  <input
+                    type="number"
+                    value={editBasicSalary}
+                    onChange={(e) => setEditBasicSalary(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white font-mono focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Status</label>
+                  <select
+                    value={editStatus}
+                    onChange={(e) => setEditStatus(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none uppercase"
+                  >
+                    <option value="active">Active</option>
+                    <option value="on_leave">On Leave</option>
+                    <option value="terminated">Terminated</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Phone</label>
+                  <input
+                    type="text"
+                    value={editPhone}
+                    onChange={(e) => setEditPhone(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Bank Name</label>
+                  <input
+                    type="text"
+                    value={editBankName}
+                    onChange={(e) => setEditBankName(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Account No</label>
+                  <input
+                    type="text"
+                    value={editBankAccountNo}
+                    onChange={(e) => setEditBankAccountNo(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white font-mono focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#CBD5E1] mb-1">Emergency Contact</label>
+                <input
+                  type="text"
+                  value={editEmergencyContact}
+                  onChange={(e) => setEditEmergencyContact(e.target.value)}
+                  placeholder="e.g. Tshering Penjor (+975 17112233)"
+                  className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold border border-white/10"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingEdit}
+                  className="flex-1 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#B89628] text-[#090D16] font-bold rounded-xl shadow-lg"
+                >
+                  {submittingEdit ? 'Saving...' : 'Update Employee'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Deactivate Modal */}
+      {showDeactivateModal && deactivatingEmployee && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#0D121F] border border-[#2A1E17] rounded-2xl shadow-2xl p-6 max-w-sm w-full space-y-4">
+            <div className="flex justify-between items-center border-b border-white/10 pb-3">
+              <h3 className="font-serif-brand font-bold text-base text-red-400">Deactivate Employee</h3>
+              <button type="button" onClick={() => setShowDeactivateModal(false)} className="text-gray-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-xs text-[#94A3B8]">
+              Are you sure you want to mark <span className="font-bold text-white">{deactivatingEmployee.full_name}</span> ({deactivatingEmployee.employee_code}) as terminated? They will no longer be included in active payroll or attendance sheets.
+            </p>
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowDeactivateModal(false)}
+                className="flex-1 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeactivate}
+                className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs"
+              >
+                Confirm Termination
+              </button>
+            </div>
           </div>
         </div>
       )}

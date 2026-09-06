@@ -15,8 +15,13 @@ const PORT = process.env.PORT || 5000;
 // Enable CORS
 app.use(cors());
 
-// Body Parsers
-app.use(express.json({ limit: '20mb' }));
+// Body Parsers (with rawBody capture for payment gateway webhook cryptographic signature verification)
+app.use(express.json({
+  limit: '20mb',
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
 // Ensure upload directory exists

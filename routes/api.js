@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { authenticateToken, optionalAuth } = require('../middleware/auth');
-const { requireRole, requirePermission } = require('../middleware/rbac');
+const { requireRole, requirePermission, requirePermissionOrRole } = require('../middleware/rbac');
 const { upload } = require('../middleware/upload');
 
 // Import Controllers
@@ -46,17 +46,17 @@ router.put('/user/my-profile', authenticateToken, userPanelCtrl.updateUserProfil
 // ==========================================
 router.get('/blog', optionalAuth, blogCtrl.getBlogPosts);
 router.get('/blog/:slug', blogCtrl.getBlogPostBySlug);
-router.post('/blog', authenticateToken, requirePermission('cms:blog') || requireRole('super_admin', 'staff'), blogCtrl.createBlogPost);
-router.put('/blog/:id', authenticateToken, requirePermission('cms:blog') || requireRole('super_admin', 'staff'), blogCtrl.updateBlogPost);
-router.delete('/blog/:id', authenticateToken, requirePermission('cms:blog') || requireRole('super_admin', 'staff'), blogCtrl.deleteBlogPost);
+router.post('/blog', authenticateToken, requirePermissionOrRole('cms:blog', 'super_admin', 'staff'), blogCtrl.createBlogPost);
+router.put('/blog/:id', authenticateToken, requirePermissionOrRole('cms:blog', 'super_admin', 'staff'), blogCtrl.updateBlogPost);
+router.delete('/blog/:id', authenticateToken, requirePermissionOrRole('cms:blog', 'super_admin', 'staff'), blogCtrl.deleteBlogPost);
 
 // ==========================================
 // 4. LEARNING & DHARMA VIDEOS (Public & Admin)
 // ==========================================
 router.get('/learning', learningCtrl.getLearningMaterials);
-router.post('/learning', authenticateToken, requirePermission('cms:learning') || requireRole('super_admin', 'staff'), learningCtrl.createLearningMaterial);
-router.put('/learning/:id', authenticateToken, requirePermission('cms:learning') || requireRole('super_admin', 'staff'), learningCtrl.updateLearningMaterial);
-router.delete('/learning/:id', authenticateToken, requirePermission('cms:learning') || requireRole('super_admin', 'staff'), learningCtrl.deleteLearningMaterial);
+router.post('/learning', authenticateToken, requirePermissionOrRole('cms:learning', 'super_admin', 'staff'), learningCtrl.createLearningMaterial);
+router.put('/learning/:id', authenticateToken, requirePermissionOrRole('cms:learning', 'super_admin', 'staff'), learningCtrl.updateLearningMaterial);
+router.delete('/learning/:id', authenticateToken, requirePermissionOrRole('cms:learning', 'super_admin', 'staff'), learningCtrl.deleteLearningMaterial);
 
 // ==========================================
 // 5. DONATIONS & CAMPAIGNS
@@ -65,6 +65,8 @@ router.get('/campaigns/public', donationCtrl.getCampaigns);
 router.get('/donations/campaigns', authenticateToken, donationCtrl.getCampaigns);
 router.post('/donations/campaigns', authenticateToken, requirePermission('donations:campaigns'), donationCtrl.createCampaign);
 router.put('/donations/campaigns/:id', authenticateToken, requirePermission('donations:campaigns'), donationCtrl.updateCampaign);
+router.delete('/donations/campaigns/:id', authenticateToken, requirePermission('donations:campaigns'), donationCtrl.deleteCampaign);
+router.put('/donations/campaigns/:id/status', authenticateToken, requirePermission('donations:campaigns'), donationCtrl.toggleCampaignStatus);
 
 router.post('/donations', authenticateToken, requirePermission('donations:create'), donationCtrl.addDonation);
 router.get('/donations', authenticateToken, requirePermission('donations:view'), donationCtrl.getAllDonations);
@@ -79,6 +81,8 @@ router.delete('/donations/:id', authenticateToken, requirePermission('donations:
 router.get('/donors', authenticateToken, donorCtrl.getDonors);
 router.post('/donors', authenticateToken, donorCtrl.createDonor);
 router.get('/donors/:id', authenticateToken, donorCtrl.getDonorById);
+router.put('/donors/:id', authenticateToken, requirePermission('donors:edit'), donorCtrl.updateDonor);
+router.delete('/donors/:id', authenticateToken, requirePermission('donors:delete'), donorCtrl.deleteDonor);
 
 // Donor Portal Backward Compatibility
 router.get('/donor/my-dashboard', authenticateToken, userPanelCtrl.getUserDashboard);
@@ -98,6 +102,7 @@ router.post('/receipts/:id/void', authenticateToken, requirePermission('receipts
 // 8. ACCOUNTS & FINANCE
 // ==========================================
 router.get('/accounts/dashboard', authenticateToken, requirePermission('accounts:view'), accountCtrl.getAccountsDashboard);
+router.get('/accounts/income', authenticateToken, requirePermission('accounts:view'), accountCtrl.getIncomeLedger);
 router.get('/accounts/banks', authenticateToken, accountCtrl.getBankAccounts);
 router.get('/accounts/categories', authenticateToken, accountCtrl.getExpenseCategories);
 router.get('/accounts/expenses', authenticateToken, accountCtrl.getExpenses);
@@ -109,18 +114,46 @@ router.post('/accounts/vouchers', authenticateToken, requirePermission('accounts
 // ==========================================
 // 9. INVENTORY & STORE
 // ==========================================
+router.get('/inventory/dashboard', authenticateToken, inventoryCtrl.getInventoryDashboard);
 router.get('/inventory/items', authenticateToken, inventoryCtrl.getItems);
 router.post('/inventory/items', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.createItem);
+router.put('/inventory/items/:id', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.updateStoreItem);
+router.delete('/inventory/items/:id', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.deleteStoreItem);
+router.post('/inventory/stock-in', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.stockIn);
+router.post('/inventory/stock-out', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.stockOut);
 router.get('/inventory/transactions', authenticateToken, inventoryCtrl.getTransactions);
 router.post('/inventory/transactions', authenticateToken, requirePermission('inventory:stock_txn'), inventoryCtrl.createTransaction);
 router.get('/inventory/low-stock', authenticateToken, inventoryCtrl.getLowStockAlerts);
+
+// Inventory Lookups CRUD (Categories, Units, Suppliers, Locations)
+router.get('/inventory/categories', authenticateToken, inventoryCtrl.getCategories);
+router.post('/inventory/categories', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.createCategory);
+router.put('/inventory/categories/:id', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.updateCategory);
+router.delete('/inventory/categories/:id', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.deleteCategory);
+
+router.get('/inventory/units', authenticateToken, inventoryCtrl.getUnits);
+router.post('/inventory/units', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.createUnit);
+router.put('/inventory/units/:id', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.updateUnit);
+router.delete('/inventory/units/:id', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.deleteUnit);
+
+router.get('/inventory/suppliers', authenticateToken, inventoryCtrl.getSuppliers);
+router.post('/inventory/suppliers', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.createSupplier);
+router.put('/inventory/suppliers/:id', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.updateSupplier);
+router.delete('/inventory/suppliers/:id', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.deleteSupplier);
+
+router.get('/inventory/locations', authenticateToken, inventoryCtrl.getLocations);
+router.post('/inventory/locations', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.createLocation);
+router.put('/inventory/locations/:id', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.updateLocation);
+router.delete('/inventory/locations/:id', authenticateToken, requirePermission('inventory:manage_items'), inventoryCtrl.deleteLocation);
 
 // ==========================================
 // 10. CERTIFICATES
 // ==========================================
 router.get('/certificates/verify/:certNumber', certCtrl.verifyCertificate);
 router.get('/certificates', authenticateToken, certCtrl.getCertificates);
-router.post('/certificates/issue', authenticateToken, certCtrl.issueCertificate);
+router.post('/certificates/issue', authenticateToken, requirePermissionOrRole('lms:issue_certificate', 'super_admin', 'admin'), certCtrl.issueCertificate);
+router.put('/certificates/:id', authenticateToken, requirePermissionOrRole('lms:issue_certificate', 'super_admin', 'admin'), certCtrl.updateCertificate);
+router.delete('/certificates/:id', authenticateToken, requirePermissionOrRole('lms:issue_certificate', 'super_admin', 'admin'), certCtrl.deleteCertificate);
 router.get('/certificates/:id/pdf', certCtrl.downloadCertificatePdf);
 router.post('/certificates/:id/revoke', authenticateToken, requireRole('super_admin'), certCtrl.revokeCertificate);
 
@@ -153,43 +186,61 @@ router.get('/student/certificates', authenticateToken, lmsCtrl.getStudentCertifi
 // 11. HRM & ATTENDANCE
 // ==========================================
 router.get('/hrm/employees', authenticateToken, hrmCtrl.getEmployees);
-router.post('/hrm/employees', authenticateToken, requirePermission('hrm:manage_employees'), hrmCtrl.createEmployee);
+router.post('/hrm/employees', authenticateToken, requirePermissionOrRole('hrm:manage_employees', 'super_admin', 'admin'), hrmCtrl.createEmployee);
+router.put('/hrm/employees/:id', authenticateToken, requirePermissionOrRole('hrm:manage_employees', 'super_admin', 'admin'), hrmCtrl.updateEmployee);
+router.delete('/hrm/employees/:id', authenticateToken, requirePermissionOrRole('hrm:manage_employees', 'super_admin', 'admin'), hrmCtrl.deleteEmployee);
 router.get('/hrm/attendance', authenticateToken, hrmCtrl.getAttendance);
-router.post('/hrm/attendance', authenticateToken, requirePermission('hrm:attendance'), hrmCtrl.markAttendance);
+router.post('/hrm/attendance', authenticateToken, requirePermissionOrRole('hrm:attendance', 'super_admin', 'admin'), hrmCtrl.markAttendance);
 router.get('/hrm/leave', authenticateToken, hrmCtrl.getLeaveRequests);
 router.post('/hrm/leave', authenticateToken, hrmCtrl.submitLeaveRequest);
-router.post('/hrm/leave/:id/approve', authenticateToken, requirePermission('hrm:leave_approve'), hrmCtrl.approveLeaveRequest);
+router.post('/hrm/leave/:id/approve', authenticateToken, requirePermissionOrRole('hrm:leave_approve', 'super_admin', 'admin'), hrmCtrl.approveLeaveRequest);
 
 // ==========================================
 // 12. PAYROLL & CASUAL LABOR
 // ==========================================
 router.get('/payroll/runs', authenticateToken, payrollCtrl.getPayrollRuns);
-router.post('/payroll/generate', authenticateToken, requirePermission('payroll:manage'), payrollCtrl.generatePayrollRun);
+router.post('/payroll/generate', authenticateToken, requirePermissionOrRole('payroll:manage', 'super_admin', 'accountant'), payrollCtrl.generatePayrollRun);
+router.post('/payroll/runs/:id/void', authenticateToken, requirePermissionOrRole('payroll:manage', 'super_admin', 'accountant'), payrollCtrl.voidPayrollRun);
 router.get('/payroll/runs/:id/slips', authenticateToken, payrollCtrl.getSalarySlipsByRun);
+router.put('/payroll/slips/:id', authenticateToken, requirePermissionOrRole('payroll:manage', 'super_admin', 'accountant'), payrollCtrl.updateSalarySlip);
 router.get('/payroll/slips/:id/pdf', payrollCtrl.downloadSalarySlipPdf);
 router.get('/payroll/casual-labor', authenticateToken, payrollCtrl.getCasualLabor);
-router.post('/payroll/casual-labor', authenticateToken, requirePermission('payroll:casual_labor'), payrollCtrl.createCasualLabor);
+router.post('/payroll/casual-labor', authenticateToken, requirePermissionOrRole('payroll:casual_labor', 'super_admin', 'accountant'), payrollCtrl.createCasualLabor);
 
 // ==========================================
 // 13. CRM & COMMUNICATIONS
 // ==========================================
 router.get('/crm/contacts', authenticateToken, crmCtrl.getContacts);
-router.post('/crm/contacts', authenticateToken, requirePermission('crm:manage_contacts'), crmCtrl.createContact);
+router.post('/crm/contacts', authenticateToken, requirePermissionOrRole('crm:manage_contacts', 'super_admin', 'admin'), crmCtrl.createContact);
+router.put('/crm/contacts/:id', authenticateToken, requirePermissionOrRole('crm:manage_contacts', 'super_admin', 'admin'), crmCtrl.updateContact);
+router.delete('/crm/contacts/:id', authenticateToken, requirePermissionOrRole('crm:manage_contacts', 'super_admin', 'admin'), crmCtrl.deleteContact);
 router.get('/crm/contacts/:id/communications', authenticateToken, crmCtrl.getCommunicationsByContact);
 router.post('/crm/contacts/:id/communications', authenticateToken, crmCtrl.addCommunication);
-router.post('/crm/campaigns/broadcast', authenticateToken, requirePermission('crm:campaigns'), crmCtrl.broadcastCampaign);
+router.post('/crm/campaigns/broadcast', authenticateToken, requirePermissionOrRole('crm:campaigns', 'super_admin', 'admin'), crmCtrl.broadcastCampaign);
 
 // ==========================================
 // 14. PROJECTS, TASKS, DOCUMENTS & NOTICES
 // ==========================================
 router.get('/projects', projectCtrl.getProjects);
-router.post('/projects', authenticateToken, requirePermission('projects:manage'), projectCtrl.createProject);
+router.post('/projects', authenticateToken, requirePermissionOrRole('projects:manage', 'super_admin', 'admin'), projectCtrl.createProject);
+router.put('/projects/:id', authenticateToken, requirePermissionOrRole('projects:manage', 'super_admin', 'admin'), projectCtrl.updateProject);
+router.delete('/projects/:id', authenticateToken, requirePermissionOrRole('projects:manage', 'super_admin', 'admin'), projectCtrl.deleteProject);
+
 router.get('/projects/tasks', authenticateToken, projectCtrl.getAllTasks);
-router.post('/projects/tasks', authenticateToken, requirePermission('projects:manage'), projectCtrl.createTask);
+router.post('/projects/tasks', authenticateToken, requirePermissionOrRole('projects:manage', 'super_admin', 'admin'), projectCtrl.createTask);
 router.get('/projects/:id/tasks', authenticateToken, projectCtrl.getTasksByProject);
 router.put('/projects/tasks/:taskId', authenticateToken, projectCtrl.updateTaskStatus);
+router.delete('/projects/tasks/:taskId', authenticateToken, requirePermissionOrRole('projects:manage', 'super_admin', 'admin'), projectCtrl.deleteTask);
+
 router.get('/documents', authenticateToken, projectCtrl.getDocuments);
+router.post('/documents', authenticateToken, requirePermissionOrRole('projects:manage', 'super_admin', 'admin'), upload.single('file'), projectCtrl.createDocument);
+router.put('/documents/:id', authenticateToken, requirePermissionOrRole('projects:manage', 'super_admin', 'admin'), projectCtrl.updateDocument);
+router.delete('/documents/:id', authenticateToken, requirePermissionOrRole('projects:manage', 'super_admin', 'admin'), projectCtrl.deleteDocument);
+
 router.get('/notices', projectCtrl.getNotices);
+router.post('/notices', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin'), projectCtrl.createNotice);
+router.put('/notices/:id', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin'), projectCtrl.updateNotice);
+router.delete('/notices/:id', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin'), projectCtrl.deleteNotice);
 
 // ==========================================
 // 15. CMS (NEWS, GALLERY, PRAYER REQUESTS)
@@ -239,7 +290,10 @@ router.get('/settings', settingsCtrl.getSettings);
 router.put('/settings', authenticateToken, requireRole('super_admin'), settingsCtrl.updateSettings);
 router.get('/users', authenticateToken, requireRole('super_admin'), settingsCtrl.getUsers);
 router.post('/users', authenticateToken, requireRole('super_admin'), settingsCtrl.createUser);
+router.put('/users/:id', authenticateToken, requireRole('super_admin'), settingsCtrl.updateUser);
+router.delete('/users/:id', authenticateToken, requireRole('super_admin'), settingsCtrl.deleteUser);
 router.get('/roles-permissions', authenticateToken, settingsCtrl.getRolesAndPermissions);
+router.put('/roles/:id/permissions', authenticateToken, requireRole('super_admin'), settingsCtrl.updateRolePermissions);
 router.get('/audit-logs', authenticateToken, requireRole('super_admin'), settingsCtrl.getAuditLogs);
 router.post('/backup', authenticateToken, requireRole('super_admin'), settingsCtrl.triggerBackup);
 router.get('/reports', authenticateToken, reportCtrl.getReports);

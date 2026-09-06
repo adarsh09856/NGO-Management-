@@ -1,4 +1,5 @@
 const { pool } = require('../config/db');
+const { logAudit } = require('../middleware/auditLogger');
 
 // Admin: Donors Directory
 async function getDonors(req, res) {
@@ -233,10 +234,108 @@ async function updateMyProfile(req, res) {
   }
 }
 
+// Admin: Update Donor Details
+async function updateDonor(req, res) {
+  try {
+    const { id } = req.params;
+    const { donorType, fullName, email, phone, address, city, state, country, postalCode, panOrTaxId, notes } = req.body;
+
+    if (!fullName) {
+      return res.status(400).json({ success: false, message: 'Full name is required' });
+    }
+
+    const [donorCheck] = await pool.query(`SELECT id FROM donors WHERE id = ?`, [id]);
+    if (donorCheck.length === 0) {
+      return res.status(404).json({ success: false, message: 'Donor record not found' });
+    }
+
+    await pool.query(
+      `UPDATE donors 
+       SET donor_type = COALESCE(?, donor_type),
+           full_name = ?,
+           email = ?,
+           phone = ?,
+           address = ?,
+           city = ?,
+           state = ?,
+           country = COALESCE(?, country),
+           postal_code = ?,
+           pan_or_tax_id = ?,
+           notes = ?
+       WHERE id = ?`,
+      [donorType, fullName, email || null, phone || null, address || null, city || null, state || null, country || 'Bhutan', postalCode || null, panOrTaxId || null, notes || null, id]
+    );
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'donors',
+      action: 'update',
+      recordId: id,
+      details: { fullName, email, phone }
+    });
+
+    return res.json({ success: true, message: 'Donor updated successfully' });
+  } catch (error) {
+    console.error('[Update Donor Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to update donor: ' + error.message });
+  }
+}
+
+// Admin: Delete Donor (Zero-Loss Financial Audit Protection)
+async function deleteDonor(req, res) {
+  try {
+    const { id } = req.params;
+
+    const [donorCheck] = await pool.query(`SELECT * FROM donors WHERE id = ?`, [id]);
+    if (donorCheck.length === 0) {
+      return res.status(404).json({ success: false, message: 'Donor not found' });
+    }
+
+    // Check for associated financial donations
+    const [donationCount] = await pool.query(`SELECT COUNT(*) as count FROM donations WHERE donor_id = ?`, [id]);
+    if (donationCount[0].count > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot delete donor with ${donationCount[0].count} historical donation record(s). Financial audit history must be preserved.`
+      });
+    }
+
+    // Also check for recurring pledges
+    const [pledgeCount] = await pool.query(`SELECT COUNT(*) as count FROM recurring_pledges WHERE donor_id = ?`, [id]);
+    if (pledgeCount[0].count > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot delete donor with active recurring pledge commitments.'
+      });
+    }
+
+    await pool.query(`DELETE FROM donors WHERE id = ?`, [id]);
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'donors',
+      action: 'delete',
+      recordId: id,
+      details: { donorName: donorCheck[0].full_name, donorEmail: donorCheck[0].email }
+    });
+
+    return res.json({ success: true, message: 'Donor record deleted successfully' });
+  } catch (error) {
+    console.error('[Delete Donor Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to delete donor: ' + error.message });
+  }
+}
+
 module.exports = {
   getDonors,
   getDonorById,
   createDonor,
+  updateDonor,
+  deleteDonor,
   getMyDashboard,
   getMyDonations,
   updateMyProfile

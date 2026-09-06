@@ -53,14 +53,22 @@ async function getNextReceiptNumber(connection) {
   return { receiptNumber, financialYear };
 }
 
-// Verify Razorpay HMAC Signature
+// Verify Razorpay HMAC Signature (Cryptographically Secure & Timing-Safe)
 function verifyRazorpaySignature({ order_id, payment_id, signature }) {
+  if (!order_id || !payment_id || !signature) return false;
   const secret = process.env.RAZORPAY_KEY_SECRET || 'rzp_test_secret_key_bhutan_peace';
   const expectedSignature = crypto
     .createHmac('sha256', secret)
     .update(`${order_id}|${payment_id}`)
     .digest('hex');
-  return expectedSignature === signature;
+
+  const expectedBuffer = Buffer.from(expectedSignature, 'utf8');
+  const signatureBuffer = Buffer.from(signature, 'utf8');
+
+  if (expectedBuffer.length !== signatureBuffer.length) {
+    return false;
+  }
+  return crypto.timingSafeEqual(expectedBuffer, signatureBuffer);
 }
 
 // Atomic Idempotent Settlement for Online Donations

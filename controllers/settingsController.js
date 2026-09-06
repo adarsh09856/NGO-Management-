@@ -144,12 +144,157 @@ async function triggerBackup(req, res) {
   }
 }
 
+// 5. Update and Delete User Accounts
+async function updateUser(req, res) {
+  try {
+    const { id } = req.params;
+    const targetId = parseInt(id, 10);
+    const { roleId, fullName, email, phone, status, password } = req.body;
+
+    const [existing] = await pool.query('SELECT * FROM users WHERE id = ?', [targetId]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (email && email.trim().toLowerCase() !== existing[0].email) {
+      const [duplicate] = await pool.query('SELECT id FROM users WHERE email = ? AND id != ?', [email.trim().toLowerCase(), targetId]);
+      if (duplicate.length > 0) {
+        return res.status(400).json({ success: false, message: 'Email is already in use by another user' });
+      }
+    }
+
+    let passwordHash = existing[0].password_hash;
+    if (password && password.trim().length > 0) {
+      const salt = await bcrypt.genSalt(10);
+      passwordHash = await bcrypt.hash(password.trim(), salt);
+    }
+
+    await pool.query(
+      `UPDATE users
+       SET role_id = COALESCE(?, role_id),
+           full_name = COALESCE(?, full_name),
+           email = COALESCE(?, email),
+           phone = ?,
+           status = COALESCE(?, status),
+           password_hash = ?
+       WHERE id = ?`,
+      [
+        roleId ? parseInt(roleId, 10) : existing[0].role_id,
+        fullName ? fullName.trim() : existing[0].full_name,
+        email ? email.trim().toLowerCase() : existing[0].email,
+        phone !== undefined ? phone : existing[0].phone,
+        status || existing[0].status,
+        passwordHash,
+        targetId
+      ]
+    );
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'users',
+      action: 'update',
+      recordId: String(targetId),
+      details: { fullName, email, roleId, status, passwordUpdated: !!password }
+    });
+
+    return res.json({ success: true, message: 'User updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update user: ' + error.message });
+  }
+}
+
+async function deleteUser(req, res) {
+  try {
+    const { id } = req.params;
+    const targetId = parseInt(id, 10);
+    if (targetId === 1 || (req.user && targetId === req.user.id)) {
+      return res.status(400).json({ success: false, message: 'Cannot delete the root super administrator or your own account' });
+    }
+
+    const [existing] = await pool.query('SELECT id, full_name, email FROM users WHERE id = ?', [targetId]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    await pool.query('DELETE FROM users WHERE id = ?', [targetId]);
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'users',
+      action: 'delete',
+      recordId: String(targetId),
+      details: { deletedUser: existing[0] }
+    });
+
+    return res.json({ success: true, message: 'User deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to delete user: ' + error.message });
+  }
+}
+
+// 6. Update Role Permissions
+async function updateRolePermissions(req, res) {
+  const connection = await pool.getConnection();
+  try {
+    const roleId = parseInt(req.params.id, 10);
+    const { permissionIds } = req.body;
+
+    if (!Array.isArray(permissionIds)) {
+      connection.release();
+      return res.status(400).json({ success: false, message: 'permissionIds must be an array of permission IDs' });
+    }
+
+    const [role] = await connection.query('SELECT id, name FROM roles WHERE id = ?', [roleId]);
+    if (role.length === 0) {
+      connection.release();
+      return res.status(404).json({ success: false, message: 'Role not found' });
+    }
+
+    await connection.beginTransaction();
+
+    // Remove all current permissions for this role
+    await connection.query('DELETE FROM role_permissions WHERE role_id = ?', [roleId]);
+
+    // Insert updated permissions
+    if (permissionIds.length > 0) {
+      const values = permissionIds.map(pid => [roleId, parseInt(pid, 10)]);
+      await connection.query('INSERT INTO role_permissions (role_id, permission_id) VALUES ?', [values]);
+    }
+
+    await connection.commit();
+    connection.release();
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'roles',
+      action: 'update_permissions',
+      recordId: String(roleId),
+      details: { roleName: role[0].name, permissionCount: permissionIds.length }
+    });
+
+    return res.json({ success: true, message: `Permissions for role '${role[0].name}' updated successfully` });
+  } catch (error) {
+    await connection.rollback();
+    connection.release();
+    return res.status(500).json({ success: false, message: 'Failed to update role permissions: ' + error.message });
+  }
+}
+
 module.exports = {
   getSettings,
   updateSettings,
   getUsers,
   createUser,
+  updateUser,
+  deleteUser,
   getRolesAndPermissions,
+  updateRolePermissions,
   getAuditLogs,
   triggerBackup
 };
