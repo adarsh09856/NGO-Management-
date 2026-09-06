@@ -8,17 +8,17 @@ export default function PayrollRuns() {
   const [payrollRuns, setPayrollRuns] = useState([]);
   const [salarySlips, setSalarySlips] = useState([]);
   const [casualWorkers, setCasualWorkers] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState('2026-08');
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
 
   // Casual Worker Pay Modal
   const [casualModalOpen, setCasualModalOpen] = useState(false);
   const [workerName, setWorkerName] = useState('');
-  const [workDate, setWorkDate] = useState('2026-08-25');
+  const [workDate, setWorkDate] = useState(new Date().toISOString().slice(0, 10));
   const [hoursWorked, setHoursWorked] = useState(8);
   const [dailyWage, setDailyWage] = useState(800);
-  const [workDescription, setWorkDescription] = useState('Stupa stone carving and masonry work');
+  const [workDescription, setWorkDescription] = useState('');
 
   const fetchData = async () => {
     try {

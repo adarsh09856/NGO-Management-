@@ -245,6 +245,7 @@ router.post('/backup', authenticateToken, requireRole('super_admin'), settingsCt
 router.get('/reports', authenticateToken, reportCtrl.getReports);
 router.get('/reports/:module/export', authenticateToken, reportCtrl.getReports);
 router.get('/admin/dashboard', authenticateToken, reportCtrl.getAdminDashboardMetrics);
+router.get('/admin/notifications', authenticateToken, reportCtrl.getAdminNotifications);
 router.get('/search', authenticateToken, searchCtrl.globalSearch);
 
 module.exports = router;

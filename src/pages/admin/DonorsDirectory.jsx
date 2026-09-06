@@ -97,56 +97,72 @@ export default function DonorsDirectory() {
       </div>
 
       {/* Donors Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {donors.map((d) => (
-          <div key={d.id} className="monastery-card p-5 space-y-3 flex flex-col justify-between">
-            <div className="space-y-2">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center space-x-2.5">
-                  <div className="w-9 h-9 rounded-full bg-[#FEF3C7] text-[#0F172A] border border-[#D4AF37] flex items-center justify-center font-bold text-xs">
-                    {d.full_name?.charAt(0)}
+      {donors.length === 0 ? (
+        <div className="monastery-card p-12 text-center space-y-3">
+          <Users className="w-12 h-12 text-gray-300 mx-auto" />
+          <h3 className="font-serif-brand font-bold text-base text-gray-700">No Donors Found</h3>
+          <p className="text-xs text-gray-500 max-w-md mx-auto">No devotees match your search or directory filter. Add a new donor record to start tracking contributions.</p>
+          <button
+            type="button"
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#E11D48] text-white rounded text-xs font-bold uppercase tracking-wider shadow hover:bg-[#BE123C]"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add New Donor</span>
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {donors.map((d) => (
+            <div key={d.id} className="monastery-card p-5 space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-9 h-9 rounded-full bg-[#FEF3C7] text-[#0F172A] border border-[#D4AF37] flex items-center justify-center font-bold text-xs">
+                      {d.full_name?.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-sm text-gray-900">{d.full_name}</h3>
+                      <p className="text-[10px] text-gray-500 capitalize">{d.donor_type} Donor</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-sm text-gray-900">{d.full_name}</h3>
-                    <p className="text-[10px] text-gray-500 capitalize">{d.donor_type} Donor</p>
-                  </div>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                    {d.total_donations_count || 0} Gifts
+                  </span>
                 </div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                  {d.total_donations_count || 0} Gifts
+
+                <div className="space-y-1 text-xs text-gray-600 pt-2 border-t">
+                  {d.email && (
+                    <p className="flex items-center gap-1.5 truncate">
+                      <Mail className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                      <span>{d.email}</span>
+                    </p>
+                  )}
+                  {d.phone && (
+                    <p className="flex items-center gap-1.5">
+                      <Phone className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                      <span>{d.phone}</span>
+                    </p>
+                  )}
+                  {d.address && (
+                    <p className="flex items-center gap-1.5 truncate">
+                      <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                      <span>{d.address}</span>
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="pt-2 border-t flex justify-between items-center text-xs">
+                <span className="text-gray-500 font-medium">Lifetime Donated:</span>
+                <span className="font-serif-brand font-bold text-emerald-700 font-mono text-sm">
+                  ₹ {parseFloat(d.total_donated || 0).toLocaleString('en-IN')}
                 </span>
               </div>
-
-              <div className="space-y-1 text-xs text-gray-600 pt-2 border-t">
-                {d.email && (
-                  <p className="flex items-center gap-1.5 truncate">
-                    <Mail className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                    <span>{d.email}</span>
-                  </p>
-                )}
-                {d.phone && (
-                  <p className="flex items-center gap-1.5">
-                    <Phone className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                    <span>{d.phone}</span>
-                  </p>
-                )}
-                {d.address && (
-                  <p className="flex items-center gap-1.5 truncate">
-                    <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                    <span>{d.address}</span>
-                  </p>
-                )}
-              </div>
             </div>
-
-            <div className="pt-2 border-t flex justify-between items-center text-xs">
-              <span className="text-gray-500 font-medium">Lifetime Donated:</span>
-              <span className="font-serif-brand font-bold text-emerald-700 font-mono text-sm">
-                ₹ {parseFloat(d.total_donated || 0).toLocaleString('en-IN')}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Add Donor Modal */}
       {showAddModal && (

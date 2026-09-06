@@ -15,6 +15,28 @@ export default function AdminTopbar({ onToggleSidebar, title = 'Dashboard', brea
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await api.get('/admin/notifications');
+      if (res.data.success) {
+        setNotifications(res.data.data.notifications || []);
+        setUnreadCount(res.data.data.unreadCount || 0);
+        setUnreadMessagesCount(res.data.data.unreadMessagesCount || 0);
+      }
+    } catch (err) {
+      // Non-fatal if offline
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const searchRef = useRef(null);
 
@@ -209,34 +231,58 @@ export default function AdminTopbar({ onToggleSidebar, title = 'Dashboard', brea
             aria-label="Notifications"
           >
             <Bell className="w-4 h-4" />
-            <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-[#E11D48] text-white text-[8px] font-bold rounded-full flex items-center justify-center">
-              8
-            </span>
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-[#E11D48] text-white text-[8px] font-bold rounded-full flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
           </button>
 
           {/* Notifications Dropdown */}
           {notificationsOpen && (
-            <div className="absolute right-0 mt-2 w-72 max-w-[90vw] bg-white rounded-lg shadow-xl border border-[#E2E8F0] py-2 z-50 text-xs animate-fadeIn">
-              <div className="px-3 py-1.5 border-b border-gray-100 font-bold text-gray-800 flex justify-between items-center">
-                <span>Notifications</span>
-                <span className="text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded">8 Unread</span>
+            <div className="absolute right-0 mt-2 w-80 max-w-[90vw] bg-white rounded-xl shadow-xl border border-[#E2E8F0] py-2 z-50 text-xs animate-fadeIn">
+              <div className="px-3.5 py-2 border-b border-gray-100 font-bold text-gray-800 flex justify-between items-center">
+                <span className="font-serif-brand">Live Operational Alerts</span>
+                {unreadCount > 0 ? (
+                  <span className="text-[10px] bg-rose-100 text-[#E11D48] px-2 py-0.5 rounded-full font-bold">
+                    {unreadCount} Active
+                  </span>
+                ) : (
+                  <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">
+                    All Caught Up
+                  </span>
+                )}
               </div>
-              <div className="max-h-60 overflow-y-auto divide-y divide-gray-100">
-                <div className="p-2.5 hover:bg-gray-50">
-                  <p className="font-semibold text-gray-800">New Donation Received</p>
-                  <p className="text-[11px] text-gray-500">Tashi Phuntsho donated ₹25,000 via Razorpay</p>
-                  <span className="text-[9px] text-gray-400">10 mins ago</span>
-                </div>
-                <div className="p-2.5 hover:bg-gray-50">
-                  <p className="font-semibold text-gray-800">Low Stock Alert</p>
-                  <p className="text-[11px] text-gray-500">Butter Lamp (Small) stock is at 18 (Min: 50)</p>
-                  <span className="text-[9px] text-gray-400">1 hour ago</span>
-                </div>
-                <div className="p-2.5 hover:bg-gray-50">
-                  <p className="font-semibold text-gray-800">Leave Request</p>
-                  <p className="text-[11px] text-gray-500">Lopen Karma Samten requested 3-day monastic retreat leave</p>
-                  <span className="text-[9px] text-gray-400">2 hours ago</span>
-                </div>
+              <div className="max-h-72 overflow-y-auto divide-y divide-gray-100">
+                {notifications.length > 0 ? (
+                  notifications.map((notif) => (
+                    <Link
+                      key={notif.id}
+                      to={notif.link}
+                      onClick={() => setNotificationsOpen(false)}
+                      className="block p-3 hover:bg-amber-50/50 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <p className="font-bold text-gray-900">{notif.title}</p>
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase ${
+                          notif.type === 'warning' ? 'bg-amber-100 text-amber-800' :
+                          notif.type === 'approval' ? 'bg-blue-100 text-blue-800' :
+                          notif.type === 'prayer' ? 'bg-purple-100 text-purple-800' :
+                          'bg-emerald-100 text-emerald-800'
+                        }`}>
+                          {notif.type}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-gray-600 mt-0.5">{notif.message}</p>
+                      <span className="text-[9px] text-gray-400 font-mono mt-1 block">{notif.time}</span>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="p-4 text-center text-gray-500">
+                    <p className="text-xs font-semibold text-emerald-700">✓ All monastery systems operational</p>
+                    <p className="text-[10px] text-gray-400 mt-0.5">No critical stock or approval alerts</p>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -245,14 +291,17 @@ export default function AdminTopbar({ onToggleSidebar, title = 'Dashboard', brea
         {/* Message Icon */}
         <div className="relative">
           <Link
-            to="/admin/crm"
+            to="/admin/prayer-requests"
             className="p-1.5 sm:p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100 relative block"
-            aria-label="Messages"
+            aria-label="Messages and Prayers"
+            title="Devotee Prayer Requests"
           >
             <Mail className="w-4 h-4" />
-            <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-[#E11D48] text-white text-[8px] font-bold rounded-full flex items-center justify-center">
-              4
-            </span>
+            {unreadMessagesCount > 0 && (
+              <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-[#D4AF37] text-[#090D16] text-[8px] font-extrabold rounded-full flex items-center justify-center">
+                {unreadMessagesCount > 9 ? '9+' : unreadMessagesCount}
+              </span>
+            )}
           </Link>
         </div>
 

@@ -128,7 +128,7 @@ export default function AdminDashboard() {
           </div>
           <div className="mt-3">
             <div className="font-serif-brand font-bold text-xl text-[#0F172A]">
-              {metrics.totalStudentsMonks || 350}
+              {metrics.totalStudentsMonks || 0}
             </div>
             <p className="text-[10px] text-gray-500 mt-0.5">Shedra & Novice Classes</p>
           </div>
@@ -178,7 +178,7 @@ export default function AdminDashboard() {
               <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
                 Monthly Financial Inflow Trends
               </h3>
-              <p className="text-xs text-gray-500">Calculated from verified donations and money receipts</p>
+              <p className="text-xs text-gray-500">Calculated live from verified donations and money receipts</p>
             </div>
             <span className="glow-pill-gold px-2.5 py-1 rounded text-[10px] font-bold">
               FY 2026-2027
@@ -187,13 +187,7 @@ export default function AdminDashboard() {
 
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={metrics.monthlyTrend && metrics.monthlyTrend.length > 0 ? metrics.monthlyTrend : [
-                { month: 'Apr', amount: 120000 },
-                { month: 'May', amount: 280000 },
-                { month: 'Jun', amount: 450000 },
-                { month: 'Jul', amount: 890000 },
-                { month: 'Aug', amount: metrics.totalDonationsMonth || 348520 }
-              ]}>
+              <BarChart data={metrics.monthlyTrend || []}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#F3EFE6" />
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#6B5E59' }} />
                 <YAxis tick={{ fontSize: 11, fill: '#6B5E59' }} />
@@ -229,21 +223,21 @@ export default function AdminDashboard() {
                 <span>Add Donation</span>
               </Link>
               <Link
-                to="/admin/receipts/new"
+                to="/admin/receipts"
                 className="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-gray-200 text-[#0F172A] flex items-center space-x-2 transition-all hover:border-[#D4AF37] shadow-sm"
               >
                 <Receipt className="w-4 h-4 text-[#D4AF37]" />
                 <span>Issue Receipt</span>
               </Link>
               <Link
-                to="/admin/cms/news"
+                to="/admin/blog"
                 className="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-gray-200 text-[#0F172A] flex items-center space-x-2 transition-all hover:border-[#D4AF37] shadow-sm"
               >
                 <Calendar className="w-4 h-4 text-[#D4AF37]" />
-                <span>Publish Event</span>
+                <span>Publish Article</span>
               </Link>
               <Link
-                to="/admin/cms/gallery"
+                to="/admin/gallery"
                 className="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-gray-200 text-[#0F172A] flex items-center space-x-2 transition-all hover:border-[#D4AF37] shadow-sm"
               >
                 <FolderPlus className="w-4 h-4 text-[#D4AF37]" />

@@ -55,7 +55,7 @@ export default function AllDonations() {
 
         <div className="flex items-center space-x-3">
           <Link
-            to="/admin/donations/add"
+            to="/admin/donations/new"
             className="px-4 py-2 bg-[#E11D48] hover:bg-[#1E293B] text-white rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -97,8 +97,17 @@ export default function AllDonations() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {donations.map((d) => (
-                <tr key={d.id} className="hover:bg-[#F8FAFC] transition-colors">
+              {donations.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="py-12 text-center text-gray-400">
+                    <Heart className="w-8 h-8 mx-auto text-gray-300 mb-2" />
+                    <p className="text-xs font-semibold text-gray-600">No donation records found</p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">Recorded gifts and offerings will appear here in chronological order</p>
+                  </td>
+                </tr>
+              ) : (
+                donations.map((d) => (
+                  <tr key={d.id} className="hover:bg-[#F8FAFC] transition-colors">
                   <td className="py-3 px-4 font-mono font-bold text-[#0F172A]">{d.receipt_number || `RC-${d.id}`}</td>
                   <td className="py-3 px-4 font-bold text-gray-900">{d.donor_name || 'Anonymous'}</td>
                   <td className="py-3 px-4 font-semibold text-gray-700">{d.donation_for}</td>
@@ -134,7 +143,7 @@ export default function AllDonations() {
                     </div>
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>

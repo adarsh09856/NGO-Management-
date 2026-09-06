@@ -35,29 +35,29 @@ export default function AddDonation() {
   const navigate = useNavigate();
   const { success, error } = useToast();
 
-  // Form State (Default initialized to match reference image 1)
+  // Form State (Clean initialized for authentic live data entry)
   const [donorType, setDonorType] = useState('individual'); // individual, organization, anonymous
   const [donorsList, setDonorsList] = useState([]);
-  const [selectedDonorId, setSelectedDonorId] = useState('1'); // Default Tashi Phuntsho
+  const [selectedDonorId, setSelectedDonorId] = useState('');
 
-  const [donorName, setDonorName] = useState('Tashi Phuntsho');
-  const [email, setEmail] = useState('tashi.phuntsho@email.com');
-  const [phone, setPhone] = useState('+975 17 55 8899');
-  const [address, setAddress] = useState('Gelephu, Sarpang, Bhutan');
+  const [donorName, setDonorName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
 
   const [donationFor, setDonationFor] = useState('Peace Stupa Construction');
-  const [campaignId, setCampaignId] = useState('1');
+  const [campaignId, setCampaignId] = useState('');
   const [campaignsList, setCampaignsList] = useState([]);
   const [donationType, setDonationType] = useState('one_time'); // one_time, recurring
-  const [amount, setAmount] = useState('25000');
+  const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState('INR');
 
   const [paymentMethod, setPaymentMethod] = useState('online_gateway'); // online_gateway, bank_transfer, cash, cheque_dd, other
-  const [transactionRef, setTransactionRef] = useState('TXN1234567890');
-  const [paymentDate, setPaymentDate] = useState('2026-08-25');
+  const [transactionRef, setTransactionRef] = useState('');
+  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().slice(0, 10));
   const [paymentGateway, setPaymentGateway] = useState('Razorpay');
-  const [bankName, setBankName] = useState('HDFC Bank');
-  const [remarks, setRemarks] = useState('Donation towards the construction of Great Druk Wangyel Stupa.');
+  const [bankName, setBankName] = useState('Bank of Bhutan');
+  const [remarks, setRemarks] = useState('');
   const [sendReceipt, setSendReceipt] = useState(true);
 
   const [loading, setLoading] = useState(false);
@@ -71,8 +71,13 @@ export default function AddDonation() {
           api.get('/donors?limit=50'),
           api.get('/donations/campaigns')
         ]);
-        if (dRes.data.success) setDonorsList(dRes.data.data);
-        if (cRes.data.success) setCampaignsList(cRes.data.data);
+        if (dRes.data.success) setDonorsList(dRes.data.data || []);
+        if (cRes.data.success) {
+          setCampaignsList(cRes.data.data || []);
+          if (cRes.data.data?.length > 0) {
+            setCampaignId(String(cRes.data.data[0].id));
+          }
+        }
       } catch (err) {
         console.error('Failed to load donor dropdowns:', err);
       }
@@ -83,9 +88,16 @@ export default function AddDonation() {
   // When donor is selected from dropdown
   const handleDonorSelect = (id) => {
     setSelectedDonorId(id);
+    if (!id) {
+      setDonorName('');
+      setEmail('');
+      setPhone('');
+      setAddress('');
+      return;
+    }
     const found = donorsList.find((d) => String(d.id) === String(id));
     if (found) {
-      setDonorName(found.full_name);
+      setDonorName(found.full_name || '');
       setEmail(found.email || '');
       setPhone(found.phone || '');
       setAddress(found.address || '');

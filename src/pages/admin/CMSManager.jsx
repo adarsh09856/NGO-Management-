@@ -15,7 +15,7 @@ export default function CMSManager() {
   const [showNewsModal, setShowNewsModal] = useState(false);
   const [newsTitle, setNewsTitle] = useState('');
   const [newsCategory, setNewsCategory] = useState('Puja');
-  const [newsDate, setNewsDate] = useState('2026-09-05');
+  const [newsDate, setNewsDate] = useState(new Date().toISOString().slice(0, 10));
   const [newsTime, setNewsTime] = useState('08:00 AM - 04:00 PM');
   const [newsLocation, setNewsLocation] = useState('Great Druk Wangyel Peace Stupa Complex');
   const [newsContent, setNewsContent] = useState('');

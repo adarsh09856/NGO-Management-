@@ -133,7 +133,7 @@ async function getAdminDashboardMetrics(req, res) {
     const [donorRow] = await pool.query(`SELECT COUNT(*) as count FROM donors`);
 
     // 3. Students / Monks Count
-    const [monkRow] = await pool.query(`SELECT COUNT(*) as count FROM students_monks WHERE status = 'enrolled'`);
+    const [monkRow] = await pool.query(`SELECT COUNT(*) as count FROM students_monks WHERE status IN ('active', 'enrolled') OR is_deleted = 0`);
 
     // 4. Receipts This Month
     const [receiptRow] = await pool.query(
@@ -234,7 +234,105 @@ async function getAdminDashboardMetrics(req, res) {
   }
 }
 
+// Live Computed Database Alerts and Notifications
+async function getAdminNotifications(req, res) {
+  try {
+    const notifications = [];
+
+    // 1. Live Low Stock Alerts from store_items
+    const [lowStock] = await pool.query(
+      `SELECT si.id, si.item_name, si.current_stock, si.min_stock, u.symbol as unit_symbol
+       FROM store_items si
+       LEFT JOIN units u ON si.unit_id = u.id
+       WHERE si.current_stock <= si.min_stock
+       ORDER BY si.current_stock ASC LIMIT 4`
+    );
+    lowStock.forEach(item => {
+      notifications.push({
+        id: `stock-${item.id}`,
+        title: 'Low Store Inventory Alert',
+        message: `${item.item_name} is down to ${item.current_stock} ${item.unit_symbol || 'units'} (Min threshold: ${item.min_stock})`,
+        type: 'warning',
+        link: '/admin/inventory',
+        time: 'Active Alert'
+      });
+    });
+
+    // 2. Pending Expense Approvals from expenses
+    const [pendingExpenses] = await pool.query(
+      `SELECT id, voucher_no, payee_name, amount, currency, expense_date
+       FROM expenses
+       WHERE status = 'pending'
+       ORDER BY expense_date DESC LIMIT 3`
+    );
+    pendingExpenses.forEach(exp => {
+      notifications.push({
+        id: `exp-${exp.id}`,
+        title: 'Pending Expense Claim Voucher',
+        message: `${exp.voucher_no || 'Voucher'}: ₹${Number(exp.amount).toLocaleString()} for ${exp.payee_name} awaiting approval`,
+        type: 'approval',
+        link: '/admin/accounts/expenses',
+        time: 'Awaiting Audit'
+      });
+    });
+
+    // 3. Pending Prayer Requests from prayer_requests
+    const [pendingPrayers] = await pool.query(
+      `SELECT id, devotee_name, prayer_type, dedication_date
+       FROM prayer_requests
+       WHERE status = 'pending'
+       ORDER BY id DESC LIMIT 4`
+    );
+    pendingPrayers.forEach(p => {
+      notifications.push({
+        id: `prayer-${p.id}`,
+        title: 'New Devotee Prayer Dedication',
+        message: `${p.devotee_name} requested recitation for ${p.prayer_type || 'General Blessing'}`,
+        type: 'prayer',
+        link: '/admin/prayer-requests',
+        time: 'Pending Sangha Chanting'
+      });
+    });
+
+    // 4. Recent Verified Offerings from donations
+    const [recentGifts] = await pool.query(
+      `SELECT d.id, d.receipt_number, COALESCE(dn.full_name, 'Anonymous Devotee') as donor_name, d.amount, d.payment_method
+       FROM donations d
+       LEFT JOIN donors dn ON d.donor_id = dn.id
+       WHERE d.payment_status = 'completed' AND d.is_deleted = 0
+       ORDER BY d.payment_date DESC, d.id DESC LIMIT 3`
+    );
+    recentGifts.forEach(g => {
+      notifications.push({
+        id: `don-${g.id}`,
+        title: 'Verified Sacred Offering Received',
+        message: `${g.donor_name} offered ₹${Number(g.amount).toLocaleString()} (${g.payment_method?.replace('_', ' ') || 'Online'})`,
+        type: 'donation',
+        link: '/admin/donations',
+        time: 'Recorded in Ledger'
+      });
+    });
+
+    const [unreadPrayerCount] = await pool.query(
+      `SELECT COUNT(*) as count FROM prayer_requests WHERE status = 'pending'`
+    );
+
+    return res.json({
+      success: true,
+      data: {
+        notifications,
+        unreadCount: notifications.length,
+        unreadMessagesCount: unreadPrayerCount[0]?.count || 0
+      }
+    });
+  } catch (error) {
+    console.error('[Admin Notifications Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to fetch admin notifications' });
+  }
+}
+
 module.exports = {
   getReports,
-  getAdminDashboardMetrics
+  getAdminDashboardMetrics,
+  getAdminNotifications
 };
