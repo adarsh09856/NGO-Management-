@@ -473,7 +473,7 @@ CREATE TABLE IF NOT EXISTS certificates (
   student_id INT NOT NULL,
   course_id INT NOT NULL,
   issue_date DATE NOT NULL,
-  grade VARCHAR(20) DEFAULT 'Distinction',
+  grade VARCHAR(50) DEFAULT 'Distinction',
   signed_by VARCHAR(150) DEFAULT 'Khenpo Tashi Dorji, Abbot',
   pdf_url VARCHAR(255),
   status ENUM('VALID', 'REVOKED') DEFAULT 'VALID',
