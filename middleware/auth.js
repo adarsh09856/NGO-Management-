@@ -31,18 +31,30 @@ async function authenticateToken(req, res, next) {
       });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (jwtError) {
+      if (jwtError.name === 'TokenExpiredError') {
+        return res.status(401).json({ success: false, message: 'Authentication token has expired. Please refresh token or log in again.' });
+      }
+      return res.status(401).json({ success: false, message: 'Invalid authentication token.' });
+    }
 
-    // Fetch fresh user record and role
-    const [users] = await pool.query(
-      `SELECT u.id, u.role_id, u.full_name, u.email, u.phone, u.avatar_url, u.status,
-              u.two_factor_enabled, COALESCE(u.must_change_password, 0) as must_change_password,
-              r.name as role_name, r.slug as role_slug
-       FROM users u
-       JOIN roles r ON u.role_id = r.id
-       WHERE u.id = ? AND u.status = 'active'`,
-      [decoded.userId]
-    );
+    // Fetch user record using SELECT u.* so missing optional columns never cause SQL errors
+    let users;
+    try {
+      [users] = await pool.query(
+        `SELECT u.*, r.name as role_name, r.slug as role_slug
+         FROM users u
+         JOIN roles r ON u.role_id = r.id
+         WHERE u.id = ? AND u.status = 'active'`,
+        [decoded.userId]
+      );
+    } catch (dbErr) {
+      console.error('[Auth] Database query error in authenticateToken:', dbErr.message);
+      return res.status(500).json({ success: false, message: 'Database error during authentication.' });
+    }
 
     if (users.length === 0) {
       return res.status(401).json({
@@ -51,31 +63,29 @@ async function authenticateToken(req, res, next) {
       });
     }
 
-    const user = users[0];
+    const user = { ...users[0] };
+    user.two_factor_enabled = Boolean(user.two_factor_enabled);
+    user.must_change_password = Boolean(user.must_change_password);
 
-    // Fetch user permissions
-    const [permissions] = await pool.query(
-      `SELECT p.module, p.action
-       FROM role_permissions rp
-       JOIN permissions p ON rp.permission_id = p.id
-       WHERE rp.role_id = ?`,
-      [user.role_id]
-    );
+    // Fetch user permissions safely
+    try {
+      const [permissions] = await pool.query(
+        `SELECT p.module, p.action
+         FROM role_permissions rp
+         JOIN permissions p ON rp.permission_id = p.id
+         WHERE rp.role_id = ?`,
+        [user.role_id]
+      );
+      user.permissions = permissions.map(p => `${p.module}:${p.action}`);
+    } catch (permErr) {
+      user.permissions = [];
+    }
 
-    user.permissions = permissions.map(p => `${p.module}:${p.action}`);
     req.user = user;
     next();
   } catch (error) {
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({
-        success: false,
-        message: 'Authentication token has expired. Please refresh token or log in again.'
-      });
-    }
-    return res.status(403).json({
-      success: false,
-      message: 'Invalid authentication token.'
-    });
+    console.error('[Auth] Unexpected error in authenticateToken:', error);
+    return res.status(500).json({ success: false, message: 'Internal authentication error.' });
   }
 }
 
@@ -100,16 +110,17 @@ async function optionalAuth(req, res, next) {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     const [users] = await pool.query(
-      `SELECT u.id, u.role_id, u.full_name, u.email, u.phone, u.avatar_url, u.status,
-              u.two_factor_enabled,
-              r.name as role_name, r.slug as role_slug
+      `SELECT u.*, r.name as role_name, r.slug as role_slug
        FROM users u
        JOIN roles r ON u.role_id = r.id
        WHERE u.id = ? AND u.status = 'active'`,
       [decoded.userId]
     );
     if (users.length > 0) {
-      req.user = users[0];
+      const user = { ...users[0] };
+      user.two_factor_enabled = Boolean(user.two_factor_enabled);
+      user.must_change_password = Boolean(user.must_change_password);
+      req.user = user;
     }
   } catch (e) {
     req.user = null;

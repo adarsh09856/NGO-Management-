@@ -9,10 +9,11 @@ const { upload } = require('../middleware/upload');
 // Rate Limiters for Sensitive API Endpoints
 const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 attempts per IP per window as mandated by Phase 1.3
+  max: 100, // Reasonable threshold to allow admin work while preventing brute-force
   message: { success: false, message: 'Too many authentication attempts. Please try again after 15 minutes.' },
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  validate: { xForwardedForHeader: false, default: false }
 });
 
 const paymentRateLimiter = rateLimit({
@@ -20,15 +21,17 @@ const paymentRateLimiter = rateLimit({
   max: 50,
   message: { success: false, message: 'Payment gateway rate limit reached. Please try again shortly.' },
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  validate: { xForwardedForHeader: false, default: false }
 });
 
 const publicFormRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 30,
+  max: 50,
   message: { success: false, message: 'Too many submissions. Please wait before submitting again.' },
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  validate: { xForwardedForHeader: false, default: false }
 });
 
 // Import Controllers

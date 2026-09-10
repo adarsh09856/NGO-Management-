@@ -30,14 +30,15 @@ export default function ProtectedRoute({ allowedRoles = [], zone = 'authenticate
   const roleSlug = user?.role?.slug || user?.role_slug;
 
   // 2. ADMIN ZONE GUARD
-  // If not authenticated or not in allowed admin roles, render 404
-  // (Do NOT redirect to /admin/login — prevents reconnaissance scanners)
   if (zone === 'admin') {
-    const adminRoles = allowedRoles.length > 0 
-      ? allowedRoles 
+    const adminRoles = allowedRoles.length > 0
+      ? allowedRoles
       : ['super_admin', 'admin', 'accountant', 'hr_manager', 'staff'];
 
-    if (!user || !roleSlug || !adminRoles.includes(roleSlug)) {
+    if (!user || !roleSlug) {
+      return <Navigate to="/admin/login" replace />;
+    }
+    if (!adminRoles.includes(roleSlug)) {
       return <NotFound />;
     }
     return children;

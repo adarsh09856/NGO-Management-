@@ -4,10 +4,21 @@ import api from '../services/api';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    try {
+      const cached = localStorage.getItem('dpl_user');
+      return cached ? JSON.parse(cached) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+  const [loading, setLoading] = useState(() => {
+    const token = localStorage.getItem('dpl_token');
+    const cachedUser = localStorage.getItem('dpl_user');
+    return !token && !cachedUser ? false : (!cachedUser);
+  });
 
-  // Initialize Auth state: verify token and session with backend before trusting
+  // Initialize Auth state: verify token and session with backend in background
   useEffect(() => {
     async function verifyAuth() {
       const storedToken = localStorage.getItem('dpl_token');
@@ -18,14 +29,16 @@ export function AuthProvider({ children }) {
           if (res.data.success && res.data.user) {
             setUser(res.data.user);
             localStorage.setItem('dpl_user', JSON.stringify(res.data.user));
-          } else {
-            throw new Error('Verification failed');
           }
         } catch (err) {
-          console.warn('[Auth] Stored session expired or invalid:', err?.message);
-          localStorage.removeItem('dpl_token');
-          localStorage.removeItem('dpl_user');
-          setUser(null);
+          // Only invalidate and clear session if server explicitly rejected auth (401 / 403)
+          if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+            console.warn('[Auth] Stored session expired or invalid:', err?.message);
+            localStorage.removeItem('dpl_token');
+            localStorage.removeItem('dpl_refresh');
+            localStorage.removeItem('dpl_user');
+            setUser(null);
+          }
         }
       } else {
         // Also check if an HTTP-only session cookie exists by calling /auth/me

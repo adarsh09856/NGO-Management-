@@ -60,7 +60,8 @@ api.interceptors.response.use(
         // No refresh token at all — log out
         localStorage.removeItem('dpl_token');
         localStorage.removeItem('dpl_user');
-        window.location.href = '/login?expired=1';
+        const isAdminPath = window.location.pathname.startsWith('/admin');
+        window.location.href = isAdminPath ? '/admin/login' : '/login?expired=1';
         return Promise.reject(error);
       }
 
