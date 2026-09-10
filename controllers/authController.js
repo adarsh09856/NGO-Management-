@@ -26,7 +26,7 @@ function generateTokens(user) {
   };
 
   const accessToken = jwt.sign(payload, JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || '15m'
+    expiresIn: process.env.JWT_EXPIRES_IN || '7d'
   });
 
   const refreshToken = crypto.randomBytes(40).toString('hex');

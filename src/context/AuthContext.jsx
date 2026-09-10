@@ -48,8 +48,12 @@ export function AuthProvider({ children }) {
   const login = async (email, password, portal) => {
     const res = await api.post('/auth/login', { email, password, portal });
     if (res.data.success) {
-      const { token, user: userData } = res.data;
-      localStorage.setItem('dpl_token', token);
+      const { token, accessToken, refreshToken, user: userData } = res.data;
+      const finalToken = accessToken || token;
+      localStorage.setItem('dpl_token', finalToken);
+      if (refreshToken) {
+        localStorage.setItem('dpl_refresh', refreshToken);
+      }
       localStorage.setItem('dpl_user', JSON.stringify(userData));
       setUser(userData);
       return userData;
@@ -66,6 +70,7 @@ export function AuthProvider({ children }) {
   // Logout
   const logout = () => {
     localStorage.removeItem('dpl_token');
+    localStorage.removeItem('dpl_refresh');
     localStorage.removeItem('dpl_user');
     setUser(null);
     window.location.href = '/login';
