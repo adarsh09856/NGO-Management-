@@ -1,7 +1,12 @@
 const crypto = require('crypto');
 const Razorpay = require('razorpay');
 const { pool } = require('../config/db');
-const { processSuccessfulDonation, verifyRazorpaySignature } = require('../services/paymentService');
+const {
+  processSuccessfulDonation,
+  verifyRazorpaySignature,
+  processSubscriptionCharge,
+  processSubscriptionFailure
+} = require('../services/paymentService');
 const { logAudit } = require('../middleware/auditLogger');
 
 // Helper to obtain initialized Razorpay SDK instance
@@ -11,13 +16,41 @@ function getRazorpayClient() {
   return new Razorpay({ key_id, key_secret });
 }
 
-// 1. Create Payment Order (Direct Razorpay Gateway Integration)
+// 1. Create Payment Order (Direct Razorpay Gateway Integration with Idempotency Key support)
 async function createPaymentOrder(req, res) {
   try {
     const { amount, currency = 'INR', donorName, donorEmail, donorPhone, campaignId, donationFor } = req.body;
+    const idempotencyKey = req.headers['x-idempotency-key'] || req.body.idempotencyKey;
 
     if (!amount || parseFloat(amount) <= 0) {
       return res.status(400).json({ success: false, message: 'Valid payment amount is required' });
+    }
+
+    // Check if order was already generated for this idempotency key
+    if (idempotencyKey) {
+      try {
+        const [existing] = await pool.query(
+          `SELECT order_id, amount, currency, payload FROM payment_idempotency_log 
+           WHERE event_id = ? AND status = 'ORDER_CREATED' LIMIT 1`,
+          [idempotencyKey]
+        );
+        if (existing.length > 0) {
+          return res.json({
+            success: true,
+            isIdempotentReplay: true,
+            data: {
+              orderId: existing[0].order_id,
+              amount: Math.round(parseFloat(existing[0].amount) * 100),
+              currency: existing[0].currency,
+              keyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_DPLFoundation2026',
+              orgName: 'Drodul Phendey Ling Foundation',
+              themeColor: '#4A0E17'
+            }
+          });
+        }
+      } catch (idempErr) {
+        // Continue if idempotency table lookup fails
+      }
     }
 
     const amountInPaise = Math.round(parseFloat(amount) * 100);
@@ -36,6 +69,18 @@ async function createPaymentOrder(req, res) {
         donation_for: donationFor || 'Peace Stupa Construction'
       }
     });
+
+    if (idempotencyKey) {
+      try {
+        await pool.query(
+          `INSERT INTO payment_idempotency_log (gateway, event_id, order_id, amount, currency, status, payload)
+           VALUES ('razorpay', ?, ?, ?, ?, 'ORDER_CREATED', ?)`,
+          [idempotencyKey, order.id, parseFloat(amount), currency, JSON.stringify({ donorName, donorEmail, amount })]
+        );
+      } catch (e) {
+        // Non-fatal
+      }
+    }
 
     logAudit({
       userId: req.user ? req.user.id : null,
@@ -64,7 +109,7 @@ async function createPaymentOrder(req, res) {
   }
 }
 
-// 2. Verify Payment & Idempotent Record Creation (Mandatory Signature Gate)
+// 2. Verify Payment & Idempotent Record Creation (Mandatory Cryptographic Timing-Safe Signature Gate)
 async function verifyPayment(req, res) {
   try {
     const razorpayOrderId = req.body.razorpayOrderId || req.body.razorpay_order_id;
@@ -164,7 +209,7 @@ async function verifyPayment(req, res) {
   }
 }
 
-// 3. Webhook Handler with Timing-Safe HMAC Verification & Idempotent Processing
+// 3. Webhook Handler with Timing-Safe HMAC Verification & Idempotent Processing (One-time & Subscription Lifecycle)
 async function handleWebhook(req, res) {
   try {
     const signature = req.headers['x-razorpay-signature'];
@@ -193,6 +238,7 @@ async function handleWebhook(req, res) {
     const event = payload.event;
     console.log(`[Payment Webhook] Validated gateway event: ${event}`);
 
+    // Case A: One-Time Payment Captured
     if (event === 'payment.captured' || event === 'order.paid') {
       const paymentEntity = payload.payload?.payment?.entity;
       if (paymentEntity) {
@@ -219,6 +265,80 @@ async function handleWebhook(req, res) {
           action: 'webhook_processed',
           recordId: paymentEntity.id,
           details: { event, orderId: paymentEntity.order_id, amount: parseFloat(paymentEntity.amount) / 100 }
+        });
+      }
+    }
+
+    // Case B: Recurring Subscription Charged Successfully
+    else if (event === 'subscription.charged') {
+      const subEntity = payload.payload?.subscription?.entity;
+      const paymentEntity = payload.payload?.payment?.entity;
+      if (subEntity && paymentEntity) {
+        await processSubscriptionCharge({
+          subscriptionId: subEntity.id,
+          paymentId: paymentEntity.id,
+          amount: parseFloat(paymentEntity.amount) / 100,
+          currency: paymentEntity.currency || 'INR',
+          donorEmail: paymentEntity.email,
+          donorName: paymentEntity.notes?.donor_name
+        });
+
+        logAudit({
+          userId: null,
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'],
+          module: 'subscriptions',
+          action: 'subscription_charged',
+          recordId: subEntity.id,
+          details: { subscriptionId: subEntity.id, paymentId: paymentEntity.id, amount: parseFloat(paymentEntity.amount) / 100 }
+        });
+      }
+    }
+
+    // Case C: Recurring Subscription Charge Failed (Action Required)
+    else if (event === 'subscription.failed' || event === 'subscription.halted' || event === 'subscription.pending') {
+      const subEntity = payload.payload?.subscription?.entity;
+      const paymentEntity = payload.payload?.payment?.entity;
+      if (subEntity) {
+        await processSubscriptionFailure({
+          subscriptionId: subEntity.id,
+          errorReason: paymentEntity?.error_description || 'Card authorization failed during recurring subscription renewal.',
+          donorEmail: paymentEntity?.email,
+          donorName: paymentEntity?.notes?.donor_name,
+          amount: paymentEntity ? parseFloat(paymentEntity.amount) / 100 : null,
+          currency: paymentEntity?.currency || 'INR'
+        });
+
+        logAudit({
+          userId: null,
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'],
+          module: 'subscriptions',
+          action: 'subscription_failed_alert',
+          recordId: subEntity.id,
+          details: { subscriptionId: subEntity.id, reason: paymentEntity?.error_description }
+        });
+      }
+    }
+
+    // Case D: Recurring Subscription Cancelled or Paused
+    else if (event === 'subscription.cancelled' || event === 'subscription.paused') {
+      const subEntity = payload.payload?.subscription?.entity;
+      if (subEntity) {
+        const newStatus = event === 'subscription.cancelled' ? 'cancelled' : 'paused';
+        await pool.query(
+          `UPDATE recurring_pledges SET status = ?, cancelled_at = NOW() WHERE gateway_subscription_id = ?`,
+          [newStatus, subEntity.id]
+        );
+
+        logAudit({
+          userId: null,
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'],
+          module: 'subscriptions',
+          action: `subscription_${newStatus}`,
+          recordId: subEntity.id,
+          details: { subscriptionId: subEntity.id, status: newStatus }
         });
       }
     }

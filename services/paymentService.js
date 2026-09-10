@@ -1,7 +1,8 @@
 const crypto = require('crypto');
+const Razorpay = require('razorpay');
 const { pool } = require('../config/db');
 const { generateReceiptPdf } = require('./pdfService');
-const { sendReceiptEmail } = require('./emailService');
+const { sendReceiptEmail, sendSubscriptionAlertEmail } = require('./emailService');
 
 // Helper to calculate amount in words
 function numberToWords(amount) {
@@ -35,11 +36,11 @@ async function getNextReceiptNumber(connection) {
   const [rows] = await connection.query(
     `SELECT receipt_number FROM money_receipts 
      WHERE financial_year = ? 
-     ORDER BY id DESC LIMIT 1`,
+     ORDER BY id DESC LIMIT 1 FOR UPDATE`,
     [financialYear]
   );
 
-  let nextSequence = 106; // Start after seed data
+  let nextSequence = 106;
   if (rows.length > 0) {
     const lastNum = rows[0].receipt_number;
     const match = lastNum.match(/RC-\d{4}-(\d+)/);
@@ -149,7 +150,7 @@ async function processSuccessfulDonation({
     const { receiptNumber, financialYear } = await getNextReceiptNumber(connection);
     const amountInWords = numberToWords(amount);
 
-    // 4. Insert Donation Record
+    // 4. Insert Primary Financial Donation Record
     const [donationResult] = await connection.query(
       `INSERT INTO donations (receipt_number, donor_id, campaign_id, donation_for, donation_type, amount, currency, amount_in_words, payment_method, payment_status, transaction_ref, payment_date, payment_gateway, remarks, send_receipt, is_80g_eligible)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'completed', ?, ?, ?, ?, ?, 1)`,
@@ -165,7 +166,7 @@ async function processSuccessfulDonation({
       );
     }
 
-    // 6. Insert Money Receipt Record
+    // 6. Insert Statutory Money Receipt Record
     const [receiptResult] = await connection.query(
       `INSERT INTO money_receipts (receipt_number, financial_year, donation_id, receipt_type, recipient_name, recipient_email, recipient_phone, recipient_address, amount, currency, amount_in_words, payment_mode, transaction_no, receipt_date, status, notes)
        VALUES (?, ?, ?, 'donation', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ISSUED', ?)`,
@@ -173,14 +174,7 @@ async function processSuccessfulDonation({
     );
     const receiptId = receiptResult.insertId;
 
-    // 7. Insert Income Ledger Entry
-    await connection.query(
-      `INSERT INTO income (receipt_id, source_category, particulars, amount, currency, received_date, payment_mode, reference_no)
-       VALUES (?, 'donation', ?, ?, ?, ?, 'Online', ?)`,
-      [receiptId, `Donation Received - ${donorName} (${donationFor})`, amount, currency, donationDate, paymentId || orderId]
-    );
-
-    // 8. Update Idempotency Table to PROCESSED
+    // 7. Update Idempotency Table to PROCESSED
     if (eventId) {
       await connection.query(
         `UPDATE payment_idempotency_log 
@@ -190,11 +184,11 @@ async function processSuccessfulDonation({
       );
     }
 
-    // Commit MySQL Transaction
+    // Commit Transaction
     await connection.commit();
     connection.release();
 
-    // 9. Generate PDF Receipt and Dispatch Email Asynchronously
+    // 8. Generate PDF Receipt and Dispatch Email Asynchronously
     const receiptData = {
       receipt_number: receiptNumber,
       financial_year: financialYear,
@@ -214,7 +208,6 @@ async function processSuccessfulDonation({
     let pdfInfo = null;
     try {
       pdfInfo = await generateReceiptPdf(receiptData);
-      // Update PDF URL in DB
       await pool.query(`UPDATE money_receipts SET pdf_url = ? WHERE id = ?`, [pdfInfo.relativeUrl, receiptId]);
 
       if (sendReceipt && donorEmail) {
@@ -225,7 +218,7 @@ async function processSuccessfulDonation({
           amount,
           currency,
           pdfPath: pdfInfo.filePath
-        }).catch(err => console.error('[Email Send Error]:', err));
+        }).catch(err => console.error('[Email Send Error]:', err.message));
       }
     } catch (pdfErr) {
       console.error('[PDF Generation Error]:', pdfErr.message);
@@ -257,9 +250,222 @@ async function processSuccessfulDonation({
   }
 }
 
+// Atomic Donation Refund & Reversal (Direct to Donations Ledger & Receipt Void)
+async function processDonationRefund({ donationId, refundAmount, refundReason, initiatedByUserId }) {
+  const connection = await pool.getConnection();
+  await connection.beginTransaction();
+
+  try {
+    const [donations] = await connection.query(
+      `SELECT * FROM donations WHERE id = ? FOR UPDATE`,
+      [donationId]
+    );
+
+    if (donations.length === 0) {
+      throw new Error('Donation record not found');
+    }
+
+    const donation = donations[0];
+
+    if (donation.payment_status === 'refunded') {
+      throw new Error('This donation has already been fully refunded.');
+    }
+
+    const alreadyRefunded = parseFloat(donation.refunded_amount || 0);
+    const maxRefundable = parseFloat(donation.amount) - alreadyRefunded;
+
+    const requestedRefund = refundAmount ? parseFloat(refundAmount) : maxRefundable;
+
+    if (requestedRefund <= 0) {
+      throw new Error('Refund amount must be greater than zero.');
+    }
+
+    if (requestedRefund > maxRefundable) {
+      throw new Error(`Refund amount exceeds maximum refundable balance of ${donation.currency} ${maxRefundable.toFixed(2)}.`);
+    }
+
+    const newTotalRefunded = alreadyRefunded + requestedRefund;
+    const isFullRefund = Math.abs(newTotalRefunded - parseFloat(donation.amount)) < 0.01;
+    const newStatus = isFullRefund ? 'refunded' : 'partially_refunded';
+    const refundRef = `RFND-${Date.now()}`;
+
+    // 1. Update Primary Donations Ledger
+    await connection.query(
+      `UPDATE donations
+       SET payment_status = ?,
+           refund_status = 'COMPLETED',
+           refunded_amount = ?,
+           refund_reason = ?,
+           refund_id = ?,
+           refunded_at = NOW(),
+           remarks = CONCAT(COALESCE(remarks, ''), ' [REFUNDED: ', ?, ']')
+       WHERE id = ?`,
+      [newStatus, newTotalRefunded, refundReason.trim(), refundRef, `${donation.currency} ${requestedRefund} - ${refundReason.trim()}`, donationId]
+    );
+
+    // 2. Void or Update Linked Money Receipt
+    if (isFullRefund) {
+      await connection.query(
+        `UPDATE money_receipts 
+         SET status = 'VOID',
+             void_reason = CONCAT('Full donation refund: ', ?),
+             voided_by_user_id = ?,
+             voided_at = NOW()
+         WHERE donation_id = ?`,
+        [refundReason.trim(), initiatedByUserId || null, donationId]
+      );
+    } else {
+      await connection.query(
+        `UPDATE money_receipts 
+         SET notes = CONCAT(COALESCE(notes, ''), ' [Partial Refund of ${donation.currency} ${requestedRefund.toFixed(2)}]')
+         WHERE donation_id = ?`,
+        [donationId]
+      );
+    }
+
+    // 3. Reconcile Donor Total Metrics
+    if (donation.donor_id) {
+      await connection.query(
+        `UPDATE donors 
+         SET total_donated = GREATEST(0, total_donated - ?),
+             total_donations_count = GREATEST(0, total_donations_count - ?)
+         WHERE id = ?`,
+        [requestedRefund, isFullRefund ? 1 : 0, donation.donor_id]
+      );
+    }
+
+    // 4. Reconcile Campaign Raised Amount if linked
+    if (donation.campaign_id) {
+      await connection.query(
+        `UPDATE campaigns 
+         SET raised_amount = GREATEST(0, raised_amount - ?) 
+         WHERE id = ?`,
+        [requestedRefund, donation.campaign_id]
+      );
+    }
+
+    await connection.commit();
+    connection.release();
+
+    return {
+      success: true,
+      donationId,
+      refundId: refundRef,
+      refundedAmount: requestedRefund,
+      totalRefunded: newTotalRefunded,
+      isFullRefund,
+      paymentStatus: newStatus
+    };
+  } catch (error) {
+    await connection.rollback();
+    connection.release();
+    throw error;
+  }
+}
+
+// Handle Recurring Subscription Charge Event
+async function processSubscriptionCharge({ subscriptionId, paymentId, amount, currency = 'INR', donorEmail, donorName }) {
+  const [pledges] = await pool.query(
+    `SELECT * FROM recurring_pledges WHERE gateway_subscription_id = ? OR id = ? LIMIT 1`,
+    [subscriptionId, subscriptionId]
+  );
+
+  const pledge = pledges[0] || null;
+  const donorId = pledge ? pledge.donor_id : null;
+  const campaignId = pledge ? pledge.campaign_id : null;
+
+  const eventId = paymentId || `SUB-CHG-${Date.now()}`;
+  const settlement = await processSuccessfulDonation({
+    gateway: 'razorpay_subscription',
+    eventId,
+    paymentId,
+    orderId: subscriptionId,
+    donorName: donorName || 'Recurring Patron',
+    donorEmail: donorEmail || (pledge ? pledge.donor_email : 'donor@example.com'),
+    amount: parseFloat(amount),
+    currency,
+    campaignId,
+    donationFor: 'Monastery Recurring Patronage',
+    donationType: 'recurring',
+    sendReceipt: true,
+    remarks: `Recurring pledge installment for subscription ${subscriptionId}`
+  });
+
+  // Calculate Next Due Date (30 days / 1 month ahead)
+  const nextDate = new Date();
+  nextDate.setMonth(nextDate.getMonth() + 1);
+  const nextDateStr = nextDate.toISOString().slice(0, 10);
+
+  if (pledge) {
+    await pool.query(
+      `UPDATE recurring_pledges 
+       SET status = 'active', 
+           failure_count = 0, 
+           last_charged_at = NOW(), 
+           next_due_date = ? 
+       WHERE id = ?`,
+      [nextDateStr, pledge.id]
+    );
+  }
+
+  // Log Subscription Event
+  await pool.query(
+    `INSERT INTO subscription_events (subscription_id, event_type, amount, currency, payload, status)
+     VALUES (?, 'subscription.charged', ?, ?, ?, 'PROCESSED')`,
+    [subscriptionId, parseFloat(amount), currency, JSON.stringify({ paymentId, receiptNumber: settlement.receiptNumber })]
+  );
+
+  // Send Alert Email
+  if (donorEmail) {
+    sendSubscriptionAlertEmail({
+      toEmail: donorEmail,
+      donorName,
+      eventType: 'charged',
+      amount,
+      currency,
+      nextBillingDate: nextDateStr
+    }).catch(e => console.error('[Subscription Email Error]:', e.message));
+  }
+
+  return settlement;
+}
+
+// Handle Recurring Subscription Failure Event
+async function processSubscriptionFailure({ subscriptionId, errorReason, donorEmail, donorName, amount, currency }) {
+  await pool.query(
+    `UPDATE recurring_pledges 
+     SET failure_count = failure_count + 1, 
+         status = 'payment_failed'
+     WHERE gateway_subscription_id = ?`,
+    [subscriptionId]
+  );
+
+  await pool.query(
+    `INSERT INTO subscription_events (subscription_id, event_type, amount, currency, payload, status)
+     VALUES (?, 'subscription.failed', ?, ?, ?, 'ACTION_REQUIRED')`,
+    [subscriptionId, amount ? parseFloat(amount) : null, currency || 'INR', JSON.stringify({ errorReason })]
+  );
+
+  if (donorEmail) {
+    sendSubscriptionAlertEmail({
+      toEmail: donorEmail,
+      donorName,
+      eventType: 'failed',
+      amount: amount || 'recurring pledge',
+      currency: currency || 'INR',
+      failureReason: errorReason || 'Card issuer declined recurring authorization.'
+    }).catch(e => console.error('[Subscription Failure Email Error]:', e.message));
+  }
+
+  return { success: true, status: 'payment_failed' };
+}
+
 module.exports = {
   numberToWords,
   getNextReceiptNumber,
   verifyRazorpaySignature,
-  processSuccessfulDonation
+  processSuccessfulDonation,
+  processDonationRefund,
+  processSubscriptionCharge,
+  processSubscriptionFailure
 };

@@ -206,6 +206,32 @@ async function getAdminDashboardMetrics(req, res) {
       }
     });
 
+    // 10. Live 30-day daily trend for Sparklines
+    const [daily30Rows] = await pool.query(
+      `SELECT 
+         DATE_FORMAT(payment_date, '%Y-%m-%d') as day,
+         COALESCE(SUM(amount), 0) as total_amount,
+         COUNT(*) as count
+       FROM donations
+       WHERE payment_status IN ('completed', 'paid') AND is_deleted = 0
+         AND payment_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+       GROUP BY day
+       ORDER BY day ASC`
+    );
+
+    const sparkline30Days = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dayStr = d.toISOString().slice(0, 10);
+      const match = daily30Rows.find(r => r.day === dayStr);
+      sparkline30Days.push({
+        day: dayStr,
+        amount: match ? parseFloat(match.total_amount) : 0,
+        count: match ? match.count : 0
+      });
+    }
+
     return res.json({
       success: true,
       data: {
@@ -220,6 +246,7 @@ async function getAdminDashboardMetrics(req, res) {
         recentDonations,
         recentReceipts,
         lowStockItems,
+        sparkline30Days,
         monthlyTrend: months.map(m => ({
           month: m.month,
           donations: m.donations,

@@ -66,27 +66,9 @@ import StudentCourses from './pages/student/StudentCourses';
 import StudentCourseDetail from './pages/student/StudentCourseDetail';
 import StudentCertificates from './pages/student/StudentCertificates';
 
-// Protected Route Helpers
-function RequireAdmin({ children }) {
-  const { user, loading, isAdmin } = useAuth();
-  if (loading) return <div className="p-8 text-center text-gray-500">Authenticating...</div>;
-  if (!user || !isAdmin) return <Navigate to="/admin/login" replace />;
-  return children;
-}
-
-function RequireUser({ children }) {
-  const { user, loading } = useAuth();
-  if (loading) return <div className="p-8 text-center text-gray-500">Authenticating...</div>;
-  if (!user) return <Navigate to="/login" replace />;
-  return children;
-}
-
-function RequireStudent({ children }) {
-  const { user, loading, isStudent } = useAuth();
-  if (loading) return <div className="p-8 text-center text-gray-500">Authenticating...</div>;
-  if (!user) return <Navigate to="/login" replace />;
-  return children;
-}
+// Enterprise Protected Route Guard & 404 Handler
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import NotFound from './pages/public/NotFound';
 
 export default function App() {
   const [donateModalOpen, setDonateModalOpen] = useState(false);
@@ -118,7 +100,7 @@ export default function App() {
                   <Route path="/blog/:slug" element={<BlogDetail />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
               <Footer />
@@ -133,14 +115,14 @@ export default function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
 
         {/* ========================================================= */}
-        {/* 3. UNIFIED USER / MEMBER PANEL                            */}
+        {/* 3. UNIFIED USER / MEMBER PANEL (AUTHENTICATED ZONE)       */}
         {/* ========================================================= */}
         <Route
           path="/user/*"
           element={
-            <RequireUser>
+            <ProtectedRoute zone="authenticated" allowedRoles={['donor', 'super_admin', 'staff']}>
               <UserLayout />
-            </RequireUser>
+            </ProtectedRoute>
           }
         >
           <Route index element={<UserDashboard />} />
@@ -155,9 +137,9 @@ export default function App() {
         <Route
           path="/student/*"
           element={
-            <RequireStudent>
+            <ProtectedRoute zone="authenticated" allowedRoles={['student_monk', 'super_admin']}>
               <StudentLayout />
-            </RequireStudent>
+            </ProtectedRoute>
           }
         >
           <Route index element={<StudentDashboard />} />
@@ -167,14 +149,14 @@ export default function App() {
         </Route>
 
         {/* ========================================================= */}
-        {/* 4. ADMIN & STAFF ROLE-RESTRICTED PORTAL                   */}
+        {/* 4. ADMIN & STAFF ROLE-RESTRICTED PORTAL (404 FOR OTHERS)  */}
         {/* ========================================================= */}
         <Route
           path="/admin/*"
           element={
-            <RequireAdmin>
+            <ProtectedRoute zone="admin" allowedRoles={['super_admin', 'admin', 'accountant', 'hr_manager', 'staff']}>
               <AdminLayout />
-            </RequireAdmin>
+            </ProtectedRoute>
           }
         >
           <Route index element={<AdminDashboard />} />

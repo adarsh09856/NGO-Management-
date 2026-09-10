@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { pool } = require('../config/db');
 const { generateCertificatePdf } = require('../services/pdfService');
 const { logAudit } = require('../middleware/auditLogger');
@@ -68,16 +69,17 @@ async function downloadCertificatePdf(req, res) {
 async function revokeCertificate(req, res) {
   try {
     const { id } = req.params;
-    const revocationReason = req.body.revocationReason || req.body.reason;
+    const revocationReason = req.body.revocationReason || req.body.reason || 'Administrative revocation';
 
     await pool.query(
       `UPDATE certificates 
        SET status = 'REVOKED', 
+           is_revoked = 1,
            revocation_reason = ?, 
            revoked_by = ?, 
            revoked_at = NOW() 
        WHERE id = ?`,
-      [revocationReason || 'Administrative revocation', req.user ? req.user.id : null, id]
+      [revocationReason, req.user ? req.user.id : null, id]
     );
 
     logAudit({
@@ -96,10 +98,16 @@ async function revokeCertificate(req, res) {
   }
 }
 
-// Verify Certificate Publicly
+// Verify Certificate Publicly (with anti-enumeration lookup and hash verification)
 async function verifyCertificate(req, res) {
   try {
     const { certNumber } = req.params;
+    const sanitizedNumber = (certNumber || '').trim();
+
+    if (!sanitizedNumber || sanitizedNumber.length < 5) {
+      return res.status(400).json({ success: false, message: 'Invalid certificate identifier supplied.' });
+    }
+
     const [rows] = await pool.query(
       `SELECT cert.*, 
               sm.monastic_name, sm.secular_name, sm.roll_number,
@@ -107,25 +115,35 @@ async function verifyCertificate(req, res) {
        FROM certificates cert
        JOIN students_monks sm ON cert.student_id = sm.id
        JOIN courses c ON cert.course_id = c.id
-       WHERE cert.certificate_number = ?`,
-      [certNumber]
+       WHERE cert.certificate_number = ? OR cert.verification_hash = ?`,
+      [sanitizedNumber, sanitizedNumber]
     );
 
     if (rows.length === 0) {
-      return res.status(404).json({ success: false, message: 'Invalid or non-existent certificate number' });
+      return res.status(404).json({
+        success: false,
+        message: 'No certificate found matching the provided identification code.'
+      });
     }
 
     const cert = rows[0];
+    const isRevoked = cert.is_revoked === 1 || cert.status === 'REVOKED';
+    const isValid = !isRevoked && (cert.status === 'VALID' || cert.status === 'ACTIVE');
+
     return res.json({
       success: true,
       data: {
         certificateNumber: cert.certificate_number,
+        verificationHash: cert.verification_hash,
         studentName: cert.monastic_name || cert.secular_name,
         courseTitle: cert.course_title,
         grade: cert.grade,
         issueDate: cert.issue_date,
-        status: cert.status,
-        isValid: cert.status === 'ACTIVE'
+        status: isRevoked ? 'REVOKED' : cert.status,
+        isValid,
+        isRevoked,
+        revocationReason: isRevoked ? (cert.revocation_reason || 'Certificate revoked by administrative authority') : null,
+        revokedAt: isRevoked ? cert.revoked_at : null
       }
     });
   } catch (error) {
@@ -133,7 +151,7 @@ async function verifyCertificate(req, res) {
   }
 }
 
-// Issue Certificate
+// Issue Certificate (Generates unguessable identifier + cryptographic hash)
 async function issueCertificate(req, res) {
   try {
     const { studentId, courseId, grade = 'Distinction', signedBy = 'Khenpo Tashi Dorji', issueDate = new Date().toISOString().slice(0, 10) } = req.body;
@@ -154,11 +172,15 @@ async function issueCertificate(req, res) {
       enrollmentId = newEnr.insertId;
     }
 
-    const certNumber = `CERT-DPL-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
+    // Generate unguessable entropy
+    const randomEntropy = crypto.randomBytes(3).toString('hex').toUpperCase();
+    const certNumber = `CERT-DPL-${new Date().getFullYear()}-${randomEntropy}`;
+    const verificationHash = crypto.createHash('sha256').update(`${certNumber}:${studentId}:${courseId}:${issueDate}`).digest('hex');
+
     const [result] = await pool.query(
-      `INSERT INTO certificates (certificate_number, enrollment_id, student_id, course_id, issue_date, grade, signed_by, status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 'VALID')`,
-      [certNumber, enrollmentId, studentId, courseId, issueDate, grade, signedBy]
+      `INSERT INTO certificates (certificate_number, verification_hash, enrollment_id, student_id, course_id, issue_date, grade, signed_by, status, is_revoked)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'VALID', 0)`,
+      [certNumber, verificationHash, enrollmentId, studentId, courseId, issueDate, grade, signedBy]
     );
 
     logAudit({
@@ -168,10 +190,16 @@ async function issueCertificate(req, res) {
       module: 'certificates',
       action: 'create',
       recordId: result.insertId,
-      details: { certNumber, studentId, courseId, grade, signedBy }
+      details: { certNumber, verificationHash, studentId, courseId, grade, signedBy }
     });
 
-    return res.status(201).json({ success: true, message: 'Certificate issued successfully', id: result.insertId, certNumber });
+    return res.status(201).json({
+      success: true,
+      message: 'Certificate issued successfully',
+      id: result.insertId,
+      certNumber,
+      verificationHash
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to issue certificate: ' + error.message });
   }

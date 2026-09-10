@@ -190,6 +190,115 @@ async function dedicatePrayerRequest(req, res, next) {
   }
 }
 
+// ==========================================
+// 4. EVENT RSVPS
+// ==========================================
+async function submitEventRsvp(req, res, next) {
+  try {
+    const { eventId, event_id, guestName, guest_name, guestEmail, guest_email, guestPhone, guest_phone, attendingCount, attending_count, specialRequests, special_requests } = req.body;
+    
+    const targetEventId = eventId || event_id;
+    const name = (guestName || guest_name || '').trim();
+    const email = (guestEmail || guest_email || '').trim().toLowerCase();
+    const phone = guestPhone || guest_phone || null;
+    const count = parseInt(attendingCount || attending_count || 1, 10);
+    const requests = specialRequests || special_requests || null;
+
+    if (!targetEventId || !name || !email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Event ID, guest name, and guest email are required.'
+      });
+    }
+
+    if (count < 1 || count > 20) {
+      return res.status(400).json({
+        success: false,
+        message: 'Attending count must be between 1 and 20.'
+      });
+    }
+
+    // Verify event exists
+    const [events] = await pool.query('SELECT id, title FROM news_events WHERE id = ?', [targetEventId]);
+    if (events.length === 0) {
+      return res.status(404).json({ success: false, message: 'Event not found.' });
+    }
+
+    const userId = req.user ? req.user.id : null;
+
+    const [result] = await pool.query(
+      `INSERT INTO event_rsvps (event_id, user_id, guest_name, guest_email, guest_phone, attending_count, special_requests, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed')`,
+      [targetEventId, userId, name, email, phone, count, requests]
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: 'RSVP confirmed! We look forward to welcoming you.',
+      id: result.insertId
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getEventRsvps(req, res, next) {
+  try {
+    const { eventId } = req.params;
+    const [rows] = await pool.query(
+      `SELECT r.*, ne.title as event_title 
+       FROM event_rsvps r
+       JOIN news_events ne ON r.event_id = ne.id
+       WHERE r.event_id = ?
+       ORDER BY r.created_at DESC`,
+      [eventId]
+    );
+
+    const [[totals]] = await pool.query(
+      `SELECT 
+         COUNT(*) as total_rsvps,
+         COALESCE(SUM(CASE WHEN status != 'cancelled' THEN attending_count ELSE 0 END), 0) as total_attendees
+       FROM event_rsvps 
+       WHERE event_id = ?`,
+      [eventId]
+    );
+
+    return res.json({
+      success: true,
+      data: rows,
+      summary: totals
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function updateRsvpStatus(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const validStatuses = ['confirmed', 'cancelled', 'attended'];
+    if (!status || !validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status. Allowed values: ${validStatuses.join(', ')}`
+      });
+    }
+
+    const [existing] = await pool.query('SELECT * FROM event_rsvps WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'RSVP record not found.' });
+    }
+
+    await pool.query('UPDATE event_rsvps SET status = ? WHERE id = ?', [status, id]);
+
+    return res.json({ success: true, message: 'RSVP status updated successfully.' });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getNewsEvents,
   getNewsEventBySlug,
@@ -199,5 +308,9 @@ module.exports = {
   deleteGalleryItem,
   submitPrayerRequest,
   getPrayerRequests,
-  dedicatePrayerRequest
+  dedicatePrayerRequest,
+  submitEventRsvp,
+  getEventRsvps,
+  updateRsvpStatus
 };
+

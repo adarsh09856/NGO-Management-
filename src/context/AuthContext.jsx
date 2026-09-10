@@ -7,24 +7,35 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Initialize Auth state from localStorage and verify with backend
+  // Initialize Auth state: verify token and session with backend before trusting
   useEffect(() => {
     async function verifyAuth() {
       const storedToken = localStorage.getItem('dpl_token');
-      const storedUser = localStorage.getItem('dpl_user');
 
-      if (storedToken && storedUser) {
+      if (storedToken) {
         try {
-          setUser(JSON.parse(storedUser));
+          const res = await api.get('/auth/me');
+          if (res.data.success && res.data.user) {
+            setUser(res.data.user);
+            localStorage.setItem('dpl_user', JSON.stringify(res.data.user));
+          } else {
+            throw new Error('Verification failed');
+          }
+        } catch (err) {
+          console.warn('[Auth] Stored session expired or invalid:', err?.message);
+          localStorage.removeItem('dpl_token');
+          localStorage.removeItem('dpl_user');
+          setUser(null);
+        }
+      } else {
+        // Also check if an HTTP-only session cookie exists by calling /auth/me
+        try {
           const res = await api.get('/auth/me');
           if (res.data.success && res.data.user) {
             setUser(res.data.user);
             localStorage.setItem('dpl_user', JSON.stringify(res.data.user));
           }
-        } catch (err) {
-          console.warn('[Auth] Stored session expired or invalid');
-          localStorage.removeItem('dpl_token');
-          localStorage.removeItem('dpl_user');
+        } catch (e) {
           setUser(null);
         }
       }

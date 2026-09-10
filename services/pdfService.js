@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { uploadDir } = require('../middleware/upload');
 
-// Generate Money Receipt PDF
+// Generate Official Charitable Donation Receipt PDF (Bhutanese & Cross-Border Compliant)
 function generateReceiptPdf(receiptData) {
   return new Promise((resolve, reject) => {
     try {
@@ -26,27 +26,30 @@ function generateReceiptPdf(receiptData) {
          .stroke();
 
       // Header Banner
-      doc.rect(25, 25, doc.page.width - 50, 90)
+      doc.rect(25, 25, doc.page.width - 50, 95)
          .fillColor('#4A0E17')
          .fill();
 
       // Tibetan Line & Header Text
-      doc.fontSize(12).fillColor('#D4AF37').text('༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པ།', 40, 35, { align: 'center' });
-      doc.fontSize(18).fillColor('#FFFFFF').font('Helvetica-Bold').text('DRODUL PHENDEY LING FOUNDATION', 40, 52, { align: 'center' });
-      doc.fontSize(9).fillColor('#E5E7EB').font('Helvetica').text('Building Peace. Empowering Lives. | Gelephu, Sarpang Dzongkhag, Bhutan', 40, 74, { align: 'center' });
-      doc.fontSize(8).fillColor('#F3F4F6').text(`Tax Exemption Reg: ${receiptData.tax_exemption_number || 'DPL/TAX-EXEMPT/BTN/2026/80G-092'} (Eligible for 80G)`, 40, 88, { align: 'center' });
+      doc.fontSize(12).fillColor('#D4AF37').text('༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པ།', 40, 33, { align: 'center' });
+      doc.fontSize(18).fillColor('#FFFFFF').font('Helvetica-Bold').text('DRODUL PHENDEY LING FOUNDATION', 40, 50, { align: 'center' });
+      doc.fontSize(8.5).fillColor('#E5E7EB').font('Helvetica').text('Registered Religious Organization | Gelephu, Sarpang Dzongkhag, Kingdom of Bhutan', 40, 72, { align: 'center' });
+      
+      const roaReg = process.env.BHUTAN_ROA_REG_NO || receiptData.tax_exemption_number || 'CRO/RO-09/2021/118';
+      const taxRef = process.env.BHUTAN_TAX_EXEMPT_REF || 'Income Tax Act 2001 (Sec 4.1.8)';
+      doc.fontSize(7.5).fillColor('#F3F4F6').text(`Registration: ${roaReg} | Exemption Ref: ${taxRef}`, 40, 86, { align: 'center' });
 
       // Receipt Title Box
       doc.moveDown(2);
       const titleY = 135;
-      doc.rect(180, titleY, doc.page.width - 360, 26)
+      doc.rect(140, titleY, doc.page.width - 280, 26)
          .fillColor('#FAF5F0')
          .strokeColor('#D4AF37')
          .lineWidth(1)
          .fillAndStroke();
 
-      doc.fontSize(12).fillColor('#5A121E').font('Helvetica-Bold')
-         .text('OFFICIAL MONEY RECEIPT', 40, titleY + 7, { align: 'center' });
+      doc.fontSize(11).fillColor('#5A121E').font('Helvetica-Bold')
+         .text('OFFICIAL CHARITABLE DONATION RECEIPT', 40, titleY + 7, { align: 'center' });
 
       // Meta Info Grid (Receipt No & Date)
       const metaY = 175;
@@ -85,7 +88,7 @@ function generateReceiptPdf(receiptData) {
 
       printRow('Received With Thanks From:', receiptData.recipient_name);
       printRow('Email / Contact Phone:', `${receiptData.recipient_email || 'N/A'} | ${receiptData.recipient_phone || 'N/A'}`);
-      printRow('Purpose / Donation For:', receiptData.purpose || receiptData.receipt_type || 'Monastery & Stupa Development');
+      printRow('Purpose / Donation For:', receiptData.purpose || receiptData.receipt_type || 'Monastery & Peace Stupa Development');
       printRow('Payment Mode & Ref:', `${receiptData.payment_mode || 'Online'} | Ref: ${receiptData.transaction_no || 'N/A'}`);
       printRow('Amount in Words:', receiptData.amount_in_words || 'INR Only');
 
@@ -98,17 +101,24 @@ function generateReceiptPdf(receiptData) {
          .fillAndStroke();
 
       doc.fontSize(12).font('Helvetica-Bold').fillColor('#5A121E')
-         .text('TOTAL AMOUNT RECEIVED:', 60, amountBoxY + 15);
+         .text('TOTAL DONATION RECEIVED:', 60, amountBoxY + 15);
       doc.fontSize(16).font('Helvetica-Bold').fillColor('#5A121E')
          .text(`${receiptData.currency || 'INR'} ${parseFloat(receiptData.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, 320, amountBoxY + 13, { align: 'right', width: 200 });
 
-      // Notes / Void Notice
+      // Legal & Tax Notice (Strictly Informational)
+      const isIndianDonor = receiptData.recipient_country === 'India' || receiptData.currency === 'INR';
+      const taxNotice = isIndianDonor
+        ? 'Tax Notice (Cross-Border): Issued under Bhutanese law. Does not constitute an Indian Section 80G certificate; donors should consult tax advisors.'
+        : 'Tax Notice: Contributions are recognized under Section 4.1.8 of the Income Tax Act of the Kingdom of Bhutan 2001.';
+
       if (isVoid) {
         doc.fontSize(11).font('Helvetica-Bold').fillColor('#DC2626')
-           .text(`THIS RECEIPT HAS BEEN VOIDED. Reason: ${receiptData.void_reason || 'Administrative correction'}`, 45, 480, { align: 'center' });
+           .text(`THIS RECEIPT HAS BEEN VOIDED. Reason: ${receiptData.void_reason || 'Administrative correction'}`, 45, 475, { align: 'center' });
       } else {
+        doc.fontSize(8).font('Helvetica').fillColor('#4B5563')
+           .text(taxNotice, 45, 470, { align: 'center', width: doc.page.width - 90 });
         doc.fontSize(9).font('Helvetica-Oblique').fillColor('#6B7280')
-           .text('Thank you for your noble contribution. May your merits bring peace, prosperity, and joy to all sentient beings.', 45, 480, { align: 'center', width: doc.page.width - 90 });
+           .text('Thank you for your noble contribution. May your merits bring peace, prosperity, and joy to all sentient beings.', 45, 490, { align: 'center', width: doc.page.width - 90 });
       }
 
       // Signatures
@@ -122,7 +132,7 @@ function generateReceiptPdf(receiptData) {
 
       // Footer
       doc.fontSize(8).font('Helvetica').fillColor('#9CA3AF')
-         .text('This is a computer-generated official receipt verified with the foundation records.', 40, doc.page.height - 45, { align: 'center' });
+         .text('This is a computer-generated official charitable receipt verified with the foundation records.', 40, doc.page.height - 45, { align: 'center' });
 
       doc.end();
 

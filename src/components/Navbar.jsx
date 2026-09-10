@@ -26,6 +26,41 @@ export default function Navbar({ onOpenDonate }) {
 
   const [lang, setLang] = useState('English');
 
+  const translations = {
+    English: {
+      home: 'HOME',
+      about: 'ABOUT US',
+      activities: 'ACTIVITIES',
+      learning: 'LEARNING',
+      blog: 'BLOG',
+      gallery: 'GALLERY',
+      contact: 'CONTACT',
+      login: 'Login',
+      register: 'Register',
+      donate: 'OFFER A DONATION',
+      prayer: 'Prayer Request',
+      news: 'News & Events',
+      monkPortal: '☸ Shedra Monk Portal'
+    },
+    Dzongkha: {
+      home: 'གདོང་ཤོག',
+      about: 'ངོ་སྤྲོད།',
+      activities: 'ལས་རིམ།',
+      learning: 'ཆོས་སྤྱོད།',
+      blog: 'གསར་འགྱུར།',
+      gallery: 'པར་རིས།',
+      contact: 'འབྲེལ་གཏུགས།',
+      login: 'ནང་འཛུལ།',
+      register: 'ཐོ་བཀོད།',
+      donate: 'ཞལ་འདེབས་ཕུལ།',
+      prayer: 'སྨོན་ལམ་ཞུ་བ།',
+      news: 'གནས་ཚུལ།',
+      monkPortal: '☸ བཤད་གྲྭའི་སྒོ་འབྱེད།'
+    }
+  };
+
+  const t = translations[lang] || translations.English;
+
   const isActive = (path) => location.pathname === path;
 
   // Track scroll position for dynamic ribbon
@@ -131,7 +166,7 @@ export default function Navbar({ onOpenDonate }) {
               isActive('/') ? 'text-[#BE123C]' : 'text-gray-700'
             }`}
           >
-            <span>HOME</span>
+            <span>{t.home}</span>
             <span
               className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
                 isActive('/') ? 'w-full' : 'w-0 group-hover:w-full'
@@ -146,7 +181,7 @@ export default function Navbar({ onOpenDonate }) {
               isActive('/about') ? 'text-[#BE123C]' : 'text-gray-700'
             }`}
           >
-            <span>ABOUT US</span>
+            <span>{t.about}</span>
             <span
               className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
                 isActive('/about') ? 'w-full' : 'w-0 group-hover:w-full'
@@ -168,7 +203,7 @@ export default function Navbar({ onOpenDonate }) {
                   : 'text-gray-700'
               }`}
             >
-              <span>ACTIVITIES</span>
+              <span>{t.activities}</span>
               <ChevronDown
                 className={`w-3.5 h-3.5 text-[#D4AF37] transition-transform duration-200 ${
                   activeDropdown === 'activities' ? 'rotate-180' : ''
@@ -185,18 +220,18 @@ export default function Navbar({ onOpenDonate }) {
 
             {/* Silk Dropdown Card */}
             {activeDropdown === 'activities' && (
-              <div className="absolute top-full left-0 mt-2 w-80 bg-white/95 backdrop-blur-xl rounded-2xl shadow-[0_15px_40px_rgba(74,14,23,0.18)] border border-[#D4AF37]/40 p-3 z-50 animate-fadeIn">
-                <div className="space-y-1">
+              <div className="absolute top-full left-0 w-72 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-[#E2E8F0] p-2 animate-fadeIn z-50">
+                <div className="space-y-1 text-xs">
                   <Link
                     to="/activities#stupa"
                     className="p-2.5 rounded-xl hover:bg-[#FEF3C7] transition-colors flex items-start space-x-3 group"
                   >
                     <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#0F172A] text-[#0F172A] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
-                      <Building className="w-4 h-4" />
+                      <Landmark className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="font-bold text-xs text-[#0F172A]">Peace Stupa Construction</p>
-                      <p className="text-[10px] text-gray-500 line-clamp-1">108ft Great Druk Wangyel monument</p>
+                      <p className="font-bold text-xs text-[#0F172A]">Great Druk Wangyel Peace Stupa</p>
+                      <p className="text-[10px] text-gray-500 line-clamp-1">108ft monumental stupa for world peace</p>
                     </div>
                   </Link>
 
@@ -237,7 +272,7 @@ export default function Navbar({ onOpenDonate }) {
               isActive('/learning') ? 'text-[#BE123C]' : 'text-gray-700'
             }`}
           >
-            <span>LEARNING</span>
+            <span>{t.learning}</span>
             <span
               className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
                 isActive('/learning') ? 'w-full' : 'w-0 group-hover:w-full'
@@ -252,7 +287,7 @@ export default function Navbar({ onOpenDonate }) {
               isActive('/blog') ? 'text-[#BE123C]' : 'text-gray-700'
             }`}
           >
-            <span>BLOG</span>
+            <span>{t.blog}</span>
             <span
               className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
                 isActive('/blog') ? 'w-full' : 'w-0 group-hover:w-full'
@@ -267,7 +302,7 @@ export default function Navbar({ onOpenDonate }) {
               isActive('/gallery') ? 'text-[#BE123C]' : 'text-gray-700'
             }`}
           >
-            <span>GALLERY</span>
+            <span>{t.gallery}</span>
             <span
               className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
                 isActive('/gallery') ? 'w-full' : 'w-0 group-hover:w-full'
@@ -282,7 +317,7 @@ export default function Navbar({ onOpenDonate }) {
               isActive('/contact') ? 'text-[#BE123C]' : 'text-gray-700'
             }`}
           >
-            <span>CONTACT</span>
+            <span>{t.contact}</span>
             <span
               className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
                 isActive('/contact') ? 'w-full' : 'w-0 group-hover:w-full'
@@ -293,7 +328,7 @@ export default function Navbar({ onOpenDonate }) {
 
         {/* Right Action Controls */}
         <div className="flex items-center space-x-2.5 sm:space-x-3 flex-shrink-0">
-          {/* User Portal Link or Login Button */}
+          {/* User Portal Link or Login/Register Buttons */}
           {user ? (
             <Link
               to={isAdmin ? '/admin' : (user?.role?.slug === 'student_monk' ? '/student' : '/user')}
@@ -305,13 +340,21 @@ export default function Navbar({ onOpenDonate }) {
               </span>
             </Link>
           ) : (
-            <Link
-              to="/login"
-              className="hidden sm:inline-flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-semibold text-[#0F172A] hover:text-[#E11D48] hover:bg-[#FEF3C7] transition-all border border-[#E2E8F0]"
-            >
-              <User className="w-3.5 h-3.5" />
-              <span>Login</span>
-            </Link>
+            <div className="hidden sm:flex items-center space-x-1.5">
+              <Link
+                to="/login"
+                className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-semibold text-[#0F172A] hover:text-[#E11D48] hover:bg-[#FEF3C7] transition-all border border-[#E2E8F0]"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>{t.login}</span>
+              </Link>
+              <Link
+                to="/register"
+                className="inline-flex items-center space-x-1 px-3.5 py-1.5 rounded-full text-xs font-bold text-[#0F172A] bg-amber-100 hover:bg-[#D4AF37] hover:text-[#0F172A] transition-all border border-[#D4AF37]/60 shadow-sm"
+              >
+                <span>{t.register}</span>
+              </Link>
+            </div>
           )}
 
           {/* Shimmering Golden & Burgundy DONATE CTA Button */}
@@ -322,7 +365,7 @@ export default function Navbar({ onOpenDonate }) {
             {/* Shimmering Light-Sweep Effect */}
             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
             <Heart className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37] group-hover:scale-125 transition-transform animate-pulse" />
-            <span className="whitespace-nowrap relative z-10">DONATE NOW</span>
+            <span className="whitespace-nowrap relative z-10">{t.donate}</span>
           </button>
 
           {/* Mobile Hamburger Toggle */}
@@ -354,42 +397,42 @@ export default function Navbar({ onOpenDonate }) {
               onClick={() => setMobileMenuOpen(false)}
               className={`block py-2 px-3.5 rounded-xl ${isActive('/') ? 'bg-[#FEF3C7] text-[#0F172A] font-bold' : 'hover:bg-gray-50'}`}
             >
-              Home
+              {t.home}
             </Link>
             <Link
               to="/about"
               onClick={() => setMobileMenuOpen(false)}
               className={`block py-2 px-3.5 rounded-xl ${isActive('/about') ? 'bg-[#FEF3C7] text-[#0F172A] font-bold' : 'hover:bg-gray-50'}`}
             >
-              About Us
+              {t.about}
             </Link>
             <Link
               to="/activities"
               onClick={() => setMobileMenuOpen(false)}
               className={`block py-2 px-3.5 rounded-xl ${isActive('/activities') ? 'bg-[#FEF3C7] text-[#0F172A] font-bold' : 'hover:bg-gray-50'}`}
             >
-              Activities & Stupa
+              {t.activities}
             </Link>
             <Link
               to="/learning"
               onClick={() => setMobileMenuOpen(false)}
               className={`block py-2 px-3.5 rounded-xl ${isActive('/learning') ? 'bg-[#FEF3C7] text-[#0F172A] font-bold' : 'hover:bg-gray-50'}`}
             >
-              Learning & Videos
+              {t.learning}
             </Link>
             <Link
               to="/blog"
               onClick={() => setMobileMenuOpen(false)}
               className={`block py-2 px-3.5 rounded-xl ${isActive('/blog') ? 'bg-[#FEF3C7] text-[#0F172A] font-bold' : 'hover:bg-gray-50'}`}
             >
-              Blog & Articles
+              {t.blog}
             </Link>
             <Link
               to="/gallery"
               onClick={() => setMobileMenuOpen(false)}
               className={`block py-2 px-3.5 rounded-xl ${isActive('/gallery') ? 'bg-[#FEF3C7] text-[#0F172A] font-bold' : 'hover:bg-gray-50'}`}
             >
-              Photo & Video Gallery
+              {t.gallery}
             </Link>
             <Link
               to="/prayer-request"
@@ -397,14 +440,14 @@ export default function Navbar({ onOpenDonate }) {
               className="block py-2 px-3.5 rounded-xl text-[#0F172A] font-bold bg-[#FEF3C7] border border-[#D4AF37]/50 flex items-center gap-1.5"
             >
               <Flame className="w-4 h-4 text-[#D4AF37]" />
-              <span>Sacred Prayer Request</span>
+              <span>{t.prayer}</span>
             </Link>
             <Link
               to="/contact"
               onClick={() => setMobileMenuOpen(false)}
               className="block py-2 px-3.5 rounded-xl hover:bg-gray-50"
             >
-              Contact Us
+              {t.contact}
             </Link>
           </div>
 
@@ -440,14 +483,14 @@ export default function Navbar({ onOpenDonate }) {
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-2.5 rounded-xl bg-[#0F172A] text-white font-bold"
                 >
-                  User Login
+                  {t.login}
                 </Link>
                 <Link
-                  to="/login?portal=admin"
+                  to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-2.5 rounded-xl bg-gray-100 hover:bg-[#FEF3C7] font-bold text-gray-800"
+                  className="p-2.5 rounded-xl bg-amber-100 hover:bg-[#FEF3C7] font-bold text-amber-900 border border-amber-300"
                 >
-                  Admin / Staff
+                  {t.register}
                 </Link>
               </div>
             )}

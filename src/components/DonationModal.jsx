@@ -88,8 +88,9 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
   };
 
   const handleDownloadPdf = () => {
-    if (completedDonation?.receiptId) {
-      window.open(`/api/receipts/${completedDonation.receiptId}/pdf`, '_blank');
+    const target = completedDonation?.receiptId || completedDonation?.receiptNumber;
+    if (target) {
+      window.open(`/api/receipts/${target}/pdf`, '_blank');
     }
   };
 

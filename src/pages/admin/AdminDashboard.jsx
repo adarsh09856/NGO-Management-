@@ -11,6 +11,7 @@ import {
   CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import api from '../../services/api';
+import { GlassCard, GlassStatWidget, GlassBadge, GlassSkeleton } from '../../components/admin/GlassUI';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -82,92 +83,64 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* 1. TOP STAT CARDS (Live Data from MySQL) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Card 1: Total Donations */}
-        <div className="glass-card-interactive p-5 rounded-2xl flex flex-col justify-between border-t-4 border-t-rose-500">
-          <div className="flex justify-between items-start">
-            <span className="text-[11px] font-bold text-gray-500 uppercase">Donations (Month)</span>
-            <div className="w-8 h-8 rounded-xl bg-rose-500/15 text-rose-700 flex items-center justify-center">
-              <Heart className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="font-serif-brand font-bold text-xl text-[#0F172A]">
-              ₹ {Number(metrics.totalDonationsMonth || 0).toLocaleString()}
-            </div>
-            <p className="text-[10px] text-gray-500 mt-0.5">
-              {metrics.totalDonationsCount || 0} gifts received
-            </p>
-          </div>
+      {/* 1. TOP STAT CARDS (Live Data from MySQL with Real SVG Sparklines) */}
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <GlassSkeleton key={i} height="h-32" />
+          ))}
         </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <GlassStatWidget
+            title="Donations (Month)"
+            value={`₹ ${Number(metrics.totalDonationsMonth || 0).toLocaleString()}`}
+            subtext={`${metrics.totalDonationsCount || 0} gifts received`}
+            icon={Heart}
+            color="#E11D48"
+            badgeText="Live 30D"
+            sparklineData={(metrics.sparkline30Days || []).map((d) => d.amount)}
+          />
 
-        {/* Card 2: Total Donors */}
-        <div className="glass-card-interactive p-5 rounded-2xl flex flex-col justify-between border-t-4 border-t-amber-500">
-          <div className="flex justify-between items-start">
-            <span className="text-[11px] font-bold text-gray-500 uppercase">Registered Donors</span>
-            <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-700 flex items-center justify-center">
-              <Users className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="font-serif-brand font-bold text-xl text-[#0F172A]">
-              {metrics.totalDonors || 0}
-            </div>
-            <p className="text-[10px] text-emerald-600 font-bold mt-0.5">Active Sangha Patrons</p>
-          </div>
-        </div>
+          <GlassStatWidget
+            title="Registered Donors"
+            value={metrics.totalDonors || 0}
+            subtext="Sangha Patrons"
+            icon={Users}
+            color="#D4AF37"
+            badgeText="Active"
+            sparklineData={(metrics.sparkline30Days || []).map((d) => d.count)}
+          />
 
-        {/* Card 3: Enrolled Monks */}
-        <div className="glass-card-interactive p-5 rounded-2xl flex flex-col justify-between border-t-4 border-t-blue-500">
-          <div className="flex justify-between items-start">
-            <span className="text-[11px] font-bold text-gray-500 uppercase">Monk Scholars</span>
-            <div className="w-8 h-8 rounded-xl bg-blue-500/15 text-blue-700 flex items-center justify-center">
-              <GraduationCap className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="font-serif-brand font-bold text-xl text-[#0F172A]">
-              {metrics.totalStudentsMonks || 0}
-            </div>
-            <p className="text-[10px] text-gray-500 mt-0.5">Shedra & Novice Classes</p>
-          </div>
-        </div>
+          <GlassStatWidget
+            title="Monk Scholars"
+            value={metrics.totalStudentsMonks || 0}
+            subtext="Shedra & Novice"
+            icon={GraduationCap}
+            color="#2563EB"
+            badgeText="Enrolled"
+          />
 
-        {/* Card 4: Receipts Value */}
-        <div className="glass-card-interactive p-5 rounded-2xl flex flex-col justify-between border-t-4 border-t-emerald-500">
-          <div className="flex justify-between items-start">
-            <span className="text-[11px] font-bold text-gray-500 uppercase">Receipts Issued</span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-700 flex items-center justify-center">
-              <Receipt className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="font-serif-brand font-bold text-xl text-[#0F172A]">
-              ₹ {Number(metrics.totalReceiptsValue || 0).toLocaleString()}
-            </div>
-            <p className="text-[10px] text-gray-500 mt-0.5">
-              {metrics.totalReceiptsMonth || 0} 80G receipts
-            </p>
-          </div>
-        </div>
+          <GlassStatWidget
+            title="Receipts Issued"
+            value={`₹ ${Number(metrics.totalReceiptsValue || 0).toLocaleString()}`}
+            subtext={`${metrics.totalReceiptsMonth || 0} 80G receipts`}
+            icon={Receipt}
+            color="#059669"
+            badgeText="Audited"
+            sparklineData={(metrics.sparkline30Days || []).map((d) => d.amount)}
+          />
 
-        {/* Card 5: Liquid Reserves */}
-        <div className="glass-card-interactive p-5 rounded-2xl flex flex-col justify-between border-t-4 border-t-purple-500">
-          <div className="flex justify-between items-start">
-            <span className="text-[11px] font-bold text-gray-500 uppercase">Liquid Reserves</span>
-            <div className="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-700 flex items-center justify-center">
-              <Wallet className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="font-serif-brand font-bold text-xl text-[#0F172A]">
-              ₹ {Number(metrics.totalCashBalance || 0).toLocaleString()}
-            </div>
-            <p className="text-[10px] text-gray-500 mt-0.5">BOB + HDFC + Cash Vault</p>
-          </div>
+          <GlassStatWidget
+            title="Liquid Reserves"
+            value={`₹ ${Number(metrics.totalCashBalance || 0).toLocaleString()}`}
+            subtext="BOB + HDFC + Vault"
+            icon={Wallet}
+            color="#7C3AED"
+            badgeText="Reconciled"
+          />
         </div>
-      </div>
+      )}
 
       {/* 2. CHARTS & RECENT ACTIVITIES */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

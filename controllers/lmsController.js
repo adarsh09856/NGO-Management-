@@ -28,17 +28,12 @@ async function getLmsOverview(req, res) {
       success: true,
       data: {
         stats: {
-          activeCourses: coursesCount[0].count || 24,
-          enrolledStudents: enrolledCount[0].count || 286,
-          completedCourses: completedCount[0].count || 156,
-          certificatesIssued: certificatesCount[0].count || 142
+          activeCourses: coursesCount[0].count || 0,
+          enrolledStudents: enrolledCount[0].count || 0,
+          completedCourses: completedCount[0].count || 0,
+          certificatesIssued: certificatesCount[0].count || 0
         },
-        recentCourses: recentCourses.length > 0 ? recentCourses : [
-          { title: 'Buddhist Philosophy - Level 1', status_badge: 'In Progress', student_count: 48 },
-          { title: 'Meditation & Mindfulness', status_badge: 'In Progress', student_count: 37 },
-          { title: 'Tibetan Language Basic', status_badge: 'In Progress', student_count: 29 },
-          { title: 'Buddha Dharma Studies', status_badge: 'Completed', student_count: 62 }
-        ]
+        recentCourses: recentCourses
       }
     });
   } catch (error) {

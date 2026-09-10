@@ -154,7 +154,10 @@ async function getReceiptById(req, res) {
 async function downloadReceiptPdf(req, res) {
   try {
     const { id } = req.params;
-    const [receipts] = await pool.query(`SELECT * FROM money_receipts WHERE id = ?`, [id]);
+    const [receipts] = await pool.query(
+      `SELECT * FROM money_receipts WHERE id = ? OR receipt_number = ?`,
+      [id, id]
+    );
     if (receipts.length === 0) {
       return res.status(404).json({ success: false, message: 'Receipt not found' });
     }

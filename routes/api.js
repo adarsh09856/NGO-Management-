@@ -1,9 +1,35 @@
 const express = require('express');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
 
 const { authenticateToken, optionalAuth } = require('../middleware/auth');
 const { requireRole, requirePermission, requirePermissionOrRole } = require('../middleware/rbac');
 const { upload } = require('../middleware/upload');
+
+// Rate Limiters for Sensitive API Endpoints
+const authRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts per IP per window as mandated by Phase 1.3
+  message: { success: false, message: 'Too many authentication attempts. Please try again after 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const paymentRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 50,
+  message: { success: false, message: 'Payment gateway rate limit reached. Please try again shortly.' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const publicFormRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: { success: false, message: 'Too many submissions. Please wait before submitting again.' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
 
 // Import Controllers
 const authCtrl = require('../controllers/authController');
@@ -26,14 +52,31 @@ const settingsCtrl = require('../controllers/settingsController');
 const reportCtrl = require('../controllers/reportController');
 const paymentCtrl = require('../controllers/paymentController');
 const searchCtrl = require('../controllers/searchController');
+const volunteerCtrl = require('../controllers/volunteerController');
+const newsletterCtrl = require('../controllers/newsletterController');
+const healthCtrl = require('../controllers/healthController');
 
 // ==========================================
-// 1. AUTHENTICATION & PORTAL LOGINS
+// 0. SYSTEM HEALTH & DIAGNOSTICS
 // ==========================================
-router.post('/auth/login', authCtrl.login);
-router.post('/auth/register', authCtrl.register);
+router.get('/health', healthCtrl.getHealth);
+
+// ==========================================
+// 1. AUTHENTICATION & PORTAL LOGINS (Phase 1 Hardened)
+// ==========================================
+router.post('/auth/login', authRateLimiter, authCtrl.login);
+router.post('/auth/register', authRateLimiter, authCtrl.register);
 router.get('/auth/me', authenticateToken, authCtrl.me);
 router.put('/auth/profile', authenticateToken, authCtrl.updateProfile);
+
+// 2FA & Session Management
+router.post('/auth/2fa/setup', authenticateToken, authCtrl.setup2FA);
+router.post('/auth/2fa/verify', authenticateToken, authCtrl.verify2FA);
+router.post('/auth/2fa/disable', authenticateToken, authCtrl.disable2FA);
+router.post('/auth/refresh-token', authCtrl.refreshToken);
+router.post('/auth/logout', optionalAuth, authCtrl.logout);
+router.post('/auth/forgot-password', authRateLimiter, authCtrl.forgotPassword);
+router.post('/auth/reset-password', authRateLimiter, authCtrl.resetPassword);
 
 // ==========================================
 // 2. UNIFIED USER PANEL (For Donors & Members)
@@ -70,6 +113,7 @@ router.put('/donations/campaigns/:id/status', authenticateToken, requirePermissi
 
 router.post('/donations', authenticateToken, requirePermission('donations:create'), donationCtrl.addDonation);
 router.get('/donations', authenticateToken, requirePermission('donations:view'), donationCtrl.getAllDonations);
+router.post('/donations/:id/refund', authenticateToken, requirePermissionOrRole('donations:refund', 'super_admin', 'accountant'), donationCtrl.refundDonation);
 router.get('/donations/recurring', authenticateToken, donationCtrl.getRecurringPledges);
 router.post('/donations/recurring/:id/status', authenticateToken, donationCtrl.updatePledgeStatus);
 router.get('/donations/:id', authenticateToken, donationCtrl.getDonationById);
@@ -149,7 +193,7 @@ router.delete('/inventory/locations/:id', authenticateToken, requirePermission('
 // ==========================================
 // 10. CERTIFICATES
 // ==========================================
-router.get('/certificates/verify/:certNumber', certCtrl.verifyCertificate);
+router.get('/certificates/verify/:certNumber', publicFormRateLimiter, certCtrl.verifyCertificate);
 router.get('/certificates', authenticateToken, certCtrl.getCertificates);
 router.post('/certificates/issue', authenticateToken, requirePermissionOrRole('lms:issue_certificate', 'super_admin', 'admin'), certCtrl.issueCertificate);
 router.put('/certificates/:id', authenticateToken, requirePermissionOrRole('lms:issue_certificate', 'super_admin', 'admin'), certCtrl.updateCertificate);
@@ -253,12 +297,35 @@ router.post('/cms/gallery', authenticateToken, cmsCtrl.createGalleryItem);
 router.put('/cms/gallery/:id', authenticateToken, cmsCtrl.updateGalleryItem);
 router.delete('/cms/gallery/:id', authenticateToken, cmsCtrl.deleteGalleryItem);
 
-router.post('/cms/prayer-requests', cmsCtrl.submitPrayerRequest);
+router.post('/cms/prayer-requests', publicFormRateLimiter, cmsCtrl.submitPrayerRequest);
 router.get('/cms/prayer-requests', authenticateToken, cmsCtrl.getPrayerRequests);
 router.put('/cms/prayer-requests/:id/dedicate', authenticateToken, cmsCtrl.dedicatePrayerRequest);
 
+// Event RSVPs
+router.post('/cms/events/:eventId/rsvp', publicFormRateLimiter, cmsCtrl.submitEventRsvp);
+router.post('/cms/events/rsvp', publicFormRateLimiter, cmsCtrl.submitEventRsvp);
+router.get('/cms/events/:eventId/rsvps', authenticateToken, cmsCtrl.getEventRsvps);
+router.put('/cms/rsvps/:id/status', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin'), cmsCtrl.updateRsvpStatus);
+
 // ==========================================
-// 16. GENERIC MEDIA UPLOAD (Videos & Images)
+// 15.1. VOLUNTEERS & COMMUNITY
+// ==========================================
+router.post('/volunteers/apply', publicFormRateLimiter, volunteerCtrl.applyVolunteer);
+router.get('/volunteers', authenticateToken, requirePermissionOrRole('volunteers:view', 'super_admin', 'admin', 'staff'), volunteerCtrl.getVolunteers);
+router.get('/volunteers/:id', authenticateToken, requirePermissionOrRole('volunteers:view', 'super_admin', 'admin', 'staff'), volunteerCtrl.getVolunteerById);
+router.put('/volunteers/:id/status', authenticateToken, requirePermissionOrRole('volunteers:manage', 'super_admin', 'admin'), volunteerCtrl.updateVolunteerStatus);
+router.delete('/volunteers/:id', authenticateToken, requirePermissionOrRole('volunteers:manage', 'super_admin', 'admin'), volunteerCtrl.deleteVolunteer);
+
+// ==========================================
+// 15.2. NEWSLETTER & DHARMA DISPATCHES
+// ==========================================
+router.post('/newsletter/subscribe', publicFormRateLimiter, newsletterCtrl.subscribe);
+router.post('/newsletter/unsubscribe', newsletterCtrl.unsubscribe);
+router.get('/newsletter/unsubscribe', newsletterCtrl.unsubscribe);
+router.get('/newsletter/subscribers', authenticateToken, requirePermissionOrRole('crm:campaigns', 'super_admin', 'admin'), newsletterCtrl.getSubscribers);
+
+// ==========================================
+// 16. GENERIC MEDIA UPLOAD (Videos, Docs & Images)
 // ==========================================
 router.post('/upload', authenticateToken, upload.single('file'), (req, res) => {
   if (!req.file) {
@@ -276,10 +343,10 @@ router.post('/upload', authenticateToken, upload.single('file'), (req, res) => {
 });
 
 // ==========================================
-// 17. PAYMENTS & WEBHOOKS
+// 17. PAYMENTS & WEBHOOKS (Rate Limited & Timing-Safe)
 // ==========================================
-router.post('/payments/create-order', paymentCtrl.createPaymentOrder);
-router.post('/payments/verify', paymentCtrl.verifyPayment);
+router.post('/payments/create-order', paymentRateLimiter, paymentCtrl.createPaymentOrder);
+router.post('/payments/verify', paymentRateLimiter, paymentCtrl.verifyPayment);
 router.post('/payments/webhook', paymentCtrl.handleWebhook);
 router.post('/payments/reconcile/:orderId', authenticateToken, paymentCtrl.reconcilePayment);
 
@@ -288,14 +355,24 @@ router.post('/payments/reconcile/:orderId', authenticateToken, paymentCtrl.recon
 // ==========================================
 router.get('/settings', settingsCtrl.getSettings);
 router.put('/settings', authenticateToken, requireRole('super_admin'), settingsCtrl.updateSettings);
+router.post('/settings', authenticateToken, requireRole('super_admin'), settingsCtrl.updateSettings);
 router.get('/users', authenticateToken, requireRole('super_admin'), settingsCtrl.getUsers);
 router.post('/users', authenticateToken, requireRole('super_admin'), settingsCtrl.createUser);
 router.put('/users/:id', authenticateToken, requireRole('super_admin'), settingsCtrl.updateUser);
 router.delete('/users/:id', authenticateToken, requireRole('super_admin'), settingsCtrl.deleteUser);
+router.post('/users/:id/reset-password', authenticateToken, requireRole('super_admin'), settingsCtrl.resetUserPasswordByAdmin);
+router.put('/users/:id/status', authenticateToken, requireRole('super_admin'), settingsCtrl.toggleUserStatus);
+router.put('/users/:id/role', authenticateToken, requireRole('super_admin'), settingsCtrl.changeUserRole);
+router.get('/users/:id/sessions', authenticateToken, requireRole('super_admin'), settingsCtrl.getUserSessions);
+router.post('/users/:id/revoke-sessions', authenticateToken, requireRole('super_admin'), settingsCtrl.revokeAllUserSessions);
+router.delete('/sessions/:sessionId', authenticateToken, requireRole('super_admin'), settingsCtrl.revokeSession);
+router.post('/sessions/kill-all', authenticateToken, requireRole('super_admin'), settingsCtrl.revokeAllSessionsGlobal);
 router.get('/roles-permissions', authenticateToken, settingsCtrl.getRolesAndPermissions);
 router.put('/roles/:id/permissions', authenticateToken, requireRole('super_admin'), settingsCtrl.updateRolePermissions);
 router.get('/audit-logs', authenticateToken, requireRole('super_admin'), settingsCtrl.getAuditLogs);
+router.get('/audit-logs/verify', authenticateToken, requireRole('super_admin'), settingsCtrl.verifyAuditLogs);
 router.post('/backup', authenticateToken, requireRole('super_admin'), settingsCtrl.triggerBackup);
+router.post('/settings/backup', authenticateToken, requireRole('super_admin'), settingsCtrl.triggerBackup);
 router.get('/reports', authenticateToken, reportCtrl.getReports);
 router.get('/reports/:module/export', authenticateToken, reportCtrl.getReports);
 router.get('/admin/dashboard', authenticateToken, reportCtrl.getAdminDashboardMetrics);

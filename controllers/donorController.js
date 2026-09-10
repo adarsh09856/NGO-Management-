@@ -9,24 +9,35 @@ async function getDonors(req, res) {
     const offset = (page - 1) * limit;
     const { search, donorType } = req.query;
 
-    let query = `SELECT * FROM donors WHERE 1=1`;
+    let query = `
+      SELECT 
+        dn.id, dn.user_id, dn.donor_type, dn.full_name, dn.email, dn.phone, dn.pan_or_tax_id,
+        dn.address, dn.city, dn.state, dn.country, dn.postal_code, dn.notes, dn.created_at,
+        COALESCE(SUM(CASE WHEN d.payment_status IN ('completed', 'paid') AND d.is_deleted = 0 THEN d.amount ELSE 0 END), dn.total_donated) as total_donated,
+        COALESCE(COUNT(CASE WHEN d.payment_status IN ('completed', 'paid') AND d.is_deleted = 0 THEN d.id ELSE NULL END), dn.total_donations_count) as total_donations_count,
+        MAX(d.payment_date) as last_donation_date
+      FROM donors dn
+      LEFT JOIN donations d ON dn.id = d.donor_id
+      WHERE 1=1`;
     const params = [];
 
     if (search) {
-      query += ` AND (full_name LIKE ? OR email LIKE ? OR phone LIKE ? OR pan_or_tax_id LIKE ?)`;
+      query += ` AND (dn.full_name LIKE ? OR dn.email LIKE ? OR dn.phone LIKE ? OR dn.pan_or_tax_id LIKE ?)`;
       const searchParam = `%${search}%`;
       params.push(searchParam, searchParam, searchParam, searchParam);
     }
     if (donorType) {
-      query += ` AND donor_type = ?`;
+      query += ` AND dn.donor_type = ?`;
       params.push(donorType);
     }
 
+    query += ` GROUP BY dn.id`;
+
     const countQuery = `SELECT COUNT(*) as total FROM (${query}) as filtered`;
     const [countResult] = await pool.query(countQuery, params);
-    const total = countResult[0].total;
+    const total = countResult[0] ? countResult[0].total : 0;
 
-    query += ` ORDER BY total_donated DESC, id DESC LIMIT ? OFFSET ?`;
+    query += ` ORDER BY total_donated DESC, dn.id DESC LIMIT ? OFFSET ?`;
     params.push(limit, offset);
 
     const [donors] = await pool.query(query, params);

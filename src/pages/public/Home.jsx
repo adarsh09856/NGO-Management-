@@ -38,18 +38,8 @@ export default function Home() {
     loadHomePreviews();
   }, []);
 
-  // Fallbacks for blogs and videos if database returns empty
-  const displayBlogs = recentBlogs.length > 0 ? recentBlogs : [
-    { id: 1, slug: 'spiritual-significance-peace-stupa', title: 'The Spiritual Significance of Great Druk Wangyel Peace Stupa', summary: 'Explore why stupas are regarded as the living mind of the Buddha and how this monument radiates blessings for global peace.', cover_image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80', published_at: '2026-08-20', author_name: 'Khenpo Tashi Dorji', tags: 'Peace Stupa' },
-    { id: 2, slug: 'daily-life-shedra-monastic-university', title: 'Daily Life in the Shedra: Nurturing Compassion & Wisdom', summary: 'A glimpse into the daily schedule, philosophical debates, and meditation practices of our resident monk scholars.', cover_image: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80', published_at: '2026-08-22', author_name: 'Lopen Karma Samten', tags: 'Shedra' },
-    { id: 3, slug: 'merit-butter-lamp-offerings', title: 'The Merit of 108 Butter Lamp Offerings for World Peace', summary: 'How the light of butter lamps dispels the darkness of ignorance and generates merit for all sentient beings.', cover_image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80', published_at: '2026-08-25', author_name: 'Dechen Wangmo', tags: 'Butter Lamps' }
-  ];
-
-  const displayVideos = recentVideos.length > 0 ? recentVideos.slice(0, 3) : [
-    { id: 1, title: 'Introduction to the Four Noble Truths & Eightfold Path', category: 'Philosophy', duration_minutes: 45, level: 'Beginner', instructor: 'Khenpo Tashi Dorji', thumbnail_url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1200&q=80' },
-    { id: 2, title: 'Shamatha Meditation & Calm Abiding Mind Practice', category: 'Meditation', duration_minutes: 60, level: 'Intermediate', instructor: 'Lopen Karma Samten', thumbnail_url: 'https://images.unsplash.com/photo-1560707303-4e980ce876ad?auto=format&fit=crop&w=1200&q=80' },
-    { id: 3, title: 'The Way of the Bodhisattva: Cultivating Compassion', category: 'Philosophy', duration_minutes: 50, level: 'All Levels', instructor: 'Khenpo Tashi Dorji', thumbnail_url: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80' }
-  ];
+  const displayBlogs = recentBlogs;
+  const displayVideos = recentVideos.slice(0, 3);
 
   return (
     <div className="w-full relative space-y-16 pb-16">

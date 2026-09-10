@@ -1,10 +1,10 @@
 const { pool, withTransaction } = require('../config/db');
-const { getNextReceiptNumber, numberToWords } = require('../services/paymentService');
+const { getNextReceiptNumber, numberToWords, processDonationRefund } = require('../services/paymentService');
 const { generateReceiptPdf } = require('../services/pdfService');
 const { sendReceiptEmail } = require('../services/emailService');
 const { logAudit } = require('../middleware/auditLogger');
 
-// 1. Add New Donation (Matching image 1 exact form layout & behavior)
+// 1. Add New Donation (Matching form layout & behavior)
 async function addDonation(req, res) {
   try {
     const {
@@ -52,7 +52,6 @@ async function addDonation(req, res) {
       }
 
       if (!finalDonorId) {
-        // Fallback to anonymous donor record
         const [anon] = await conn.query(`SELECT id FROM donors WHERE donor_type = 'anonymous' LIMIT 1`);
         if (anon.length > 0) {
           finalDonorId = anon[0].id;
@@ -83,7 +82,7 @@ async function addDonation(req, res) {
       // Generate Auto Receipt Number
       const { receiptNumber, financialYear } = await getNextReceiptNumber(conn);
 
-      // Insert Donation
+      // Insert Primary Financial Donation Record
       const [donationRes] = await conn.query(
         `INSERT INTO donations (receipt_number, donor_id, campaign_id, donation_for, donation_type, amount, currency, amount_in_words, payment_method, payment_status, transaction_ref, payment_date, payment_gateway, bank_name, remarks, send_receipt, is_80g_eligible, created_by_user_id)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'completed', ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -98,56 +97,23 @@ async function addDonation(req, res) {
 
       // Insert Money Receipt
       const paymentModeLabel = paymentMethod === 'online_gateway' ? `Online (${paymentGateway})` :
-                               paymentMethod === 'bank_transfer' ? `Bank Transfer (${bankName})` :
-                               paymentMethod === 'cash' ? 'Cash' :
-                               paymentMethod === 'cheque_dd' ? 'Cheque / DD' : 'Other';
+                               paymentMethod === 'bank_transfer' ? `Bank Transfer (${bankName || 'Bank'})` :
+                               paymentMethod === 'cheque_dd' ? `Cheque / DD` : 'Cash';
 
       const [receiptRes] = await conn.query(
-        `INSERT INTO money_receipts (receipt_number, financial_year, donation_id, receipt_type, recipient_name, recipient_email, recipient_phone, recipient_address, amount, currency, amount_in_words, payment_mode, transaction_no, receipt_date, status, notes)
-         VALUES (?, ?, ?, 'donation', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ISSUED', ?)`,
-        [receiptNumber, financialYear, donationId, donor.full_name, donor.email, donor.phone, donor.address, numAmount, currency, amountInWords, paymentModeLabel, transactionRef || `TXN${Date.now()}`, paymentDate, remarks || `Donation for ${donationFor}`]
+        `INSERT INTO money_receipts (receipt_number, financial_year, donation_id, receipt_type, recipient_name, recipient_email, recipient_phone, recipient_address, amount, currency, amount_in_words, payment_mode, transaction_no, receipt_date, status, notes, issued_by_user_id)
+         VALUES (?, ?, ?, 'donation', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ISSUED', ?, ?)`,
+        [receiptNumber, financialYear, donationId, donor.full_name, donor.email, donor.phone, donor.address, numAmount, currency, amountInWords, paymentModeLabel, transactionRef || `TXN${Date.now()}`, paymentDate, `Donation for ${donationFor}`, req.user ? req.user.id : null]
       );
       const receiptId = receiptRes.insertId;
 
-      // Insert into Income Ledger
-      await conn.query(
-        `INSERT INTO income (receipt_id, source_category, particulars, amount, currency, received_date, payment_mode, reference_no, created_by)
-         VALUES (?, 'donation', ?, ?, ?, ?, ?, ?, ?)`,
-        [receiptId, `Donation Received - ${donor.full_name} (${donationFor})`, numAmount, currency, paymentDate, paymentModeLabel, transactionRef || `TXN${Date.now()}`, req.user ? req.user.id : null]
-      );
-
-      // If Recurring Donation, insert into recurring_pledges
-      if (donationType === 'recurring') {
-        const nextMonth = new Date(paymentDate);
-        nextMonth.setMonth(nextMonth.getMonth() + 1);
-        await conn.query(
-          `INSERT INTO recurring_pledges (donor_id, campaign_id, amount, currency, frequency, status, start_date, next_charge_date, payment_method)
-           VALUES (?, ?, ?, ?, 'monthly', 'active', ?, ?, ?)`,
-          [finalDonorId, campaignId || null, numAmount, currency, paymentDate, nextMonth.toISOString().slice(0, 10), paymentModeLabel]
-        );
-      }
-
-      return {
-        donationId,
-        receiptId,
-        receiptNumber,
-        financialYear,
-        donor,
-        donationFor,
-        numAmount,
-        currency,
-        amountInWords,
-        paymentModeLabel,
-        transactionRef: transactionRef || `TXN${Date.now()}`,
-        paymentDate,
-        sendReceipt
-      };
+      return { donationId, receiptId, receiptNumber, financialYear, donor, numAmount, currency, amountInWords, paymentModeLabel, paymentDate, donationFor };
     });
 
-    // Generate PDF Receipt asynchronously
-    let pdfUrl = null;
+    // Generate PDF & Dispatch Email
+    let pdfResult = null;
     try {
-      const receiptPdfData = {
+      pdfResult = await generateReceiptPdf({
         receipt_number: result.receiptNumber,
         financial_year: result.financialYear,
         recipient_name: result.donor.full_name,
@@ -158,16 +124,14 @@ async function addDonation(req, res) {
         currency: result.currency,
         amount_in_words: result.amountInWords,
         payment_mode: result.paymentModeLabel,
-        transaction_no: result.transactionRef,
+        transaction_no: transactionRef || `TXN${Date.now()}`,
         receipt_date: result.paymentDate,
         status: 'ISSUED'
-      };
+      });
 
-      const pdfResult = await generateReceiptPdf(receiptPdfData);
-      pdfUrl = pdfResult.relativeUrl;
-      await pool.query(`UPDATE money_receipts SET pdf_url = ? WHERE id = ?`, [pdfUrl, result.receiptId]);
+      await pool.query(`UPDATE money_receipts SET pdf_url = ? WHERE id = ?`, [pdfResult.relativeUrl, result.receiptId]);
 
-      if (result.sendReceipt && result.donor.email) {
+      if (sendReceipt && result.donor.email) {
         sendReceiptEmail({
           toEmail: result.donor.email,
           donorName: result.donor.full_name,
@@ -175,10 +139,10 @@ async function addDonation(req, res) {
           amount: result.numAmount,
           currency: result.currency,
           pdfPath: pdfResult.filePath
-        }).catch(e => console.error('[Mailer Error]:', e.message));
+        }).catch(err => console.error('[Email Send Error]:', err.message));
       }
-    } catch (pdfErr) {
-      console.error('[PDF Gen Error]:', pdfErr.message);
+    } catch (e) {
+      console.error('[Receipt PDF Error]:', e.message);
     }
 
     logAudit({
@@ -188,27 +152,27 @@ async function addDonation(req, res) {
       module: 'donations',
       action: 'create',
       recordId: result.donationId,
-      details: { amount: result.numAmount, receiptNumber: result.receiptNumber, donor: result.donor.full_name }
+      details: { amount: numAmount, currency, receiptNumber: result.receiptNumber }
     });
 
     return res.status(201).json({
       success: true,
-      message: 'Donation recorded successfully',
+      message: `Donation recorded successfully! Receipt ${result.receiptNumber} generated.`,
       data: {
         donationId: result.donationId,
         receiptId: result.receiptId,
         receiptNumber: result.receiptNumber,
-        pdfUrl
+        pdfUrl: pdfResult ? pdfResult.relativeUrl : null
       }
     });
 
   } catch (error) {
-    console.error('[Donation Error] Failed to add donation:', error);
+    console.error('[Add Donation Error]:', error);
     return res.status(500).json({ success: false, message: 'Failed to record donation: ' + error.message });
   }
 }
 
-// 2. Get All Donations (Paginated, Searchable, Filterable)
+// 2. Get All Donations (Paginated, Filterable)
 async function getAllDonations(req, res) {
   try {
     const page = parseInt(req.query.page || '1', 10);
@@ -219,9 +183,9 @@ async function getAllDonations(req, res) {
 
     let query = `
       SELECT d.*, 
-             dn.full_name as donor_name, dn.email as donor_email, dn.phone as donor_phone, dn.donor_type,
+             dn.full_name as donor_name, dn.email as donor_email, dn.phone as donor_phone, dn.country as donor_country,
              c.title as campaign_title,
-             mr.id as receipt_id, mr.pdf_url as receipt_pdf_url, mr.status as receipt_status
+             mr.id as receipt_id, mr.pdf_url as receipt_pdf_url
       FROM donations d
       JOIN donors dn ON d.donor_id = dn.id
       LEFT JOIN campaigns c ON d.campaign_id = c.id
@@ -232,8 +196,8 @@ async function getAllDonations(req, res) {
 
     if (search) {
       query += ` AND (d.receipt_number LIKE ? OR dn.full_name LIKE ? OR dn.email LIKE ? OR d.transaction_ref LIKE ?)`;
-      const searchParam = `%${search}%`;
-      params.push(searchParam, searchParam, searchParam, searchParam);
+      const s = `%${search}%`;
+      params.push(s, s, s, s);
     }
     if (campaignId) {
       query += ` AND d.campaign_id = ?`;
@@ -331,7 +295,49 @@ async function deleteDonation(req, res) {
   }
 }
 
-// 5. Campaigns CRUD
+// 5. Refund Donation (Direct Reversal against Donations Ledger & Receipt Void)
+async function refundDonation(req, res) {
+  try {
+    const { id } = req.params;
+    const { amount, refundReason } = req.body;
+
+    if (!refundReason || refundReason.trim().length < 10) {
+      return res.status(400).json({
+        success: false,
+        message: 'A mandatory refund reason of at least 10 characters is required for auditing financial reversals.'
+      });
+    }
+
+    const userId = req.user ? req.user.id : null;
+    const result = await processDonationRefund({
+      donationId: id,
+      refundAmount: amount,
+      refundReason: refundReason.trim(),
+      initiatedByUserId: userId
+    });
+
+    logAudit({
+      userId,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'donations',
+      action: 'refund',
+      recordId: id,
+      details: { ...result, refundReason: refundReason.trim() }
+    });
+
+    return res.json({
+      success: true,
+      message: `Donation ${id} refunded successfully (${result.isFullRefund ? 'Full Refund' : 'Partial Refund'}).`,
+      data: result
+    });
+  } catch (error) {
+    console.error('[Donation Refund Error]:', error.message);
+    return res.status(400).json({ success: false, message: error.message });
+  }
+}
+
+// 6. Campaigns CRUD
 async function getCampaigns(req, res) {
   try {
     const [campaigns] = await pool.query(
@@ -388,7 +394,7 @@ async function updateCampaign(req, res) {
   }
 }
 
-// 6. Recurring Donations / Pledges
+// 7. Recurring Donations / Pledges
 async function getRecurringPledges(req, res) {
   try {
     const [pledges] = await pool.query(
@@ -411,14 +417,36 @@ async function updatePledgeStatus(req, res) {
     const { id } = req.params;
     const { status } = req.body; // 'active', 'paused', 'cancelled'
 
-    await pool.query(`UPDATE recurring_pledges SET status = ? WHERE id = ?`, [status, id]);
-    return res.json({ success: true, message: `Pledge status updated to ${status}` });
+    if (!['active', 'paused', 'cancelled'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Status must be one of: active, paused, cancelled' });
+    }
+
+    const cancelledAt = status === 'cancelled' ? new Date() : null;
+    await pool.query(
+      `UPDATE recurring_pledges 
+       SET status = ?, 
+           cancelled_at = COALESCE(?, cancelled_at)
+       WHERE id = ?`,
+      [status, cancelledAt, id]
+    );
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'donations',
+      action: 'update_pledge_status',
+      recordId: id,
+      details: { status }
+    });
+
+    return res.json({ success: true, message: `Recurring pledge status updated to ${status}` });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to update pledge status' });
   }
 }
 
-// 5.1 Delete Campaign (Strict Zero-Corruption Policy)
+// 8. Delete Campaign (Strict Zero-Corruption Policy)
 async function deleteCampaign(req, res) {
   try {
     const { id } = req.params;
@@ -428,7 +456,6 @@ async function deleteCampaign(req, res) {
       return res.status(404).json({ success: false, message: 'Campaign not found' });
     }
 
-    // Check if any donations are linked to this campaign
     const [donationCount] = await pool.query(`SELECT COUNT(*) as count FROM donations WHERE campaign_id = ?`, [id]);
     if (donationCount[0].count > 0) {
       return res.status(400).json({
@@ -437,7 +464,6 @@ async function deleteCampaign(req, res) {
       });
     }
 
-    // Check if any recurring pledges are linked
     const [pledgeCount] = await pool.query(`SELECT COUNT(*) as count FROM recurring_pledges WHERE campaign_id = ?`, [id]);
     if (pledgeCount[0].count > 0) {
       return res.status(400).json({
@@ -465,7 +491,7 @@ async function deleteCampaign(req, res) {
   }
 }
 
-// 5.2 Toggle Campaign Active Status
+// 9. Toggle Campaign Active Status
 async function toggleCampaignStatus(req, res) {
   try {
     const { id } = req.params;
@@ -505,6 +531,7 @@ module.exports = {
   getAllDonations,
   getDonationById,
   deleteDonation,
+  refundDonation,
   getCampaigns,
   createCampaign,
   updateCampaign,

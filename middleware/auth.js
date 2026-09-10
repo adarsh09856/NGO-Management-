@@ -1,13 +1,28 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const { pool } = require('../config/db');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dpl_monastery_super_secure_jwt_secret_key_2026_bhutan';
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'dpl_monastery_super_secure_refresh_secret_key_2026_bhutan';
+
+// Hash token with SHA-256 for secure database storage
+function hashToken(token) {
+  return crypto.createHash('sha256').update(String(token)).digest('hex');
+}
 
 // Authenticate JWT token and attach user + role info to request
 async function authenticateToken(req, res, next) {
   try {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : req.query.token;
+    let token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+
+    if (!token && req.cookies) {
+      token = req.cookies.dpl_token || req.cookies.token || req.cookies.accessToken;
+    }
+
+    if (!token && req.query) {
+      token = req.query.token;
+    }
 
     if (!token) {
       return res.status(401).json({
@@ -21,6 +36,7 @@ async function authenticateToken(req, res, next) {
     // Fetch fresh user record and role
     const [users] = await pool.query(
       `SELECT u.id, u.role_id, u.full_name, u.email, u.phone, u.avatar_url, u.status,
+              u.two_factor_enabled, COALESCE(u.must_change_password, 0) as must_change_password,
               r.name as role_name, r.slug as role_slug
        FROM users u
        JOIN roles r ON u.role_id = r.id
@@ -53,7 +69,7 @@ async function authenticateToken(req, res, next) {
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({
         success: false,
-        message: 'Authentication token has expired. Please log in again.'
+        message: 'Authentication token has expired. Please refresh token or log in again.'
       });
     }
     return res.status(403).json({
@@ -66,7 +82,15 @@ async function authenticateToken(req, res, next) {
 // Optional Auth (for endpoints that can be accessed publicly but attach user if logged in)
 async function optionalAuth(req, res, next) {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : req.query.token;
+  let token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+
+  if (!token && req.cookies) {
+    token = req.cookies.dpl_token || req.cookies.token || req.cookies.accessToken;
+  }
+
+  if (!token && req.query) {
+    token = req.query.token;
+  }
 
   if (!token) {
     req.user = null;
@@ -77,6 +101,7 @@ async function optionalAuth(req, res, next) {
     const decoded = jwt.verify(token, JWT_SECRET);
     const [users] = await pool.query(
       `SELECT u.id, u.role_id, u.full_name, u.email, u.phone, u.avatar_url, u.status,
+              u.two_factor_enabled,
               r.name as role_name, r.slug as role_slug
        FROM users u
        JOIN roles r ON u.role_id = r.id
@@ -95,5 +120,7 @@ async function optionalAuth(req, res, next) {
 module.exports = {
   authenticateToken,
   optionalAuth,
-  JWT_SECRET
+  hashToken,
+  JWT_SECRET,
+  JWT_REFRESH_SECRET
 };
