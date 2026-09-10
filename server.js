@@ -36,6 +36,9 @@ const apiRouter = require('./routes/api');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust nginx reverse proxy — required for express-rate-limit behind nginx
+app.set('trust proxy', 1);
+
 // Comprehensive Security Headers
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
