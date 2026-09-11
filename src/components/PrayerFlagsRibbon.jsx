@@ -11,19 +11,19 @@ export default function PrayerFlagsRibbon() {
   ];
 
   return (
-    <div className="w-full overflow-hidden bg-[#0B0F19] border-b border-[#1E293B] select-none pointer-events-none py-0.5">
-      <div className="flex justify-between items-center max-w-7xl mx-auto px-4 opacity-90">
-        {Array.from({ length: 6 }).map((_, repeatIndex) => (
-          <div key={repeatIndex} className="hidden sm:flex items-center space-x-1.5 flex-1 justify-around">
+    <div className="w-full overflow-hidden bg-[#070A12] border-b border-[#D4AF37]/20 select-none pointer-events-none py-1 relative">
+      <div className="flex justify-between items-center max-w-7xl mx-auto px-2 sm:px-4 opacity-95">
+        {Array.from({ length: 4 }).map((_, repeatIndex) => (
+          <div key={repeatIndex} className="flex items-center space-x-1 sm:space-x-2 flex-1 justify-around animate-prayer-wave">
             {flags.map((f, i) => (
               <div
                 key={i}
-                className={`h-2.5 w-6 sm:w-8 ${f.bg} rounded-[2px] shadow-sm flex items-center justify-center transform transition-transform duration-700 hover:scale-110`}
+                className={`h-2 sm:h-2.5 w-5 sm:w-8 ${f.bg} rounded-[1px] shadow-sm flex items-center justify-center`}
                 style={{
-                  clipPath: 'polygon(0% 0%, 100% 0%, 100% 75%, 50% 100%, 0% 75%)'
+                  clipPath: 'polygon(0% 0%, 100% 0%, 100% 80%, 50% 100%, 0% 80%)'
                 }}
               >
-                <span className={`text-[7px] font-tibetan font-bold ${f.dark ? 'text-gray-900' : 'text-white'}`}>
+                <span className={`text-[6px] sm:text-[7px] font-tibetan font-bold ${f.dark ? 'text-gray-900' : 'text-white'}`}>
                   {f.text}
                 </span>
               </div>

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Calendar, MapPin, Clock, ArrowLeft, Share2, Eye } from 'lucide-react';
+import { Calendar, MapPin, Clock, ArrowLeft, Share2, Eye, Sparkles, Heart, Bell } from 'lucide-react';
 import api from '../../services/api';
 
 export default function NewsDetail() {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     async function fetchPost() {
@@ -25,72 +26,172 @@ export default function NewsDetail() {
     fetchPost();
   }, [slug]);
 
-  if (loading) return <div className="text-center py-24 text-gray-500">Loading article...</div>;
-  if (!post) return <div className="text-center py-24 text-gray-500">Article not found. <Link to="/news-events" className="text-[#0F172A] font-bold">Go back</Link></div>;
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: post?.title,
+        url: window.location.href,
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center bg-[#FCFBF9]">
+        <div className="text-center space-y-3">
+          <div className="w-10 h-10 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-xs font-serif text-gray-500 tracking-wider">Unfolding ceremony chronicles...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!post) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-[#FCFBF9] p-6 text-center space-y-4">
+        <div className="w-16 h-16 rounded-full bg-[#1A0B0E] border border-[#D4AF37] flex items-center justify-center">
+          <Calendar className="w-8 h-8 text-[#D4AF37]" />
+        </div>
+        <h2 className="font-editorial text-2xl text-[#1A0B0E]">Ceremony Not Found</h2>
+        <p className="text-xs font-serif text-gray-500 max-w-sm">
+          The requested ceremony or announcement could not be found in our current calendar.
+        </p>
+        <Link
+          to="/news-events"
+          className="monastic-maroon-btn px-6 py-2.5 rounded-full text-xs inline-flex items-center gap-2"
+        >
+          <ArrowLeft className="w-4 h-4 text-[#D4AF37]" />
+          <span>Return to Ceremonies</span>
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-[80vh] py-12 px-4 sm:px-8 bg-[#F8FAFC]">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <Link to="/news-events" className="inline-flex items-center text-xs font-semibold text-[#BE123C] hover:text-[#0F172A] gap-1">
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to All News & Events</span>
-        </Link>
+    <div className="w-full bg-[#FCFBF9] min-h-screen py-12 px-4 sm:px-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+        {/* Navigation Breadcrumb */}
+        <div className="flex items-center justify-between">
+          <Link
+            to="/news-events"
+            className="inline-flex items-center gap-2 text-xs font-serif font-bold text-[#721C24] hover:text-[#D4AF37] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>← Back to All Ceremonies & News</span>
+          </Link>
+
+          <button
+            onClick={handleShare}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-[#D4AF37]/30 text-xs font-serif text-gray-700 hover:border-[#D4AF37] transition-all shadow-sm"
+          >
+            <Share2 className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span>{copied ? 'Link Copied!' : 'Share Event'}</span>
+          </button>
+        </div>
 
         {/* Hero Image */}
-        <div className="relative rounded-xl overflow-hidden shadow-lg border border-[#E2E8F0] max-h-[450px]">
+        <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-[#D4AF37]/30 max-h-[480px] bg-[#1A0B0E]">
           <img
             src={post.banner_image || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1200'}
             alt={post.title}
             onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1200'; }}
             className="w-full h-full object-cover"
           />
-          <div className="absolute top-4 right-4 bg-[#0F172A] text-[#D4AF37] text-xs font-bold px-3 py-1 rounded shadow">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+          <div className="absolute top-4 right-4 bg-[#1A0B0E]/90 text-[#D4AF37] text-xs font-serif font-bold uppercase tracking-widest px-4 py-1.5 rounded-full border border-[#D4AF37]/50 shadow-lg backdrop-blur-sm">
             {post.category}
           </div>
         </div>
 
-        {/* Post Header */}
-        <div className="space-y-3 bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-[#E2E8F0]">
-          <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500">
-            {post.event_date && (
-              <span className="flex items-center gap-1">
-                <Calendar className="w-4 h-4 text-[#D4AF37]" />
-                {new Date(post.event_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}
-              </span>
-            )}
-            {post.event_time && (
-              <span className="flex items-center gap-1">
-                <Clock className="w-4 h-4 text-[#D4AF37]" />
-                {post.event_time}
-              </span>
-            )}
-            {post.location && (
-              <span className="flex items-center gap-1">
-                <MapPin className="w-4 h-4 text-[#D4AF37]" />
-                {post.location}
-              </span>
-            )}
-            <span className="flex items-center gap-1 ml-auto text-[11px]">
-              <Eye className="w-3.5 h-3.5" />
-              {post.views_count} views
-            </span>
+        {/* Event Card Header */}
+        <article className="glass-luxury-card p-6 sm:p-12 space-y-8 rounded-3xl border border-[#D4AF37]/30 shadow-xl">
+          <div className="space-y-4">
+            <h1 className="font-editorial text-3xl sm:text-4xl md:text-5xl text-[#1A0B0E] leading-tight tracking-tight">
+              {post.title}
+            </h1>
+
+            {/* Date / Time / Location Quick Info Bar */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 pb-6 border-y border-[#D4AF37]/20 text-xs font-serif">
+              {post.event_date && (
+                <div className="flex items-center gap-2.5 text-[#1A0B0E]">
+                  <div className="w-8 h-8 rounded-full bg-[#FAF5F0] border border-[#D4AF37]/40 flex items-center justify-center flex-shrink-0">
+                    <Calendar className="w-4 h-4 text-[#721C24]" />
+                  </div>
+                  <div>
+                    <span className="block text-[10px] text-gray-400 uppercase tracking-wider">Date</span>
+                    <strong className="font-semibold">
+                      {new Date(post.event_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}
+                    </strong>
+                  </div>
+                </div>
+              )}
+
+              {post.event_time && (
+                <div className="flex items-center gap-2.5 text-[#1A0B0E]">
+                  <div className="w-8 h-8 rounded-full bg-[#FAF5F0] border border-[#D4AF37]/40 flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-4 h-4 text-[#721C24]" />
+                  </div>
+                  <div>
+                    <span className="block text-[10px] text-gray-400 uppercase tracking-wider">Time (BST)</span>
+                    <strong className="font-semibold">{post.event_time}</strong>
+                  </div>
+                </div>
+              )}
+
+              {post.location && (
+                <div className="flex items-center gap-2.5 text-[#1A0B0E]">
+                  <div className="w-8 h-8 rounded-full bg-[#FAF5F0] border border-[#D4AF37]/40 flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-4 h-4 text-[#721C24]" />
+                  </div>
+                  <div>
+                    <span className="block text-[10px] text-gray-400 uppercase tracking-wider">Location</span>
+                    <strong className="font-semibold line-clamp-1">{post.location}</strong>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
-          <h1 className="font-serif-brand font-extrabold text-2xl sm:text-3xl md:text-4xl text-[#0F172A] leading-tight">
-            {post.title}
-          </h1>
-
           {/* Body Content */}
-          <div className="pt-6 border-t border-gray-100 text-sm sm:text-base text-gray-700 leading-relaxed space-y-4 whitespace-pre-line">
+          <div className="text-base sm:text-lg text-[#2A2A2A] font-serif leading-relaxed space-y-6 pt-2 whitespace-pre-line">
             {post.content}
           </div>
 
-          {/* Footer Callout */}
-          <div className="bg-[#FEF3C7] border-l-4 border-[#D4AF37] p-4 mt-8 rounded text-xs text-[#0F172A]">
-            <p className="font-bold mb-1">Join the Ceremony & Dharma Discourses</p>
-            <p className="text-gray-700">For prayer dedications, butter lamp offerings, or monastery inquiries, please contact our administration at <strong>contact@drodulphendeyling.org</strong> or call <strong>+975 17556559</strong>.</p>
+          {/* Auspicious Callout & Prayer Dedication */}
+          <div className="glass-dark-card p-6 sm:p-8 rounded-2xl border border-[#D4AF37]/40 shadow-xl space-y-4">
+            <div className="flex items-center gap-2 text-[#D4AF37] text-xs font-serif uppercase tracking-widest">
+              <Sparkles className="w-4 h-4" />
+              <span>Devotee Participation</span>
+            </div>
+            <h3 className="font-editorial text-2xl text-[#FCFBF9]">
+              Participate or Dedicate a Puja in Your Family’s Name
+            </h3>
+            <p className="text-xs text-[#E6D5C3] font-light leading-relaxed">
+              If you cannot attend in person, you may request the resident Sangha of Drodul Phendey Ling to recite special prayers and light 108 butter lamps during this sacred gathering.
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center gap-4">
+              <Link
+                to="/prayer-request"
+                className="monastic-gold-btn px-6 py-2.5 rounded-full text-xs inline-flex items-center gap-2 shadow-lg"
+              >
+                <Heart className="w-3.5 h-3.5 fill-[#2A080C]" />
+                <span>Dedicate Prayers & Butter Lamps</span>
+              </Link>
+
+              <Link
+                to="/contact"
+                className="px-5 py-2.5 rounded-full text-xs font-serif font-bold text-white border border-[#D4AF37]/40 hover:border-[#D4AF37] transition-colors"
+              >
+                Monastery Contact & Etiquette
+              </Link>
+            </div>
           </div>
-        </div>
+        </article>
       </div>
     </div>
   );

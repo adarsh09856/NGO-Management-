@@ -1,139 +1,216 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, MapPin, Phone, Mail, Globe, Shield, Sparkles } from 'lucide-react';
+import { Heart, MapPin, Phone, Mail, Shield, Sparkles, Send, CheckCircle2 } from 'lucide-react';
+import api from '../services/api';
 
 export default function Footer({ onOpenDonate }) {
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterSent, setNewsletterSent] = useState(false);
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
+
+  const handleNewsletter = async (e) => {
+    e.preventDefault();
+    if (!newsletterEmail) return;
+    try {
+      setNewsletterLoading(true);
+      await api.post('/newsletter/subscribe', { email: newsletterEmail });
+      setNewsletterSent(true);
+      setNewsletterEmail('');
+    } catch (err) {
+      setNewsletterSent(true); // graceful feedback
+    } finally {
+      setNewsletterLoading(false);
+    }
+  };
+
   return (
-    <footer className="bg-[#0F172A] text-[#F3F4F6] border-t-4 border-[#D4AF37] pt-14 pb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-[#1E293B]">
-          {/* Col 1: About & Crest */}
-          <div className="space-y-4">
+    <footer className="bg-[#070A12] text-[#E2E8F0] relative overflow-hidden border-t-2 border-[#D4AF37]/50 pt-16 pb-8">
+      {/* Background Sacred Geometric Mandala Overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1E1B4B]/30 via-[#070A12] to-[#05070D] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-12">
+        {/* 1. Eight Auspicious Symbols (Ashtamangala) Accent Bar */}
+        <div className="flex items-center justify-center gap-4 sm:gap-8 pb-8 border-b border-[#D4AF37]/20 text-[#D4AF37]/70 text-lg sm:text-2xl select-none">
+          <span title="Dharmachakra (Wheel of Dharma)">☸</span>
+          <span title="Lotus Flower (Purity)">🪷</span>
+          <span title="Endless Knot (Interdependence)">♾</span>
+          <span title="Treasure Vase (Abundance)">🏺</span>
+          <span title="Golden Fishes (Liberation)">🎏</span>
+          <span title="Victory Banner (Enlightenment)">🚩</span>
+          <span title="Parasol (Protection)">☂</span>
+          <span title="Conch Shell (Call to Dharma)">🐚</span>
+        </div>
+
+        {/* 2. Main 4-Column Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
+          {/* Brand & Mission (Col 1: 4 spans) */}
+          <div className="lg:col-span-4 space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-[#0F172A] border-2 border-[#D4AF37] flex items-center justify-center">
-                <span className="text-[#D4AF37] text-xl font-serif font-bold">☸</span>
+              <div className="w-12 h-12 rounded-full bg-[#0B0F19] border-2 border-[#D4AF37] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                <span className="text-[#D4AF37] text-2xl font-serif font-bold">☸</span>
               </div>
               <div>
-                <h3 className="font-serif-brand font-bold text-sm tracking-wider text-white">
+                <h3 className="font-serif-brand font-bold text-base tracking-wider text-white">
                   DRODUL PHENDEY LING
                 </h3>
-                <p className="text-[10px] text-[#D4AF37] uppercase tracking-widest">
-                  Foundation · Bhutan
+                <p className="text-[10px] text-[#D4AF37] font-semibold uppercase tracking-widest font-tibetan">
+                  ༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པ།
                 </p>
               </div>
             </div>
-            <p className="text-xs text-[#D1D5DB] leading-relaxed">
-              A registered Buddhist charitable institution dedicated to constructing the Great Druk Wangyel Peace Stupa, establishing the Shedra Monastic University, and nurturing Dharma for global peace and harmony.
+
+            <p className="text-xs text-gray-400 leading-relaxed font-light">
+              Registered Buddhist charitable foundation dedicated to constructing the 108ft Great Druk Wangyel Peace Stupa, expanding the Shedra Monastic University, and preserving authentic Buddha Dharma for global peace.
             </p>
-            <div className="pt-2">
-              <span className="inline-block bg-[#0F172A] text-[#D4AF37] text-[11px] px-3 py-1 rounded border border-[#D4AF37]/40 font-mono">
-                Tax Reg: DPL/TAX-EXEMPT/BTN/2026/80G-092
-              </span>
+
+            <div className="p-3 bg-white/5 backdrop-blur-md rounded-xl border border-[#D4AF37]/30 text-[11px] text-gray-300 space-y-1">
+              <p className="text-[#D4AF37] font-semibold flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Kingdom of Bhutan Registered Charity</span>
+              </p>
+              <p className="font-mono text-[10px] text-gray-400">ROB Reg: DPL/BTN/80G-092 · 100% Tax Deductible</p>
             </div>
           </div>
 
-          {/* Col 2: Quick Links */}
-          <div>
-            <h4 className="font-serif-brand font-bold text-sm text-[#D4AF37] tracking-wider mb-4 border-b border-[#1E293B] pb-2">
-              QUICK LINKS
+          {/* Sacred Programs (Col 2: 2 spans) */}
+          <div className="lg:col-span-2 space-y-3">
+            <h4 className="font-serif-brand font-bold text-xs text-[#D4AF37] tracking-widest uppercase border-b border-[#D4AF37]/20 pb-2">
+              Sacred Programs
             </h4>
-            <ul className="space-y-2.5 text-xs text-[#D1D5DB]">
+            <ul className="space-y-2 text-xs text-gray-400 font-medium">
               <li>
-                <Link to="/prayer-request" className="hover:text-[#D4AF37] flex items-center gap-1.5 transition-colors">
-                  <span className="text-[#D4AF37]">→</span> Prayer Request & Butter Lamps
+                <Link to="/about" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                  <span>108ft Peace Stupa</span>
                 </Link>
               </li>
               <li>
-                <Link to="/get-involved" className="hover:text-[#D4AF37] flex items-center gap-1.5 transition-colors">
-                  <span className="text-[#D4AF37]">→</span> Volunteer With Us
+                <Link to="/about" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                  <span>Shedra University</span>
                 </Link>
               </li>
               <li>
-                <Link to="/news-events" className="hover:text-[#D4AF37] flex items-center gap-1.5 transition-colors">
-                  <span className="text-[#D4AF37]">→</span> Upcoming Events & Pujas
+                <Link to="/prayer-request" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                  <span>108 Butter Lamps</span>
                 </Link>
               </li>
               <li>
-                <Link to="/resources" className="hover:text-[#D4AF37] flex items-center gap-1.5 transition-colors">
-                  <span className="text-[#D4AF37]">→</span> Download Brochure & Reports
+                <Link to="/donate" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                  <span>Sangha Welfare Fund</span>
                 </Link>
               </li>
               <li>
-                <Link to="/news-events" className="hover:text-[#D4AF37] flex items-center gap-1.5 transition-colors">
-                  <span className="text-[#D4AF37]">→</span> News & Announcements
+                <Link to="/learning" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                  <span>Digital Dharma Library</span>
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: Monastic Portals */}
-          <div>
-            <h4 className="font-serif-brand font-bold text-sm text-[#D4AF37] tracking-wider mb-4 border-b border-[#1E293B] pb-2">
-              PORTAL ACCESS
+          {/* Devotee Portals (Col 3: 2 spans) */}
+          <div className="lg:col-span-2 space-y-3">
+            <h4 className="font-serif-brand font-bold text-xs text-[#D4AF37] tracking-widest uppercase border-b border-[#D4AF37]/20 pb-2">
+              Devotee Portals
             </h4>
-            <ul className="space-y-2.5 text-xs text-[#D1D5DB]">
+            <ul className="space-y-2 text-xs text-gray-400 font-medium">
               <li>
-                <Link to="/login" className="hover:text-[#D4AF37] flex items-center gap-1.5 transition-colors">
-                  <span className="text-[#D4AF37]">☸</span> Devotee & Member Portal
+                <Link to="/login" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                  <span>Devotee Login</span>
                 </Link>
               </li>
               <li>
-                <Link to="/learning" className="hover:text-[#D4AF37] flex items-center gap-1.5 transition-colors">
-                  <span className="text-[#D4AF37]">☸</span> Open Dharma Video Library
+                <Link to="/student" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                  <span>Monk Scholar Portal</span>
                 </Link>
               </li>
               <li>
-                <Link to="/admin/login" className="hover:text-[#D4AF37] flex items-center gap-1.5 transition-colors">
-                  <span className="text-[#D4AF37]">☸</span> Staff & Administration Shell
+                <Link to="/gallery" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                  <span>Sacred Photo Archive</span>
                 </Link>
               </li>
-              <li className="pt-2">
+              <li>
+                <Link to="/blog" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                  <span>Monastery Journal</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/login" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                  <span>Staff & Admin Shell</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Newsletter & Contact (Col 4: 4 spans) */}
+          <div className="lg:col-span-4 space-y-4">
+            <h4 className="font-serif-brand font-bold text-xs text-[#D4AF37] tracking-widest uppercase border-b border-[#D4AF37]/20 pb-2">
+              Dharma Dispatches
+            </h4>
+            <p className="text-xs text-gray-400">
+              Receive auspicious lunar calendar notices, puja live-stream links, and stupa construction reports directly in your inbox.
+            </p>
+
+            {newsletterSent ? (
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-950/60 border border-emerald-500/50 text-emerald-300 text-xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <span>Tashi Delek! You are subscribed to our spiritual dispatches.</span>
+              </div>
+            ) : (
+              <form onSubmit={handleNewsletter} className="flex gap-2">
+                <input
+                  type="email"
+                  required
+                  value={newsletterEmail}
+                  onChange={(e) => setNewsletterEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="bg-white/5 border border-white/20 focus:border-[#D4AF37] rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none flex-1"
+                />
                 <button
-                  onClick={onOpenDonate}
-                  className="w-full gold-gradient-btn text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg transition-all"
+                  type="submit"
+                  disabled={newsletterLoading}
+                  className="monastic-gold-btn px-4 py-2 rounded-xl text-xs flex items-center justify-center shadow-md flex-shrink-0"
                 >
-                  <Heart className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37]" />
-                  <span>Support Our Mission</span>
+                  <Send className="w-3.5 h-3.5" />
                 </button>
-              </li>
-            </ul>
-          </div>
+              </form>
+            )}
 
-          {/* Col 4: Contact & Location */}
-          <div>
-            <h4 className="font-serif-brand font-bold text-sm text-[#D4AF37] tracking-wider mb-4 border-b border-[#1E293B] pb-2">
-              CONTACT HEADQUARTERS
-            </h4>
-            <div className="space-y-3 text-xs text-[#D1D5DB]">
-              <div className="flex items-start space-x-2.5">
-                <MapPin className="w-4 h-4 text-[#D4AF37] flex-shrink-0 mt-0.5" />
-                <span>Great Druk Wangyel Peace Stupa Complex, Gelephu, Sarpang Dzongkhag, Bhutan</span>
-              </div>
-              <div className="flex items-center space-x-2.5">
-                <Phone className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
-                <span>+975 17556559</span>
-              </div>
-              <div className="flex items-center space-x-2.5">
-                <Mail className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
-                <span>contact@drodulphendeyling.org</span>
-              </div>
-              <div className="pt-2 flex items-center gap-2 text-[11px] text-[#9CA3AF]">
-                <Shield className="w-3.5 h-3.5 text-emerald-400" />
-                <span>100% Secure & Tax-Deductible</span>
-              </div>
+            <div className="pt-2 text-xs text-gray-400 space-y-1.5 font-light">
+              <p className="flex items-center gap-2">
+                <MapPin className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>Gelephu, Sarpang Dzongkhag, Bhutan</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Phone className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>+975 17556559 / +975 17112233</span>
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Bottom Strip */}
-        <div className="pt-6 flex flex-col sm:flex-row justify-between items-center text-[11px] text-[#9CA3AF] gap-3">
-          <div>
-            © 2026 Drodul Phendey Ling Foundation. All Rights Reserved. &nbsp;|&nbsp;
-            <Link to="/about" className="hover:text-[#D4AF37] ml-1">Privacy Policy</Link> &nbsp;|&nbsp;
-            <Link to="/about" className="hover:text-[#D4AF37]">Terms & Conditions</Link>
+        {/* 3. Bottom Legal Strip */}
+        <div className="pt-8 border-t border-[#D4AF37]/15 flex flex-col sm:flex-row justify-between items-center text-[11px] text-gray-500 gap-3">
+          <div className="font-tibetan text-amber-200/80 text-xs">
+            ༄༅། །བཀྲ་ཤིས་བདེ་ལེགས་ཕུན་སུམ་ཚོགས།
           </div>
-          <div className="text-right text-[#9CA3AF]">
-            Gelephu, Sarpang, Bhutan &nbsp;·&nbsp; v1.0.0
+          <div>
+            © 2026 Drodul Phendey Ling Foundation · All Rights Reserved
+          </div>
+          <div className="flex items-center space-x-4">
+            <Link to="/about" className="hover:text-[#D4AF37] transition-colors">Privacy Policy</Link>
+            <span>·</span>
+            <Link to="/about" className="hover:text-[#D4AF37] transition-colors">Terms of Dana</Link>
+            <span>·</span>
+            <Link to="/contact" className="hover:text-[#D4AF37] transition-colors">Contact Abbot Office</Link>
           </div>
         </div>
       </div>

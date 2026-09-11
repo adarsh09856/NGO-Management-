@@ -19,8 +19,8 @@ export default function Learning() {
         if (searchQuery) params.append('q', searchQuery);
 
         const res = await api.get(`/learning?${params.toString()}`);
-        if (res.data.success) {
-          setMaterials(res.data.data);
+        if (res.data?.success) {
+          setMaterials(res.data.data || []);
           if (res.data.categories && res.data.categories.length > 0) {
             setCategories(res.data.categories);
           }
@@ -61,138 +61,140 @@ export default function Learning() {
   };
 
   return (
-    <div className="w-full min-h-screen py-10 px-4 sm:px-8 relative z-10">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header Banner */}
-        <div className="bg-gradient-to-r from-[#090D16] via-[#0F172A] to-[#05070D] rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40">
-          <div className="relative z-10 max-w-3xl space-y-3">
-            <span className="glow-pill-gold px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5">
-              <span>☸</span> Open Monastic Dharma Education
-            </span>
-            <h1 className="font-serif-brand font-extrabold text-2xl sm:text-4xl text-white tracking-wide">
-              Learning & Dharma Video Discourses
-            </h1>
-            <p className="text-xs sm:text-sm text-gray-200 font-light leading-relaxed">
-              Explore authentic Tibetan Buddhist teachings, meditation instructions, and philosophical commentaries presented by our revered Khenpos and resident masters in Bhutan.
-            </p>
-          </div>
+    <div className="w-full min-h-screen py-10 px-4 sm:px-8 relative z-10 max-w-7xl mx-auto space-y-10">
+      {/* Header Banner */}
+      <div className="bg-gradient-to-r from-[#070A12] via-[#120508] to-[#070A12] rounded-3xl p-8 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40">
+        <div className="relative z-10 max-w-3xl space-y-4">
+          <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5">
+            <span>☸</span> Open Monastic Dharma Education
+          </span>
+          <h1 className="font-serif-brand font-extrabold text-3xl sm:text-5xl text-white tracking-wide leading-tight">
+            Learning & Dharma Video Discourses
+          </h1>
+          <p className="text-xs sm:text-sm text-gray-200 font-light leading-relaxed">
+            Explore authentic Tibetan Buddhist teachings, meditation instructions, and philosophical commentaries presented by our revered Khenpos and resident masters in Bhutan.
+          </p>
+        </div>
+      </div>
+
+      {/* Controls: Search & Category Filter Pills */}
+      <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 glass-luxury-card p-4 sm:p-5 rounded-2xl border border-gray-200/80 shadow-md">
+        {/* Category Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-thin">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
+                selectedCategory === cat
+                  ? 'bg-[#070A12] text-[#D4AF37] border border-[#D4AF37]/60 shadow-md scale-105'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-[#0F172A] border border-gray-200'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
 
-        {/* Controls: Search & Category Filter Pills */}
-        <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 glass-panel p-4 rounded-2xl border border-white/80 shadow-md">
-          {/* Category Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-thin">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
-                  selectedCategory === cat
-                    ? 'bg-[#0F172A] text-[#D4AF37] border border-[#D4AF37]/60 shadow-md'
-                    : 'bg-white/80 text-gray-700 hover:bg-white hover:text-[#0F172A] border border-gray-200'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          {/* Search Box */}
-          <div className="relative w-full md:w-72">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-            <input
-              type="text"
-              placeholder="Search lectures, masters..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="glass-input w-full pl-9 pr-4 py-2 text-xs rounded-xl"
-            />
-          </div>
+        {/* Search Box */}
+        <div className="relative w-full md:w-80">
+          <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
+          <input
+            type="text"
+            placeholder="Search lectures, masters, topics..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="glass-input w-full pl-10 pr-4 py-2 text-xs rounded-xl text-gray-900 focus:ring-2 focus:ring-[#D4AF37]/40"
+          />
         </div>
+      </div>
 
-        {/* Video Grid */}
-        {loading ? (
-          <div className="text-center py-20">
-            <div className="w-8 h-8 border-2 border-[#E11D48] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-            <p className="text-xs text-gray-500">Loading Dharma lectures...</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayList.map((item) => (
-              <div
-                key={item.id}
-                className="glass-card-interactive overflow-hidden rounded-2xl flex flex-col justify-between group"
-              >
-                <div>
-                  <div
-                    className="relative aspect-video overflow-hidden bg-gray-950 cursor-pointer"
-                    onClick={() => setActiveVideo(item)}
-                  >
-                    <img
-                      src={item.thumbnail_url}
-                      alt={item.title}
-                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80'; }}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
-                    />
+      {/* Video Grid */}
+      {loading ? (
+        <div className="text-center py-20">
+          <div className="w-8 h-8 border-2 border-[#721C24] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+          <p className="text-xs text-gray-500">Loading Dharma discourses...</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayList.map((item) => (
+            <div
+              key={item.id}
+              className="glass-luxury-card overflow-hidden rounded-2xl flex flex-col justify-between group border border-gray-200/80"
+            >
+              <div>
+                <div
+                  className="relative aspect-video overflow-hidden bg-gray-950 cursor-pointer"
+                  onClick={() => setActiveVideo(item)}
+                >
+                  <img
+                    src={item.thumbnail_url}
+                    alt={item.title}
+                    onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80'; }}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                  />
 
-                    {/* Play Overlay */}
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                      <div className="w-12 h-12 rounded-full bg-[#0F172A]/90 text-[#D4AF37] border-2 border-[#D4AF37] flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
-                        <Play className="w-5 h-5 fill-[#D4AF37] ml-0.5" />
-                      </div>
+                  {/* Play Overlay */}
+                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-[#070A12]/90 text-[#D4AF37] border-2 border-[#D4AF37] flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                      <Play className="w-5 h-5 fill-[#D4AF37] ml-0.5" />
                     </div>
+                  </div>
 
-                    <span className="absolute top-3 left-3 glow-pill-sapphire px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-                      {item.category}
-                    </span>
+                  <span className="absolute top-3 left-3 glow-pill-sapphire px-2.5 py-0.5 rounded-full text-[10px] font-bold">
+                    {item.category}
+                  </span>
 
+                  {item.duration_minutes && (
                     <span className="absolute bottom-3 right-3 bg-black/80 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded">
                       {item.duration_minutes} mins
                     </span>
-                  </div>
+                  )}
+                </div>
 
-                  <div className="p-5 space-y-2">
-                    <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-amber-700 font-bold uppercase tracking-wider">
-                        {item.instructor}
-                      </span>
+                <div className="p-5 space-y-2">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-amber-700 font-bold uppercase tracking-wider">
+                      {item.instructor}
+                    </span>
+                    {item.level && (
                       <span className="glow-pill-gold px-2 py-0.5 rounded text-[10px] font-semibold">
                         {item.level}
                       </span>
-                    </div>
-
-                    <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] leading-snug group-hover:text-[#BE123C] transition-colors">
-                      {item.title}
-                    </h3>
-
-                    <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
-                      {item.description}
-                    </p>
+                    )}
                   </div>
-                </div>
 
-                <div className="p-5 pt-0">
-                  <button
-                    onClick={() => setActiveVideo(item)}
-                    className="w-full gold-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md"
-                  >
-                    <Play className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37]" />
-                    <span>WATCH DISCOURSE</span>
-                  </button>
+                  <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] leading-snug group-hover:text-[#721C24] transition-colors">
+                    {item.title}
+                  </h3>
+
+                  <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed font-light">
+                    {item.description}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
 
-      {/* Video Modal */}
+              <div className="p-5 pt-0">
+                <button
+                  onClick={() => setActiveVideo(item)}
+                  className="w-full monastic-maroon-btn py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm"
+                >
+                  <Play className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37]" />
+                  <span>WATCH DISCOURSE</span>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Video Lightbox Modal */}
       {activeVideo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
           <div className="relative w-full max-w-4xl bg-gray-950 rounded-2xl overflow-hidden border border-[#D4AF37]/60 shadow-2xl">
             <button
               onClick={() => setActiveVideo(null)}
-              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#BE123C] transition-colors"
+              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#721C24] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -207,7 +209,7 @@ export default function Learning() {
               />
             </div>
 
-            <div className="p-6 bg-[#1a050a] text-white space-y-2 border-t border-[#D4AF37]/30">
+            <div className="p-6 bg-[#070A12] text-white space-y-2 border-t border-[#D4AF37]/30">
               <div className="flex items-center gap-3">
                 <span className="glow-pill-sapphire px-2.5 py-0.5 rounded text-[10px] font-bold">
                   {activeVideo.category}
@@ -219,7 +221,7 @@ export default function Learning() {
               <h2 className="font-serif-brand font-bold text-lg text-white">
                 {activeVideo.title}
               </h2>
-              <p className="text-xs text-gray-300 leading-relaxed">
+              <p className="text-xs text-gray-300 leading-relaxed font-light">
                 {activeVideo.description}
               </p>
             </div>

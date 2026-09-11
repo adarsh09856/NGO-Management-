@@ -79,56 +79,57 @@ export default function Navbar({ onOpenDonate }) {
   }, []);
 
   return (
-    <header className="w-full z-40 sticky top-0 bg-white shadow-sm border-b border-[#E2E8F0] transition-shadow duration-300">
+    <header className="w-full z-40 sticky top-0 bg-white/95 backdrop-blur-xl shadow-[0_4px_25px_rgba(15,23,42,0.06)] border-b border-[#D4AF37]/30 transition-all duration-300">
       {/* 0. BHUTANESE PRAYER FLAGS RIBBON */}
       <PrayerFlagsRibbon />
 
-      {/* 1. TOP UTILITY BAR */}
-      <div className="bg-[#0F172A] text-[#F3F4F6] text-[11px] sm:text-xs py-1.5 px-3 sm:px-8 border-b border-[#1E293B]">
+      {/* 1. TOP UTILITY BAR (Deep Monastic Obsidian) */}
+      <div className="bg-[#070A12] text-[#E2E8F0] text-[11px] sm:text-xs py-1 px-3 sm:px-8 border-b border-[#D4AF37]/20">
         <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-y-1 gap-x-3">
           {/* Left contact info */}
-          <div className="flex items-center space-x-3 sm:space-x-6 text-[11px] sm:text-xs">
-            <div className="flex items-center space-x-1.5 hover:text-[#D4AF37] transition-colors cursor-default">
+          <div className="flex items-center space-x-3 sm:space-x-6 text-[11px]">
+            <div className="flex items-center space-x-1.5 text-gray-300 hover:text-[#D4AF37] transition-colors cursor-default">
               <MapPin className="w-3.5 h-3.5 text-[#D4AF37] flex-shrink-0" />
-              <span className="truncate max-w-[140px] sm:max-w-none">Gelephu, Sarpang, Bhutan</span>
+              <span className="truncate max-w-[150px] sm:max-w-none">Gelephu, Sarpang, Bhutan</span>
             </div>
-            <div className="flex items-center space-x-1.5 hover:text-[#D4AF37] transition-colors cursor-default">
+            <div className="flex items-center space-x-1.5 text-gray-300 hover:text-[#D4AF37] transition-colors cursor-default">
               <Phone className="w-3.5 h-3.5 text-[#D4AF37] flex-shrink-0" />
               <span>+975 17556559</span>
             </div>
-            <div className="hidden lg:flex items-center space-x-1.5 hover:text-[#D4AF37] transition-colors cursor-default">
+            <div className="hidden lg:flex items-center space-x-1.5 text-gray-300 hover:text-[#D4AF37] transition-colors cursor-default">
               <Mail className="w-3.5 h-3.5 text-[#D4AF37] flex-shrink-0" />
               <span>contact@drodulphendeyling.org</span>
             </div>
           </div>
 
           {/* Right quick links & language switcher */}
-          <div className="flex items-center space-x-3 sm:space-x-5 text-[11px] sm:text-xs">
+          <div className="flex items-center space-x-3 sm:space-x-5 text-[11px]">
             <Link
               to="/prayer-request"
-              className="hover:text-[#D4AF37] flex items-center gap-1 transition-colors group"
+              className="text-amber-300 hover:text-[#D4AF37] flex items-center gap-1 transition-colors group font-medium"
             >
               <span className="text-[#D4AF37] group-hover:rotate-45 transition-transform">☸</span>
-              <span className="hidden xs:inline font-medium">Prayer Request</span>
+              <span className="hidden xs:inline">Offer Butter Lamps</span>
               <span className="xs:hidden">Prayer</span>
             </Link>
-            <Link to="/news-events" className="hover:text-[#D4AF37] transition-colors hidden sm:inline">
+            <Link to="/news-events" className="text-gray-300 hover:text-[#D4AF37] transition-colors hidden sm:inline">
               News & Events
             </Link>
-            <Link to="/gallery" className="hover:text-[#D4AF37] transition-colors hidden md:inline">
-              Gallery
+            <Link to="/gallery" className="text-gray-300 hover:text-[#D4AF37] transition-colors hidden md:inline">
+              Photo Archives
             </Link>
-            <Link to="/student" className="text-[#D4AF37] hover:text-white font-semibold transition-colors hidden sm:inline">
-              ☸ Shedra Monk Portal
+            <Link to="/student" className="text-[#D4AF37] hover:text-white font-semibold transition-colors hidden sm:inline flex items-center gap-1">
+              <span>☸</span>
+              <span>Shedra Monk Portal</span>
             </Link>
 
             {/* Language Switcher */}
-            <div className="flex items-center space-x-1 text-[#D4AF37] border-l border-[#1E293B] pl-2.5">
+            <div className="flex items-center space-x-1 text-[#D4AF37] border-l border-white/20 pl-2.5">
               <Globe className="w-3.5 h-3.5 flex-shrink-0" />
               <select
                 value={lang}
                 onChange={(e) => setLang(e.target.value)}
-                className="bg-transparent text-white text-[11px] sm:text-xs focus:outline-none cursor-pointer pr-1 font-medium"
+                className="bg-transparent text-white text-[11px] focus:outline-none cursor-pointer pr-1 font-medium"
               >
                 <option value="English" className="text-gray-900">English</option>
                 <option value="Dzongkha" className="text-gray-900">རྫོང་ཁ (Dzongkha)</option>
@@ -139,36 +140,36 @@ export default function Navbar({ onOpenDonate }) {
       </div>
 
       {/* 2. MAIN HEADER & BRAND */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-3">
+      <div className="max-w-7xl mx-auto px-3 sm:px-8 py-3 flex items-center justify-between gap-3">
         {/* Brand Crest & Logo */}
-        <Link to="/" className="flex items-center space-x-2.5 sm:space-x-3 group min-w-0">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#0F172A] border-2 border-[#D4AF37] flex items-center justify-center shadow-md group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(212,175,55,0.4)] transition-all flex-shrink-0">
+        <Link to="/" className="flex items-center space-x-3 group min-w-0">
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#070A12] border-2 border-[#D4AF37] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.3)] group-hover:scale-105 group-hover:border-amber-400 transition-all flex-shrink-0">
             <span className="text-[#D4AF37] text-xl sm:text-2xl font-serif font-bold group-hover:rotate-180 transition-transform duration-700">
               ☸
             </span>
           </div>
           <div className="min-w-0">
-            <h1 className="font-serif-brand font-bold text-xs sm:text-base md:text-lg text-[#0F172A] tracking-wider leading-tight truncate">
+            <h1 className="font-serif-brand font-bold text-sm sm:text-base md:text-lg text-[#0F172A] tracking-wider leading-tight truncate group-hover:text-[#721C24] transition-colors">
               DRODUL PHENDEY LING
             </h1>
-            <p className="text-[9px] sm:text-xs text-[#BE123C] font-medium tracking-widest uppercase truncate">
-              Building Peace. Empowering Lives.
+            <p className="text-[10px] text-amber-700 font-semibold tracking-wider font-tibetan truncate">
+              ༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པ། · Gelephu, Bhutan
             </p>
           </div>
         </Link>
 
-        {/* Desktop Magnetic Silk Navigation Links */}
-        <nav className="hidden xl:flex items-center space-x-5 2xl:space-x-6 text-xs font-bold text-[#374151] tracking-wider">
+        {/* Desktop Navigation Links */}
+        <nav className="hidden xl:flex items-center space-x-6 2xl:space-x-7 text-xs font-bold text-[#1E293B] tracking-wider uppercase">
           {/* HOME */}
           <Link
             to="/"
-            className={`relative py-1.5 transition-all duration-200 hover:text-[#0F172A] hover:scale-105 group ${
-              isActive('/') ? 'text-[#BE123C]' : 'text-gray-700'
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group ${
+              isActive('/') ? 'text-[#721C24]' : 'text-gray-700'
             }`}
           >
             <span>{t.home}</span>
             <span
-              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
                 isActive('/') ? 'w-full' : 'w-0 group-hover:w-full'
               }`}
             />
@@ -177,13 +178,13 @@ export default function Navbar({ onOpenDonate }) {
           {/* ABOUT US */}
           <Link
             to="/about"
-            className={`relative py-1.5 transition-all duration-200 hover:text-[#0F172A] hover:scale-105 group ${
-              isActive('/about') ? 'text-[#BE123C]' : 'text-gray-700'
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group ${
+              isActive('/about') ? 'text-[#721C24]' : 'text-gray-700'
             }`}
           >
             <span>{t.about}</span>
             <span
-              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
                 isActive('/about') ? 'w-full' : 'w-0 group-hover:w-full'
               }`}
             />
@@ -197,9 +198,9 @@ export default function Navbar({ onOpenDonate }) {
           >
             <button
               type="button"
-              className={`flex items-center gap-1 py-1.5 transition-all duration-200 hover:text-[#0F172A] hover:scale-105 group ${
+              className={`flex items-center gap-1 py-1.5 transition-all duration-200 hover:text-[#721C24] group ${
                 activeDropdown === 'activities' || location.pathname.startsWith('/activities')
-                  ? 'text-[#BE123C]'
+                  ? 'text-[#721C24]'
                   : 'text-gray-700'
               }`}
             >
@@ -210,7 +211,7 @@ export default function Navbar({ onOpenDonate }) {
                 }`}
               />
               <span
-                className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#BE123C] transition-all duration-300 ${
+                className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
                   activeDropdown === 'activities' || location.pathname.startsWith('/activities')
                     ? 'w-full'
                     : 'w-0 group-hover:w-full'
@@ -340,17 +341,17 @@ export default function Navbar({ onOpenDonate }) {
               </span>
             </Link>
           ) : (
-            <div className="hidden sm:flex items-center space-x-1.5">
+            <div className="hidden sm:flex items-center space-x-2">
               <Link
                 to="/login"
-                className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-semibold text-[#0F172A] hover:text-[#E11D48] hover:bg-[#FEF3C7] transition-all border border-[#E2E8F0]"
+                className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700 hover:text-[#721C24] hover:bg-amber-50/80 transition-all border border-gray-200"
               >
-                <User className="w-3.5 h-3.5" />
+                <User className="w-3.5 h-3.5 text-[#D4AF37]" />
                 <span>{t.login}</span>
               </Link>
               <Link
                 to="/register"
-                className="inline-flex items-center space-x-1 px-3.5 py-1.5 rounded-full text-xs font-bold text-[#0F172A] bg-amber-100 hover:bg-[#D4AF37] hover:text-[#0F172A] transition-all border border-[#D4AF37]/60 shadow-sm"
+                className="inline-flex items-center space-x-1 px-3.5 py-1.5 rounded-full text-xs font-bold text-[#0F172A] bg-gradient-to-r from-amber-100 to-amber-200 hover:from-amber-200 hover:to-amber-300 transition-all border border-[#D4AF37]/60 shadow-sm"
               >
                 <span>{t.register}</span>
               </Link>
@@ -360,12 +361,12 @@ export default function Navbar({ onOpenDonate }) {
           {/* Shimmering Golden & Burgundy DONATE CTA Button */}
           <button
             onClick={onOpenDonate || (() => navigate('/donate'))}
-            className="relative group overflow-hidden flex items-center space-x-1.5 sm:space-x-2 bg-gradient-to-r from-[#E11D48] via-[#BE123C] to-[#1E293B] hover:from-[#BE123C] hover:to-[#0F172A] text-white px-4 sm:px-5 py-2 rounded-full font-bold text-[11px] sm:text-xs tracking-wider uppercase shadow-[0_4px_15px_rgba(126,25,41,0.35)] hover:shadow-[0_6px_25px_rgba(212,175,55,0.45)] hover:scale-105 transition-all duration-300 flex-shrink-0 border border-[#D4AF37]/50"
+            className="monastic-maroon-btn relative group overflow-hidden flex items-center space-x-2 px-4 sm:px-5 py-2 rounded-full font-bold text-[11px] sm:text-xs tracking-wider uppercase flex-shrink-0"
           >
             {/* Shimmering Light-Sweep Effect */}
-            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
-            <Heart className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37] group-hover:scale-125 transition-transform animate-pulse" />
-            <span className="whitespace-nowrap relative z-10">{t.donate}</span>
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
+            <Heart className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37] group-hover:scale-125 transition-transform" />
+            <span className="whitespace-nowrap relative z-10 font-serif-brand">{t.donate}</span>
           </button>
 
           {/* Mobile Hamburger Toggle */}

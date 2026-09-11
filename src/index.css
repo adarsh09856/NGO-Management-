@@ -242,3 +242,70 @@
 .animate-gold-pulse {
   animation: goldPulse 2.5s ease-in-out infinite;
 }
+
+/* 9. Ultra-Luxury Monastic Styles */
+.monastic-gold-btn {
+  background: linear-gradient(135deg, #D4AF37 0%, #F59E0B 50%, #B45309 100%);
+  color: #070A12;
+  font-weight: 700;
+  border: 1px solid rgba(253, 230, 138, 0.7);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.35);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.monastic-gold-btn:hover {
+  background: linear-gradient(135deg, #FDE68A 0%, #D4AF37 50%, #D97706 100%);
+  box-shadow: 0 12px 35px rgba(212, 175, 55, 0.55);
+  transform: translateY(-2px);
+}
+
+.monastic-maroon-btn {
+  background: linear-gradient(135deg, #721C24 0%, #4A0E17 100%);
+  color: #FFFFFF;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 0 8px 24px rgba(114, 28, 36, 0.35);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.monastic-maroon-btn:hover {
+  background: linear-gradient(135deg, #881337 0%, #721C24 100%);
+  border-color: rgba(212, 175, 55, 0.8);
+  box-shadow: 0 12px 32px rgba(114, 28, 36, 0.5), 0 0 20px rgba(212, 175, 55, 0.3);
+  transform: translateY(-2px);
+}
+
+.glass-luxury-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 0 1px rgba(0, 0, 0, 0.05);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-luxury-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.12), 0 0 25px rgba(212, 175, 55, 0.18);
+  border-color: rgba(212, 175, 55, 0.6);
+}
+
+.glass-dark-card {
+  background: rgba(11, 15, 25, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.5);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-dark-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow: 0 25px 55px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(212, 175, 55, 0.2);
+}
+
+@keyframes waveSlow {
+  0%, 100% { transform: rotate(0deg) skewX(0deg); }
+  25% { transform: rotate(1deg) skewX(1deg); }
+  75% { transform: rotate(-1deg) skewX(-1deg); }
+}
+
+.animate-prayer-wave {
+  animation: waveSlow 6s ease-in-out infinite;
+}

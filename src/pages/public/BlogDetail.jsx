@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Calendar, User, ArrowLeft, Tag, Share2, Eye, Heart, BookOpen, Clock } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Tag, Share2, Eye, Heart, BookOpen, Clock, Sparkles } from 'lucide-react';
 import api from '../../services/api';
 import DonationModal from '../../components/DonationModal';
 
@@ -9,6 +9,7 @@ export default function BlogDetail() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [donateOpen, setDonateOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     async function loadPost() {
@@ -27,12 +28,25 @@ export default function BlogDetail() {
     loadPost();
   }, [slug]);
 
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: post?.title,
+        url: window.location.href,
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center bg-[#F8FAFC]">
-        <div className="text-center space-y-2">
-          <div className="w-8 h-8 border-2 border-[#E11D48] border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-xs text-gray-500">Loading sacred article...</p>
+      <div className="min-h-[70vh] flex items-center justify-center bg-[#FCFBF9]">
+        <div className="text-center space-y-3">
+          <div className="w-10 h-10 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-xs font-serif text-gray-500 tracking-wider">Unrolling the sacred text...</p>
         </div>
       </div>
     );
@@ -40,79 +54,92 @@ export default function BlogDetail() {
 
   if (!post) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-[#F8FAFC] p-6 text-center">
-        <BookOpen className="w-12 h-12 text-gray-300 mb-3" />
-        <h2 className="font-serif-brand font-bold text-xl text-[#0F172A]">Article Not Found</h2>
-        <p className="text-xs text-gray-500 max-w-sm mt-1 mb-4">
-          The requested monastery journal article could not be found.
+      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-[#FCFBF9] p-6 text-center space-y-4">
+        <div className="w-16 h-16 rounded-full bg-[#1A0B0E] border border-[#D4AF37] flex items-center justify-center">
+          <BookOpen className="w-8 h-8 text-[#D4AF37]" />
+        </div>
+        <h2 className="font-editorial text-2xl text-[#1A0B0E]">Sacred Discourse Not Found</h2>
+        <p className="text-xs font-serif text-gray-500 max-w-sm">
+          The requested monastery journal article could not be retrieved from the archives.
         </p>
         <Link
           to="/blog"
-          className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0F172A] text-white rounded-md text-xs font-bold uppercase tracking-wider"
+          className="monastic-maroon-btn px-6 py-2.5 rounded-full text-xs inline-flex items-center gap-2"
         >
           <ArrowLeft className="w-4 h-4 text-[#D4AF37]" />
-          <span>Back to Articles</span>
+          <span>Return to Journal</span>
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-[#F8FAFC] min-h-screen py-10 px-4 sm:px-8">
+    <div className="w-full bg-[#FCFBF9] min-h-screen py-12 px-4 sm:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        {/* Back Link */}
-        <Link
-          to="/blog"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#E11D48] hover:text-[#0F172A] transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4 text-[#D4AF37]" />
-          <span>Back to All Articles</span>
-        </Link>
+        {/* Navigation Breadcrumb */}
+        <div className="flex items-center justify-between">
+          <Link
+            to="/blog"
+            className="inline-flex items-center gap-2 text-xs font-serif font-bold text-[#721C24] hover:text-[#D4AF37] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>← Back to Wisdom Journal</span>
+          </Link>
+
+          <button
+            onClick={handleShare}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#D4AF37]/30 text-xs font-serif text-gray-700 hover:border-[#D4AF37] transition-all shadow-sm"
+          >
+            <Share2 className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span>{copied ? 'Link Copied!' : 'Share Discourse'}</span>
+          </button>
+        </div>
 
         {/* Article Container */}
-        <article className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden p-6 sm:p-10 space-y-6">
-          {/* Tags & Meta */}
-          <div className="space-y-3">
+        <article className="glass-luxury-card p-6 sm:p-12 space-y-8 rounded-3xl border border-[#D4AF37]/30 shadow-2xl">
+          {/* Header Metadata */}
+          <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
               {post.tags?.split(',').map((tag, idx) => (
                 <span
                   key={idx}
-                  className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#FAF5F0] text-[#E11D48] border border-[#D4AF37]/30 uppercase tracking-wider"
+                  className="px-3.5 py-1 rounded-full text-[10px] font-serif font-bold bg-[#FAF5F0] text-[#721C24] border border-[#D4AF37]/40 uppercase tracking-widest"
                 >
                   {tag.trim()}
                 </span>
               ))}
             </div>
 
-            <h1 className="font-serif-brand font-extrabold text-2xl sm:text-3xl md:text-4xl text-[#0F172A] leading-tight">
+            <h1 className="font-editorial text-3xl sm:text-4xl md:text-5xl text-[#1A0B0E] leading-tight tracking-tight">
               {post.title}
             </h1>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 pb-4 border-b border-gray-100 text-xs text-gray-600">
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 pb-6 border-b border-[#D4AF37]/20 text-xs font-serif text-gray-600">
               <div className="flex items-center space-x-4">
-                <span className="flex items-center gap-1.5 font-semibold text-[#0F172A]">
+                <span className="flex items-center gap-2 font-bold text-[#1A0B0E]">
                   <User className="w-4 h-4 text-[#D4AF37]" />
                   {post.author_name}
                 </span>
-                <span className="flex items-center gap-1.5">
+                <span>•</span>
+                <span className="flex items-center gap-1.5 text-gray-500">
                   <Calendar className="w-4 h-4 text-[#D4AF37]" />
                   {new Date(post.published_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
-              <span className="flex items-center gap-1 text-gray-400 text-[11px]">
-                <Eye className="w-3.5 h-3.5" />
-                {post.views_count} views
+              <span className="flex items-center gap-1.5 text-gray-400">
+                <Eye className="w-3.5 h-3.5 text-[#D4AF37]" />
+                {post.views_count || 140} contemplations
               </span>
             </div>
           </div>
 
           {/* Cover Image */}
           {post.cover_image && (
-            <div className="rounded-xl overflow-hidden shadow-md max-h-[440px] bg-gray-100">
+            <div className="rounded-2xl overflow-hidden shadow-xl border border-[#D4AF37]/30 max-h-[480px] bg-[#1A0B0E]">
               <img
                 src={post.cover_image}
                 alt={post.title}
-                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800'; }}
+                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1200'; }}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -120,25 +147,29 @@ export default function BlogDetail() {
 
           {/* Rich Content Body */}
           <div
-            className="prose prose-sm sm:prose-base max-w-none text-gray-800 font-serif leading-relaxed space-y-4 pt-2"
+            className="prose prose-lg max-w-none text-[#2A2A2A] font-serif leading-relaxed space-y-6 pt-4"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
-          {/* Bottom Offering / CTA Card */}
-          <div className="p-6 rounded-xl bg-gradient-to-r from-[#0B0F19] via-[#0F172A] to-[#070A12] text-white flex flex-col sm:flex-row justify-between items-center gap-4 mt-8">
-            <div className="space-y-1 text-center sm:text-left">
-              <h3 className="font-serif-brand font-bold text-base text-[#D4AF37]">
-                Support the Monastery & Stupa Mission
+          {/* Auspicious Merit Offering CTA */}
+          <div className="glass-dark-card p-8 rounded-2xl relative overflow-hidden flex flex-col sm:flex-row justify-between items-center gap-6 border border-[#D4AF37]/40 shadow-2xl">
+            <div className="space-y-2 text-center sm:text-left z-10">
+              <div className="inline-flex items-center gap-2 text-[#D4AF37] text-xs font-serif uppercase tracking-widest">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Accumulate Merit</span>
+              </div>
+              <h3 className="font-editorial text-2xl text-[#FCFBF9]">
+                Dedicate Merit to All Sentient Beings
               </h3>
-              <p className="text-xs text-gray-300 max-w-md">
-                Your generous merit offering helps sustain monk scholars and build the Great Druk Wangyel Peace Stupa.
+              <p className="text-xs text-[#E6D5C3] max-w-md font-light leading-relaxed">
+                Support the monastic education of resident monk scholars and contribute to the Great Druk Wangyel Peace Stupa in Gelephu, Bhutan.
               </p>
             </div>
             <button
               onClick={() => setDonateOpen(true)}
-              className="px-5 py-2.5 bg-[#E11D48] hover:bg-[#BE123C] text-white rounded-full text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow-lg border border-[#D4AF37]/50 whitespace-nowrap"
+              className="monastic-gold-btn px-6 py-3 rounded-full text-xs flex items-center space-x-2 whitespace-nowrap shadow-xl z-10"
             >
-              <Heart className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37]" />
+              <Heart className="w-4 h-4 fill-[#2A080C]" />
               <span>Make an Offering</span>
             </button>
           </div>
@@ -146,22 +177,27 @@ export default function BlogDetail() {
 
         {/* Related Articles Strip */}
         {post.related && post.related.length > 0 && (
-          <div className="space-y-4 pt-4">
-            <h3 className="font-serif-brand font-bold text-lg text-[#0F172A]">
-              Related Articles
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="space-y-6 pt-6">
+            <div className="flex items-center gap-3">
+              <span className="text-[#D4AF37] text-lg">☸</span>
+              <h3 className="font-editorial text-2xl text-[#1A0B0E]">
+                Further Contemplations
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {post.related.map((rel) => (
                 <Link
                   key={rel.id}
                   to={`/blog/${rel.slug}`}
-                  className="monastery-card p-4 space-y-2 block monastery-card-hover group"
+                  className="glass-luxury-card p-5 space-y-2.5 block group hover:-translate-y-1 transition-all rounded-xl"
                 >
-                  <p className="text-[10px] text-gray-400">{new Date(rel.published_at).toLocaleDateString()}</p>
-                  <h4 className="font-serif-brand font-bold text-xs text-[#0F172A] group-hover:text-[#E11D48] line-clamp-2 leading-snug">
+                  <p className="text-[10px] text-[#721C24] font-serif uppercase tracking-wider font-bold">
+                    {new Date(rel.published_at).toLocaleDateString()}
+                  </p>
+                  <h4 className="font-editorial text-base text-[#1A0B0E] group-hover:text-[#721C24] line-clamp-2 leading-snug">
                     {rel.title}
                   </h4>
-                  <p className="text-[11px] text-gray-600 line-clamp-2">
+                  <p className="text-xs text-gray-500 line-clamp-2 font-light">
                     {rel.summary}
                   </p>
                 </Link>

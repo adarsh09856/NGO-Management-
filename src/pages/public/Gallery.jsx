@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ZoomIn, Play, Film, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { X, ZoomIn, Play, Film, Image as ImageIcon, Sparkles, Filter } from 'lucide-react';
 import api from '../../services/api';
 
 export default function Gallery() {
@@ -18,8 +18,8 @@ export default function Gallery() {
         if (mediaTypeFilter !== 'All') params.append('type', mediaTypeFilter);
 
         const res = await api.get(`/cms/gallery?${params.toString()}`);
-        if (res.data.success) {
-          setItems(res.data.data);
+        if (res.data?.success) {
+          setItems(res.data.data || []);
         }
       } catch (err) {
         console.error('Failed to load gallery:', err);
@@ -64,110 +64,108 @@ export default function Gallery() {
   };
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-8 relative z-10">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-2 max-w-2xl mx-auto">
-          <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold">
-            Sacred Moments
-          </span>
-          <h1 className="font-serif-brand font-extrabold text-3xl sm:text-4xl text-[#0F172A]">
-            Monastery Photo & Video Gallery
-          </h1>
-          <p className="text-xs sm:text-sm text-gray-600 font-light">
-            Witness the sacred construction of the Great Druk Wangyel Peace Stupa, Shedra monastic student life, and sacred ceremonies in Gelephu, Bhutan.
-          </p>
+    <div className="min-h-screen py-12 px-4 sm:px-8 relative z-10 max-w-7xl mx-auto space-y-10">
+      {/* Header */}
+      <div className="text-center space-y-3 max-w-2xl mx-auto">
+        <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+          Sacred Photo Archives
+        </span>
+        <h1 className="font-serif-brand font-extrabold text-3xl sm:text-5xl text-[#0F172A] tracking-wide">
+          Monastery Photo & Video Gallery
+        </h1>
+        <p className="text-xs sm:text-sm text-gray-600 font-light leading-relaxed">
+          Witness the sacred construction of the Great Druk Wangyel Peace Stupa, Shedra monastic student life, and sacred ceremonies in Gelephu, Bhutan.
+        </p>
+      </div>
+
+      {/* Filter Controls: Media Type Tabs + Categories */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 glass-luxury-card p-4 sm:p-5 rounded-2xl border border-gray-200/80 shadow-md">
+        {/* Media Type Filter */}
+        <div className="flex items-center bg-gray-100 p-1 rounded-full border border-gray-200">
+          {['All', 'Photos', 'Videos'].map((t) => (
+            <button
+              key={t}
+              onClick={() => setMediaTypeFilter(t)}
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+                mediaTypeFilter === t
+                  ? 'bg-[#070A12] text-[#D4AF37] shadow-sm'
+                  : 'text-gray-700 hover:text-[#0F172A]'
+              }`}
+            >
+              {t}
+            </button>
+          ))}
         </div>
 
-        {/* Filter Controls: Media Type Tabs + Categories */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 glass-panel p-4 rounded-2xl border border-white/80 shadow-md">
-          {/* Media Type Filter */}
-          <div className="flex items-center bg-gray-100/80 p-1 rounded-full border border-gray-200">
-            {['All', 'Photos', 'Videos'].map((t) => (
-              <button
-                key={t}
-                onClick={() => setMediaTypeFilter(t)}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                  mediaTypeFilter === t
-                    ? 'bg-[#0F172A] text-[#D4AF37] shadow-sm'
-                    : 'text-gray-700 hover:text-[#0F172A]'
-                }`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-
-          {/* Category Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-thin">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
-                  category === cat
-                    ? 'bg-[#0F172A] text-white shadow'
-                    : 'bg-white/80 text-gray-700 hover:bg-white hover:text-[#0F172A] border border-gray-200'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+        {/* Category Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-thin">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setCategory(cat)}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
+                category === cat
+                  ? 'bg-[#721C24] text-white shadow-sm'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-[#0F172A] border border-gray-200'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
+      </div>
 
-        {/* Masonry / Grid */}
-        {loading ? (
-          <div className="text-center py-20">
-            <div className="w-8 h-8 border-2 border-[#E11D48] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-            <p className="text-xs text-gray-500">Loading gallery...</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayItems.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => setLightboxItem(item)}
-                className="glass-card-interactive overflow-hidden rounded-2xl cursor-pointer group flex flex-col justify-between"
-              >
-                <div className="relative h-60 overflow-hidden bg-gray-950">
-                  <img
-                    src={item.thumbnail_url || item.media_url}
-                    alt={item.title}
-                    onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80'; }}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
-                  />
+      {/* Masonry / Grid */}
+      {loading ? (
+        <div className="text-center py-20">
+          <div className="w-8 h-8 border-2 border-[#721C24] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+          <p className="text-xs text-gray-500">Loading sacred gallery...</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayItems.map((item) => (
+            <div
+              key={item.id}
+              onClick={() => setLightboxItem(item)}
+              className="glass-luxury-card overflow-hidden rounded-2xl cursor-pointer group flex flex-col justify-between border border-gray-200/80"
+            >
+              <div className="relative h-64 overflow-hidden bg-gray-950">
+                <img
+                  src={item.thumbnail_url || item.media_url}
+                  alt={item.title}
+                  onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80'; }}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
+                />
 
-                  {/* Badges */}
-                  <span className="absolute top-3 left-3 glow-pill-gold px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-                    {item.category}
-                  </span>
+                {/* Badges */}
+                <span className="absolute top-3 left-3 glow-pill-gold px-2.5 py-0.5 rounded-full text-[10px] font-bold">
+                  {item.category}
+                </span>
 
-                  {/* Video / Zoom Icon */}
-                  <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-full bg-[#0F172A]/90 text-[#D4AF37] border-2 border-[#D4AF37] flex items-center justify-center shadow-xl">
-                      {isVideo(item) ? (
-                        <Play className="w-5 h-5 fill-[#D4AF37] ml-0.5" />
-                      ) : (
-                        <ZoomIn className="w-5 h-5" />
-                      )}
-                    </div>
+                {/* Video / Zoom Icon */}
+                <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-[#070A12]/90 text-[#D4AF37] border-2 border-[#D4AF37] flex items-center justify-center shadow-xl">
+                    {isVideo(item) ? (
+                      <Play className="w-5 h-5 fill-[#D4AF37] ml-0.5" />
+                    ) : (
+                      <ZoomIn className="w-5 h-5" />
+                    )}
                   </div>
                 </div>
-
-                <div className="p-4 space-y-1">
-                  <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] group-hover:text-[#BE123C] transition-colors leading-snug">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-gray-600 line-clamp-2">
-                    {item.caption}
-                  </p>
-                </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+
+              <div className="p-5 space-y-1.5">
+                <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] group-hover:text-[#721C24] transition-colors leading-snug">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-gray-600 line-clamp-2 font-light">
+                  {item.caption}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Lightbox / Video Modal */}
       {lightboxItem && (
@@ -175,7 +173,7 @@ export default function Gallery() {
           <div className="relative w-full max-w-4xl bg-gray-950 rounded-2xl overflow-hidden border border-[#D4AF37]/50 shadow-2xl">
             <button
               onClick={() => setLightboxItem(null)}
-              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#BE123C] transition-colors"
+              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#721C24] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -200,14 +198,14 @@ export default function Gallery() {
               </div>
             )}
 
-            <div className="p-6 bg-[#1a050a] text-white space-y-2 border-t border-[#D4AF37]/30">
+            <div className="p-6 bg-[#070A12] text-white space-y-2 border-t border-[#D4AF37]/30">
               <span className="glow-pill-gold px-2.5 py-0.5 rounded text-[10px] font-bold">
                 {lightboxItem.category}
               </span>
               <h2 className="font-serif-brand font-bold text-lg text-white">
                 {lightboxItem.title}
               </h2>
-              <p className="text-xs text-gray-300">
+              <p className="text-xs text-gray-300 font-light">
                 {lightboxItem.caption}
               </p>
             </div>

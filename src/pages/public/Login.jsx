@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Lock, Mail, Heart, ArrowRight } from 'lucide-react';
+import { Lock, Mail, ArrowRight, Sparkles } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
@@ -23,7 +23,7 @@ export default function Login() {
     try {
       setLoading(true);
       const user = await login(email, password, 'user');
-      success(`Welcome back, ${user.fullName}!`);
+      success(`Tashi Delek! Welcome back, ${user.fullName}!`);
 
       if (['super_admin', 'accountant', 'staff', 'hr_manager'].includes(user.role?.slug)) {
         navigate('/admin');
@@ -40,69 +40,78 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#F8FAFC]">
-      <div className="max-w-md w-full space-y-6">
+    <div className="min-h-[85vh] flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-[#FCFBF9] relative overflow-hidden">
+      {/* Subtle Background Elements */}
+      <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#D4AF37]/5 blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full bg-[#4A0E17]/5 blur-3xl pointer-events-none"></div>
+
+      <div className="max-w-md w-full space-y-6 relative z-10">
         {/* Brand Crest */}
-        <div className="text-center space-y-2">
-          <div className="w-14 h-14 rounded-full bg-[#0F172A] border-2 border-[#D4AF37] flex items-center justify-center mx-auto shadow-md">
-            <span className="text-[#D4AF37] text-2xl font-serif font-bold">☸</span>
+        <div className="text-center space-y-3">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#1A0B0E] via-[#4A0E17] to-[#1A0B0E] border-2 border-[#D4AF37] flex items-center justify-center mx-auto shadow-xl ring-4 ring-[#D4AF37]/20">
+            <span className="text-[#D4AF37] text-3xl font-serif font-bold animate-spin" style={{ animationDuration: '30s' }}>☸</span>
           </div>
-          <h1 className="font-serif-brand font-extrabold text-2xl text-[#0F172A] tracking-wider uppercase">
-            DRODUL PHENDEY LING
-          </h1>
-          <p className="text-xs text-gray-500 font-medium">
-            Devotee & Member Portal Login
-          </p>
+          <div>
+            <span className="text-[10px] font-serif uppercase tracking-widest text-[#721C24] font-bold">
+              ༄༅། །འབྲུག་འགྲོ་འདུལ་ཕན་བདེ་གླིང་།
+            </span>
+            <h1 className="font-editorial text-2xl sm:text-3xl text-[#1A0B0E] tracking-tight">
+              Drodul Phendey Ling
+            </h1>
+            <p className="text-xs font-serif text-gray-500 mt-1">
+              Devotee & Member Sanctuary Portal
+            </p>
+          </div>
         </div>
 
         {/* Login Form Card */}
-        <div className="monastery-card p-6 sm:p-8 space-y-6 shadow-md">
-          <div className="space-y-1">
-            <h2 className="font-serif-brand font-bold text-base text-[#0F172A]">
-              Sign In to Your User Panel
+        <div className="glass-luxury-card p-8 space-y-6 shadow-2xl rounded-3xl border border-[#D4AF37]/30">
+          <div className="space-y-1 text-center">
+            <h2 className="font-editorial text-xl text-[#1A0B0E]">
+              Sign In to Your Sanctuary
             </h2>
-            <p className="text-xs text-gray-500">
-              Access your donation history, 80G tax receipts, and prayer requests.
+            <p className="text-xs text-gray-500 font-serif">
+              View your merit offerings, 80G tax receipts, and dedicated prayer pujas.
             </p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Email Address
+              <label className="block text-xs font-serif font-bold text-gray-700 mb-1.5">
+                Registered Email Address
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                <Mail className="w-4 h-4 text-[#D4AF37] absolute left-3.5 top-3.5" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#E11D48] bg-[#FAF9F5]"
-                  placeholder="Enter your registered email"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs border border-[#D4AF37]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] bg-[#FAF5F0]/60 font-serif"
+                  placeholder="name@example.com"
                   autoComplete="email"
                 />
               </div>
             </div>
 
             <div>
-              <div className="flex justify-between items-center mb-1">
-                <label className="text-xs font-semibold text-gray-700">
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="text-xs font-serif font-bold text-gray-700">
                   Password
                 </label>
-                <Link to="/forgot-password" className="text-[11px] text-[#E11D48] hover:underline">
-                  Forgot?
+                <Link to="/forgot-password" className="text-[11px] font-serif text-[#721C24] hover:underline">
+                  Forgot Password?
                 </Link>
               </div>
               <div className="relative">
-                <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                <Lock className="w-4 h-4 text-[#D4AF37] absolute left-3.5 top-3.5" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#E11D48] bg-[#FAF9F5]"
-                  placeholder="Enter your password"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs border border-[#D4AF37]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] bg-[#FAF5F0]/60 font-serif"
+                  placeholder="••••••••••••"
                   autoComplete="current-password"
                 />
               </div>
@@ -111,24 +120,24 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#E11D48] hover:bg-[#1E293B] text-white py-2.5 rounded font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-1.5 shadow transition-all"
+              className="monastic-maroon-btn w-full py-3.5 rounded-xl text-xs flex items-center justify-center space-x-2 shadow-xl"
             >
-              <span>{loading ? 'Authenticating...' : 'Sign In to User Panel'}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span>{loading ? 'Verifying Credentials...' : 'Sign In to Portal'}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
             </button>
           </form>
-        </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-2 px-1">
-          <p>
-            New devotee?{' '}
-            <Link to="/register" className="text-[#E11D48] font-bold hover:underline">
-              Create an Account
+          <div className="pt-4 border-t border-[#D4AF37]/20 flex flex-col sm:flex-row items-center justify-between text-xs font-serif text-gray-500 gap-2">
+            <p>
+              New devotee?{' '}
+              <Link to="/register" className="text-[#721C24] font-bold hover:underline">
+                Create an Account
+              </Link>
+            </p>
+            <Link to="/admin/login" className="text-gray-400 hover:text-[#1A0B0E] font-medium transition-colors">
+              Staff / Admin Portal →
             </Link>
-          </p>
-          <Link to="/admin/login" className="text-gray-400 hover:text-[#0F172A] font-medium">
-            Staff / Admin Login →
-          </Link>
+          </div>
         </div>
       </div>
     </div>
