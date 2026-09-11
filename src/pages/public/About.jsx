@@ -4,19 +4,19 @@ import { Heart, Shield, CheckCircle2, Award, Users, BookOpen, Landmark, Sparkles
 
 export default function About() {
   return (
-    <div className="py-12 px-4 sm:px-8 space-y-20 relative z-10 max-w-7xl mx-auto">
+    <div className="py-10 sm:py-16 px-3 xs:px-4 sm:px-8 space-y-12 sm:space-y-20 relative z-10 max-w-7xl mx-auto">
       {/* 1. Header Banner */}
-      <div className="max-w-4xl mx-auto text-center space-y-4">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glow-pill-gold text-xs font-bold animate-float">
-          <span className="font-tibetan text-base">༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པའི་ལོ་རྒྱུས།</span>
+      <div className="max-w-4xl mx-auto text-center space-y-3 sm:space-y-4 animate-fade-in-up">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glow-pill-gold text-xs font-bold animate-float">
+          <span className="font-tibetan text-sm sm:text-base">༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པའི་ལོ་རྒྱུས།</span>
           <span>• Sacred Monastic Heritage</span>
         </div>
 
-        <h1 className="font-serif-brand font-extrabold text-3xl sm:text-5xl text-[#0F172A] leading-tight">
+        <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-5xl text-[#0F172A] leading-tight break-words">
           About Drodul Phendey Ling Foundation
         </h1>
 
-        <p className="text-sm sm:text-base text-gray-600 leading-relaxed max-w-2xl mx-auto font-light">
+        <p className="text-xs sm:text-base text-gray-600 leading-relaxed max-w-2xl mx-auto font-light">
           Established in the tranquil Himalayan foothills of Gelephu, Sarpang Dzongkhag, Bhutan, to nurture authentic Buddha Dharma, train monk scholars, and build the historic 108ft Great Druk Wangyel Peace Stupa.
         </p>
       </div>

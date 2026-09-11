@@ -51,15 +51,15 @@ export default function PrayerRequest() {
   };
 
   return (
-    <div className="min-h-[85vh] py-12 px-4 sm:px-8 relative z-10 max-w-4xl mx-auto space-y-12">
+    <div className="min-h-[85vh] py-10 sm:py-16 px-3 xs:px-4 sm:px-8 relative z-10 max-w-4xl mx-auto space-y-8 sm:space-y-12">
       {/* 1. Header Banner */}
-      <div className="text-center space-y-4">
-        <div className="inline-flex items-center space-x-2 glow-pill-gold px-4 py-1.5 rounded-full text-xs font-bold animate-float">
+      <div className="text-center space-y-3 sm:space-y-4 animate-fade-in-up">
+        <div className="inline-flex items-center space-x-2 glow-pill-gold px-3.5 py-1.5 rounded-full text-xs font-bold animate-float">
           <Flame className="w-4 h-4 text-amber-600" />
           <span className="font-tibetan text-sm">༄༅། །མར་མེ་སྨོན་ལམ།</span>
           <span>• Consecrated Sangha Pujas & Butter Lamps</span>
         </div>
-        <h1 className="font-serif-brand font-extrabold text-3xl sm:text-5xl text-[#0F172A] tracking-wide">
+        <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-5xl text-[#0F172A] tracking-wide break-words">
           Sacred Prayer Dedication & Offerings
         </h1>
         <p className="text-xs sm:text-sm text-gray-600 max-w-xl mx-auto font-light leading-relaxed">
@@ -90,8 +90,8 @@ export default function PrayerRequest() {
           </button>
         </div>
       ) : (
-        <div className="glass-luxury-card rounded-3xl shadow-2xl border border-gray-200/80 p-6 sm:p-10">
-          <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="glass-luxury-card rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D4AF37]/30 p-4 xs:p-6 sm:p-10 animate-scale-in">
+          <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
             {/* Devotee Info */}
             <div className="space-y-4">
               <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] uppercase tracking-wider flex items-center gap-2 border-b border-gray-100 pb-2">

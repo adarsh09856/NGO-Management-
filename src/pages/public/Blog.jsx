@@ -75,45 +75,45 @@ export default function Blog() {
   return (
     <div className="w-full bg-[#FCFBF9] min-h-screen pb-20">
       {/* Luxury Hero Header */}
-      <section className="relative bg-[#1A0B0E] text-white py-20 px-4 sm:px-8 overflow-hidden border-b border-[#D4AF37]/30">
+      <section className="relative bg-[#1A0B0E] text-white py-12 sm:py-20 px-3 xs:px-4 sm:px-8 overflow-hidden border-b border-[#D4AF37]/30">
         <div className="absolute inset-0 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:24px_24px] opacity-10"></div>
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none"></div>
         <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-[#721C24]/30 blur-3xl pointer-events-none"></div>
 
-        <div className="max-w-7xl mx-auto relative z-10 space-y-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-serif uppercase tracking-widest backdrop-blur-md">
+        <div className="max-w-7xl mx-auto relative z-10 space-y-4 sm:space-y-6 text-center animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-serif uppercase tracking-widest backdrop-blur-md">
             <span className="text-sm">☸</span>
-            <span>༄༅། །ཆོས་ཀྱི་བགྲོ་གླེང་དང་དྲན་དེབ། · Wisdom Gazette</span>
+            <span className="truncate">༄༅། །ཆོས་ཀྱི་བགྲོ་གླེང་དང་དྲན་དེབ། · Wisdom Gazette</span>
           </div>
 
-          <h1 className="font-editorial text-4xl sm:text-5xl lg:text-6xl text-[#FCFBF9] tracking-tight leading-tight max-w-4xl mx-auto">
+          <h1 className="font-editorial text-2xl xs:text-3xl sm:text-5xl lg:text-6xl text-[#FCFBF9] tracking-tight leading-tight max-w-4xl mx-auto break-words">
             The Bodhi Path: Sacred Journal & Monastic Chronicles
           </h1>
 
-          <p className="text-sm sm:text-base text-[#E6D5C3] font-light max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xs sm:text-base text-[#E6D5C3] font-light max-w-2xl mx-auto leading-relaxed">
             Spiritual discourses, Buddhist philosophical reflections, and living updates on the Great Druk Wangyel Peace Stupa from Gelephu, Bhutan.
           </p>
 
           {/* Quick Search in Hero */}
-          <div className="pt-4 max-w-xl mx-auto">
+          <div className="pt-2 sm:pt-4 max-w-xl mx-auto">
             <div className="relative">
-              <Search className="w-5 h-5 text-[#D4AF37] absolute left-4 top-3.5" />
+              <Search className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37] absolute left-4 top-3 sm:top-3.5" />
               <input
                 type="text"
-                placeholder="Search sacred teachings, sutras, chronicles..."
+                placeholder="Search sacred teachings, sutras..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 text-sm bg-white/10 border border-[#D4AF37]/40 rounded-full text-white placeholder-gray-400 backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:bg-white/15 transition-all shadow-xl"
+                className="w-full pl-11 sm:pl-12 pr-4 py-2.5 sm:py-3 text-xs sm:text-sm bg-white/10 border border-[#D4AF37]/40 rounded-full text-white placeholder-gray-400 backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:bg-white/15 transition-all shadow-xl font-serif"
               />
             </div>
           </div>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 mt-10 space-y-12">
+      <div className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-8 mt-8 sm:mt-10 space-y-8 sm:space-y-12">
         {/* Category Navigation Pills */}
-        <div className="flex items-center justify-between border-b border-[#D4AF37]/20 pb-4 flex-wrap gap-4">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
+        <div className="flex items-center justify-between border-b border-[#D4AF37]/20 pb-3 sm:pb-4 flex-wrap gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-2 no-scrollbar w-full sm:w-auto">
             {allTags.map((tag) => {
               const active = (tag === 'All' && !selectedTag) || selectedTag === tag;
               return (

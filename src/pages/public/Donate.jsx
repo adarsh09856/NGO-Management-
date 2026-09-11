@@ -109,36 +109,36 @@ export default function Donate() {
   };
 
   return (
-    <div className="py-12 px-4 sm:px-8 min-h-[85vh] space-y-16 relative z-10 max-w-7xl mx-auto">
+    <div className="py-10 sm:py-16 px-3 xs:px-4 sm:px-8 min-h-[85vh] space-y-12 sm:space-y-16 relative z-10 max-w-7xl mx-auto">
       {/* 1. Header Hero Banner */}
-      <div className="bg-gradient-to-r from-[#070A12] via-[#120508] to-[#070A12] rounded-3xl p-8 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40">
+      <div className="bg-gradient-to-r from-[#070A12] via-[#120508] to-[#070A12] rounded-3xl p-6 xs:p-8 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40 animate-fade-in-up">
         <div
           className="absolute inset-0 opacity-25 bg-cover bg-center pointer-events-none mix-blend-luminosity"
           style={{ backgroundImage: `url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1400&q=80')` }}
         />
-        <div className="relative z-10 max-w-3xl space-y-5">
-          <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-[#D4AF37]/50 text-[#D4AF37] text-xs font-semibold">
+        <div className="relative z-10 max-w-3xl space-y-4 sm:space-y-5">
+          <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#D4AF37]/50 text-[#D4AF37] text-xs font-semibold">
             <span className="font-tibetan text-sm">☸ མཆོད་འབུལ།</span>
-            <span>• Sacred Buddhist Philanthropy</span>
+            <span>• Sacred Monastic Philanthropy</span>
           </div>
 
-          <h1 className="font-serif-brand font-extrabold text-3xl sm:text-5xl text-white tracking-wide leading-tight">
+          <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-4xl md:text-5xl text-white tracking-wide leading-tight break-words">
             Make A Meritorious Offering for <br />
             <span className="gold-foil-text font-serif">Peace & Buddha Dharma</span>
           </h1>
 
           <p className="text-xs sm:text-sm text-gray-200 font-light leading-relaxed">
-            Every offering directly finances the 108ft Great Druk Wangyel Peace Stupa, sustains 350+ resident monks with nutrition and education, and radiates blessings of merit across the world.
+            Every offering directly finances the 108ft Great Druk Wangyel Peace Stupa, sustains resident monks with nutrition and education, and radiates blessings of merit across the world.
           </p>
 
-          <div className="pt-3 flex flex-wrap items-center gap-4 text-xs text-[#D4AF37]">
-            <span className="flex items-center gap-1.5 bg-black/40 px-3.5 py-2 rounded-xl border border-[#D4AF37]/30">
-              <Shield className="w-4 h-4 text-emerald-400" />
+          <div className="pt-2 sm:pt-3 flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-[#D4AF37]">
+            <span className="flex items-center gap-1.5 bg-black/40 px-3 py-1.5 rounded-xl border border-[#D4AF37]/30">
+              <Shield className="w-3.5 h-3.5 text-emerald-400" />
               <span>100% Tax-Deductible (80G Certified)</span>
             </span>
-            <span className="flex items-center gap-1.5 bg-black/40 px-3.5 py-2 rounded-xl border border-[#D4AF37]/30">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              <span>Instant Digitally Signed 80G PDF Receipt</span>
+            <span className="flex items-center gap-1.5 bg-black/40 px-3 py-1.5 rounded-xl border border-[#D4AF37]/30">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Instant Signed 80G Receipt</span>
             </span>
           </div>
         </div>
@@ -158,7 +158,7 @@ export default function Donate() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {displayCauses.map((c) => {
             const Icon = c.icon || Landmark;
             return (

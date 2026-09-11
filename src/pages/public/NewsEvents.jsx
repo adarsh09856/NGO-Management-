@@ -80,21 +80,21 @@ export default function NewsEvents() {
   return (
     <div className="w-full bg-[#FCFBF9] min-h-screen pb-20">
       {/* Luxury Hero Banner */}
-      <section className="relative bg-[#1A0B0E] text-white py-20 px-4 sm:px-8 overflow-hidden border-b border-[#D4AF37]/30">
+      <section className="relative bg-[#1A0B0E] text-white py-12 sm:py-20 px-3 xs:px-4 sm:px-8 overflow-hidden border-b border-[#D4AF37]/30">
         <div className="absolute inset-0 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:24px_24px] opacity-10"></div>
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none"></div>
 
-        <div className="max-w-5xl mx-auto relative z-10 text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-serif uppercase tracking-widest backdrop-blur-md">
+        <div className="max-w-5xl mx-auto relative z-10 text-center space-y-4 sm:space-y-6 animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-serif uppercase tracking-widest backdrop-blur-md">
             <span className="text-sm">☸</span>
-            <span>༄༅། །དགེ་ལུགས་ཀྱི་མཛད་སྒོ་དང་གསལ་བསྒྲགས། · Ceremonial Gazette</span>
+            <span className="truncate">༄༅། །དགེ་ལུགས་ཀྱི་མཛད་སྒོ་དང་གསལ་བསྒྲགས། · Ceremonial Gazette</span>
           </div>
 
-          <h1 className="font-editorial text-4xl sm:text-5xl lg:text-6xl text-[#FCFBF9] tracking-tight leading-tight">
+          <h1 className="font-editorial text-2xl xs:text-3xl sm:text-5xl lg:text-6xl text-[#FCFBF9] tracking-tight leading-tight break-words">
             Auspicious Ceremonies & Dharma Teachings
           </h1>
 
-          <p className="text-sm sm:text-base text-[#E6D5C3] font-light max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xs sm:text-base text-[#E6D5C3] font-light max-w-2xl mx-auto leading-relaxed">
             Stay aligned with monthly astrological tsog offerings, peace stupa consecrations, and open discourses by Khenpo Tashi Dorji in Gelephu, Bhutan.
           </p>
 
@@ -111,9 +111,9 @@ export default function NewsEvents() {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 mt-12 space-y-10">
+      <div className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-8 mt-8 sm:mt-12 space-y-8 sm:space-y-10">
         {/* Category Filters */}
-        <div className="flex flex-wrap justify-center gap-2.5 pb-4 border-b border-[#D4AF37]/20">
+        <div className="flex items-center gap-2.5 overflow-x-auto pb-2 no-scrollbar sm:justify-center border-b border-[#D4AF37]/20">
           {categories.map((cat) => {
             const active = category === cat;
             return (

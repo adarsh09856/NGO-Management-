@@ -75,29 +75,29 @@ export default function Contact() {
   return (
     <div className="w-full bg-[#FCFBF9] min-h-screen pb-20">
       {/* Luxury Hero Banner */}
-      <section className="relative bg-[#1A0B0E] text-white py-20 px-4 sm:px-8 overflow-hidden border-b border-[#D4AF37]/30">
+      <section className="relative bg-[#1A0B0E] text-white py-12 sm:py-20 px-3 xs:px-4 sm:px-8 overflow-hidden border-b border-[#D4AF37]/30">
         <div className="absolute inset-0 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:24px_24px] opacity-10"></div>
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none"></div>
 
-        <div className="max-w-5xl mx-auto relative z-10 text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-serif uppercase tracking-widest backdrop-blur-md">
+        <div className="max-w-5xl mx-auto relative z-10 text-center space-y-4 sm:space-y-6 animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-serif uppercase tracking-widest backdrop-blur-md">
             <span className="text-sm">☸</span>
-            <span>༄༅། །འབྲེལ་གཏུགས་དང་ཞབས་ཞུ། · Sacred Connection</span>
+            <span className="truncate">༄༅། །འབྲེལ་གཏུགས་དང་ཞབས་ཞུ། · Sacred Connection</span>
           </div>
 
-          <h1 className="font-editorial text-4xl sm:text-5xl lg:text-6xl text-[#FCFBF9] tracking-tight leading-tight">
+          <h1 className="font-editorial text-2xl xs:text-3xl sm:text-5xl lg:text-6xl text-[#FCFBF9] tracking-tight leading-tight break-words">
             Connect with Drodul Phendey Ling
           </h1>
 
-          <p className="text-sm sm:text-base text-[#E6D5C3] font-light max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xs sm:text-base text-[#E6D5C3] font-light max-w-2xl mx-auto leading-relaxed">
             Reach our Monastic Administration, Shedra Admissions, or Peace Stupa Donation Desk located in the peaceful foothills of Gelephu, Kingdom of Bhutan.
           </p>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 mt-12 space-y-16">
+      <div className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-8 mt-8 sm:mt-12 space-y-10 sm:space-y-16">
         {/* Department Directory Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {departments.map((dep, idx) => {
             const Icon = dep.icon;
             return (

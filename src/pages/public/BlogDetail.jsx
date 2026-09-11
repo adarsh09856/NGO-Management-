@@ -74,31 +74,31 @@ export default function BlogDetail() {
   }
 
   return (
-    <div className="w-full bg-[#FCFBF9] min-h-screen py-12 px-4 sm:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="w-full bg-[#FCFBF9] min-h-screen py-8 sm:py-14 px-3 xs:px-4 sm:px-8">
+      <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
         {/* Navigation Breadcrumb */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <Link
             to="/blog"
-            className="inline-flex items-center gap-2 text-xs font-serif font-bold text-[#721C24] hover:text-[#D4AF37] transition-colors"
+            className="inline-flex items-center gap-1.5 sm:gap-2 text-xs font-serif font-bold text-[#721C24] hover:text-[#D4AF37] transition-colors truncate"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>← Back to Wisdom Journal</span>
+            <ArrowLeft className="w-4 h-4 flex-shrink-0" />
+            <span className="truncate">← Back to Journal</span>
           </Link>
 
           <button
             onClick={handleShare}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#D4AF37]/30 text-xs font-serif text-gray-700 hover:border-[#D4AF37] transition-all shadow-sm"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#D4AF37]/30 text-xs font-serif text-gray-700 hover:border-[#D4AF37] transition-all shadow-sm flex-shrink-0"
           >
             <Share2 className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>{copied ? 'Link Copied!' : 'Share Discourse'}</span>
+            <span>{copied ? 'Copied!' : 'Share'}</span>
           </button>
         </div>
 
         {/* Article Container */}
-        <article className="glass-luxury-card p-6 sm:p-12 space-y-8 rounded-3xl border border-[#D4AF37]/30 shadow-2xl">
+        <article className="glass-luxury-card p-4 xs:p-6 sm:p-12 space-y-6 sm:space-y-8 rounded-2xl sm:rounded-3xl border border-[#D4AF37]/30 shadow-2xl animate-fade-in-up">
           {/* Header Metadata */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div className="flex flex-wrap gap-2">
               {post.tags?.split(',').map((tag, idx) => (
                 <span

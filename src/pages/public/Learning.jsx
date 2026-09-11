@@ -61,14 +61,14 @@ export default function Learning() {
   };
 
   return (
-    <div className="w-full min-h-screen py-10 px-4 sm:px-8 relative z-10 max-w-7xl mx-auto space-y-10">
+    <div className="w-full min-h-screen py-8 sm:py-16 px-3 xs:px-4 sm:px-8 relative z-10 max-w-7xl mx-auto space-y-8 sm:space-y-10">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-[#070A12] via-[#120508] to-[#070A12] rounded-3xl p-8 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40">
-        <div className="relative z-10 max-w-3xl space-y-4">
+      <div className="bg-gradient-to-r from-[#070A12] via-[#120508] to-[#070A12] rounded-3xl p-6 xs:p-8 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40 animate-fade-in-up">
+        <div className="relative z-10 max-w-3xl space-y-3 sm:space-y-4">
           <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5">
             <span>☸</span> Open Monastic Dharma Education
           </span>
-          <h1 className="font-serif-brand font-extrabold text-3xl sm:text-5xl text-white tracking-wide leading-tight">
+          <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-5xl text-white tracking-wide leading-tight break-words">
             Learning & Dharma Video Discourses
           </h1>
           <p className="text-xs sm:text-sm text-gray-200 font-light leading-relaxed">
@@ -78,9 +78,9 @@ export default function Learning() {
       </div>
 
       {/* Controls: Search & Category Filter Pills */}
-      <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 glass-luxury-card p-4 sm:p-5 rounded-2xl border border-gray-200/80 shadow-md">
-        {/* Category Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-thin">
+      <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 sm:gap-4 glass-luxury-card p-3 xs:p-4 sm:p-5 rounded-2xl border border-gray-200/80 shadow-md">
+        {/* Category Tabs with horizontal touch scroll */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 no-scrollbar">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -104,19 +104,19 @@ export default function Learning() {
             placeholder="Search lectures, masters, topics..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="glass-input w-full pl-10 pr-4 py-2 text-xs rounded-xl text-gray-900 focus:ring-2 focus:ring-[#D4AF37]/40"
+            className="glass-input w-full pl-10 pr-4 py-2 text-xs rounded-xl text-gray-900 focus:ring-2 focus:ring-[#D4AF37]/40 font-serif"
           />
         </div>
       </div>
 
-      {/* Video Grid */}
+      {/* Media Grid */}
       {loading ? (
         <div className="text-center py-20">
           <div className="w-8 h-8 border-2 border-[#721C24] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
           <p className="text-xs text-gray-500">Loading Dharma discourses...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayList.map((item) => (
             <div
               key={item.id}
@@ -190,11 +190,12 @@ export default function Learning() {
 
       {/* Video Lightbox Modal */}
       {activeVideo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-4xl bg-gray-950 rounded-2xl overflow-hidden border border-[#D4AF37]/60 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 xs:p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+          <div className="relative w-full max-w-4xl bg-gray-950 rounded-2xl overflow-hidden border border-[#D4AF37]/60 shadow-2xl animate-scale-in">
             <button
               onClick={() => setActiveVideo(null)}
-              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#721C24] transition-colors"
+              className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#721C24] transition-colors border border-white/20"
+              aria-label="Close lecture"
             >
               <X className="w-5 h-5" />
             </button>

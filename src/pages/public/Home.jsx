@@ -63,7 +63,7 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 1. CINEMATIC MONASTIC HERO & LUXURY GIVING CAPSULE        */}
       {/* ========================================================= */}
-      <section className="relative min-h-[720px] bg-gradient-to-b from-[#070A12] via-[#0B0F19] to-[#120508] text-white overflow-hidden py-20 px-4 sm:px-8 flex items-center">
+      <section className="relative min-h-[640px] sm:min-h-[720px] bg-gradient-to-b from-[#070A12] via-[#0B0F19] to-[#120508] text-white overflow-hidden py-12 sm:py-20 px-3 xs:px-4 sm:px-8 flex items-center">
         {/* Background Dochula Peace Stupas with High-Res Monastic Atmosphere */}
         <div
           className="absolute inset-0 opacity-30 mix-blend-luminosity bg-cover bg-center pointer-events-none scale-105 transition-transform duration-1000"
@@ -74,30 +74,30 @@ export default function Home() {
         <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-[#721C24]/30 blur-3xl pointer-events-none" />
 
-        <div className="relative max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full z-10">
+        <div className="relative max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center w-full z-10">
           {/* Left Hero Narrative */}
-          <div className="lg:col-span-7 space-y-6 text-left">
+          <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-left animate-fade-in-up">
             {/* Authentic Dzongkha Inscription Badge */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 backdrop-blur-xl border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-semibold tracking-wider shadow-[0_0_20px_rgba(212,175,55,0.2)]">
-              <span className="font-tibetan text-sm sm:text-base">༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པ།</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
-              <span className="text-[10px] uppercase tracking-widest text-amber-200">Gelephu, Bhutan</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-xl border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-semibold tracking-wider shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+              <span className="font-tibetan text-xs sm:text-base truncate">༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པ།</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] flex-shrink-0" />
+              <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-amber-200 truncate">Gelephu, Bhutan</span>
             </div>
 
-            <h1 className="font-serif-brand font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-wide leading-[1.15] drop-shadow-xl">
+            <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-wide leading-[1.15] drop-shadow-xl break-words">
               BUILDING A SACRED LEGACY <br />
               <span className="gold-foil-text font-serif">OF PEACE & WISDOM</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-gray-300 max-w-xl font-light leading-relaxed">
+            <p className="text-xs sm:text-base text-gray-300 max-w-xl font-light leading-relaxed">
               Constructing the monumental 108ft Great Druk Wangyel Peace Stupa, expanding the Shedra Monastic University, and preserving authentic Buddha Dharma for global harmony in Gelephu, Bhutan.
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-wrap gap-4 pt-2">
+            <div className="flex flex-col xs:flex-row gap-3 xs:gap-4 pt-2 w-full xs:w-auto">
               <button
                 onClick={() => handleOpenDonate('Great Druk Wangyel Peace Stupa', donateAmount)}
-                className="monastic-gold-btn px-8 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider flex items-center space-x-2.5 shadow-2xl transition-all group"
+                className="monastic-gold-btn px-6 sm:px-8 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2.5 shadow-2xl transition-all group"
               >
                 <Heart className="w-4 h-4 text-[#721C24] fill-[#721C24] group-hover:scale-125 transition-transform" />
                 <span className="font-serif-brand tracking-widest">OFFER DANA / DONATE</span>
@@ -105,7 +105,7 @@ export default function Home() {
 
               <Link
                 to="/about"
-                className="bg-white/10 hover:bg-white/20 backdrop-blur-xl text-white px-7 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider flex items-center space-x-2 border border-white/30 transition-all hover:border-[#D4AF37] shadow-lg group"
+                className="bg-white/10 hover:bg-white/20 backdrop-blur-xl text-white px-6 sm:px-7 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 border border-white/30 transition-all hover:border-[#D4AF37] shadow-lg group"
               >
                 <span>EXPLORE OUR WORK</span>
                 <ArrowRight className="w-4 h-4 text-[#D4AF37] group-hover:translate-x-1 transition-transform" />
@@ -113,7 +113,7 @@ export default function Home() {
             </div>
 
             {/* Mini Trust Highlights */}
-            <div className="pt-4 flex flex-wrap items-center gap-6 text-xs text-gray-400 font-light border-t border-white/10">
+            <div className="pt-3 sm:pt-4 flex flex-wrap items-center gap-4 sm:gap-6 text-[11px] sm:text-xs text-gray-400 font-light border-t border-white/10">
               <div className="flex items-center gap-2">
                 <Shield className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                 <span>100% Tax-Exempt (80G Guaranteed)</span>
@@ -234,61 +234,61 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 2. IMPACT STATS RIBBON                                    */}
       {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 -mt-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <section className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-8 relative z-10 -mt-6 sm:-mt-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {/* Stat 1: Stupa */}
-          <div className="glass-luxury-card p-6 rounded-2xl flex items-center space-x-4 border-l-4 border-l-amber-500">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-700 shadow-sm p-3">
-              <Landmark className="w-6 h-6" />
+          <div className="glass-luxury-card p-4 sm:p-6 rounded-2xl flex flex-col xs:flex-row items-start xs:items-center space-y-2 xs:space-y-0 xs:space-x-3.5 sm:space-x-4 border-l-4 border-l-amber-500 hover:-translate-y-1 transition-all duration-300">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-700 shadow-sm p-2.5 sm:p-3 flex-shrink-0">
+              <Landmark className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <div className="font-serif-brand font-extrabold text-2xl sm:text-3xl text-[#0F172A]">
-                108 <span className="text-amber-600 text-lg">FT</span>
+              <div className="font-serif-brand font-extrabold text-xl xs:text-2xl sm:text-3xl text-[#0F172A] leading-none">
+                108 <span className="text-amber-600 text-sm sm:text-lg">FT</span>
               </div>
-              <p className="text-xs font-bold text-gray-700">Great Peace Stupa</p>
-              <p className="text-[11px] text-gray-500">Monument in Gelephu, Bhutan</p>
+              <p className="text-xs font-bold text-gray-700 mt-1">Great Peace Stupa</p>
+              <p className="text-[10px] sm:text-[11px] text-gray-500 hidden xs:block">Gelephu, Bhutan</p>
             </div>
           </div>
 
           {/* Stat 2: Shedra Monks */}
-          <div className="glass-luxury-card p-6 rounded-2xl flex items-center space-x-4 border-l-4 border-l-blue-500">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-700 shadow-sm p-3">
-              <GraduationCap className="w-6 h-6" />
+          <div className="glass-luxury-card p-4 sm:p-6 rounded-2xl flex flex-col xs:flex-row items-start xs:items-center space-y-2 xs:space-y-0 xs:space-x-3.5 sm:space-x-4 border-l-4 border-l-blue-500 hover:-translate-y-1 transition-all duration-300">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-700 shadow-sm p-2.5 sm:p-3 flex-shrink-0">
+              <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <div className="font-serif-brand font-extrabold text-2xl sm:text-3xl text-[#0F172A]">
-                350<span className="text-blue-600">+</span>
+              <div className="font-serif-brand font-extrabold text-xl xs:text-2xl sm:text-3xl text-[#0F172A] leading-none">
+                350<span className="text-blue-600 text-sm sm:text-lg">+</span>
               </div>
-              <p className="text-xs font-bold text-gray-700">Resident Monk Scholars</p>
-              <p className="text-[11px] text-gray-500">Full residential Shedra education</p>
+              <p className="text-xs font-bold text-gray-700 mt-1">Resident Monks</p>
+              <p className="text-[10px] sm:text-[11px] text-gray-500 hidden xs:block">Shedra university scholars</p>
             </div>
           </div>
 
           {/* Stat 3: Butter Lamps */}
-          <div className="glass-luxury-card p-6 rounded-2xl flex items-center space-x-4 border-l-4 border-l-rose-500">
-            <div className="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-700 shadow-sm p-3">
-              <Flame className="w-6 h-6" />
+          <div className="glass-luxury-card p-4 sm:p-6 rounded-2xl flex flex-col xs:flex-row items-start xs:items-center space-y-2 xs:space-y-0 xs:space-x-3.5 sm:space-x-4 border-l-4 border-l-rose-500 hover:-translate-y-1 transition-all duration-300">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-700 shadow-sm p-2.5 sm:p-3 flex-shrink-0">
+              <Flame className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <div className="font-serif-brand font-extrabold text-2xl sm:text-3xl text-[#0F172A]">
-                108 <span className="text-rose-600 text-lg">DAILY</span>
+              <div className="font-serif-brand font-extrabold text-xl xs:text-2xl sm:text-3xl text-[#0F172A] leading-none">
+                108 <span className="text-rose-600 text-xs sm:text-base font-bold">DAILY</span>
               </div>
-              <p className="text-xs font-bold text-gray-700">Consecrated Butter Lamps</p>
-              <p className="text-[11px] text-gray-500">Dedicated prayers for donors</p>
+              <p className="text-xs font-bold text-gray-700 mt-1">Butter Lamps</p>
+              <p className="text-[10px] sm:text-[11px] text-gray-500 hidden xs:block">Dedicated merit prayers</p>
             </div>
           </div>
 
           {/* Stat 4: Tax Exemption */}
-          <div className="glass-luxury-card p-6 rounded-2xl flex items-center space-x-4 border-l-4 border-l-emerald-500">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-700 shadow-sm p-3">
-              <Shield className="w-6 h-6" />
+          <div className="glass-luxury-card p-4 sm:p-6 rounded-2xl flex flex-col xs:flex-row items-start xs:items-center space-y-2 xs:space-y-0 xs:space-x-3.5 sm:space-x-4 border-l-4 border-l-emerald-500 hover:-translate-y-1 transition-all duration-300">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-700 shadow-sm p-2.5 sm:p-3 flex-shrink-0">
+              <Shield className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <div className="font-serif-brand font-extrabold text-2xl sm:text-3xl text-emerald-800">
-                100<span className="text-emerald-600">%</span>
+              <div className="font-serif-brand font-extrabold text-xl xs:text-2xl sm:text-3xl text-emerald-800 leading-none">
+                100<span className="text-emerald-600 text-sm sm:text-lg">%</span>
               </div>
-              <p className="text-xs font-bold text-gray-700">Tax Deductible</p>
-              <p className="text-[11px] text-gray-500">Instant signed 80G tax receipt</p>
+              <p className="text-xs font-bold text-gray-700 mt-1">Tax Deductible</p>
+              <p className="text-[10px] sm:text-[11px] text-gray-500 hidden xs:block">Official 80G tax receipt</p>
             </div>
           </div>
         </div>
@@ -847,11 +847,12 @@ export default function Home() {
 
       {/* Video Lightbox Modal */}
       {videoModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-4xl bg-gray-950 rounded-2xl overflow-hidden border border-[#D4AF37]/50 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 xs:p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+          <div className="relative w-full max-w-4xl bg-gray-950 rounded-2xl overflow-hidden border border-[#D4AF37]/50 shadow-2xl animate-scale-in">
             <button
               onClick={() => setVideoModalOpen(false)}
-              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#721C24] transition-colors"
+              className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-[#721C24] transition-colors border border-white/20"
+              aria-label="Close documentary"
             >
               <X className="w-5 h-5" />
             </button>

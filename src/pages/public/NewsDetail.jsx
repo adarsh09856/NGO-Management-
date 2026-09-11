@@ -72,29 +72,29 @@ export default function NewsDetail() {
   }
 
   return (
-    <div className="w-full bg-[#FCFBF9] min-h-screen py-12 px-4 sm:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="w-full bg-[#FCFBF9] min-h-screen py-8 sm:py-14 px-3 xs:px-4 sm:px-8">
+      <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
         {/* Navigation Breadcrumb */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <Link
             to="/news-events"
-            className="inline-flex items-center gap-2 text-xs font-serif font-bold text-[#721C24] hover:text-[#D4AF37] transition-colors"
+            className="inline-flex items-center gap-1.5 sm:gap-2 text-xs font-serif font-bold text-[#721C24] hover:text-[#D4AF37] transition-colors truncate"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>← Back to All Ceremonies & News</span>
+            <ArrowLeft className="w-4 h-4 flex-shrink-0" />
+            <span className="truncate">← Back to Ceremonies</span>
           </Link>
 
           <button
             onClick={handleShare}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-[#D4AF37]/30 text-xs font-serif text-gray-700 hover:border-[#D4AF37] transition-all shadow-sm"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#D4AF37]/30 text-xs font-serif text-gray-700 hover:border-[#D4AF37] transition-all shadow-sm flex-shrink-0"
           >
             <Share2 className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>{copied ? 'Link Copied!' : 'Share Event'}</span>
+            <span>{copied ? 'Copied!' : 'Share'}</span>
           </button>
         </div>
 
         {/* Hero Image */}
-        <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-[#D4AF37]/30 max-h-[480px] bg-[#1A0B0E]">
+        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-[#D4AF37]/30 max-h-[480px] bg-[#1A0B0E]">
           <img
             src={post.banner_image || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1200'}
             alt={post.title}
@@ -102,15 +102,15 @@ export default function NewsDetail() {
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-          <div className="absolute top-4 right-4 bg-[#1A0B0E]/90 text-[#D4AF37] text-xs font-serif font-bold uppercase tracking-widest px-4 py-1.5 rounded-full border border-[#D4AF37]/50 shadow-lg backdrop-blur-sm">
+          <div className="absolute top-3 sm:top-4 right-3 sm:right-4 bg-[#1A0B0E]/90 text-[#D4AF37] text-[10px] sm:text-xs font-serif font-bold uppercase tracking-widest px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border border-[#D4AF37]/50 shadow-lg backdrop-blur-sm">
             {post.category}
           </div>
         </div>
 
         {/* Event Card Header */}
-        <article className="glass-luxury-card p-6 sm:p-12 space-y-8 rounded-3xl border border-[#D4AF37]/30 shadow-xl">
-          <div className="space-y-4">
-            <h1 className="font-editorial text-3xl sm:text-4xl md:text-5xl text-[#1A0B0E] leading-tight tracking-tight">
+        <article className="glass-luxury-card p-4 xs:p-6 sm:p-12 space-y-6 sm:space-y-8 rounded-2xl sm:rounded-3xl border border-[#D4AF37]/30 shadow-xl animate-fade-in-up">
+          <div className="space-y-3 sm:space-y-4">
+            <h1 className="font-editorial text-2xl xs:text-3xl sm:text-4xl md:text-5xl text-[#1A0B0E] leading-tight tracking-tight break-words">
               {post.title}
             </h1>
 

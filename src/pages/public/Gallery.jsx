@@ -64,13 +64,13 @@ export default function Gallery() {
   };
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-8 relative z-10 max-w-7xl mx-auto space-y-10">
+    <div className="min-h-screen py-8 sm:py-16 px-3 xs:px-4 sm:px-8 relative z-10 max-w-7xl mx-auto space-y-8 sm:space-y-10">
       {/* Header */}
-      <div className="text-center space-y-3 max-w-2xl mx-auto">
+      <div className="text-center space-y-3 max-w-2xl mx-auto animate-fade-in-up">
         <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
           Sacred Photo Archives
         </span>
-        <h1 className="font-serif-brand font-extrabold text-3xl sm:text-5xl text-[#0F172A] tracking-wide">
+        <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-5xl text-[#0F172A] tracking-wide break-words">
           Monastery Photo & Video Gallery
         </h1>
         <p className="text-xs sm:text-sm text-gray-600 font-light leading-relaxed">
@@ -79,14 +79,14 @@ export default function Gallery() {
       </div>
 
       {/* Filter Controls: Media Type Tabs + Categories */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 glass-luxury-card p-4 sm:p-5 rounded-2xl border border-gray-200/80 shadow-md">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4 glass-luxury-card p-3 xs:p-4 sm:p-5 rounded-2xl border border-gray-200/80 shadow-md">
         {/* Media Type Filter */}
-        <div className="flex items-center bg-gray-100 p-1 rounded-full border border-gray-200">
+        <div className="flex items-center bg-gray-100 p-1 rounded-full border border-gray-200 w-full sm:w-auto justify-center">
           {['All', 'Photos', 'Videos'].map((t) => (
             <button
               key={t}
               onClick={() => setMediaTypeFilter(t)}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex-1 sm:flex-initial ${
                 mediaTypeFilter === t
                   ? 'bg-[#070A12] text-[#D4AF37] shadow-sm'
                   : 'text-gray-700 hover:text-[#0F172A]'
@@ -98,7 +98,7 @@ export default function Gallery() {
         </div>
 
         {/* Category Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-thin">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 no-scrollbar w-full sm:w-auto">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -169,11 +169,12 @@ export default function Gallery() {
 
       {/* Lightbox / Video Modal */}
       {lightboxItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-4xl bg-gray-950 rounded-2xl overflow-hidden border border-[#D4AF37]/50 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 xs:p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+          <div className="relative w-full max-w-4xl bg-gray-950 rounded-2xl overflow-hidden border border-[#D4AF37]/50 shadow-2xl animate-scale-in">
             <button
               onClick={() => setLightboxItem(null)}
-              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#721C24] transition-colors"
+              className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#721C24] transition-colors border border-white/20"
+              aria-label="Close lightbox"
             >
               <X className="w-5 h-5" />
             </button>
