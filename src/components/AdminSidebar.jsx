@@ -4,7 +4,7 @@ import {
   LayoutDashboard, HeartHandshake, Video, Newspaper, Image as ImageIcon,
   Landmark, Warehouse, UserCheck, FolderKanban, MessageSquareShare,
   BarChart3, UserCog, Settings, ClipboardList, ChevronDown, ChevronRight, X, Flame,
-  GraduationCap, Award, BookOpen
+  GraduationCap, Award, BookOpen, CreditCard
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -150,6 +150,15 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     • Campaigns & Causes
+                  </Link>
+                  <Link
+                    to="/admin/payment-gateways"
+                    onClick={handleNavClick}
+                    className={`block py-1 px-2 rounded hover:text-white ${
+                      isActive('/admin/payment-gateways') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
+                    }`}
+                  >
+                    • Payment Gateways & Banking
                   </Link>
                 </div>
               )}
@@ -502,6 +511,19 @@ export default function AdminSidebar({ isOpen, onClose }) {
               >
                 <ClipboardList className="w-4 h-4 text-[#D4AF37]" />
                 <span>Security Audit Trail</span>
+              </Link>
+
+              <Link
+                to="/admin/payment-gateways"
+                onClick={handleNavClick}
+                className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors ${
+                  isActive('/admin/payment-gateways')
+                    ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                    : 'text-gray-300 hover:bg-[#0F172A] hover:text-white'
+                }`}
+              >
+                <CreditCard className="w-4 h-4 text-[#D4AF37]" />
+                <span>Payment Gateways & Accounts</span>
               </Link>
 
               <Link

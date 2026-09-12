@@ -380,8 +380,8 @@ router.post('/payments/reconcile/:orderId', authenticateToken, paymentCtrl.recon
 // 18. SETTINGS, USERS, AUDIT LOG & REPORTS
 // ==========================================
 router.get('/settings', settingsCtrl.getSettings);
-router.put('/settings', authenticateToken, requireRole('super_admin'), settingsCtrl.updateSettings);
-router.post('/settings', authenticateToken, requireRole('super_admin'), settingsCtrl.updateSettings);
+router.put('/settings', authenticateToken, requirePermissionOrRole('settings:edit', 'super_admin', 'admin'), settingsCtrl.updateSettings);
+router.post('/settings', authenticateToken, requirePermissionOrRole('settings:edit', 'super_admin', 'admin'), settingsCtrl.updateSettings);
 router.get('/users', authenticateToken, requireRole('super_admin'), settingsCtrl.getUsers);
 router.post('/users', authenticateToken, requireRole('super_admin'), settingsCtrl.createUser);
 router.put('/users/:id', authenticateToken, requireRole('super_admin'), settingsCtrl.updateUser);

@@ -55,9 +55,31 @@ export default function DonationModal({
 
   // Processing & Success
   const [processingStatus, setProcessingStatus] = useState('Securing 256-Bit SSL Handshake...');
-  const [completedDonation, setCompletedDonation] = useState(null);
-
   // Causes list
+  const [gatewaySettings, setGatewaySettings] = useState({
+    upi_merchant_vpa: 'drodulphendeyling@bob',
+    upi_merchant_name: 'Drodul Phendey Ling Monastery Foundation',
+    bank_account_name: 'Drodul Phendey Ling Monastery',
+    bank_account_no: '20188944110023',
+    bank_name: 'Bank of Bhutan Ltd. (BoB)',
+    bank_swift_code: 'BOBNBTBT',
+    bank_branch: 'Gelephu Main Branch',
+    payment_upi_enabled: '1',
+    payment_cards_enabled: '1',
+    payment_bank_wire_enabled: '1'
+  });
+
+  useEffect(() => {
+    api.get('/settings').then(res => {
+      if (res.data?.success && res.data?.data) {
+        setGatewaySettings(prev => ({
+          ...prev,
+          ...res.data.data
+        }));
+      }
+    }).catch(() => {});
+  }, []);
+
   const causes = [
     { id: 1, title: 'Great Druk Wangyel Peace Stupa', subtitle: '108ft Sacred Monument for World Peace', tag: 'Monument' },
     { id: 2, title: 'Shedra Monastic University', subtitle: 'Scholarships & Higher Buddhist Philosophy', tag: 'Education' },
@@ -688,7 +710,7 @@ export default function DonationModal({
                   <div className="w-36 h-36 bg-white p-2.5 rounded-2xl border-2 border-[#D4AF37] shadow-md flex flex-col items-center justify-center flex-shrink-0">
                     <img
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(
-                        `upi://pay?pa=drodulphendeyling@bob&pn=Drodul+Phendey+Ling+Monastery&am=${finalAmount}&cu=${currency}`
+                        `upi://pay?pa=${gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn=${encodeURIComponent(gatewaySettings.upi_merchant_name || 'Drodul Phendey Ling Monastery')}&am=${finalAmount}&cu=${currency}`
                       )}`}
                       alt="Monastery UPI QR"
                       className="w-full h-full object-contain rounded-lg"
@@ -705,11 +727,11 @@ export default function DonationModal({
 
                     <div className="flex items-center space-x-2 pt-1 justify-center sm:justify-start">
                       <div className="bg-white px-3 py-1.5 rounded-xl border border-gray-300 text-xs font-mono font-bold text-gray-800 select-all">
-                        drodulphendeyling@bob
+                        {gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob'}
                       </div>
                       <button
                         type="button"
-                        onClick={() => handleCopy('drodulphendeyling@bob', 'upi')}
+                        onClick={() => handleCopy(gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob', 'upi')}
                         className="p-1.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 transition-colors"
                         title="Copy UPI ID"
                       >
@@ -855,24 +877,24 @@ export default function DonationModal({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
                   <div className="bg-white p-2 rounded-xl border border-gray-200">
                     <span className="text-gray-500 block text-[10px]">Beneficiary Name</span>
-                    <strong className="text-gray-900 font-bold">Drodul Phendey Ling Monastery</strong>
+                    <strong className="text-gray-900 font-bold">{gatewaySettings.bank_account_name || 'Drodul Phendey Ling Monastery'}</strong>
                   </div>
 
                   <div className="bg-white p-2 rounded-xl border border-gray-200 flex items-center justify-between">
                     <div>
                       <span className="text-gray-500 block text-[10px]">Bank Name</span>
-                      <strong className="text-gray-900 font-bold">Bank of Bhutan Ltd. (BoB)</strong>
+                      <strong className="text-gray-900 font-bold">{gatewaySettings.bank_name || 'Bank of Bhutan Ltd. (BoB)'}</strong>
                     </div>
                   </div>
 
                   <div className="bg-white p-2 rounded-xl border border-gray-200 flex items-center justify-between">
                     <div>
                       <span className="text-gray-500 block text-[10px]">Account Number</span>
-                      <strong className="text-gray-900 font-mono font-bold">20188944110023</strong>
+                      <strong className="text-gray-900 font-mono font-bold">{gatewaySettings.bank_account_no || '20188944110023'}</strong>
                     </div>
                     <button
                       type="button"
-                      onClick={() => handleCopy('20188944110023', 'acct')}
+                      onClick={() => handleCopy(gatewaySettings.bank_account_no || '20188944110023', 'acct')}
                       className="p-1 text-gray-500 hover:text-gray-800"
                     >
                       {copiedField === 'acct' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
@@ -882,11 +904,11 @@ export default function DonationModal({
                   <div className="bg-white p-2 rounded-xl border border-gray-200 flex items-center justify-between">
                     <div>
                       <span className="text-gray-500 block text-[10px]">SWIFT Code (International)</span>
-                      <strong className="text-gray-900 font-mono font-bold">BOBNBTBT</strong>
+                      <strong className="text-gray-900 font-mono font-bold">{gatewaySettings.bank_swift_code || 'BOBNBTBT'}</strong>
                     </div>
                     <button
                       type="button"
-                      onClick={() => handleCopy('BOBNBTBT', 'swift')}
+                      onClick={() => handleCopy(gatewaySettings.bank_swift_code || 'BOBNBTBT', 'swift')}
                       className="p-1 text-gray-500 hover:text-gray-800"
                     >
                       {copiedField === 'swift' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}

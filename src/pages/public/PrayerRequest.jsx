@@ -20,6 +20,25 @@ export default function PrayerRequest() {
   const [paymentChannel, setPaymentChannel] = useState('upi');
   const [upiUtr, setUpiUtr] = useState('');
   const [wireRef, setWireRef] = useState('');
+  const [gatewaySettings, setGatewaySettings] = useState({
+    upi_merchant_vpa: 'drodulphendeyling@bob',
+    upi_merchant_name: 'Drodul Phendey Ling Monastery',
+    bank_account_name: 'Drodul Phendey Ling Monastic Foundation',
+    bank_account_no: '20188944110023',
+    bank_name: 'Bank of Bhutan (BoB)',
+    bank_swift_code: 'BOBNBTBT'
+  });
+
+  useEffect(() => {
+    api.get('/settings').then(res => {
+      if (res.data?.success && res.data?.data) {
+        setGatewaySettings(prev => ({
+          ...prev,
+          ...res.data.data
+        }));
+      }
+    }).catch(() => {});
+  }, []);
 
   const [loading, setLoading] = useState(false);
   const [submittedData, setSubmittedData] = useState(null);
@@ -386,7 +405,7 @@ export default function PrayerRequest() {
                     <div className="w-28 h-28 bg-white p-2 rounded-xl border border-[#D4AF37] shadow-sm flex-shrink-0">
                       <img
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(
-                          `upi://pay?pa=drodulphendeyling@bob&pn=Drodul+Phendey+Ling+Monastery&am=${offeringAmount}&cu=INR`
+                          `upi://pay?pa=${gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn=${encodeURIComponent(gatewaySettings.upi_merchant_name || 'Drodul Phendey Ling Monastery')}&am=${offeringAmount}&cu=INR`
                         )}`}
                         alt="Monastery UPI QR"
                         className="w-full h-full object-contain rounded"
@@ -396,7 +415,7 @@ export default function PrayerRequest() {
                       <div className="text-gray-700">
                         Scan QR with any UPI App and deposit <strong>₹{offeringAmount.toLocaleString()}</strong> into:
                         <div className="font-mono font-bold text-gray-900 bg-white p-1.5 rounded border border-gray-200 mt-1 inline-block select-all">
-                          drodulphendeyling@bob
+                          {gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob'}
                         </div>
                       </div>
                       <div>
@@ -419,19 +438,19 @@ export default function PrayerRequest() {
                     <div className="p-3 bg-white rounded-xl border border-gray-200 space-y-1">
                       <div className="flex justify-between">
                         <span className="text-gray-500">Bank Name:</span>
-                        <span className="font-bold">Bank of Bhutan (BoB)</span>
+                        <span className="font-bold">{gatewaySettings.bank_name || 'Bank of Bhutan (BoB)'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500">Account Name:</span>
-                        <span className="font-bold">Drodul Phendey Ling Monastic Foundation</span>
+                        <span className="font-bold">{gatewaySettings.bank_account_name || 'Drodul Phendey Ling Monastic Foundation'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500">Account No:</span>
-                        <span className="font-mono font-bold select-all">20188944110023</span>
+                        <span className="font-mono font-bold select-all">{gatewaySettings.bank_account_no || '20188944110023'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500">SWIFT / IFSC:</span>
-                        <span className="font-mono font-bold select-all">BOBNBTBT</span>
+                        <span className="font-mono font-bold select-all">{gatewaySettings.bank_swift_code || 'BOBNBTBT'}</span>
                       </div>
                     </div>
                     <div>
