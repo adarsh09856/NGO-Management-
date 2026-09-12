@@ -266,7 +266,7 @@ export default function DonationModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-900/30 backdrop-blur-sm overflow-y-auto animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget && onClose) onClose();
       }}
