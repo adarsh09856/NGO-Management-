@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   X, Heart, Shield, CheckCircle2, Download, ArrowRight, ArrowLeft,
   Lock, Sparkles, Building2, CreditCard, QrCode, Smartphone, Copy,
-  Check, ExternalLink, RefreshCw, FileText, CheckCircle
+  Check, ExternalLink, RefreshCw, FileText, CheckCircle, Clock, AlertCircle
 } from 'lucide-react';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
@@ -41,6 +41,7 @@ export default function DonationModal({
   // Step 3: Payment Channel
   const [paymentChannel, setPaymentChannel] = useState('upi'); // 'upi', 'card', 'bank_wire'
   const [upiApp, setUpiApp] = useState('gpay'); // 'gpay', 'phonepe', 'paytm', 'bhim'
+  const [upiUtr, setUpiUtr] = useState(''); // Real 12-digit UPI UTR proof
   const [copiedField, setCopiedField] = useState(null);
 
   // Card Inputs
@@ -139,10 +140,40 @@ export default function DonationModal({
     setCurrentStep(3);
   };
 
-  // Step 3 Execution: Interactive Realistic Payment Handshake
+  // Step 3 Execution: Interactive Realistic Payment Handshake with Real Proof Verification
   const handleFinalizePayment = async () => {
-    // Validations based on channel
-    if (paymentChannel === 'card') {
+    // 1. Mandatory Validations based on payment channel
+    let transactionRef = '';
+    let isPendingVerification = false;
+    let paymentMethod = 'online_gateway';
+
+    if (paymentChannel === 'upi') {
+      const cleanUtr = upiUtr.trim();
+      if (!cleanUtr) {
+        error('Please enter your 12-digit UPI Reference / UTR Number from Google Pay, PhonePe, Paytm, or BHIM as payment proof.');
+        return;
+      }
+      if (cleanUtr.length < 8) {
+        error('Please enter a valid UPI Reference / UTR Number (at least 8-12 characters).');
+        return;
+      }
+      transactionRef = cleanUtr;
+      isPendingVerification = true;
+      paymentMethod = 'upi_qr';
+    } else if (paymentChannel === 'bank_wire') {
+      const cleanWire = wireRef.trim();
+      if (!cleanWire) {
+        error('Please enter your Bank Wire / IMPS / NEFT Transfer Reference or UTR Number as proof of deposit.');
+        return;
+      }
+      if (cleanWire.length < 6) {
+        error('Please enter a valid Bank Transfer Reference Number.');
+        return;
+      }
+      transactionRef = cleanWire;
+      isPendingVerification = true;
+      paymentMethod = 'bank_transfer';
+    } else if (paymentChannel === 'card') {
       const rawCard = cardNumber.replace(/\s/g, '');
       if (rawCard.length < 15) {
         error('Please enter a valid 16-digit debit or credit card number.');
@@ -156,27 +187,32 @@ export default function DonationModal({
         error('Please enter a valid 3-digit CVV security code.');
         return;
       }
+      transactionRef = `CARD-${Date.now()}`;
+      isPendingVerification = false;
+      paymentMethod = 'online_gateway';
     }
 
     try {
       setCurrentStep(4); // Processing
 
-      // Simulated realistic banking handshake steps
-      setProcessingStatus('Establishing 256-Bit SSL Encrypted Session...');
-      await new Promise((r) => setTimeout(r, 600));
+      const paymentStatus = isPendingVerification ? 'pending_verification' : 'completed';
+
+      // Realistic banking handshake sequence
+      setProcessingStatus('Securing 256-Bit SSL Encrypted Session...');
+      await new Promise((r) => setTimeout(r, 500));
 
       if (paymentChannel === 'upi') {
-        setProcessingStatus(`Awaiting UPI Confirmation from ${upiApp.toUpperCase()} Gateway...`);
-        await new Promise((r) => setTimeout(r, 800));
-      } else if (paymentChannel === 'card') {
-        setProcessingStatus('Connecting to 3D-Secure Bank Verification...');
-        await new Promise((r) => setTimeout(r, 800));
+        setProcessingStatus(`Registering UPI UTR (${transactionRef}) with Monastic Treasury...`);
+        await new Promise((r) => setTimeout(r, 700));
+      } else if (paymentChannel === 'bank_wire') {
+        setProcessingStatus(`Registering BoB Wire Reference (${transactionRef}) with Monastic Treasury...`);
+        await new Promise((r) => setTimeout(r, 700));
       } else {
-        setProcessingStatus('Registering SWIFT Wire Confirmation with Bank of Bhutan...');
+        setProcessingStatus('Connecting to 3D-Secure Bank Verification...');
         await new Promise((r) => setTimeout(r, 700));
       }
 
-      setProcessingStatus('Recording Dana in Monastic Ledger & Generating 80G Tax Receipt...');
+      setProcessingStatus('Logging Offering into Monastic Ledger & Generating Receipt...');
 
       // Post to live backend endpoint
       const res = await api.post('/donations/public-offering', {
@@ -189,16 +225,29 @@ export default function DonationModal({
         campaignId,
         donationFor,
         donationType: frequency,
-        paymentMethod: paymentChannel === 'bank_wire' ? 'bank_transfer' : 'online_gateway',
+        paymentMethod,
+        transactionRef,
+        paymentStatus,
         remarks: paymentChannel === 'bank_wire'
-          ? `Direct BoB Wire Transfer (Ref: ${wireRef || 'Pending Receipt'}) for ${donationFor}. Intention: ${dedicationPrayer || 'General Merit'}`
-          : `${paymentChannel.toUpperCase()} Merit Offering for ${donationFor}. Intention: ${dedicationPrayer || 'General Merit'}`
+          ? `BoB Wire Transfer (Ref: ${transactionRef}) for ${donationFor}. Intention: ${dedicationPrayer || 'General Merit'}`
+          : paymentChannel === 'upi'
+          ? `UPI Transfer via ${upiApp.toUpperCase()} (UTR: ${transactionRef}) for ${donationFor}. Intention: ${dedicationPrayer || 'General Merit'}`
+          : `Card Offering for ${donationFor}. Intention: ${dedicationPrayer || 'General Merit'}`
       });
 
       if (res.data?.success) {
-        setCompletedDonation(res.data.data);
-        setCurrentStep(5); // Success
-        success('Merit offering received! Your official tax receipt has been generated.');
+        setCompletedDonation({
+          ...res.data.data,
+          paymentStatus,
+          transactionRef,
+          paymentMethod
+        });
+        setCurrentStep(5); // Success / Confirmation
+        if (isPendingVerification) {
+          success('Merit offering submitted with transaction proof! Treasury reconciliation pending.');
+        } else {
+          success('Merit offering received! Your official tax receipt has been generated.');
+        }
       } else {
         throw new Error(res.data?.message || 'Transaction could not be completed.');
       }
@@ -648,10 +697,10 @@ export default function DonationModal({
 
                   <div className="space-y-2 flex-1 text-center sm:text-left">
                     <span className="text-[10px] uppercase tracking-wider font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
-                      Scan with any UPI App
+                      Step 1: Scan & Pay via any UPI App
                     </span>
                     <p className="text-xs text-gray-700 font-sans leading-relaxed">
-                      Scan using <strong>Google Pay, PhonePe, Paytm, or BHIM</strong>. Your donation is automatically linked to your receipt.
+                      Scan using <strong>Google Pay, PhonePe, Paytm, or BHIM</strong> for direct deposit into the Monastery account.
                     </p>
 
                     <div className="flex items-center space-x-2 pt-1 justify-center sm:justify-start">
@@ -673,7 +722,7 @@ export default function DonationModal({
                 {/* Popular App Selector */}
                 <div className="pt-2 border-t border-gray-200/80">
                   <span className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 text-center sm:text-left">
-                    Select Your Installed UPI App:
+                    Selected Payment App:
                   </span>
                   <div className="grid grid-cols-4 gap-2 text-xs font-semibold">
                     {[
@@ -695,6 +744,33 @@ export default function DonationModal({
                         {app.name}
                       </button>
                     ))}
+                  </div>
+                </div>
+
+                {/* Step 2: Mandatory UPI UTR / Transaction Proof Input */}
+                <div className="pt-3 border-t border-[#D4AF37]/30">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-[11px] font-bold text-[#721C24] uppercase tracking-wider">
+                      Step 2: Enter 12-Digit UPI Ref / UTR Number <span className="text-red-500">*</span>
+                    </label>
+                    <span className="text-[10px] font-semibold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300">
+                      Mandatory Proof
+                    </span>
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    maxLength={25}
+                    placeholder="e.g. 428912345678 (From GPay / PhonePe / Paytm payment slip)"
+                    value={upiUtr}
+                    onChange={(e) => setUpiUtr(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
+                    className="w-full text-xs p-2.5 rounded-xl border-2 border-amber-300 bg-white font-mono font-bold text-gray-900 focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] focus:outline-none"
+                  />
+                  <div className="flex items-start gap-1.5 mt-2 text-[10.5px] text-gray-600 bg-amber-50/80 p-2 rounded-lg border border-amber-200/60 font-sans">
+                    <Shield className="w-3.5 h-3.5 text-amber-700 flex-shrink-0 mt-0.5" />
+                    <span>
+                      <strong>Real Bank Reconciliation:</strong> Our monastic treasury reconciles this 12-digit UTR against our Bank of Bhutan account before certifying your permanent Section 80G tax receipt.
+                    </span>
                   </div>
                 </div>
               </div>
@@ -818,17 +894,26 @@ export default function DonationModal({
                   </div>
                 </div>
 
-                <div className="pt-1">
-                  <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
-                    Your Wire UTR / Transaction Reference (Optional)
-                  </label>
+                <div className="pt-2 border-t border-[#D4AF37]/30">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-[11px] font-bold text-[#721C24] uppercase tracking-wider">
+                      Bank Transfer Reference / UTR Number <span className="text-red-500">*</span>
+                    </label>
+                    <span className="text-[10px] font-semibold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300">
+                      Mandatory Proof
+                    </span>
+                  </div>
                   <input
                     type="text"
-                    placeholder="e.g. UTR / IMPS reference number..."
+                    required
+                    placeholder="e.g. BoB IMPS Ref, NEFT / SWIFT Transaction ID"
                     value={wireRef}
                     onChange={(e) => setWireRef(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-xl border border-gray-300 bg-white focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
+                    className="w-full text-xs p-2.5 rounded-xl border-2 border-amber-300 bg-white font-mono font-bold text-gray-900 focus:ring-2 focus:ring-[#D4AF37] focus:outline-none"
                   />
+                  <p className="text-[10.5px] text-gray-600 mt-1.5">
+                    Enter the reference number from your bank transfer slip so the monastery treasury can verify the deposit.
+                  </p>
                 </div>
               </div>
             )}
@@ -878,66 +963,158 @@ export default function DonationModal({
         {/* ============================================================== */}
         {currentStep === 5 && (
           <div className="p-6 sm:p-8 text-center space-y-4 font-serif flex-1 overflow-y-auto">
-            <div className="w-16 h-16 bg-emerald-50 border-2 border-emerald-500 rounded-full flex items-center justify-center mx-auto text-emerald-600 shadow-md">
-              <CheckCircle2 className="w-9 h-9" />
-            </div>
+            {completedDonation?.paymentStatus === 'pending_verification' ? (
+              <>
+                <div className="w-16 h-16 bg-amber-50 border-2 border-amber-500 rounded-full flex items-center justify-center mx-auto text-amber-600 shadow-md">
+                  <Clock className="w-9 h-9 text-amber-600" />
+                </div>
 
-            <div className="space-y-1">
-              <span className="text-amber-800 text-[10px] uppercase font-bold tracking-widest bg-amber-100 px-3 py-0.5 rounded-full border border-amber-200">
-                Auspicious Offering Confirmed
-              </span>
-              <h4 className="font-editorial text-xl sm:text-2xl text-[#1A0B0E] font-bold">
-                Tashi Delek! Merit Offering Received
-              </h4>
-              <p className="text-xs text-gray-600 max-w-md mx-auto leading-relaxed">
-                Thank you, <strong>{donorName}</strong>. May your virtuous offering bring eternal peace, wisdom, and flourishing to all sentient beings.
-              </p>
-            </div>
+                <div className="space-y-1">
+                  <span className="text-amber-800 text-[10px] uppercase font-bold tracking-widest bg-amber-100 px-3 py-1 rounded-full border border-amber-300 inline-flex items-center gap-1.5 shadow-sm">
+                    <Clock className="w-3 h-3 text-amber-700 animate-pulse" />
+                    Payment Proof Submitted · Pending Bank Reconciliation
+                  </span>
+                  <h4 className="font-editorial text-xl sm:text-2xl text-[#1A0B0E] font-bold">
+                    Tashi Delek! Merit Offering Recorded
+                  </h4>
+                  <p className="text-xs text-gray-600 max-w-md mx-auto leading-relaxed">
+                    Thank you, <strong>{donorName}</strong>. Your offering of <strong>{currency} {finalAmount?.toLocaleString()}</strong> has been submitted with transaction reference <strong className="font-mono text-amber-900">{completedDonation?.transactionRef || upiUtr || wireRef}</strong>.
+                  </p>
+                </div>
 
-            {/* Official Receipt Summary Card */}
-            <div className="bg-[#FAF5F0] border border-[#D4AF37]/50 rounded-2xl p-4 max-w-md mx-auto text-left text-xs space-y-2 shadow-sm font-sans">
-              <div className="flex justify-between items-center pb-2 border-b border-[#D4AF37]/20">
-                <span className="text-gray-500 font-serif">Monastery Receipt No:</span>
-                <span className="font-bold text-[#1A0B0E] font-mono text-sm">
-                  {completedDonation?.receiptNumber || 'RC-2026-CONFIRMED'}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-500">Amount Offered:</span>
-                <span className="font-bold text-emerald-700 font-mono text-sm">
-                  {currency} {finalAmount?.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-500">Sacred Cause:</span>
-                <span className="font-semibold text-gray-800 line-clamp-1">{donationFor}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-500">Statutory Tax Status:</span>
-                <span className="text-emerald-700 font-bold flex items-center gap-1">
-                  <Shield className="w-3.5 h-3.5" />
-                  Section 80G Certified
-                </span>
-              </div>
-            </div>
+                {/* Official Receipt Summary Card */}
+                <div className="bg-[#FAF5F0] border border-[#D4AF37]/50 rounded-2xl p-4 max-w-md mx-auto text-left text-xs space-y-2 shadow-sm font-sans">
+                  <div className="flex justify-between items-center pb-2 border-b border-[#D4AF37]/20">
+                    <span className="text-gray-500 font-serif">Provisional Receipt No:</span>
+                    <span className="font-bold text-[#1A0B0E] font-mono text-sm">
+                      {completedDonation?.receiptNumber || 'RC-2026-PENDING'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-500">Transaction Proof / UTR:</span>
+                    <span className="font-bold text-amber-900 font-mono text-xs bg-amber-100/70 px-2 py-0.5 rounded border border-amber-300">
+                      {completedDonation?.transactionRef || upiUtr || wireRef}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-500">Amount Offered:</span>
+                    <span className="font-bold text-emerald-700 font-mono text-sm">
+                      {currency} {finalAmount?.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-500">Sacred Cause:</span>
+                    <span className="font-semibold text-gray-800 line-clamp-1">{donationFor}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-500">Reconciliation Status:</span>
+                    <span className="text-amber-800 font-bold bg-amber-100 px-2 py-0.5 rounded flex items-center gap-1 text-[11px]">
+                      <Clock className="w-3 h-3 text-amber-700" />
+                      Pending Treasury Verification
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-500">Tax Deductibility:</span>
+                    <span className="text-emerald-700 font-bold flex items-center gap-1">
+                      <Shield className="w-3.5 h-3.5" />
+                      Section 80G Eligible (Provisional)
+                    </span>
+                  </div>
+                </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
-              <button
-                onClick={handleDownloadPdf}
-                className="monastic-maroon-btn px-6 py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg"
-              >
-                <Download className="w-4 h-4 text-[#D4AF37]" />
-                <span>Download Official PDF Receipt</span>
-              </button>
+                {/* Treasury Reconciliation Notice */}
+                <div className="p-3 bg-amber-50/90 border border-amber-200 rounded-xl text-[11px] text-amber-900 text-left space-y-1 max-w-md mx-auto">
+                  <div className="font-bold flex items-center gap-1.5 text-[#721C24]">
+                    <CheckCircle className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                    <span>Real-World Bank Verification Process</span>
+                  </div>
+                  <p className="text-[10.5px] leading-relaxed text-gray-700">
+                    The monastery treasury office will match your submitted UTR reference (<strong className="font-mono text-amber-950">{completedDonation?.transactionRef || upiUtr || wireRef}</strong>) directly against our Bank of Bhutan account statement. Once verified, the donation status will automatically update to <em>Completed</em> and your permanent certified receipt will be issued.
+                  </p>
+                </div>
 
-              <button
-                onClick={onClose}
-                className="px-6 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs transition-colors"
-              >
-                Complete & Close
-              </button>
-            </div>
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
+                  <button
+                    onClick={handleDownloadPdf}
+                    className="monastic-maroon-btn px-6 py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg"
+                  >
+                    <Download className="w-4 h-4 text-[#D4AF37]" />
+                    <span>Download Provisional Receipt PDF</span>
+                  </button>
+
+                  <button
+                    onClick={onClose}
+                    className="px-6 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs transition-colors"
+                  >
+                    Close & Finish
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="w-16 h-16 bg-emerald-50 border-2 border-emerald-500 rounded-full flex items-center justify-center mx-auto text-emerald-600 shadow-md">
+                  <CheckCircle2 className="w-9 h-9" />
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-amber-800 text-[10px] uppercase font-bold tracking-widest bg-amber-100 px-3 py-0.5 rounded-full border border-amber-200">
+                    Auspicious Offering Confirmed
+                  </span>
+                  <h4 className="font-editorial text-xl sm:text-2xl text-[#1A0B0E] font-bold">
+                    Tashi Delek! Merit Offering Received
+                  </h4>
+                  <p className="text-xs text-gray-600 max-w-md mx-auto leading-relaxed">
+                    Thank you, <strong>{donorName}</strong>. May your virtuous offering bring eternal peace, wisdom, and flourishing to all sentient beings.
+                  </p>
+                </div>
+
+                {/* Official Receipt Summary Card */}
+                <div className="bg-[#FAF5F0] border border-[#D4AF37]/50 rounded-2xl p-4 max-w-md mx-auto text-left text-xs space-y-2 shadow-sm font-sans">
+                  <div className="flex justify-between items-center pb-2 border-b border-[#D4AF37]/20">
+                    <span className="text-gray-500 font-serif">Monastery Receipt No:</span>
+                    <span className="font-bold text-[#1A0B0E] font-mono text-sm">
+                      {completedDonation?.receiptNumber || 'RC-2026-CONFIRMED'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-500">Amount Offered:</span>
+                    <span className="font-bold text-emerald-700 font-mono text-sm">
+                      {currency} {finalAmount?.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-500">Sacred Cause:</span>
+                    <span className="font-semibold text-gray-800 line-clamp-1">{donationFor}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-500">Statutory Tax Status:</span>
+                    <span className="text-emerald-700 font-bold flex items-center gap-1">
+                      <Shield className="w-3.5 h-3.5" />
+                      Section 80G Certified
+                    </span>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
+                  <button
+                    onClick={handleDownloadPdf}
+                    className="monastic-maroon-btn px-6 py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg"
+                  >
+                    <Download className="w-4 h-4 text-[#D4AF37]" />
+                    <span>Download Official PDF Receipt</span>
+                  </button>
+
+                  <button
+                    onClick={onClose}
+                    className="px-6 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs transition-colors"
+                  >
+                    Complete & Close
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>

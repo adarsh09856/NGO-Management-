@@ -321,8 +321,9 @@ async function runBidirectionalTests() {
     // =========================================================================
     console.log('\n--- PART B: Public Interactions are Live & Manageable in Admin Panel ---');
 
-    // [B.1] Public Dana Offering -> Admin Ledgers & Voiding
-    console.log('\n[B.1] Public Dana Offering -> Admin Ledgers & Receipt Voiding:');
+    // [B.1] Public Dana Offering (Mandatory UTR Proof) -> Admin Reconciliation & Voiding
+    console.log('\n[B.1] Public Dana Offering (Mandatory UTR Proof) -> Admin Bank Reconciliation:');
+    const testUtr = `UTR${Date.now().toString().slice(-9)}`;
     const offeringRes = await axios.post(`${baseURL}/donations/public-offering`, {
       amount: 3500,
       currency: 'INR',
@@ -331,17 +332,29 @@ async function runBidirectionalTests() {
       donorPhone: '+975 17554433',
       donationFor: 'Great Druk Wangyel Peace Stupa',
       donationType: 'one_time',
-      paymentMethod: 'online_upi',
-      remarks: 'Offering for family peace and monastery stupa'
+      paymentMethod: 'upi_qr',
+      transactionRef: testUtr,
+      paymentStatus: 'pending_verification',
+      remarks: `UPI Transfer via GPAY (UTR: ${testUtr}) for Great Druk Wangyel Peace Stupa`
     });
-    assert(offeringRes.data.success, 'Public devotee processed ₹3,500 Dana offering');
+    assert(offeringRes.data.success, 'Public devotee submitted ₹3,500 Dana offering with 12-digit UPI UTR proof');
+    const donationId = offeringRes.data.data.donationId;
     const receiptNo = offeringRes.data.data.receiptNumber;
     const receiptId = offeringRes.data.data.receiptId;
 
-    // Admin views donation in All Donations
+    // Admin views donation in All Donations, verifies status is pending_verification and UTR is logged
     const allDonationsRes = await axios.get(`${baseURL}/donations`, adminHeaders);
     const foundDonation = allDonationsRes.data.data.find(d => d.receipt_number === receiptNo);
-    assert(!!foundDonation && parseFloat(foundDonation.amount) === 3500, 'Admin All Donations list displays the public offering of ₹3,500');
+    assert(
+      !!foundDonation &&
+      foundDonation.payment_status === 'pending_verification' &&
+      foundDonation.transaction_ref === testUtr,
+      `Admin All Donations list displays pending UTR proof (${testUtr})`
+    );
+
+    // Admin verifies & confirms payment against bank statement
+    const verifyRes = await axios.put(`${baseURL}/donations/${donationId}/verify`, {}, adminHeaders);
+    assert(verifyRes.data.success && verifyRes.data.status === 'completed', 'Admin reconciled & certified donation after verifying UTR with bank statement');
 
     // Admin inspects Accounts Dashboard to ensure income is recorded
     const accDashboard = await axios.get(`${baseURL}/accounts/dashboard`, adminHeaders);

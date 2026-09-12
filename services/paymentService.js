@@ -90,6 +90,8 @@ async function processSuccessfulDonation({
   eventId,
   paymentId,
   orderId,
+  transactionRef,
+  paymentStatus = 'completed',
   donorName,
   donorEmail,
   donorPhone,
@@ -163,10 +165,13 @@ async function processSuccessfulDonation({
     const amountInWords = numberToWords(amount);
 
     // 4. Insert Primary Financial Donation Record
+    const finalTransactionRef = transactionRef || paymentId || orderId || `TXN${Date.now()}`;
+    const finalStatus = paymentStatus || 'completed';
+
     const [donationResult] = await connection.query(
       `INSERT INTO donations (receipt_number, donor_id, campaign_id, donation_for, donation_type, amount, currency, amount_in_words, payment_method, payment_status, transaction_ref, payment_date, payment_gateway, remarks, send_receipt, is_80g_eligible)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'completed', ?, ?, ?, ?, ?, 1)`,
-      [receiptNumber, donorId, campaignId || null, donationFor, donationType, amount, currency, amountInWords, paymentMethod, paymentId || orderId, donationDate, gateway, remarks, sendReceipt ? 1 : 0]
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+      [receiptNumber, donorId, campaignId || null, donationFor, donationType, amount, currency, amountInWords, paymentMethod, finalStatus, finalTransactionRef, donationDate, gateway, remarks, sendReceipt ? 1 : 0]
     );
     const donationId = donationResult.insertId;
 
@@ -179,10 +184,11 @@ async function processSuccessfulDonation({
     }
 
     // 6. Insert Statutory Money Receipt Record
+    const receiptStatus = finalStatus === 'completed' ? 'ISSUED' : 'PENDING_VERIFICATION';
     const [receiptResult] = await connection.query(
       `INSERT INTO money_receipts (receipt_number, financial_year, donation_id, receipt_type, recipient_name, recipient_email, recipient_phone, recipient_address, amount, currency, amount_in_words, payment_mode, transaction_no, receipt_date, status, notes)
-       VALUES (?, ?, ?, 'donation', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ISSUED', ?)`,
-      [receiptNumber, financialYear, donationId, donorName, donorEmail, donorPhone, donorAddress, amount, currency, amountInWords, `Online (${gateway})`, paymentId || orderId, donationDate, `Donation for ${donationFor}`]
+       VALUES (?, ?, ?, 'donation', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [receiptNumber, financialYear, donationId, donorName, donorEmail, donorPhone, donorAddress, amount, currency, amountInWords, `Online (${gateway})`, finalTransactionRef, donationDate, receiptStatus, `Donation for ${donationFor}`]
     );
     const receiptId = receiptResult.insertId;
 
@@ -212,9 +218,9 @@ async function processSuccessfulDonation({
       currency: currency,
       amount_in_words: amountInWords,
       payment_mode: `Online (${gateway})`,
-      transaction_no: paymentId || orderId,
+      transaction_no: finalTransactionRef,
       receipt_date: donationDate,
-      status: 'ISSUED'
+      status: receiptStatus
     };
 
     let pdfInfo = null;

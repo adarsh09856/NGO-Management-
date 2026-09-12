@@ -540,6 +540,8 @@ async function submitPublicOffering(req, res) {
       donationFor = 'Great Druk Wangyel Peace Stupa',
       donationType = 'one_time',
       paymentMethod = 'online_gateway',
+      transactionRef,
+      paymentStatus = 'completed',
       remarks
     } = req.body;
 
@@ -548,14 +550,16 @@ async function submitPublicOffering(req, res) {
     }
 
     const eventId = `pub_dana_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-    const paymentId = `pay_${Date.now()}`;
+    const paymentId = transactionRef || `pay_${Date.now()}`;
     const orderId = `order_${Date.now()}`;
 
     const settlement = await processSuccessfulDonation({
-      gateway: paymentMethod === 'bank_transfer' ? 'bank_transfer' : 'razorpay',
+      gateway: paymentMethod === 'bank_transfer' ? 'bank_transfer' : (paymentMethod === 'upi_qr' ? 'upi_qr' : 'razorpay'),
       eventId,
       paymentId,
       orderId,
+      transactionRef,
+      paymentStatus,
       donorName,
       donorEmail,
       donorPhone,
@@ -577,7 +581,7 @@ async function submitPublicOffering(req, res) {
       module: 'donations',
       action: 'public_offering_settled',
       recordId: settlement.donationId,
-      details: { receiptNumber: settlement.receiptNumber, donorName, donorEmail, amount, currency }
+      details: { receiptNumber: settlement.receiptNumber, donorName, donorEmail, amount, currency, transactionRef }
     });
 
     return res.status(201).json({
@@ -588,6 +592,51 @@ async function submitPublicOffering(req, res) {
   } catch (error) {
     console.error('[Public Offering Error]:', error);
     return res.status(500).json({ success: false, message: 'Failed to record merit offering: ' + error.message });
+  }
+}
+
+// 11. Admin Verification of Donation Payment (Reconciliation against Bank Statement / UTR proof)
+async function verifyDonationPayment(req, res) {
+  try {
+    const { id } = req.params;
+
+    const [donationRows] = await pool.query(
+      `SELECT id, receipt_number, amount, donor_id, payment_status, transaction_ref FROM donations WHERE id = ?`,
+      [id]
+    );
+
+    if (donationRows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Donation record not found' });
+    }
+
+    await pool.query(
+      `UPDATE donations SET payment_status = 'completed' WHERE id = ?`,
+      [id]
+    );
+
+    await pool.query(
+      `UPDATE money_receipts SET status = 'ISSUED', notes = CONCAT(COALESCE(notes, ''), ' - UTR Verified by Monastic Treasury') WHERE donation_id = ?`,
+      [id]
+    );
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'donations',
+      action: 'verify_payment',
+      recordId: id,
+      details: { receiptNumber: donationRows[0].receipt_number, utr: donationRows[0].transaction_ref, verifiedBy: req.user?.email || 'admin' }
+    });
+
+    return res.json({
+      success: true,
+      message: `Donation payment verified successfully. Official 80G tax receipt ${donationRows[0].receipt_number} is certified.`,
+      status: 'completed'
+    });
+  } catch (error) {
+    console.error('[Verify Donation Payment Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to verify donation payment: ' + error.message });
   }
 }
 
@@ -604,5 +653,6 @@ module.exports = {
   toggleCampaignStatus,
   getRecurringPledges,
   updatePledgeStatus,
-  submitPublicOffering
+  submitPublicOffering,
+  verifyDonationPayment
 };
