@@ -207,7 +207,13 @@ export default function BlogDetail() {
         )}
       </div>
 
-      {donateOpen && <DonationModal onClose={() => setDonateOpen(false)} />}
+      {donateOpen && (
+        <DonationModal
+          causeTitle="Shedra Monastic University"
+          initialAmount={1000}
+          onClose={() => setDonateOpen(false)}
+        />
+      )}
     </div>
   );
 }

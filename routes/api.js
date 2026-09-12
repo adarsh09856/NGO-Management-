@@ -108,6 +108,7 @@ router.delete('/learning/:id', authenticateToken, requirePermissionOrRole('cms:l
 // 5. DONATIONS & CAMPAIGNS
 // ==========================================
 router.get('/campaigns/public', donationCtrl.getCampaigns);
+router.post('/donations/public-offering', publicFormRateLimiter, donationCtrl.submitPublicOffering);
 router.get('/donations/campaigns', authenticateToken, donationCtrl.getCampaigns);
 router.post('/donations/campaigns', authenticateToken, requirePermission('donations:campaigns'), donationCtrl.createCampaign);
 router.put('/donations/campaigns/:id', authenticateToken, requirePermission('donations:campaigns'), donationCtrl.updateCampaign);
@@ -153,8 +154,10 @@ router.get('/accounts/income', authenticateToken, requirePermission('accounts:vi
 router.get('/accounts/banks', authenticateToken, accountCtrl.getBankAccounts);
 router.get('/accounts/categories', authenticateToken, accountCtrl.getExpenseCategories);
 router.get('/accounts/expenses', authenticateToken, accountCtrl.getExpenses);
-router.post('/accounts/expenses', authenticateToken, requirePermission('accounts:expenses_submit'), accountCtrl.submitExpense);
-router.post('/accounts/expenses/:id/approve', authenticateToken, requirePermission('accounts:expenses_approve'), accountCtrl.approveExpense);
+router.post('/accounts/expenses', authenticateToken, requirePermissionOrRole('accounts:expenses_submit', 'super_admin', 'accountant'), accountCtrl.submitExpense);
+router.put('/accounts/expenses/:id', authenticateToken, requirePermissionOrRole('accounts:expenses_submit', 'super_admin', 'accountant'), accountCtrl.updateExpense);
+router.delete('/accounts/expenses/:id', authenticateToken, requirePermissionOrRole('accounts:expenses_approve', 'super_admin', 'accountant'), accountCtrl.deleteExpense);
+router.post('/accounts/expenses/:id/approve', authenticateToken, requirePermissionOrRole('accounts:expenses_approve', 'super_admin', 'accountant'), accountCtrl.approveExpense);
 router.get('/accounts/vouchers', authenticateToken, accountCtrl.getVouchers);
 router.post('/accounts/vouchers', authenticateToken, requirePermission('accounts:vouchers'), accountCtrl.createVoucher);
 
@@ -203,21 +206,30 @@ router.put('/certificates/:id', authenticateToken, requirePermissionOrRole('lms:
 router.delete('/certificates/:id', authenticateToken, requirePermissionOrRole('lms:issue_certificate', 'super_admin', 'admin'), certCtrl.deleteCertificate);
 router.get('/certificates/:id/pdf', certCtrl.downloadCertificatePdf);
 router.post('/certificates/:id/revoke', authenticateToken, requireRole('super_admin'), certCtrl.revokeCertificate);
+router.put('/certificates/:id/revoke', authenticateToken, requireRole('super_admin'), certCtrl.revokeCertificate);
 
 // ==========================================
 // 10.1. SHEDRA MONASTIC ACADEMY & LMS
 // ==========================================
+router.get('/courses/public', lmsCtrl.getPublicCourses);
 router.get('/lms/overview', authenticateToken, lmsCtrl.getLmsOverview);
 router.get('/lms/courses', authenticateToken, lmsCtrl.getCourses);
 router.get('/lms/courses/:id', authenticateToken, lmsCtrl.getCourseById);
-router.post('/lms/courses', authenticateToken, lmsCtrl.createCourse);
+router.post('/lms/courses', authenticateToken, requirePermissionOrRole('lms:courses', 'super_admin', 'admin'), lmsCtrl.createCourse);
+router.put('/lms/courses/:id', authenticateToken, requirePermissionOrRole('lms:courses', 'super_admin', 'admin'), lmsCtrl.updateCourse);
+router.delete('/lms/courses/:id', authenticateToken, requirePermissionOrRole('lms:courses', 'super_admin', 'admin'), lmsCtrl.deleteCourse);
 router.get('/lms/batches', authenticateToken, lmsCtrl.getBatches);
-router.post('/lms/batches', authenticateToken, lmsCtrl.createBatch);
+router.post('/lms/batches', authenticateToken, requirePermissionOrRole('lms:batches', 'super_admin', 'admin'), lmsCtrl.createBatch);
+router.put('/lms/batches/:id', authenticateToken, requirePermissionOrRole('lms:batches', 'super_admin', 'admin'), lmsCtrl.updateBatch);
+router.delete('/lms/batches/:id', authenticateToken, requirePermissionOrRole('lms:batches', 'super_admin', 'admin'), lmsCtrl.deleteBatch);
 router.get('/lms/enrollments', authenticateToken, lmsCtrl.getEnrollments);
-router.post('/lms/enrollments', authenticateToken, lmsCtrl.createEnrollment);
+router.post('/lms/enrollments', authenticateToken, requirePermissionOrRole('lms:enrollments', 'super_admin', 'admin'), lmsCtrl.createEnrollment);
 router.put('/lms/enrollments/:id/progress', authenticateToken, lmsCtrl.updateEnrollmentProgress);
+router.delete('/lms/enrollments/:id', authenticateToken, requirePermissionOrRole('lms:enrollments', 'super_admin', 'admin'), lmsCtrl.deleteEnrollment);
 router.get('/lms/students', authenticateToken, lmsCtrl.getStudents);
-router.post('/lms/students', authenticateToken, lmsCtrl.createStudent);
+router.post('/lms/students', authenticateToken, requirePermissionOrRole('lms:students', 'super_admin', 'admin'), lmsCtrl.createStudent);
+router.put('/lms/students/:id', authenticateToken, requirePermissionOrRole('lms:students', 'super_admin', 'admin'), lmsCtrl.updateStudent);
+router.delete('/lms/students/:id', authenticateToken, requirePermissionOrRole('lms:students', 'super_admin', 'admin'), lmsCtrl.deleteStudent);
 
 // ==========================================
 // 10.2. MONASTIC STUDENT & SCHOLAR PORTAL
@@ -257,12 +269,15 @@ router.post('/payroll/casual-labor', authenticateToken, requirePermissionOrRole(
 // ==========================================
 // 13. CRM & COMMUNICATIONS
 // ==========================================
+router.post('/crm/inquiries', publicFormRateLimiter, crmCtrl.submitPublicInquiry);
+router.post('/contacts', publicFormRateLimiter, crmCtrl.submitPublicInquiry);
 router.get('/crm/contacts', authenticateToken, crmCtrl.getContacts);
 router.post('/crm/contacts', authenticateToken, requirePermissionOrRole('crm:manage_contacts', 'super_admin', 'admin'), crmCtrl.createContact);
 router.put('/crm/contacts/:id', authenticateToken, requirePermissionOrRole('crm:manage_contacts', 'super_admin', 'admin'), crmCtrl.updateContact);
 router.delete('/crm/contacts/:id', authenticateToken, requirePermissionOrRole('crm:manage_contacts', 'super_admin', 'admin'), crmCtrl.deleteContact);
 router.get('/crm/contacts/:id/communications', authenticateToken, crmCtrl.getCommunicationsByContact);
 router.post('/crm/contacts/:id/communications', authenticateToken, crmCtrl.addCommunication);
+router.get('/crm/campaigns', authenticateToken, crmCtrl.getEmailCampaigns);
 router.post('/crm/campaigns/broadcast', authenticateToken, requirePermissionOrRole('crm:campaigns', 'super_admin', 'admin'), crmCtrl.broadcastCampaign);
 
 // ==========================================
@@ -294,6 +309,9 @@ router.delete('/notices/:id', authenticateToken, requirePermissionOrRole('cms:ma
 // ==========================================
 router.get('/cms/news-events', cmsCtrl.getNewsEvents);
 router.get('/cms/news-events/:slug', cmsCtrl.getNewsEventBySlug);
+router.post('/cms/news-events', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin', 'staff'), cmsCtrl.createNewsEvent);
+router.put('/cms/news-events/:id', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin', 'staff'), cmsCtrl.updateNewsEvent);
+router.delete('/cms/news-events/:id', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin', 'staff'), cmsCtrl.deleteNewsEvent);
 
 router.get('/cms/gallery', cmsCtrl.getGallery);
 router.post('/cms/gallery', authenticateToken, cmsCtrl.createGalleryItem);
@@ -303,6 +321,7 @@ router.delete('/cms/gallery/:id', authenticateToken, cmsCtrl.deleteGalleryItem);
 router.post('/cms/prayer-requests', publicFormRateLimiter, cmsCtrl.submitPrayerRequest);
 router.get('/cms/prayer-requests', authenticateToken, cmsCtrl.getPrayerRequests);
 router.put('/cms/prayer-requests/:id/dedicate', authenticateToken, cmsCtrl.dedicatePrayerRequest);
+router.put('/cms/prayer-requests/:id/status', authenticateToken, cmsCtrl.dedicatePrayerRequest);
 
 // Event RSVPs
 router.post('/cms/events/:eventId/rsvp', publicFormRateLimiter, cmsCtrl.submitEventRsvp);
@@ -373,6 +392,7 @@ router.post('/sessions/kill-all', authenticateToken, requireRole('super_admin'),
 router.get('/roles-permissions', authenticateToken, settingsCtrl.getRolesAndPermissions);
 router.put('/roles/:id/permissions', authenticateToken, requireRole('super_admin'), settingsCtrl.updateRolePermissions);
 router.get('/audit-logs', authenticateToken, requireRole('super_admin'), settingsCtrl.getAuditLogs);
+router.get('/settings/audit-logs', authenticateToken, requireRole('super_admin'), settingsCtrl.getAuditLogs);
 router.get('/audit-logs/verify', authenticateToken, requireRole('super_admin'), settingsCtrl.verifyAuditLogs);
 router.post('/backup', authenticateToken, requireRole('super_admin'), settingsCtrl.triggerBackup);
 router.post('/settings/backup', authenticateToken, requireRole('super_admin'), settingsCtrl.triggerBackup);

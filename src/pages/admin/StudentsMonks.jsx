@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, Plus, Search, Award, BookOpen, GraduationCap, 
-  X, UserPlus, Filter, Calendar, Phone, MapPin
+  X, UserPlus, Filter, Calendar, Phone, MapPin, Edit2, Trash2
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
@@ -26,6 +26,16 @@ export default function StudentsMonks() {
   const [guardianName, setGuardianName] = useState('');
   const [guardianPhone, setGuardianPhone] = useState('');
   const [address, setAddress] = useState('Gelephu, Sarpang Dzongkhag, Bhutan');
+
+  // Edit Monk Modal
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingStudent, setEditingStudent] = useState(null);
+  const [editSecularName, setEditSecularName] = useState('');
+  const [editMonasticName, setEditMonasticName] = useState('');
+  const [editMonkStatus, setEditMonkStatus] = useState('novice');
+  const [editGuardianName, setEditGuardianName] = useState('');
+  const [editGuardianPhone, setEditGuardianPhone] = useState('');
+  const [editAddress, setEditAddress] = useState('');
 
   // Quick Enroll Modal
   const [showEnrollModal, setShowEnrollModal] = useState(false);
@@ -109,6 +119,53 @@ export default function StudentsMonks() {
       }
     } catch (err) {
       error(err.response?.data?.message || 'Enrollment failed');
+    }
+  };
+
+  const handleOpenEdit = (student) => {
+    setEditingStudent(student);
+    setEditSecularName(student.secular_name || '');
+    setEditMonasticName(student.monastic_name || '');
+    setEditMonkStatus(student.monk_status || 'novice');
+    setEditGuardianName(student.guardian_name || '');
+    setEditGuardianPhone(student.guardian_phone || student.emergency_contact || '');
+    setEditAddress(student.address || '');
+    setShowEditModal(true);
+  };
+
+  const handleUpdateStudent = async (e) => {
+    e.preventDefault();
+    if (!editingStudent) return;
+    try {
+      const res = await api.put(`/lms/students/${editingStudent.id}`, {
+        secularName: editSecularName,
+        monasticName: editMonasticName,
+        monkStatus: editMonkStatus,
+        guardianName: editGuardianName,
+        guardianPhone: editGuardianPhone,
+        address: editAddress
+      });
+      if (res.data.success) {
+        success('Monk scholar profile updated successfully!');
+        setShowEditModal(false);
+        setEditingStudent(null);
+        fetchStudents();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to update monk profile');
+    }
+  };
+
+  const handleDeleteStudent = async (id, name) => {
+    if (!window.confirm(`Are you sure you want to remove monk scholar "${name}" from registry? This action cannot be undone.`)) return;
+    try {
+      const res = await api.delete(`/lms/students/${id}`);
+      if (res.data.success) {
+        success('Monk scholar removed from registry');
+        fetchStudents();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to delete monk');
     }
   };
 
@@ -262,16 +319,34 @@ export default function StudentsMonks() {
                       <div className="text-[10px] font-mono">{s.guardian_phone || s.emergency_contact || '—'}</div>
                     </td>
                     <td className="py-3.5 px-5 text-right">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedStudent(s);
-                          setShowEnrollModal(true);
-                        }}
-                        className="px-3 py-1.5 bg-gradient-to-r from-[#D4AF37] to-[#B89628] hover:opacity-90 text-[#090D16] font-bold text-xs rounded-lg transition-all"
-                      >
-                        Enroll Course
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedStudent(s);
+                            setShowEnrollModal(true);
+                          }}
+                          className="px-2.5 py-1 bg-gradient-to-r from-[#D4AF37] to-[#B89628] hover:opacity-90 text-[#090D16] font-bold text-xs rounded-lg transition-all"
+                        >
+                          Enroll
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEdit(s)}
+                          className="p-1.5 rounded-lg bg-white/5 hover:bg-[#D4AF37]/20 text-gray-300 hover:text-[#D4AF37] text-xs border border-white/10 transition-all"
+                          title="Edit Monk Profile"
+                        >
+                          <Edit2 className="w-3 h-3" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteStudent(s.id, s.monastic_name || s.secular_name)}
+                          className="p-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 text-xs border border-white/10 transition-all"
+                          title="Delete Monk"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -416,6 +491,111 @@ export default function StudentsMonks() {
                   className="flex-1 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#B89628] text-[#090D16] font-bold rounded-xl shadow-lg transition-all"
                 >
                   Register Scholar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Monk Modal */}
+      {showEditModal && editingStudent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#0D121F] border border-[#2A1E17] rounded-2xl shadow-2xl p-6 max-w-lg w-full space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="p-1.5 rounded-lg bg-[#D4AF37]/10 text-[#D4AF37]">
+                  <Edit2 className="w-5 h-5" />
+                </span>
+                <h3 className="font-serif-brand font-bold text-base text-white">Edit Monk Scholar Profile</h3>
+              </div>
+              <button type="button" onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateStudent} className="space-y-3.5 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Monastic / Dharma Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editMonasticName}
+                    onChange={(e) => setEditMonasticName(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Secular / Civil Name</label>
+                  <input
+                    type="text"
+                    value={editSecularName}
+                    onChange={(e) => setEditSecularName(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#CBD5E1] mb-1">Monastic Ordination Status</label>
+                <select
+                  value={editMonkStatus}
+                  onChange={(e) => setEditMonkStatus(e.target.value)}
+                  className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white font-semibold focus:border-[#D4AF37] focus:outline-none"
+                >
+                  <option value="novice">Novice (Getshul)</option>
+                  <option value="gelong">Fully Ordained (Gelong)</option>
+                  <option value="khenpo">Khenpo (Professor)</option>
+                  <option value="lay_student">Lay Student</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Guardian / Abbot Contact</label>
+                  <input
+                    type="text"
+                    value={editGuardianName}
+                    onChange={(e) => setEditGuardianName(e.target.value)}
+                    placeholder="Guardian or monastery contact"
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Contact Phone</label>
+                  <input
+                    type="tel"
+                    value={editGuardianPhone}
+                    onChange={(e) => setEditGuardianPhone(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#CBD5E1] mb-1">Origin Dzongkhag / Address</label>
+                <input
+                  type="text"
+                  value={editAddress}
+                  onChange={(e) => setEditAddress(e.target.value)}
+                  className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold transition-all border border-white/10"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#B89628] text-[#090D16] font-bold rounded-xl shadow-lg transition-all"
+                >
+                  Update Profile
                 </button>
               </div>
             </form>

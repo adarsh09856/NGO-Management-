@@ -79,6 +79,7 @@ async function createLearningMaterial(req, res, next) {
     res.status(201).json({
       success: true,
       message: 'Learning video added successfully',
+      id: result.insertId,
       data: { id: result.insertId }
     });
   } catch (error) {

@@ -25,16 +25,16 @@ async function getUserDashboard(req, res, next) {
          FROM donations d
          LEFT JOIN campaigns c ON d.campaign_id = c.id
          LEFT JOIN money_receipts r ON d.id = r.donation_id
-         WHERE d.donor_id = ? OR d.donor_email = ?
+         WHERE d.donor_id = ?
          ORDER BY d.payment_date DESC LIMIT 10`,
-        [donor.id, userEmail]
+        [donor.id]
       );
       donations = dRows;
 
       // 2. Receipts list for direct download
       const [rRows] = await pool.query(
         `SELECT * FROM money_receipts 
-         WHERE recipient_email = ? OR notes LIKE ?
+         WHERE recipient_email = ? OR recipient_name LIKE ?
          ORDER BY receipt_date DESC`,
         [userEmail, `%${donor.full_name}%`]
       );
@@ -51,13 +51,14 @@ async function getUserDashboard(req, res, next) {
       );
       pledges = pRows;
     } else {
-      // If no donor row found, still fetch any donations matching email
+      // If no direct donor row linked to user_id, search donations joined with donors table by email
       const [dRows] = await pool.query(
         `SELECT d.*, c.title as campaign_title, r.receipt_number, r.id as receipt_id
          FROM donations d
+         JOIN donors dn ON d.donor_id = dn.id
          LEFT JOIN campaigns c ON d.campaign_id = c.id
          LEFT JOIN money_receipts r ON d.id = r.donation_id
-         WHERE d.donor_email = ?
+         WHERE dn.email = ?
          ORDER BY d.payment_date DESC LIMIT 10`,
         [userEmail]
       );

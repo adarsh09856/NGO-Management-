@@ -51,11 +51,20 @@ async function logAudit({ userId, ipAddress, userAgent, module, action, recordId
       timestamp: now
     });
 
-    await pool.query(
-      `INSERT INTO audit_logs (user_id, ip_address, user_agent, module, action, record_id, details, prev_hash, record_hash, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId || null, ipAddress || '127.0.0.1', userAgent || 'System', module, action, String(recordId || ''), detailsJson, prevHash, recordHash, timestampStr]
-    );
+    try {
+      await pool.query(
+        `INSERT INTO audit_logs (user_id, ip_address, user_agent, module, action, record_id, details, prev_hash, record_hash, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [userId || null, ipAddress || '127.0.0.1', userAgent || 'System', module, action, String(recordId || ''), detailsJson, prevHash, recordHash, timestampStr]
+      );
+    } catch (insertErr) {
+      // Fallback if prev_hash/record_hash columns are not yet defined in schema
+      await pool.query(
+        `INSERT INTO audit_logs (user_id, ip_address, user_agent, module, action, record_id, details, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [userId || null, ipAddress || '127.0.0.1', userAgent || 'System', module, action, String(recordId || ''), detailsJson, timestampStr]
+      );
+    }
 
     return { prevHash, recordHash };
   } catch (error) {

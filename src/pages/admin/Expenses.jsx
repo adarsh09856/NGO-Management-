@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Wallet, Plus, CheckCircle2, Clock, IndianRupee, Filter, 
-  Search, XCircle, AlertCircle, Check, X, Building2, Calendar, FileText
+  Search, XCircle, AlertCircle, Check, X, Building2, Calendar, FileText,
+  Edit2, Trash2
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
@@ -26,6 +27,17 @@ export default function Expenses() {
   const [paymentMode, setPaymentMode] = useState('Bank Transfer');
   const [bankAccountId, setBankAccountId] = useState('');
   const [description, setDescription] = useState('');
+
+  // Edit Expense Modal
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingExpense, setEditingExpense] = useState(null);
+  const [editExpenseDate, setEditExpenseDate] = useState('');
+  const [editCategoryId, setEditCategoryId] = useState('1');
+  const [editPayeeName, setEditPayeeName] = useState('');
+  const [editTitle, setEditTitle] = useState('');
+  const [editAmount, setEditAmount] = useState('');
+  const [editPaymentMode, setEditPaymentMode] = useState('Bank Transfer');
+  const [editDescription, setEditDescription] = useState('');
 
   // Rejection Modal
   const [showRejectModal, setShowRejectModal] = useState(false);
@@ -114,6 +126,55 @@ export default function Expenses() {
       }
     } catch (err) {
       error(err.response?.data?.message || `Failed to ${action} expense`);
+    }
+  };
+
+  const handleOpenEdit = (exp) => {
+    setEditingExpense(exp);
+    setEditExpenseDate(exp.expense_date ? exp.expense_date.slice(0, 10) : new Date().toISOString().slice(0, 10));
+    setEditCategoryId(String(exp.category_id || (categories[0]?.id || '1')));
+    setEditPayeeName(exp.payee_name || '');
+    setEditTitle(exp.title || '');
+    setEditAmount(String(exp.amount || ''));
+    setEditPaymentMode(exp.payment_method || 'Bank Transfer');
+    setEditDescription(exp.description || '');
+    setShowEditModal(true);
+  };
+
+  const handleUpdateExpense = async (e) => {
+    e.preventDefault();
+    if (!editingExpense) return;
+    try {
+      const res = await api.put(`/accounts/expenses/${editingExpense.id}`, {
+        expenseDate: editExpenseDate,
+        categoryId: parseInt(editCategoryId, 10),
+        payeeName: editPayeeName,
+        title: editTitle || editDescription || `Payment to ${editPayeeName}`,
+        amount: parseFloat(editAmount),
+        paymentMethod: editPaymentMode,
+        description: editDescription
+      });
+      if (res.data.success) {
+        success('Expense claim updated successfully!');
+        setShowEditModal(false);
+        setEditingExpense(null);
+        fetchExpenses();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to update expense');
+    }
+  };
+
+  const handleDeleteExpense = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this expense record? This action cannot be undone.')) return;
+    try {
+      const res = await api.delete(`/accounts/expenses/${id}`);
+      if (res.data.success) {
+        success('Expense record deleted successfully');
+        fetchExpenses();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to delete expense');
     }
   };
 
@@ -308,42 +369,57 @@ export default function Expenses() {
                       </span>
                     </td>
                     <td className="py-3.5 px-5 text-right">
-                      {exp.status === 'pending' && (
-                        <div className="inline-flex items-center gap-1.5">
+                      <div className="inline-flex items-center gap-1.5">
+                        {exp.status === 'pending' && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => handleApprove(exp.id, 'approved')}
+                              className="px-2.5 py-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold transition-all flex items-center gap-1"
+                              title="Approve Claim"
+                            >
+                              <Check className="w-3 h-3" />
+                              <span>Approve</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setRejectId(exp.id);
+                                setShowRejectModal(true);
+                              }}
+                              className="px-2 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg text-xs font-bold transition-all flex items-center gap-1"
+                              title="Reject Claim"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </>
+                        )}
+                        {exp.status === 'approved' && (
                           <button
                             type="button"
-                            onClick={() => handleApprove(exp.id, 'approved')}
-                            className="px-2.5 py-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold transition-all flex items-center gap-1"
-                            title="Approve Claim"
+                            onClick={() => handleApprove(exp.id, 'paid')}
+                            className="px-2.5 py-1 bg-gradient-to-r from-[#D4AF37] to-[#B89628] hover:opacity-90 text-[#090D16] rounded-lg text-xs font-bold transition-all"
                           >
-                            <Check className="w-3 h-3" />
-                            <span>Approve</span>
+                            Disburse (Paid)
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setRejectId(exp.id);
-                              setShowRejectModal(true);
-                            }}
-                            className="px-2 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg text-xs font-bold transition-all flex items-center gap-1"
-                            title="Reject Claim"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      )}
-                      {exp.status === 'approved' && (
+                        )}
                         <button
                           type="button"
-                          onClick={() => handleApprove(exp.id, 'paid')}
-                          className="px-2.5 py-1 bg-gradient-to-r from-[#D4AF37] to-[#B89628] hover:opacity-90 text-[#090D16] rounded-lg text-xs font-bold transition-all"
+                          onClick={() => handleOpenEdit(exp)}
+                          className="p-1.5 rounded-lg bg-white/5 hover:bg-[#D4AF37]/20 text-gray-300 hover:text-[#D4AF37] text-xs border border-white/10 transition-all"
+                          title="Edit Claim"
                         >
-                          Disburse (Paid)
+                          <Edit2 className="w-3 h-3" />
                         </button>
-                      )}
-                      {(exp.status === 'paid' || exp.status === 'rejected') && (
-                        <span className="text-[11px] text-[#94A3B8]">Settled</span>
-                      )}
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteExpense(exp.id)}
+                          className="p-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 text-xs border border-white/10 transition-all"
+                          title="Delete Claim"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -494,6 +570,130 @@ export default function Expenses() {
                   className="flex-1 py-2.5 bg-gradient-to-r from-[#E11D48] to-[#BE123C] text-white font-bold rounded-xl shadow-lg transition-all"
                 >
                   Submit Claim
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Expense Modal */}
+      {showEditModal && editingExpense && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#0D121F] border border-[#2A1E17] rounded-2xl shadow-2xl p-6 max-w-md w-full space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="p-1.5 rounded-lg bg-[#D4AF37]/10 text-[#D4AF37]">
+                  <Edit2 className="w-5 h-5" />
+                </span>
+                <h3 className="font-serif-brand font-bold text-base text-white">Edit Expense Claim</h3>
+              </div>
+              <button type="button" onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateExpense} className="space-y-3.5 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Expense Date *</label>
+                  <input
+                    type="date"
+                    required
+                    value={editExpenseDate}
+                    onChange={(e) => setEditExpenseDate(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white font-mono focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Cost Category *</label>
+                  <select
+                    value={editCategoryId}
+                    onChange={(e) => setEditCategoryId(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white font-semibold focus:border-[#D4AF37] focus:outline-none"
+                  >
+                    {categories.map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#CBD5E1] mb-1">Payee / Vendor Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={editPayeeName}
+                  onChange={(e) => setEditPayeeName(e.target.value)}
+                  placeholder="Vendor or staff claimant..."
+                  className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#CBD5E1] mb-1">Expense Title / Item Particulars</label>
+                <input
+                  type="text"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  placeholder="e.g. Copper Sheets for Relic Chamber"
+                  className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Amount (₹ INR) *</label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    step="0.01"
+                    value={editAmount}
+                    onChange={(e) => setEditAmount(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white font-mono font-bold focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Payment Method</label>
+                  <select
+                    value={editPaymentMode}
+                    onChange={(e) => setEditPaymentMode(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white font-semibold focus:border-[#D4AF37] focus:outline-none"
+                  >
+                    <option value="Bank Transfer">Bank Transfer (BOB/BNB)</option>
+                    <option value="Cash">Cash in Hand</option>
+                    <option value="Petty Cash">Petty Cash</option>
+                    <option value="Cheque">Bank Cheque</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#CBD5E1] mb-1">Bill Narration / Notes</label>
+                <textarea
+                  rows={2}
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  placeholder="Details of the voucher, invoice number..."
+                  className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                ></textarea>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold transition-all border border-white/10"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#B89628] text-[#090D16] font-bold rounded-xl shadow-lg transition-all"
+                >
+                  Update Claim
                 </button>
               </div>
             </form>

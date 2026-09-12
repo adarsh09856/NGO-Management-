@@ -1,13 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Calendar, MapPin, Clock, ArrowLeft, Share2, Eye, Sparkles, Heart, Bell } from 'lucide-react';
+import { Calendar, MapPin, Clock, ArrowLeft, Share2, Eye, Sparkles, Heart, Bell, X, CheckCircle2, Users, Send } from 'lucide-react';
 import api from '../../services/api';
+import { useToast } from '../../context/ToastContext';
 
 export default function NewsDetail() {
   const { slug } = useParams();
+  const { success, error } = useToast();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+
+  // RSVP Modal States
+  const [rsvpModalOpen, setRsvpModalOpen] = useState(false);
+  const [guestName, setGuestName] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
+  const [guestPhone, setGuestPhone] = useState('');
+  const [attendingCount, setAttendingCount] = useState(1);
+  const [specialRequests, setSpecialRequests] = useState('');
+  const [rsvpSubmitting, setRsvpSubmitting] = useState(false);
+  const [rsvpConfirmed, setRsvpConfirmed] = useState(false);
 
   useEffect(() => {
     async function fetchPost() {
@@ -36,6 +48,35 @@ export default function NewsDetail() {
       navigator.clipboard.writeText(window.location.href);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleRsvpSubmit = async (e) => {
+    e.preventDefault();
+    if (!guestName.trim() || !guestEmail.trim()) {
+      error('Please provide your name and email to register attendance.');
+      return;
+    }
+
+    try {
+      setRsvpSubmitting(true);
+      const res = await api.post('/cms/events/rsvp', {
+        eventId: post.id,
+        guestName: guestName.trim(),
+        guestEmail: guestEmail.trim().toLowerCase(),
+        guestPhone: guestPhone.trim(),
+        attendingCount: parseInt(attendingCount, 10) || 1,
+        specialRequests: specialRequests.trim()
+      });
+
+      if (res.data?.success) {
+        setRsvpConfirmed(true);
+        success('RSVP confirmed! We look forward to welcoming you to the ceremony.');
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to submit RSVP. Please try again.');
+    } finally {
+      setRsvpSubmitting(false);
     }
   };
 
@@ -175,24 +216,158 @@ export default function NewsDetail() {
             </p>
 
             <div className="pt-2 flex flex-wrap items-center gap-4">
-              <Link
-                to="/prayer-request"
+              <button
+                onClick={() => { setRsvpModalOpen(true); setRsvpConfirmed(false); }}
                 className="monastic-gold-btn px-6 py-2.5 rounded-full text-xs inline-flex items-center gap-2 shadow-lg"
               >
-                <Heart className="w-3.5 h-3.5 fill-[#2A080C]" />
-                <span>Dedicate Prayers & Butter Lamps</span>
+                <Bell className="w-3.5 h-3.5" />
+                <span>RSVP to Attend Ceremony</span>
+              </button>
+
+              <Link
+                to="/prayer-request"
+                className="px-5 py-2.5 rounded-full text-xs font-serif font-bold text-amber-300 border border-[#D4AF37]/50 hover:bg-white/10 transition-colors inline-flex items-center gap-2"
+              >
+                <Heart className="w-3.5 h-3.5 fill-[#D4AF37]" />
+                <span>Dedicate Butter Lamps</span>
               </Link>
 
               <Link
                 to="/contact"
-                className="px-5 py-2.5 rounded-full text-xs font-serif font-bold text-white border border-[#D4AF37]/40 hover:border-[#D4AF37] transition-colors"
+                className="px-5 py-2.5 rounded-full text-xs font-serif font-bold text-white border border-white/20 hover:border-[#D4AF37] transition-colors"
               >
-                Monastery Contact & Etiquette
+                Monastery Etiquette
               </Link>
             </div>
           </div>
         </article>
       </div>
+
+      {/* Interactive RSVP Modal */}
+      {rsvpModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 xs:p-4 bg-black/80 backdrop-blur-md animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setRsvpModalOpen(false);
+          }}
+        >
+          <div className="bg-white w-full max-w-lg rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D4AF37]/50 overflow-hidden relative animate-scale-in flex flex-col font-serif">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-[#1A0B0E] via-[#4A0E17] to-[#1A0B0E] text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#D4AF37]/40">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37] flex items-center justify-center">
+                  <span className="text-sm text-[#D4AF37]">☸</span>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] block">
+                    Ceremony Attendance Registration
+                  </span>
+                  <h3 className="font-editorial font-bold text-base sm:text-lg text-white truncate max-w-xs sm:max-w-sm">
+                    {post.title}
+                  </h3>
+                </div>
+              </div>
+              <button
+                onClick={() => setRsvpModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white flex items-center justify-center transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Content */}
+            {rsvpConfirmed ? (
+              <div className="p-8 text-center space-y-4">
+                <div className="w-14 h-14 bg-emerald-50 border-2 border-emerald-500 rounded-full flex items-center justify-center mx-auto text-emerald-600 shadow-md">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <h4 className="font-editorial text-2xl text-[#1A0B0E]">
+                  Tashi Delek! RSVP Confirmed
+                </h4>
+                <p className="text-xs text-gray-600 max-w-sm mx-auto leading-relaxed">
+                  Thank you, <strong>{guestName}</strong>. Your party of {attendingCount} devotee(s) has been registered for this sacred gathering. We look forward to welcoming you in Gelephu.
+                </p>
+                <button
+                  onClick={() => setRsvpModalOpen(false)}
+                  className="monastic-gold-btn px-6 py-2 rounded-full text-xs font-bold shadow-md"
+                >
+                  Close Confirmation
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleRsvpSubmit} className="p-6 space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block font-bold text-gray-700 mb-1">Your Full Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={guestName}
+                      onChange={(e) => setGuestName(e.target.value)}
+                      placeholder="e.g. Karma Wangdi"
+                      className="w-full p-2.5 rounded-xl border border-gray-300 focus:border-[#D4AF37] focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-gray-700 mb-1">Email Address *</label>
+                    <input
+                      type="email"
+                      required
+                      value={guestEmail}
+                      onChange={(e) => setGuestEmail(e.target.value)}
+                      placeholder="devotee@example.com"
+                      className="w-full p-2.5 rounded-xl border border-gray-300 focus:border-[#D4AF37] focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-gray-700 mb-1">Phone / WhatsApp</label>
+                    <input
+                      type="tel"
+                      value={guestPhone}
+                      onChange={(e) => setGuestPhone(e.target.value)}
+                      placeholder="+975 17..."
+                      className="w-full p-2.5 rounded-xl border border-gray-300 focus:border-[#D4AF37] focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-gray-700 mb-1">Number of Attendees</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="20"
+                      value={attendingCount}
+                      onChange={(e) => setAttendingCount(e.target.value)}
+                      className="w-full p-2.5 rounded-xl border border-gray-300 focus:border-[#D4AF37] focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="text-xs">
+                  <label className="block font-bold text-gray-700 mb-1">Special Requests / Seating Needs</label>
+                  <textarea
+                    rows="2"
+                    value={specialRequests}
+                    onChange={(e) => setSpecialRequests(e.target.value)}
+                    placeholder="E.g. elderly devotee seating, dietary notes, or guest house inquiries..."
+                    className="w-full p-2.5 rounded-xl border border-gray-300 focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={rsvpSubmitting}
+                    className="w-full monastic-maroon-btn py-3 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl"
+                  >
+                    <Send className="w-3.5 h-3.5 text-[#D4AF37]" />
+                    <span>{rsvpSubmitting ? 'Registering Attendance...' : 'Confirm Ceremony RSVP'}</span>
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

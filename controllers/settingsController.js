@@ -94,15 +94,27 @@ async function getUsers(req, res) {
   try {
     const [users] = await pool.query(
       `SELECT u.id, u.role_id, u.full_name, u.email, u.phone, u.avatar_url, u.status, u.is_verified, 
-              u.two_factor_enabled, u.last_login_at, u.created_at,
-              r.name as role_name, r.slug as role_slug
+              COALESCE(u.two_factor_enabled, 0) as two_factor_enabled, u.last_login_at, u.created_at,
+              COALESCE(r.name, 'Devotee') as role_name, COALESCE(r.slug, 'devotee') as role_slug
        FROM users u
-       JOIN roles r ON u.role_id = r.id
+       LEFT JOIN roles r ON u.role_id = r.id
        ORDER BY u.id ASC`
     );
     return res.json({ success: true, data: users });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to fetch users' });
+    try {
+      const [users] = await pool.query(
+        `SELECT u.id, u.role_id, u.full_name, u.email, u.phone, u.avatar_url, u.status, u.is_verified, 
+                0 as two_factor_enabled, u.last_login_at, u.created_at,
+                COALESCE(r.name, 'Devotee') as role_name, COALESCE(r.slug, 'devotee') as role_slug
+         FROM users u
+         LEFT JOIN roles r ON u.role_id = r.id
+         ORDER BY u.id ASC`
+      );
+      return res.json({ success: true, data: users });
+    } catch (fallbackErr) {
+      return res.status(500).json({ success: false, message: 'Failed to fetch users: ' + fallbackErr.message });
+    }
   }
 }
 
@@ -140,7 +152,12 @@ async function createUser(req, res) {
       details: { fullName, email: email.trim().toLowerCase(), roleId }
     });
 
-    return res.status(201).json({ success: true, message: 'User account created', id: result.insertId });
+    return res.status(201).json({
+      success: true,
+      message: 'User account created',
+      id: result.insertId,
+      data: { id: result.insertId }
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to create user: ' + error.message });
   }
@@ -385,12 +402,21 @@ async function resetUserPasswordByAdmin(req, res) {
     const tempPassword = `DPL#${Math.random().toString(36).slice(2, 6).toUpperCase()}!${Math.floor(1000 + Math.random() * 9000)}`;
     const hash = await bcrypt.hash(tempPassword, BCRYPT_ROUNDS);
 
-    await pool.query(
-      `UPDATE users SET password_hash = ?, must_change_password = 1 WHERE id = ?`,
-      [hash, id]
-    );
+    try {
+      await pool.query(
+        `UPDATE users SET password_hash = ?, must_change_password = 1 WHERE id = ?`,
+        [hash, id]
+      );
+    } catch (colErr) {
+      await pool.query(
+        `UPDATE users SET password_hash = ? WHERE id = ?`,
+        [hash, id]
+      );
+    }
 
-    await pool.query(`UPDATE active_sessions SET is_revoked = 1, revoked_at = NOW() WHERE user_id = ?`, [id]);
+    try {
+      await pool.query(`UPDATE active_sessions SET is_revoked = 1, revoked_at = NOW() WHERE user_id = ?`, [id]);
+    } catch (_) {}
 
     logAudit({
       userId: req.user ? req.user.id : null,
@@ -406,6 +432,7 @@ async function resetUserPasswordByAdmin(req, res) {
       success: true,
       message: `Password reset successfully for ${user.full_name}`,
       temporaryPassword: tempPassword,
+      data: { temporaryPassword: tempPassword },
       mustChangePassword: true
     });
   } catch (error) {

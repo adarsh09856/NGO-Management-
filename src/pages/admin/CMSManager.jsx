@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, Plus, Image, Calendar, Flame, CheckCircle2 } from 'lucide-react';
+import { Globe, Plus, Image, Calendar, Flame, CheckCircle2, Edit2, Trash2, X } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 
@@ -19,6 +19,15 @@ export default function CMSManager() {
   const [newsTime, setNewsTime] = useState('08:00 AM - 04:00 PM');
   const [newsLocation, setNewsLocation] = useState('Great Druk Wangyel Peace Stupa Complex');
   const [newsContent, setNewsContent] = useState('');
+
+  // Edit News Modal
+  const [editingNews, setEditingNews] = useState(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editCategory, setEditCategory] = useState('Puja');
+  const [editDate, setEditDate] = useState('');
+  const [editTime, setEditTime] = useState('');
+  const [editLocation, setEditLocation] = useState('');
+  const [editContent, setEditContent] = useState('');
 
   const fetchData = async () => {
     try {
@@ -74,6 +83,51 @@ export default function CMSManager() {
       }
     } catch (err) {
       error(err.response?.data?.message || 'Failed to publish news');
+    }
+  };
+
+  const handleOpenEditNews = (item) => {
+    setEditingNews(item);
+    setEditTitle(item.title || '');
+    setEditCategory(item.category || 'Puja');
+    setEditDate(item.event_date ? item.event_date.slice(0, 10) : '');
+    setEditTime(item.event_time || '');
+    setEditLocation(item.location || 'Great Druk Wangyel Peace Stupa Complex');
+    setEditContent(item.content || '');
+  };
+
+  const handleUpdateNews = async (e) => {
+    e.preventDefault();
+    if (!editingNews) return;
+    try {
+      const res = await api.put(`/cms/news-events/${editingNews.id}`, {
+        title: editTitle,
+        category: editCategory,
+        eventDate: editDate,
+        eventTime: editTime,
+        location: editLocation,
+        content: editContent
+      });
+      if (res.data.success) {
+        success('News & Event updated successfully!');
+        setEditingNews(null);
+        fetchData();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to update news');
+    }
+  };
+
+  const handleDeleteNews = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this event from the website?')) return;
+    try {
+      const res = await api.delete(`/cms/news-events/${id}`);
+      if (res.data.success) {
+        success('Event deleted successfully');
+        fetchData();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to delete event');
     }
   };
 
@@ -191,13 +245,35 @@ export default function CMSManager() {
       {activeTab === 'news' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {newsList.map((n) => (
-            <div key={n.id} className="monastery-card p-4 space-y-2 text-xs">
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FEF3C7] text-[#0F172A] border border-[#D4AF37]">
-                {n.category}
-              </span>
-              <h4 className="font-serif-brand font-bold text-sm text-[#0F172A]">{n.title}</h4>
-              <p className="text-gray-500 text-[11px]">{n.event_date ? new Date(n.event_date).toLocaleDateString('en-GB') : 'Announcement'}</p>
-              <p className="text-gray-600 line-clamp-3">{n.content}</p>
+            <div key={n.id} className="monastery-card p-4 space-y-2 text-xs flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FEF3C7] text-[#0F172A] border border-[#D4AF37]">
+                    {n.category}
+                  </span>
+                  <div className="flex items-center space-x-1">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditNews(n)}
+                      className="p-1 text-gray-500 hover:text-amber-600 rounded transition-colors"
+                      title="Edit Event"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteNews(n.id)}
+                      className="p-1 text-gray-400 hover:text-red-600 rounded transition-colors"
+                      title="Delete Event"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+                <h4 className="font-serif-brand font-bold text-sm text-[#0F172A]">{n.title}</h4>
+                <p className="text-gray-500 text-[11px]">{n.event_date ? new Date(n.event_date).toLocaleDateString('en-GB') : 'Announcement'}</p>
+                <p className="text-gray-600 line-clamp-3">{n.content}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -290,6 +366,113 @@ export default function CMSManager() {
                   className="flex-1 py-2 bg-[#0F172A] text-white rounded font-bold hover:bg-[#1E293B]"
                 >
                   Publish Announcement
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit News Modal */}
+      {editingNews && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-md w-full space-y-4 animate-fadeIn">
+            <div className="flex justify-between items-center">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
+                Edit News & Auspicious Event
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingNews(null)}
+                className="text-gray-400 hover:text-gray-600 p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateNews} className="space-y-3 text-xs">
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Event Title *</label>
+                <input
+                  type="text"
+                  required
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full p-2.5 rounded border border-gray-300 focus:ring-2 focus:ring-[#D4AF37]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Category</label>
+                  <select
+                    value={editCategory}
+                    onChange={(e) => setEditCategory(e.target.value)}
+                    className="w-full p-2 rounded border border-gray-300 bg-white font-semibold"
+                  >
+                    <option value="Puja">Puja / Ceremony</option>
+                    <option value="Teaching">Dharma Teaching</option>
+                    <option value="Ganachakra">Ganachakra</option>
+                    <option value="News">General News</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Event Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={editDate}
+                    onChange={(e) => setEditDate(e.target.value)}
+                    className="w-full p-2 rounded border border-gray-300"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Time</label>
+                  <input
+                    type="text"
+                    value={editTime}
+                    onChange={(e) => setEditTime(e.target.value)}
+                    className="w-full p-2 rounded border border-gray-300"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Location</label>
+                  <input
+                    type="text"
+                    value={editLocation}
+                    onChange={(e) => setEditLocation(e.target.value)}
+                    className="w-full p-2 rounded border border-gray-300"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Content / Announcement Details *</label>
+                <textarea
+                  rows={4}
+                  required
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  className="w-full p-2.5 rounded border border-gray-300"
+                ></textarea>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingNews(null)}
+                  className="flex-1 py-2 bg-gray-100 rounded text-gray-700 font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2 bg-[#D4AF37] hover:bg-[#b89528] text-gray-900 rounded font-bold"
+                >
+                  Save Changes
                 </button>
               </div>
             </form>

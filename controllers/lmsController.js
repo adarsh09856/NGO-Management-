@@ -60,6 +60,21 @@ async function getCourses(req, res) {
   }
 }
 
+// Public Courses (For public visitor & prospective student catalog)
+async function getPublicCourses(req, res) {
+  try {
+    const [courses] = await pool.query(
+      `SELECT id, course_code, title, slug, level, duration_months, total_credits, instructor_name, fee_amount, description, created_at
+       FROM courses 
+       WHERE is_active = 1 
+       ORDER BY id ASC`
+    );
+    return res.json({ success: true, data: courses });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch public courses' });
+  }
+}
+
 async function createCourse(req, res) {
   try {
     const { courseCode, title, level = 'Basic', description, durationMonths = 6, totalCredits = 12, instructorName, feeAmount = 0, syllabus } = req.body;
@@ -74,6 +89,60 @@ async function createCourse(req, res) {
     return res.status(201).json({ success: true, message: 'Course created successfully', id: result.insertId });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to create course' });
+  }
+}
+
+async function updateCourse(req, res) {
+  try {
+    const { id } = req.params;
+    const { courseCode, title, level, description, durationMonths, totalCredits, instructorName, feeAmount, syllabus, isActive } = req.body;
+
+    const [existing] = await pool.query('SELECT * FROM courses WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Course not found' });
+    }
+
+    await pool.query(
+      `UPDATE courses SET
+        course_code = COALESCE(?, course_code),
+        title = COALESCE(?, title),
+        level = COALESCE(?, level),
+        description = COALESCE(?, description),
+        duration_months = COALESCE(?, duration_months),
+        total_credits = COALESCE(?, total_credits),
+        instructor_name = COALESCE(?, instructor_name),
+        fee_amount = COALESCE(?, fee_amount),
+        syllabus = COALESCE(?, syllabus),
+        is_active = COALESCE(?, is_active),
+        updated_at = NOW()
+       WHERE id = ?`,
+      [courseCode || null, title || null, level || null, description || null, durationMonths || null, totalCredits || null, instructorName || null, feeAmount !== undefined ? feeAmount : null, syllabus || null, isActive !== undefined ? isActive : null, id]
+    );
+
+    return res.json({ success: true, message: 'Course updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update course: ' + error.message });
+  }
+}
+
+async function deleteCourse(req, res) {
+  try {
+    const { id } = req.params;
+    const [existing] = await pool.query('SELECT * FROM courses WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Course not found' });
+    }
+
+    const [enrollments] = await pool.query('SELECT COUNT(*) as count FROM enrollments WHERE course_id = ?', [id]);
+    if (enrollments[0].count > 0) {
+      await pool.query('UPDATE courses SET is_active = 0, updated_at = NOW() WHERE id = ?', [id]);
+      return res.json({ success: true, message: 'Course has active enrollments and has been archived' });
+    } else {
+      await pool.query('DELETE FROM courses WHERE id = ?', [id]);
+      return res.json({ success: true, message: 'Course deleted successfully' });
+    }
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to delete course: ' + error.message });
   }
 }
 
@@ -270,6 +339,59 @@ async function createStudent(req, res) {
   }
 }
 
+async function updateStudent(req, res) {
+  try {
+    const { id } = req.params;
+    const { monasticName, secularName, rollNumber, sanghaId, gender, dob, nationality, monkStatus, guardianName, guardianPhone, address, emergencyContact } = req.body;
+
+    const [existing] = await pool.query('SELECT * FROM students_monks WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Monk scholar not found' });
+    }
+
+    await pool.query(
+      `UPDATE students_monks SET
+        monastic_name = COALESCE(?, monastic_name),
+        secular_name = COALESCE(?, secular_name),
+        roll_number = COALESCE(?, roll_number),
+        sangha_id = COALESCE(?, sangha_id),
+        gender = COALESCE(?, gender),
+        dob = COALESCE(?, dob),
+        nationality = COALESCE(?, nationality),
+        monk_status = COALESCE(?, monk_status),
+        guardian_name = COALESCE(?, guardian_name),
+        guardian_phone = COALESCE(?, guardian_phone),
+        address = COALESCE(?, address),
+        emergency_contact = COALESCE(?, emergency_contact),
+        updated_at = NOW()
+       WHERE id = ?`,
+      [monasticName || null, secularName || null, rollNumber || null, sanghaId || null, gender || null, dob || null, nationality || null, monkStatus || null, guardianName || null, guardianPhone || null, address || null, emergencyContact || null, id]
+    );
+
+    return res.json({ success: true, message: 'Monk scholar profile updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update monk: ' + error.message });
+  }
+}
+
+async function deleteStudent(req, res) {
+  try {
+    const { id } = req.params;
+    const [existing] = await pool.query('SELECT * FROM students_monks WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Monk scholar not found' });
+    }
+
+    await pool.query('DELETE FROM certificates WHERE student_id = ?', [id]);
+    await pool.query('DELETE FROM enrollments WHERE student_id = ?', [id]);
+    await pool.query('DELETE FROM students_monks WHERE id = ?', [id]);
+
+    return res.json({ success: true, message: 'Monk scholar record removed successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to delete monk: ' + error.message });
+  }
+}
+
 // 6. Student Portal Endpoints
 async function getStudentDashboard(req, res) {
   try {
@@ -366,6 +488,51 @@ async function createBatch(req, res) {
   }
 }
 
+async function updateBatch(req, res) {
+  try {
+    const { id } = req.params;
+    const { batchName, batchCode, startDate, endDate, capacity, status } = req.body;
+
+    const [existing] = await pool.query('SELECT * FROM batches WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Batch not found' });
+    }
+
+    await pool.query(
+      `UPDATE batches SET
+        batch_name = COALESCE(?, batch_name),
+        batch_code = COALESCE(?, batch_code),
+        start_date = COALESCE(?, start_date),
+        end_date = COALESCE(?, end_date),
+        capacity = COALESCE(?, capacity),
+        status = COALESCE(?, status)
+       WHERE id = ?`,
+      [batchName || null, batchCode || null, startDate || null, endDate || null, capacity !== undefined ? capacity : null, status || null, id]
+    );
+
+    return res.json({ success: true, message: 'Batch updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update batch: ' + error.message });
+  }
+}
+
+async function deleteBatch(req, res) {
+  try {
+    const { id } = req.params;
+    const [existing] = await pool.query('SELECT * FROM batches WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Batch not found' });
+    }
+
+    await pool.query('UPDATE enrollments SET batch_id = NULL WHERE batch_id = ?', [id]);
+    await pool.query('DELETE FROM batches WHERE id = ?', [id]);
+
+    return res.json({ success: true, message: 'Batch deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to delete batch: ' + error.message });
+  }
+}
+
 async function createEnrollment(req, res) {
   try {
     const { studentId, courseId, batchId } = req.body;
@@ -388,6 +555,23 @@ async function createEnrollment(req, res) {
     return res.status(201).json({ success: true, message: 'Scholar enrolled into course successfully', id: result.insertId });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to enroll scholar: ' + error.message });
+  }
+}
+
+async function deleteEnrollment(req, res) {
+  try {
+    const { id } = req.params;
+    const [existing] = await pool.query('SELECT * FROM enrollments WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Enrollment record not found' });
+    }
+
+    await pool.query('DELETE FROM certificates WHERE enrollment_id = ?', [id]);
+    await pool.query('DELETE FROM enrollments WHERE id = ?', [id]);
+
+    return res.json({ success: true, message: 'Enrollment record removed successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to delete enrollment: ' + error.message });
   }
 }
 
@@ -657,15 +841,23 @@ async function updateStudentLessonProgress(req, res) {
 module.exports = {
   getLmsOverview,
   getCourses,
+  getPublicCourses,
   createCourse,
+  updateCourse,
+  deleteCourse,
   getCourseById,
   getBatches,
   createBatch,
+  updateBatch,
+  deleteBatch,
   getEnrollments,
   createEnrollment,
   updateEnrollmentProgress,
+  deleteEnrollment,
   getStudents,
   createStudent,
+  updateStudent,
+  deleteStudent,
   getStudentDashboard,
   getStudentCertificates,
   getStudentCourses,

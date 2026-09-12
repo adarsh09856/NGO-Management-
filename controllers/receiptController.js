@@ -39,7 +39,7 @@ async function issueReceipt(req, res) {
          (receipt_number, donation_id, recipient_name, recipient_email, recipient_phone, recipient_address, recipient_pan, amount, amount_in_words, currency, payment_method, transaction_no, purpose, receipt_date, is_80g_eligible, status, issued_by_user_id, remarks)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ISSUED', ?, ?)`,
         [
-          receiptNumber,
+          receiptNumber.receiptNumber || String(receiptNumber),
           donationId || null,
           recipientName,
           recipientEmail || null,

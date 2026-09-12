@@ -195,6 +195,24 @@ async function login(req, res) {
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
+    const userObj = {
+      id: user.id,
+      fullName: user.full_name,
+      email: user.email,
+      phone: user.phone,
+      avatarUrl: user.avatar_url,
+      twoFactorEnabled: !!user.two_factor_enabled,
+      role: {
+        id: user.role_id,
+        name: user.role_name,
+        slug: user.role_slug
+      },
+      permissions: permissionList,
+      mustChangePassword: !!user.must_change_password,
+      linkedDonorId,
+      linkedStudentId
+    };
+
     return res.json({
       success: true,
       message: 'Login successful',
@@ -202,22 +220,12 @@ async function login(req, res) {
       accessToken,
       refreshToken,
       require2FASetup,
-      user: {
-        id: user.id,
-        fullName: user.full_name,
-        email: user.email,
-        phone: user.phone,
-        avatarUrl: user.avatar_url,
-        twoFactorEnabled: !!user.two_factor_enabled,
-        role: {
-          id: user.role_id,
-          name: user.role_name,
-          slug: user.role_slug
-        },
-        permissions: permissionList,
-        mustChangePassword: !!user.must_change_password,
-        linkedDonorId,
-        linkedStudentId
+      user: userObj,
+      data: {
+        token: accessToken,
+        accessToken,
+        refreshToken,
+        user: userObj
       }
     });
 
@@ -315,25 +323,28 @@ async function me(req, res) {
       if (monks.length > 0) linkedStudentId = monks[0].id;
     }
 
+    const userObj = {
+      id: req.user.id,
+      fullName: req.user.full_name,
+      email: req.user.email,
+      phone: req.user.phone,
+      avatarUrl: req.user.avatar_url,
+      twoFactorEnabled: !!req.user.two_factor_enabled,
+      role: {
+        id: req.user.role_id,
+        name: req.user.role_name,
+        slug: req.user.role_slug
+      },
+      permissions: req.user.permissions,
+      mustChangePassword: !!req.user.must_change_password,
+      linkedDonorId,
+      linkedStudentId
+    };
+
     return res.json({
       success: true,
-      user: {
-        id: req.user.id,
-        fullName: req.user.full_name,
-        email: req.user.email,
-        phone: req.user.phone,
-        avatarUrl: req.user.avatar_url,
-        twoFactorEnabled: !!req.user.two_factor_enabled,
-        role: {
-          id: req.user.role_id,
-          name: req.user.role_name,
-          slug: req.user.role_slug
-        },
-        permissions: req.user.permissions,
-        mustChangePassword: !!req.user.must_change_password,
-        linkedDonorId,
-        linkedStudentId
-      }
+      user: userObj,
+      data: userObj
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to fetch user profile' });

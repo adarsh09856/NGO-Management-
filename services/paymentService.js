@@ -29,29 +29,41 @@ function numberToWords(amount) {
 
 // Generate Next Sequential Receipt Number
 async function getNextReceiptNumber(connection) {
+  const conn = connection || pool;
   const currentYear = new Date().getFullYear();
   const nextYear = currentYear + 1;
   const financialYear = `${currentYear}-${nextYear}`;
 
-  const [rows] = await connection.query(
-    `SELECT receipt_number FROM money_receipts 
-     WHERE financial_year = ? 
-     ORDER BY id DESC LIMIT 1 FOR UPDATE`,
-    [financialYear]
+  const [rows] = await conn.query(
+    `SELECT receipt_number FROM money_receipts WHERE receipt_number LIKE ? 
+     UNION 
+     SELECT receipt_number FROM donations WHERE receipt_number LIKE ?`,
+    [`RC-${currentYear}-%`, `RC-${currentYear}-%`]
   );
 
-  let nextSequence = 106;
-  if (rows.length > 0) {
-    const lastNum = rows[0].receipt_number;
-    const match = lastNum.match(/RC-\d{4}-(\d+)/);
-    if (match) {
-      nextSequence = parseInt(match[1], 10) + 1;
+  let maxSequence = 100;
+  if (rows && rows.length > 0) {
+    for (const r of rows) {
+      if (r.receipt_number) {
+        const match = r.receipt_number.match(/RC-\d{4}-(\d+)/);
+        if (match) {
+          const val = parseInt(match[1], 10);
+          if (val > maxSequence) {
+            maxSequence = val;
+          }
+        }
+      }
     }
   }
 
+  const nextSequence = maxSequence + 1;
   const formattedSeq = String(nextSequence).padStart(3, '0');
   const receiptNumber = `RC-${currentYear}-${formattedSeq}`;
-  return { receiptNumber, financialYear };
+
+  const res = new String(receiptNumber);
+  res.receiptNumber = receiptNumber;
+  res.financialYear = financialYear;
+  return res;
 }
 
 // Verify Razorpay HMAC Signature (Cryptographically Secure & Timing-Safe)

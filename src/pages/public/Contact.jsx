@@ -15,22 +15,22 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!fullName || !email || !message) {
-      error('Please fill in required fields.');
+    if (!fullName.trim() || !email.trim() || !message.trim()) {
+      error('Please fill in your name, email, and message.');
       return;
     }
 
     try {
       setLoading(true);
-      const res = await api.post('/crm/contacts', {
-        contactType: 'prospect',
-        fullName,
-        email,
-        phone,
-        tags: subject ? `Website Inquiry: ${subject}` : 'Website Inquiry'
+      const res = await api.post('/crm/inquiries', {
+        fullName: fullName.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        subject: subject.trim() || 'General Monastery Inquiry',
+        message: message.trim()
       });
 
-      if (res.data.success) {
+      if (res.data?.success) {
         setSubmitted(true);
         success('Tashi Delek! Your message has been received by our monastery office.');
       }

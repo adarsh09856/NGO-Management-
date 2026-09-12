@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Flame, Heart, Shield, CheckCircle2, Sparkles, Send, Calendar, Users } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import DonationModal from '../../components/DonationModal';
 
 export default function PrayerRequest() {
   const { success, error } = useToast();
@@ -17,6 +18,7 @@ export default function PrayerRequest() {
 
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [donateOpen, setDonateOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,12 +84,21 @@ export default function PrayerRequest() {
           <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/30 text-xs text-amber-900 font-light">
             Resident monk scholars will chant Tara & Medicine Buddha pujas on the next auspicious auspicious lunar day.
           </div>
-          <button
-            onClick={() => { setSubmitted(false); setIntentionText(''); setDedicationNames(''); }}
-            className="monastic-gold-btn text-xs font-bold py-3 px-8 rounded-full shadow-lg"
-          >
-            Offer Another Prayer
-          </button>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+            <button
+              onClick={() => setDonateOpen(true)}
+              className="monastic-maroon-btn text-xs font-bold py-3 px-6 rounded-full shadow-lg flex items-center justify-center gap-2"
+            >
+              <Heart className="w-4 h-4 text-[#D4AF37] fill-[#D4AF37]" />
+              <span>Offer Dana for this Prayer (₹{offeringAmount.toLocaleString()})</span>
+            </button>
+            <button
+              onClick={() => { setSubmitted(false); setIntentionText(''); setDedicationNames(''); }}
+              className="monastic-gold-btn text-xs font-bold py-3 px-6 rounded-full shadow-lg"
+            >
+              Offer Another Prayer
+            </button>
+          </div>
         </div>
       ) : (
         <div className="glass-luxury-card rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D4AF37]/30 p-4 xs:p-6 sm:p-10 animate-scale-in">
@@ -240,6 +251,14 @@ export default function PrayerRequest() {
             </div>
           </form>
         </div>
+      )}
+
+      {donateOpen && (
+        <DonationModal
+          initialAmount={offeringAmount}
+          causeTitle="108 Butter Lamp Fund"
+          onClose={() => setDonateOpen(false)}
+        />
       )}
     </div>
   );

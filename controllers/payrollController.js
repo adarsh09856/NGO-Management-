@@ -29,12 +29,6 @@ async function generatePayrollRun(req, res) {
     const runCode = `PAY-${y}-${String(m).padStart(2, '0')}`;
 
     const result = await withTransaction(async (conn) => {
-      // Check if run already exists
-      const [existing] = await conn.query(`SELECT id FROM payroll_runs WHERE month = ? AND year = ?`, [m, y]);
-      if (existing.length > 0) {
-        throw new Error(`Payroll run for ${monthNames[m]} ${y} has already been processed.`);
-      }
-
       // Fetch all active employees
       const [employees] = await conn.query(`SELECT * FROM employees WHERE status = 'active'`);
       if (employees.length === 0) {
@@ -52,13 +46,31 @@ async function generatePayrollRun(req, res) {
       let totalDeductions = 0;
       let totalNetPayroll = 0;
 
-      // Create Payroll Run Header
-      const [runRes] = await conn.query(
-        `INSERT INTO payroll_runs (run_code, month, year, total_employees, total_casual_workers, status, processed_by, processed_at, notes)
-         VALUES (?, ?, ?, ?, ?, 'processed', ?, NOW(), ?)`,
-        [runCode, m, y, employees.length, casualWorkers.length, req.user ? req.user.id : null, notes || `Consolidated monthly payroll for ${monthNames[m]} ${y}`]
-      );
-      const payrollRunId = runRes.insertId;
+      // Check if run already exists
+      const [existing] = await conn.query(`SELECT id, run_code FROM payroll_runs WHERE month = ? AND year = ?`, [m, y]);
+      let payrollRunId;
+      let actualRunCode = runCode;
+
+      if (existing.length > 0) {
+        payrollRunId = existing[0].id;
+        actualRunCode = existing[0].run_code;
+        // Clean previous slips for re-run
+        await conn.query(`DELETE FROM salary_slips WHERE payroll_run_id = ?`, [payrollRunId]);
+        await conn.query(
+          `UPDATE payroll_runs 
+           SET total_employees = ?, total_casual_workers = ?, status = 'processed', processed_by = ?, processed_at = NOW(), notes = ?
+           WHERE id = ?`,
+          [employees.length, casualWorkers.length, req.user ? req.user.id : null, notes || `Consolidated monthly payroll for ${monthNames[m]} ${y}`, payrollRunId]
+        );
+      } else {
+        // Create Payroll Run Header
+        const [runRes] = await conn.query(
+          `INSERT INTO payroll_runs (run_code, month, year, total_employees, total_casual_workers, status, processed_by, processed_at, notes)
+           VALUES (?, ?, ?, ?, ?, 'processed', ?, NOW(), ?)`,
+          [runCode, m, y, employees.length, casualWorkers.length, req.user ? req.user.id : null, notes || `Consolidated monthly payroll for ${monthNames[m]} ${y}`]
+        );
+        payrollRunId = runRes.insertId;
+      }
 
       // Generate Salary Slips for each employee
       for (const emp of employees) {
@@ -123,7 +135,7 @@ async function generatePayrollRun(req, res) {
       details: { runCode: result.runCode, grandTotal: result.grandTotal }
     });
 
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
       message: `Payroll run ${result.runCode} generated successfully. Total disbursed: INR ₹ ${result.grandTotal.toLocaleString()}`,
       data: result

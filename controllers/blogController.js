@@ -128,6 +128,7 @@ async function createBlogPost(req, res, next) {
     res.status(201).json({
       success: true,
       message: 'Blog article published successfully',
+      id: result.insertId,
       data: { id: result.insertId, slug: generatedSlug }
     });
   } catch (error) {

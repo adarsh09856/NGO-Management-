@@ -60,7 +60,7 @@ async function subscribe(req, res, next) {
       [subscriberEmail, subscriberName, token]
     );
 
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
       message: 'Thank you for subscribing to our foundation news and dharma dispatches!',
       id: result.insertId
@@ -127,7 +127,7 @@ async function unsubscribe(req, res, next) {
 async function getSubscribers(req, res, next) {
   try {
     const { status, limit = 50, offset = 0 } = req.query;
-    let query = 'SELECT id, email, full_name, status, subscribed_at, unsubscribed_at FROM newsletter_subscribers WHERE 1=1';
+    let query = 'SELECT id, email, full_name, status, created_at AS subscribed_at, created_at, unsubscribed_at FROM newsletter_subscribers WHERE 1=1';
     const params = [];
 
     if (status && status !== 'all') {
@@ -135,7 +135,7 @@ async function getSubscribers(req, res, next) {
       params.push(status);
     }
 
-    query += ' ORDER BY subscribed_at DESC LIMIT ? OFFSET ?';
+    query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
     params.push(parseInt(limit, 10), parseInt(offset, 10));
 
     const [rows] = await pool.query(query, params);

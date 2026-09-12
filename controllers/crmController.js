@@ -63,7 +63,8 @@ async function getCommunicationsByContact(req, res) {
 async function addCommunication(req, res) {
   try {
     const { id } = req.params;
-    const { commType, subject, notes, scheduledFollowupDate, followupStatus = 'done' } = req.body;
+    const commType = req.body.commType || req.body.communicationType;
+    const { subject, notes, scheduledFollowupDate, followupDate, followupStatus = 'done' } = req.body;
 
     if (!commType || !subject) {
       return res.status(400).json({ success: false, message: 'Communication type and subject are required' });
@@ -202,6 +203,65 @@ async function deleteContact(req, res) {
   }
 }
 
+// 4. Public Contact Inquiry Submission
+async function submitPublicInquiry(req, res) {
+  try {
+    const { fullName, email, phone, subject = 'General Inquiry', message, department = 'General' } = req.body;
+
+    if (!fullName || !email || !message) {
+      return res.status(400).json({ success: false, message: 'Full name, email address, and message are required.' });
+    }
+
+    // Check or create contact
+    let contactId;
+    const [existing] = await pool.query('SELECT id FROM contacts WHERE email = ? LIMIT 1', [email]);
+    if (existing.length > 0) {
+      contactId = existing[0].id;
+      await pool.query(
+        `UPDATE contacts SET full_name = COALESCE(full_name, ?), phone = COALESCE(phone, ?), last_contact_date = CURDATE() WHERE id = ?`,
+        [fullName, phone || null, contactId]
+      );
+    } else {
+      const [cRes] = await pool.query(
+        `INSERT INTO contacts (contact_type, full_name, email, phone, country, tags)
+         VALUES ('prospect', ?, ?, ?, 'Bhutan', ?)`,
+        [fullName, email, phone || null, `Website Inquiry: ${department || 'General'}`]
+      );
+      contactId = cRes.insertId;
+    }
+
+    // Insert communication record
+    await pool.query(
+      `INSERT INTO contact_communications (contact_id, comm_type, subject, notes, scheduled_followup_date, followup_status, created_by)
+       VALUES (?, 'inquiry', ?, ?, CURDATE(), 'pending', NULL)`,
+      [contactId, subject || 'Website Inquiry', message]
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: 'Tashi Delek! Your inquiry has been received by the monastery administration.'
+    });
+  } catch (error) {
+    console.error('[Public Inquiry Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to submit inquiry: ' + error.message });
+  }
+}
+
+// 5. Get Email Campaigns History
+async function getEmailCampaigns(req, res) {
+  try {
+    const [rows] = await pool.query(
+      `SELECT ec.*, u.full_name as created_by_name 
+       FROM email_campaigns ec
+       LEFT JOIN users u ON ec.created_by = u.id
+       ORDER BY ec.id DESC`
+    );
+    return res.json({ success: true, data: rows });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch email campaigns: ' + error.message });
+  }
+}
+
 module.exports = {
   getContacts,
   createContact,
@@ -209,5 +269,7 @@ module.exports = {
   deleteContact,
   getCommunicationsByContact,
   addCommunication,
-  broadcastCampaign
+  broadcastCampaign,
+  getEmailCampaigns,
+  submitPublicInquiry
 };

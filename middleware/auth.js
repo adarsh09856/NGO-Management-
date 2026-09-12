@@ -49,7 +49,7 @@ async function authenticateToken(req, res, next) {
          FROM users u
          JOIN roles r ON u.role_id = r.id
          WHERE u.id = ? AND u.status = 'active'`,
-        [decoded.userId]
+        [decoded.userId || decoded.id]
       );
     } catch (dbErr) {
       console.error('[Auth] Database query error in authenticateToken:', dbErr.message);

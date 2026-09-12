@@ -30,6 +30,123 @@ async function getNewsEventBySlug(req, res, next) {
   }
 }
 
+async function createNewsEvent(req, res, next) {
+  try {
+    const {
+      title,
+      category = 'News',
+      summary,
+      content,
+      eventDate,
+      event_date,
+      eventTime,
+      event_time,
+      location,
+      eventType = 'In-Person',
+      event_type,
+      bannerImage,
+      banner_image,
+      isPublished = 1,
+      is_published
+    } = req.body;
+
+    if (!title || !content) {
+      return res.status(400).json({ success: false, message: 'Title and content are required' });
+    }
+
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now();
+    const finalDate = eventDate || event_date || null;
+    const finalTime = eventTime || event_time || null;
+    const finalType = eventType || event_type || 'In-Person';
+    const finalBanner = bannerImage || banner_image || null;
+    const finalPub = isPublished !== undefined ? (isPublished ? 1 : 0) : (is_published !== undefined ? (is_published ? 1 : 0) : 1);
+
+    const [result] = await pool.query(
+      `INSERT INTO news_events (title, slug, category, summary, content, event_date, event_time, location, event_type, banner_image, is_published)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [title, slug, category, summary || content.slice(0, 160), content, finalDate, finalTime, location || 'Great Druk Wangyel Peace Stupa Complex', finalType, finalBanner, finalPub]
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: 'News & Event published successfully',
+      id: result.insertId,
+      slug
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function updateNewsEvent(req, res, next) {
+  try {
+    const { id } = req.params;
+    const {
+      title,
+      category,
+      summary,
+      content,
+      eventDate,
+      event_date,
+      eventTime,
+      event_time,
+      location,
+      eventType,
+      event_type,
+      bannerImage,
+      banner_image,
+      isPublished,
+      is_published
+    } = req.body;
+
+    const [existing] = await pool.query('SELECT * FROM news_events WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'News & Event record not found' });
+    }
+
+    const finalDate = eventDate !== undefined ? eventDate : (event_date !== undefined ? event_date : existing[0].event_date);
+    const finalTime = eventTime !== undefined ? eventTime : (event_time !== undefined ? event_time : existing[0].event_time);
+    const finalType = eventType !== undefined ? eventType : (event_type !== undefined ? event_type : existing[0].event_type);
+    const finalBanner = bannerImage !== undefined ? bannerImage : (banner_image !== undefined ? banner_image : existing[0].banner_image);
+    const finalPub = isPublished !== undefined ? (isPublished ? 1 : 0) : (is_published !== undefined ? (is_published ? 1 : 0) : existing[0].is_published);
+
+    await pool.query(
+      `UPDATE news_events SET
+        title = COALESCE(?, title),
+        category = COALESCE(?, category),
+        summary = COALESCE(?, summary),
+        content = COALESCE(?, content),
+        event_date = ?,
+        event_time = ?,
+        location = COALESCE(?, location),
+        event_type = ?,
+        banner_image = ?,
+        is_published = ?
+       WHERE id = ?`,
+      [title || null, category || null, summary || null, content || null, finalDate, finalTime, location || null, finalType, finalBanner, finalPub, id]
+    );
+
+    return res.json({ success: true, message: 'News & Event updated successfully' });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function deleteNewsEvent(req, res, next) {
+  try {
+    const { id } = req.params;
+    const [existing] = await pool.query('SELECT * FROM news_events WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'News & Event record not found' });
+    }
+
+    await pool.query('DELETE FROM news_events WHERE id = ?', [id]);
+    return res.json({ success: true, message: 'News & Event deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+}
+
 // ==========================================
 // 2. GALLERY ITEMS (Photos, Video Files & URLs)
 // ==========================================
@@ -87,6 +204,7 @@ async function createGalleryItem(req, res, next) {
     res.status(201).json({
       success: true,
       message: 'Gallery item added successfully',
+      id: result.insertId,
       data: { id: result.insertId }
     });
   } catch (error) {
@@ -136,14 +254,20 @@ async function submitPrayerRequest(req, res, next) {
   try {
     const { devoteeName, devoteeEmail, devoteePhone, country = 'Bhutan', prayerType = 'World Peace', intentionText, butterLampsCount = 108, dedicationNames, offeringAmount = 0 } = req.body;
 
-    if (!devoteeName || !intentionText) {
+    const finalName = devoteeName || req.body.fullName || req.body.name;
+    const finalEmail = devoteeEmail || req.body.email;
+    const finalPhone = devoteePhone || req.body.phone;
+    const finalIntention = intentionText || req.body.dedicationPrayer || req.body.message;
+    const finalLamps = butterLampsCount !== undefined ? butterLampsCount : (req.body.butterLamps || 108);
+
+    if (!finalName || !finalIntention) {
       return res.status(400).json({ success: false, message: 'Devotee name and prayer intention are required' });
     }
 
     const [result] = await pool.query(
       `INSERT INTO prayer_requests (devotee_name, devotee_email, devotee_phone, country, prayer_type, intention_text, butter_lamps_count, dedication_names, offering_amount, status)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
-      [devoteeName, devoteeEmail || null, devoteePhone || null, country, prayerType, intentionText, butterLampsCount, dedicationNames || null, offeringAmount]
+      [finalName, finalEmail || null, finalPhone || null, country, prayerType, finalIntention, finalLamps, dedicationNames || null, offeringAmount]
     );
 
     return res.status(201).json({
@@ -173,18 +297,18 @@ async function getPrayerRequests(req, res, next) {
 async function dedicatePrayerRequest(req, res, next) {
   try {
     const { id } = req.params;
-    const { monkId } = req.body;
+    const { monkId, status = 'dedicated' } = req.body;
 
     await pool.query(
       `UPDATE prayer_requests 
-       SET status = 'dedicated', 
-           dedicated_by_monk_id = ?, 
-           dedication_date = CURDATE() 
+       SET status = ?, 
+           dedicated_by_monk_id = COALESCE(?, dedicated_by_monk_id), 
+           dedication_date = CASE WHEN ? = 'dedicated' THEN CURDATE() ELSE dedication_date END 
        WHERE id = ?`,
-      [monkId || null, id]
+      [status, monkId || null, status, id]
     );
 
-    return res.json({ success: true, message: 'Prayer request marked dedicated' });
+    return res.json({ success: true, message: `Prayer request updated to ${status}` });
   } catch (error) {
     next(error);
   }
@@ -302,6 +426,9 @@ async function updateRsvpStatus(req, res, next) {
 module.exports = {
   getNewsEvents,
   getNewsEventBySlug,
+  createNewsEvent,
+  updateNewsEvent,
+  deleteNewsEvent,
   getGallery,
   createGalleryItem,
   updateGalleryItem,

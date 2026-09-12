@@ -1,5 +1,5 @@
 const { pool, withTransaction } = require('../config/db');
-const { getNextReceiptNumber, numberToWords, processDonationRefund } = require('../services/paymentService');
+const { getNextReceiptNumber, numberToWords, processDonationRefund, processSuccessfulDonation } = require('../services/paymentService');
 const { generateReceiptPdf } = require('../services/pdfService');
 const { sendReceiptEmail } = require('../services/emailService');
 const { logAudit } = require('../middleware/auditLogger');
@@ -526,6 +526,71 @@ async function toggleCampaignStatus(req, res) {
   }
 }
 
+// 10. Public Offering Submission (Auto Settlement, Donor Registry & Instant 80G Receipt)
+async function submitPublicOffering(req, res) {
+  try {
+    const {
+      donorName,
+      donorEmail,
+      donorPhone,
+      donorAddress,
+      amount,
+      currency = 'INR',
+      campaignId,
+      donationFor = 'Great Druk Wangyel Peace Stupa',
+      donationType = 'one_time',
+      paymentMethod = 'online_gateway',
+      remarks
+    } = req.body;
+
+    if (!donorName || !donorEmail || !amount || parseFloat(amount) <= 0) {
+      return res.status(400).json({ success: false, message: 'Devotee name, email, and valid amount are required.' });
+    }
+
+    const eventId = `pub_dana_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const paymentId = `pay_${Date.now()}`;
+    const orderId = `order_${Date.now()}`;
+
+    const settlement = await processSuccessfulDonation({
+      gateway: paymentMethod === 'bank_transfer' ? 'bank_transfer' : 'razorpay',
+      eventId,
+      paymentId,
+      orderId,
+      donorName,
+      donorEmail,
+      donorPhone,
+      donorAddress: donorAddress || '',
+      amount: parseFloat(amount),
+      currency,
+      campaignId: campaignId ? parseInt(campaignId, 10) : null,
+      donationFor: donationFor || 'Great Druk Wangyel Peace Stupa',
+      donationType,
+      paymentMethod: paymentMethod || 'online_gateway',
+      sendReceipt: true,
+      remarks: remarks || `Public offering for ${donationFor}`
+    });
+
+    logAudit({
+      userId: null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'donations',
+      action: 'public_offering_settled',
+      recordId: settlement.donationId,
+      details: { receiptNumber: settlement.receiptNumber, donorName, donorEmail, amount, currency }
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Tashi Delek! Your merit offering has been received and official receipt generated.',
+      data: settlement
+    });
+  } catch (error) {
+    console.error('[Public Offering Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to record merit offering: ' + error.message });
+  }
+}
+
 module.exports = {
   addDonation,
   getAllDonations,
@@ -538,5 +603,6 @@ module.exports = {
   deleteCampaign,
   toggleCampaignStatus,
   getRecurringPledges,
-  updatePledgeStatus
+  updatePledgeStatus,
+  submitPublicOffering
 };

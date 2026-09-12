@@ -1,16 +1,26 @@
-import React, { useState } from 'react';
-import { X, Heart, Shield, CheckCircle2, Download, ArrowRight, Lock, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Heart, Shield, CheckCircle2, Download, ArrowRight, Lock, Sparkles, Building2, CreditCard } from 'lucide-react';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 
-export default function DonationModal({ isOpen, onClose, defaultCampaignId, defaultAmount }) {
+export default function DonationModal({
+  isOpen = true,
+  onClose,
+  defaultCampaignId = 1,
+  defaultAmount = 1000,
+  initialAmount,
+  initialType = 'one_time',
+  causeTitle = 'Great Druk Wangyel Peace Stupa'
+}) {
   const { success, error } = useToast();
-  const [frequency, setFrequency] = useState('one_time');
+  const [frequency, setFrequency] = useState(initialType || 'one_time');
   const [currency, setCurrency] = useState('INR');
-  const [selectedPreset, setSelectedPreset] = useState(defaultAmount || 5000);
+  const [selectedPreset, setSelectedPreset] = useState(initialAmount || defaultAmount || 1000);
   const [customAmount, setCustomAmount] = useState('');
-  const [donationFor, setDonationFor] = useState('Peace Stupa Construction');
+  const [donationFor, setDonationFor] = useState(causeTitle || 'Great Druk Wangyel Peace Stupa');
   const [campaignId, setCampaignId] = useState(defaultCampaignId || 1);
+  const [paymentMethod, setPaymentMethod] = useState('online_gateway'); // 'online_gateway' | 'bank_transfer'
+  const [transactionRef, setTransactionRef] = useState('');
 
   // Donor Details Form
   const [donorName, setDonorName] = useState('');
@@ -24,7 +34,34 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
   const [step, setStep] = useState('form'); // 'form', 'processing', 'success'
   const [completedDonation, setCompletedDonation] = useState(null);
 
-  if (!isOpen) return null;
+  // Sync props when opening or switching causes
+  useEffect(() => {
+    if (initialAmount) {
+      setSelectedPreset(Number(initialAmount));
+      setCustomAmount('');
+    } else if (defaultAmount) {
+      setSelectedPreset(Number(defaultAmount));
+      setCustomAmount('');
+    }
+    if (initialType) setFrequency(initialType);
+    if (causeTitle) setDonationFor(causeTitle);
+    if (defaultCampaignId) setCampaignId(defaultCampaignId);
+  }, [isOpen, initialAmount, defaultAmount, initialType, causeTitle, defaultCampaignId]);
+
+  // Handle ESC key to close
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (isOpen === false) return null;
 
   const currentAmount = customAmount ? parseFloat(customAmount) : selectedPreset;
 
@@ -48,36 +85,25 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
     try {
       setStep('processing');
 
-      // 1. Create order
-      const orderRes = await api.post('/payments/create-order', {
-        amount: currentAmount,
-        currency,
-        donorEmail,
-        campaignId,
-        donationFor
-      });
-
-      const { orderId } = orderRes.data.data;
-
-      // 2. Settlement verification
-      const verifyRes = await api.post('/payments/verify', {
-        razorpayOrderId: orderId,
-        razorpayPaymentId: `pay_gateway_${Date.now()}`,
-        donorName,
-        donorEmail,
-        donorPhone,
-        donorAddress,
+      // Submit public offering (recorded in DB, updates campaign, generates receipt & PDF)
+      const res = await api.post('/donations/public-offering', {
+        donorName: donorName.trim(),
+        donorEmail: donorEmail.trim().toLowerCase(),
+        donorPhone: donorPhone.trim(),
+        donorAddress: donorAddress.trim(),
         amount: currentAmount,
         currency,
         campaignId,
         donationFor,
         donationType: frequency,
-        sendReceipt: true,
-        remarks: `Online donation for ${donationFor}`
+        paymentMethod,
+        remarks: paymentMethod === 'bank_transfer'
+          ? `Direct wire transfer${transactionRef ? ` (Ref: ${transactionRef})` : ''} for ${donationFor}`
+          : `Online dana offering for ${donationFor}`
       });
 
-      if (verifyRes.data.success) {
-        setCompletedDonation(verifyRes.data.data);
+      if (res.data?.success) {
+        setCompletedDonation(res.data.data);
         setStep('success');
         success('Merit offering received! Your official tax receipt has been generated.');
       }
@@ -88,15 +114,20 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
   };
 
   const handleDownloadPdf = () => {
-    const target = completedDonation?.receiptId || completedDonation?.receiptNumber;
+    const target = completedDonation?.receiptId || completedDonation?.receiptNumber || completedDonation?.donationId;
     if (target) {
       window.open(`/api/receipts/${target}/pdf`, '_blank');
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 xs:p-4 bg-black/75 backdrop-blur-md overflow-y-auto animate-fadeIn">
-      <div className="bg-white w-full max-w-lg my-auto rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D4AF37]/40 overflow-hidden relative animate-scale-in flex flex-col max-h-[92vh]">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 xs:p-4 bg-black/80 backdrop-blur-md overflow-y-auto animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && onClose) onClose();
+      }}
+    >
+      <div className="bg-white w-full max-w-lg my-auto rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D4AF37]/50 overflow-hidden relative animate-scale-in flex flex-col max-h-[92vh]">
         {/* Modal Header */}
         <div className="bg-gradient-to-r from-[#1A0B0E] via-[#4A0E17] to-[#1A0B0E] text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#D4AF37]/40 flex-shrink-0">
           <div className="flex items-center space-x-2.5 sm:space-x-3.5 min-w-0">
@@ -160,11 +191,60 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
                 onChange={(e) => setDonationFor(e.target.value)}
                 className="w-full text-xs font-semibold p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-2 focus:ring-[#D4AF37] focus:outline-none"
               >
-                <option value="Peace Stupa Construction">Great Druk Wangyel Peace Stupa Construction</option>
+                <option value="Great Druk Wangyel Peace Stupa">Great Druk Wangyel Peace Stupa Construction</option>
                 <option value="Shedra Monastic University">Shedra Monastic University & Scholarships</option>
                 <option value="Sangha Daily Food Fund">Sangha Monks Daily Meals & Healthcare</option>
-                <option value="Butter Lamp Puja Sponsorship">108 Butter Lamps & World Peace Prayers</option>
+                <option value="108 Butter Lamp Fund">108 Butter Lamps & World Peace Prayers</option>
               </select>
+            </div>
+
+            {/* Offering Mode: Online vs Bank Wire */}
+            <div>
+              <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                Payment Channel
+              </label>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('online_gateway')}
+                  className={`p-2 rounded-xl border flex items-center justify-center gap-1.5 font-bold transition-all ${
+                    paymentMethod === 'online_gateway'
+                      ? 'border-[#D4AF37] bg-amber-50/80 text-[#721C24] shadow-sm ring-1 ring-[#D4AF37]'
+                      : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <CreditCard className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <span>Online (Cards / UPI)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('bank_transfer')}
+                  className={`p-2 rounded-xl border flex items-center justify-center gap-1.5 font-bold transition-all ${
+                    paymentMethod === 'bank_transfer'
+                      ? 'border-[#D4AF37] bg-amber-50/80 text-[#721C24] shadow-sm ring-1 ring-[#D4AF37]'
+                      : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <Building2 className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <span>Bank Wire (BoB SWIFT)</span>
+                </button>
+              </div>
+
+              {paymentMethod === 'bank_transfer' && (
+                <div className="mt-2 p-3 bg-gray-50 rounded-xl border border-gray-200 text-[11px] space-y-1 font-mono text-gray-700">
+                  <p><strong className="font-sans text-gray-900">Bank:</strong> Bank of Bhutan Ltd. (BoB)</p>
+                  <p><strong className="font-sans text-gray-900">A/C:</strong> 20188944110023 · <strong className="font-sans text-gray-900">SWIFT:</strong> BOBNBTBT</p>
+                  <div className="pt-1.5">
+                    <input
+                      type="text"
+                      placeholder="Enter Wire UTR / Transaction Ref (Optional)"
+                      value={transactionRef}
+                      onChange={(e) => setTransactionRef(e.target.value)}
+                      className="w-full text-[11px] p-2 rounded-lg border border-gray-300 bg-white font-sans focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Amount Presets */}
@@ -174,14 +254,26 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
                   Amount ({currency})
                 </label>
                 <div className="flex items-center space-x-1.5 text-xs font-semibold">
-                  <span className={currency === 'INR' ? 'font-bold text-[#721C24]' : 'text-gray-400'}>INR (₹)</span>
+                  <button
+                    type="button"
+                    onClick={() => setCurrency('INR')}
+                    className={currency === 'INR' ? 'font-bold text-[#721C24]' : 'text-gray-400 hover:text-gray-600'}
+                  >
+                    INR (₹)
+                  </button>
                   <span className="text-gray-300">|</span>
-                  <span className={currency === 'USD' ? 'font-bold text-[#721C24]' : 'text-gray-400'}>USD ($)</span>
+                  <button
+                    type="button"
+                    onClick={() => setCurrency('USD')}
+                    className={currency === 'USD' ? 'font-bold text-[#721C24]' : 'text-gray-400 hover:text-gray-600'}
+                  >
+                    USD ($)
+                  </button>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 xs:grid-cols-4 gap-2 mb-2">
-                {(currency === 'INR' ? [500, 1000, 5000, 25000] : [25, 50, 100, 500]).map((amt) => (
+                {(currency === 'INR' ? [500, 1000, 2500, 5000] : [25, 50, 100, 250]).map((amt) => (
                   <button
                     key={amt}
                     type="button"
@@ -212,7 +304,7 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
             {/* Donor Info Grid */}
             <div className="space-y-2.5 pt-2 border-t border-[#D4AF37]/20">
               <h4 className="text-[10px] sm:text-[11px] font-bold text-[#1A0B0E] uppercase tracking-wider">
-                Devotee Details (for Official Tax Receipt)
+                Devotee Details (for Official 80G Tax Receipt)
               </h4>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -257,19 +349,19 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
                     type="text"
                     value={panTaxId}
                     onChange={(e) => setPanTaxId(e.target.value)}
-                    placeholder="For tax exemption"
+                    placeholder="For statutory 80G tax receipt"
                     className="w-full text-xs p-2 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-gray-600 mb-0.5">City, Country</label>
+                <label className="block text-[10px] font-semibold text-gray-600 mb-0.5">Address / City / Country</label>
                 <input
                   type="text"
                   value={donorAddress}
                   onChange={(e) => setDonorAddress(e.target.value)}
-                  placeholder="Gelephu, Bhutan / New York, USA"
+                  placeholder="Gelephu, Bhutan"
                   className="w-full text-xs p-2 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
                 />
               </div>
@@ -283,7 +375,7 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
                   className="rounded border-[#D4AF37] text-[#4A0E17] focus:ring-[#D4AF37]"
                 />
                 <label htmlFor="modal80g" className="text-[11px] text-gray-600">
-                  Email official 80G tax receipt PDF immediately
+                  Generate and email official 80G tax receipt PDF immediately
                 </label>
               </div>
             </div>
@@ -292,14 +384,16 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
             <div className="pt-2">
               <button
                 type="submit"
-                className="monastic-maroon-btn w-full py-3 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center space-x-2 shadow-xl"
+                className="monastic-maroon-btn w-full py-3.5 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center space-x-2 shadow-xl border border-[#D4AF37]/40"
               >
                 <Lock className="w-3.5 h-3.5 text-[#D4AF37]" />
-                <span>Offer Dana · {currency === 'INR' ? '₹' : '$'}{currentAmount ? currentAmount.toLocaleString() : '0'}</span>
+                <span>
+                  Confirm Merit Offering · {currency === 'INR' ? '₹' : '$'}{currentAmount ? currentAmount.toLocaleString() : '0'}
+                </span>
               </button>
               <p className="text-[10px] text-center text-gray-500 mt-1.5 flex items-center justify-center gap-1.5">
                 <Shield className="w-3 h-3 text-emerald-600" />
-                256-Bit SSL Encrypted Checkout · 100% Tax Deductible
+                256-Bit SSL Encrypted · 100% Tax Deductible (80G Certified)
               </p>
             </div>
           </form>
@@ -310,10 +404,10 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
           <div className="p-10 sm:p-14 text-center space-y-4 font-serif flex-1 flex flex-col justify-center items-center">
             <div className="w-12 h-12 border-3 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto"></div>
             <h4 className="font-editorial font-bold text-lg sm:text-xl text-[#1A0B0E]">
-              Connecting to Sacred Treasury Gateway...
+              Registering Merit Offering in Monastic Ledger...
             </h4>
             <p className="text-xs text-gray-500 max-w-xs mx-auto leading-relaxed">
-              Registering your merit offering and preparing the official receipt.
+              Recording your donation, updating campaign totals, and generating official 80G tax receipt.
             </p>
           </div>
         )}
@@ -342,15 +436,15 @@ export default function DonationModal({ isOpen, onClose, defaultCampaignId, defa
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Amount:</span>
-                <span className="font-bold text-emerald-700 font-mono">{currency} ₹{currentAmount.toLocaleString()}</span>
+                <span className="font-bold text-emerald-700 font-mono">{currency} {currentAmount.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Dedication:</span>
                 <span className="font-semibold text-gray-800 line-clamp-1">{donationFor}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Exemption:</span>
-                <span className="text-emerald-700 font-bold">ROB Certified / 80G Eligible</span>
+                <span className="text-gray-500">Status:</span>
+                <span className="text-emerald-700 font-bold">ROB Certified / 80G Issued</span>
               </div>
             </div>
 

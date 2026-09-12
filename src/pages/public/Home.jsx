@@ -847,7 +847,12 @@ export default function Home() {
 
       {/* Video Lightbox Modal */}
       {videoModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 xs:p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 xs:p-4 bg-black/85 backdrop-blur-md animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setVideoModalOpen(false);
+          }}
+        >
           <div className="relative w-full max-w-4xl bg-gray-950 rounded-2xl overflow-hidden border border-[#D4AF37]/50 shadow-2xl animate-scale-in">
             <button
               onClick={() => setVideoModalOpen(false)}

@@ -172,20 +172,25 @@ async function getStoreItems(req, res) {
 // Add Item
 async function createStoreItem(req, res) {
   try {
-    const { itemCode, itemName, categoryId, unitId, currentStock = 0, minStock = 10, unitCost = 0, locationId, description } = req.body;
+    const { itemCode, itemName, name, categoryId, unitId, currentStock = 0, minStock = 10, minStockLevel, unitCost = 0, locationId, description } = req.body;
 
-    if (!itemCode || !itemName || !categoryId || !unitId) {
-      return res.status(400).json({ success: false, message: 'Item code, name, category, and unit are required' });
+    const finalName = itemName || name;
+    const finalCategoryId = categoryId || 1;
+    const finalUnitId = unitId || 1;
+    const finalMinStock = minStockLevel !== undefined ? minStockLevel : minStock;
+
+    if (!itemCode || !finalName) {
+      return res.status(400).json({ success: false, message: 'Item code and item name are required' });
     }
 
     let status = 'in_stock';
     if (currentStock === 0) status = 'out_of_stock';
-    else if (currentStock <= minStock) status = 'low_stock';
+    else if (currentStock <= finalMinStock) status = 'low_stock';
 
     const [result] = await pool.query(
       `INSERT INTO store_items (item_code, item_name, category_id, unit_id, current_stock, min_stock, unit_cost, location_id, description, status)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [itemCode, itemName, categoryId, unitId, currentStock, minStock, unitCost, locationId || 1, description || null, status]
+      [itemCode, finalName, finalCategoryId, finalUnitId, currentStock, finalMinStock, unitCost, locationId || 1, description || null, status]
     );
 
     return res.status(201).json({ success: true, message: 'Store item added successfully', id: result.insertId });

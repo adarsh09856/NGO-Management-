@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   GraduationCap, BookOpen, Users, Award, Plus, 
-  CheckCircle2, Download, Edit2, Layers, Search, 
+  CheckCircle2, Download, Edit2, Trash2, Layers, Search, 
   Filter, Calendar, Clock, X, UserPlus, FilePlus
 } from 'lucide-react';
 import api from '../../services/api';
@@ -19,6 +19,19 @@ export default function LMSOverview() {
 
   // Modals
   const [showCourseModal, setShowCourseModal] = useState(false);
+  const [showEditCourseModal, setShowEditCourseModal] = useState(false);
+  const [editingCourse, setEditingCourse] = useState(null);
+  const [editCourseForm, setEditCourseForm] = useState({
+    courseCode: '',
+    title: '',
+    level: 'Basic',
+    durationMonths: 6,
+    totalCredits: 12,
+    instructorName: 'Khenpo Tashi Dorji',
+    feeAmount: 0,
+    syllabus: '',
+    description: ''
+  });
   const [showBatchModal, setShowBatchModal] = useState(false);
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
@@ -196,6 +209,64 @@ export default function LMSOverview() {
     }
   };
 
+  const handleOpenEditCourse = (c) => {
+    setEditingCourse(c);
+    setEditCourseForm({
+      courseCode: c.course_code || '',
+      title: c.title || '',
+      level: c.level || 'Basic',
+      durationMonths: c.duration_months || 6,
+      totalCredits: c.total_credits || 12,
+      instructorName: c.instructor_name || 'Khenpo Tashi Dorji',
+      feeAmount: c.fee_amount || 0,
+      syllabus: c.syllabus || '',
+      description: c.description || ''
+    });
+    setShowEditCourseModal(true);
+  };
+
+  const handleUpdateCourse = async (e) => {
+    e.preventDefault();
+    if (!editingCourse) return;
+    try {
+      const res = await api.put(`/lms/courses/${editingCourse.id}`, editCourseForm);
+      if (res.data.success) {
+        success('Shedra course curriculum updated successfully!');
+        setShowEditCourseModal(false);
+        setEditingCourse(null);
+        fetchData();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to update course');
+    }
+  };
+
+  const handleDeleteCourse = async (id, title) => {
+    if (!window.confirm(`Are you sure you want to delete course "${title}"? This cannot be undone.`)) return;
+    try {
+      const res = await api.delete(`/lms/courses/${id}`);
+      if (res.data.success) {
+        success('Course deleted from curriculum');
+        fetchData();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to delete course');
+    }
+  };
+
+  const handleDeleteEnrollment = async (id) => {
+    if (!window.confirm('Are you sure you want to remove this scholar enrollment record?')) return;
+    try {
+      const res = await api.delete(`/lms/enrollments/${id}`);
+      if (res.data.success) {
+        success('Enrollment record removed');
+        fetchData();
+      }
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to delete enrollment');
+    }
+  };
+
   const filteredCourses = courses.filter(c => {
     const matchesLevel = levelFilter === 'all' || c.level === levelFilter;
     const matchesSearch = !searchQuery ||
@@ -354,6 +425,26 @@ export default function LMSOverview() {
                   <span className="text-white font-semibold truncate max-w-[130px]">{c.instructor_name}</span>
                 </div>
               </div>
+
+              <div className="pt-2 border-t border-white/5 flex items-center justify-end gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => handleOpenEditCourse(c)}
+                  className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-[#D4AF37]/20 text-gray-300 hover:text-[#D4AF37] text-xs font-semibold flex items-center gap-1 transition-all"
+                  title="Edit Course"
+                >
+                  <Edit2 className="w-3 h-3 text-[#D4AF37]" />
+                  <span>Edit</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteCourse(c.id, c.title)}
+                  className="p-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 text-xs transition-all"
+                  title="Delete Course"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -446,14 +537,24 @@ export default function LMSOverview() {
                       )}
                     </td>
                     <td className="py-3.5 px-5 text-right">
-                      <button
-                        type="button"
-                        onClick={() => handleOpenProgressModal(e)}
-                        className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white font-bold text-xs border border-white/10 flex items-center gap-1 ml-auto transition-all"
-                      >
-                        <Edit2 className="w-3 h-3 text-[#D4AF37]" />
-                        <span>Update</span>
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenProgressModal(e)}
+                          className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white font-bold text-xs border border-white/10 flex items-center gap-1 transition-all"
+                        >
+                          <Edit2 className="w-3 h-3 text-[#D4AF37]" />
+                          <span>Update</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteEnrollment(e.id)}
+                          className="p-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 text-xs border border-white/10 transition-all"
+                          title="Delete Enrollment"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -584,6 +685,131 @@ export default function LMSOverview() {
                   className="flex-1 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#B89628] text-[#090D16] font-bold rounded-xl shadow-lg transition-all"
                 >
                   Save Course
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Course Modal */}
+      {showEditCourseModal && editingCourse && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#0D121F] border border-[#2A1E17] rounded-2xl shadow-2xl p-6 max-w-lg w-full space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="p-1.5 rounded-lg bg-[#D4AF37]/10 text-[#D4AF37]">
+                  <Edit2 className="w-5 h-5" />
+                </span>
+                <h3 className="font-serif-brand font-bold text-base text-white">Edit Shedra Course</h3>
+              </div>
+              <button type="button" onClick={() => setShowEditCourseModal(false)} className="text-gray-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateCourse} className="space-y-3.5 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Course Code *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editCourseForm.courseCode}
+                    onChange={(e) => setEditCourseForm({ ...editCourseForm, courseCode: e.target.value })}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white font-mono font-bold focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Academic Level</label>
+                  <select
+                    value={editCourseForm.level}
+                    onChange={(e) => setEditCourseForm({ ...editCourseForm, level: e.target.value })}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white font-semibold focus:border-[#D4AF37] focus:outline-none"
+                  >
+                    <option value="Basic">Basic</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                    <option value="Shedra Master">Shedra Master</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#CBD5E1] mb-1">Course Title *</label>
+                <input
+                  type="text"
+                  required
+                  value={editCourseForm.title}
+                  onChange={(e) => setEditCourseForm({ ...editCourseForm, title: e.target.value })}
+                  className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Duration (Months)</label>
+                  <input
+                    type="number"
+                    value={editCourseForm.durationMonths}
+                    onChange={(e) => setEditCourseForm({ ...editCourseForm, durationMonths: parseInt(e.target.value, 10) || 6 })}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white font-mono focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Total Credits</label>
+                  <input
+                    type="number"
+                    value={editCourseForm.totalCredits}
+                    onChange={(e) => setEditCourseForm({ ...editCourseForm, totalCredits: parseInt(e.target.value, 10) || 12 })}
+                    className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white font-mono focus:border-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#CBD5E1] mb-1">Principal Instructor</label>
+                <input
+                  type="text"
+                  value={editCourseForm.instructorName}
+                  onChange={(e) => setEditCourseForm({ ...editCourseForm, instructorName: e.target.value })}
+                  className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#CBD5E1] mb-1">Course Description</label>
+                <textarea
+                  rows="2"
+                  value={editCourseForm.description}
+                  onChange={(e) => setEditCourseForm({ ...editCourseForm, description: e.target.value })}
+                  className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                ></textarea>
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#CBD5E1] mb-1">Syllabus Modules (One line per module)</label>
+                <textarea
+                  rows="3"
+                  value={editCourseForm.syllabus}
+                  onChange={(e) => setEditCourseForm({ ...editCourseForm, syllabus: e.target.value })}
+                  className="w-full p-2.5 rounded-lg bg-[#090D16] border border-white/10 text-white focus:border-[#D4AF37] focus:outline-none"
+                ></textarea>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowEditCourseModal(false)}
+                  className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold transition-all border border-white/10"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#B89628] text-[#090D16] font-bold rounded-xl shadow-lg transition-all"
+                >
+                  Update Course
                 </button>
               </div>
             </form>

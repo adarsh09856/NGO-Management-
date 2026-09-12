@@ -7,14 +7,20 @@ async function getAccountsDashboard(req, res) {
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
 
-    // 1. Current Month Income
+    // 1. Current Month Income (Combines manual income entries + live completed donations)
     const [incomeRows] = await pool.query(
       `SELECT COALESCE(SUM(amount), 0) as total 
        FROM income 
        WHERE MONTH(received_date) = ? AND YEAR(received_date) = ?`,
       [currentMonth, currentYear]
     );
-    const totalIncomeThisMonth = parseFloat(incomeRows[0].total) || 0;
+    const [donationIncomeRow] = await pool.query(
+      `SELECT COALESCE(SUM(amount), 0) as total 
+       FROM donations 
+       WHERE MONTH(payment_date) = ? AND YEAR(payment_date) = ? AND payment_status = 'completed'`,
+      [currentMonth, currentYear]
+    );
+    const totalIncomeThisMonth = (parseFloat(incomeRows[0].total) || 0) + (parseFloat(donationIncomeRow[0].total) || 0);
 
     // Prior Month Income for % change
     const priorMonth = currentMonth === 1 ? 12 : currentMonth - 1;
@@ -25,7 +31,13 @@ async function getAccountsDashboard(req, res) {
        WHERE MONTH(received_date) = ? AND YEAR(received_date) = ?`,
       [priorMonth, priorYear]
     );
-    const priorIncome = parseFloat(priorIncomeRows[0].total) || 0;
+    const [priorDonationRows] = await pool.query(
+      `SELECT COALESCE(SUM(amount), 0) as total 
+       FROM donations 
+       WHERE MONTH(payment_date) = ? AND YEAR(payment_date) = ? AND payment_status = 'completed'`,
+      [priorMonth, priorYear]
+    );
+    const priorIncome = (parseFloat(priorIncomeRows[0].total) || 0) + (parseFloat(priorDonationRows[0].total) || 0);
     const incomeGrowth = priorIncome > 0 ? ((totalIncomeThisMonth - priorIncome) / priorIncome) * 100 : 0.0;
 
     // 2. Current Month Expenses
@@ -101,9 +113,20 @@ async function getAccountsDashboard(req, res) {
        GROUP BY m`,
       [currentYear]
     );
+    const [yearDonationsRows] = await pool.query(
+      `SELECT MONTH(payment_date) as m, COALESCE(SUM(amount), 0) as total 
+       FROM donations 
+       WHERE YEAR(payment_date) = ? AND payment_status = 'completed'
+       GROUP BY m`,
+      [currentYear]
+    );
     yearIncomeRows.forEach(r => {
       const target = monthlySeries.find(item => item.monthNum === r.m);
-      if (target) target.income = parseFloat(r.total);
+      if (target) target.income += parseFloat(r.total);
+    });
+    yearDonationsRows.forEach(r => {
+      const target = monthlySeries.find(item => item.monthNum === r.m);
+      if (target) target.income += parseFloat(r.total);
     });
 
     const [yearExpenseRows] = await pool.query(
@@ -122,22 +145,25 @@ async function getAccountsDashboard(req, res) {
       item.net = item.income - item.expense;
     });
 
+    const stats = {
+      totalIncome: totalIncomeThisMonth,
+      incomeGrowth: parseFloat(incomeGrowth.toFixed(1)),
+      totalExpenses: totalExpensesThisMonth,
+      expenseGrowth: parseFloat(expenseGrowth.toFixed(1)),
+      netSurplus,
+      surplusGrowth: parseFloat(surplusGrowth.toFixed(1)),
+      totalReceivables: 0,
+      overdueInvoicesCount: 0,
+      totalPayables,
+      overdueBillsCount,
+      cashInHand
+    };
+
     return res.json({
       success: true,
       data: {
-        stats: {
-          totalIncome: totalIncomeThisMonth,
-          incomeGrowth: parseFloat(incomeGrowth.toFixed(1)),
-          totalExpenses: totalExpensesThisMonth,
-          expenseGrowth: parseFloat(expenseGrowth.toFixed(1)),
-          netSurplus,
-          surplusGrowth: parseFloat(surplusGrowth.toFixed(1)),
-          totalReceivables: 0,
-          overdueInvoicesCount: 0,
-          totalPayables,
-          overdueBillsCount,
-          cashInHand
-        },
+        stats,
+        metrics: stats,
         monthlySeries,
         bankAccounts,
         recentTransactions
@@ -329,12 +355,89 @@ async function createVoucher(req, res) {
   }
 }
 
+// Update Expense
+async function updateExpense(req, res) {
+  try {
+    const { id } = req.params;
+    const { categoryId, title, description, amount, currency, expenseDate, payeeName, paymentMethod, paymentMode, bankAccountId } = req.body;
+
+    const [existing] = await pool.query('SELECT * FROM expenses WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Expense record not found' });
+    }
+
+    const numAmount = amount !== undefined ? parseFloat(amount) : existing[0].amount;
+    const resolvedPayee = payeeName !== undefined ? payeeName : existing[0].payee_name;
+    const resolvedTitle = title !== undefined ? title : existing[0].title;
+    const resolvedMethod = (paymentMethod || paymentMode) !== undefined ? (paymentMethod || paymentMode) : existing[0].payment_method;
+
+    await pool.query(
+      `UPDATE expenses SET
+        category_id = COALESCE(?, category_id),
+        title = COALESCE(?, title),
+        description = COALESCE(?, description),
+        amount = COALESCE(?, amount),
+        currency = COALESCE(?, currency),
+        expense_date = COALESCE(?, expense_date),
+        payee_name = COALESCE(?, payee_name),
+        payment_method = COALESCE(?, payment_method),
+        bank_account_id = COALESCE(?, bank_account_id),
+        updated_at = NOW()
+       WHERE id = ?`,
+      [categoryId || null, resolvedTitle, description !== undefined ? description : null, numAmount, currency || null, expenseDate || null, resolvedPayee, resolvedMethod, bankAccountId !== undefined ? bankAccountId : null, id]
+    );
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'expenses',
+      action: 'update_expense',
+      recordId: id,
+      details: { title: resolvedTitle, amount: numAmount }
+    });
+
+    return res.json({ success: true, message: 'Expense updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update expense: ' + error.message });
+  }
+}
+
+// Delete Expense
+async function deleteExpense(req, res) {
+  try {
+    const { id } = req.params;
+    const [existing] = await pool.query('SELECT * FROM expenses WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Expense record not found' });
+    }
+
+    await pool.query('DELETE FROM expenses WHERE id = ?', [id]);
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'expenses',
+      action: 'delete_expense',
+      recordId: id,
+      details: { title: existing[0].title, amount: existing[0].amount }
+    });
+
+    return res.json({ success: true, message: 'Expense deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to delete expense: ' + error.message });
+  }
+}
+
 module.exports = {
   getAccountsDashboard,
   getIncomeLedger,
   getExpenses,
   createExpense,
   submitExpense: createExpense,
+  updateExpense,
+  deleteExpense,
   approveExpense,
   getExpenseCategories,
   getBankAccounts,
