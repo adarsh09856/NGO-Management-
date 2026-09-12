@@ -85,9 +85,9 @@ export default function Footer({ onOpenDonate }) {
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                <Link to="/shedra" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
                   <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
-                  <span>Shedra University</span>
+                  <span>Shedra Monastic Academy</span>
                 </Link>
               </li>
               <li>
@@ -133,6 +133,12 @@ export default function Footer({ onOpenDonate }) {
                 <Link to="/student" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
                   <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
                   <span>Monk Scholar Portal</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/verify-certificate" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                  <span>Verify Monastic Certificate</span>
                 </Link>
               </li>
               <li>

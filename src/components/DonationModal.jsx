@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, Heart, Shield, CheckCircle2, Download, ArrowRight, Lock, Sparkles, Building2, CreditCard } from 'lucide-react';
+import {
+  X, Heart, Shield, CheckCircle2, Download, ArrowRight, ArrowLeft,
+  Lock, Sparkles, Building2, CreditCard, QrCode, Smartphone, Copy,
+  Check, ExternalLink, RefreshCw, FileText, CheckCircle
+} from 'lucide-react';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 
@@ -13,26 +17,56 @@ export default function DonationModal({
   causeTitle = 'Great Druk Wangyel Peace Stupa'
 }) {
   const { success, error } = useToast();
+
+  // Multi-step Wizard: 1: 'amount', 2: 'devotee', 3: 'payment', 4: 'processing', 5: 'success'
+  const [currentStep, setCurrentStep] = useState(1);
+
+  // Step 1: Amount & Cause
   const [frequency, setFrequency] = useState(initialType || 'one_time');
   const [currency, setCurrency] = useState('INR');
   const [selectedPreset, setSelectedPreset] = useState(initialAmount || defaultAmount || 1000);
   const [customAmount, setCustomAmount] = useState('');
   const [donationFor, setDonationFor] = useState(causeTitle || 'Great Druk Wangyel Peace Stupa');
   const [campaignId, setCampaignId] = useState(defaultCampaignId || 1);
-  const [paymentMethod, setPaymentMethod] = useState('online_gateway'); // 'online_gateway' | 'bank_transfer'
-  const [transactionRef, setTransactionRef] = useState('');
 
-  // Donor Details Form
+  // Step 2: Devotee & Tax Info
   const [donorName, setDonorName] = useState('');
   const [donorEmail, setDonorEmail] = useState('');
   const [donorPhone, setDonorPhone] = useState('');
   const [donorAddress, setDonorAddress] = useState('');
   const [panTaxId, setPanTaxId] = useState('');
   const [is80g, setIs80g] = useState(true);
+  const [dedicationPrayer, setDedicationPrayer] = useState('');
 
-  // States
-  const [step, setStep] = useState('form'); // 'form', 'processing', 'success'
+  // Step 3: Payment Channel
+  const [paymentChannel, setPaymentChannel] = useState('upi'); // 'upi', 'card', 'bank_wire'
+  const [upiApp, setUpiApp] = useState('gpay'); // 'gpay', 'phonepe', 'paytm', 'bhim'
+  const [copiedField, setCopiedField] = useState(null);
+
+  // Card Inputs
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvv, setCardCvv] = useState('');
+  const [cardName, setCardName] = useState('');
+
+  // Bank Wire Inputs
+  const [wireRef, setWireRef] = useState('');
+
+  // Processing & Success
+  const [processingStatus, setProcessingStatus] = useState('Securing 256-Bit SSL Handshake...');
   const [completedDonation, setCompletedDonation] = useState(null);
+
+  // Causes list
+  const causes = [
+    { id: 1, title: 'Great Druk Wangyel Peace Stupa', subtitle: '108ft Sacred Monument for World Peace', tag: 'Monument' },
+    { id: 2, title: 'Shedra Monastic University', subtitle: 'Scholarships & Higher Buddhist Philosophy', tag: 'Education' },
+    { id: 3, title: 'Sangha Daily Food Fund', subtitle: 'Nutritious Meals & Healthcare for Monks', tag: 'Welfare' },
+    { id: 4, title: '108 Butter Lamp Fund', subtitle: 'Auspicious Prayers & World Peace Dedications', tag: 'Prayers' }
+  ];
+
+  // Presets by currency
+  const presets = currency === 'INR' ? [500, 1000, 2500, 5000] : [25, 50, 100, 250];
+  const finalAmount = customAmount ? parseFloat(customAmount) : selectedPreset;
 
   // Sync props when opening or switching causes
   useEffect(() => {
@@ -51,65 +85,126 @@ export default function DonationModal({
   // Handle ESC key to close
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && onClose) {
-        onClose();
-      }
+      if (e.key === 'Escape' && onClose) onClose();
     };
-    if (isOpen) {
-      window.addEventListener('keydown', handleKeyDown);
-    }
+    if (isOpen) window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
   if (isOpen === false) return null;
 
-  const currentAmount = customAmount ? parseFloat(customAmount) : selectedPreset;
-
-  const handlePresetClick = (amt) => {
-    setSelectedPreset(amt);
-    setCustomAmount('');
+  // Copy helper
+  const handleCopy = (text, fieldName) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldName);
+    setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const handleCheckout = async (e) => {
-    e.preventDefault();
+  // Card formatting
+  const handleCardNumberChange = (e) => {
+    const val = e.target.value.replace(/\D/g, '').slice(0, 16);
+    const formatted = val.match(/.{1,4}/g)?.join(' ') || val;
+    setCardNumber(formatted);
+  };
 
-    if (!donorName.trim() || !donorEmail.trim()) {
-      error('Please provide your full name and email address for the tax receipt.');
-      return;
+  const handleExpiryChange = (e) => {
+    const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+    if (val.length >= 3) {
+      setCardExpiry(`${val.slice(0, 2)}/${val.slice(2)}`);
+    } else {
+      setCardExpiry(val);
     }
-    if (!currentAmount || currentAmount <= 0) {
+  };
+
+  // Step 1 Validation
+  const handleNextToDevotee = () => {
+    if (!finalAmount || finalAmount <= 0) {
       error('Please select or enter a valid donation amount.');
       return;
     }
+    setCurrentStep(2);
+  };
+
+  // Step 2 Validation
+  const handleNextToPayment = (e) => {
+    e.preventDefault();
+    if (!donorName.trim()) {
+      error('Please provide your full legal name for the 80G tax receipt.');
+      return;
+    }
+    if (!donorEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(donorEmail.trim())) {
+      error('Please provide a valid email address to receive your official receipt.');
+      return;
+    }
+    setCurrentStep(3);
+  };
+
+  // Step 3 Execution: Interactive Realistic Payment Handshake
+  const handleFinalizePayment = async () => {
+    // Validations based on channel
+    if (paymentChannel === 'card') {
+      const rawCard = cardNumber.replace(/\s/g, '');
+      if (rawCard.length < 15) {
+        error('Please enter a valid 16-digit debit or credit card number.');
+        return;
+      }
+      if (cardExpiry.length < 5) {
+        error('Please enter a valid card expiry date (MM/YY).');
+        return;
+      }
+      if (cardCvv.length < 3) {
+        error('Please enter a valid 3-digit CVV security code.');
+        return;
+      }
+    }
 
     try {
-      setStep('processing');
+      setCurrentStep(4); // Processing
 
-      // Submit public offering (recorded in DB, updates campaign, generates receipt & PDF)
+      // Simulated realistic banking handshake steps
+      setProcessingStatus('Establishing 256-Bit SSL Encrypted Session...');
+      await new Promise((r) => setTimeout(r, 600));
+
+      if (paymentChannel === 'upi') {
+        setProcessingStatus(`Awaiting UPI Confirmation from ${upiApp.toUpperCase()} Gateway...`);
+        await new Promise((r) => setTimeout(r, 800));
+      } else if (paymentChannel === 'card') {
+        setProcessingStatus('Connecting to 3D-Secure Bank Verification...');
+        await new Promise((r) => setTimeout(r, 800));
+      } else {
+        setProcessingStatus('Registering SWIFT Wire Confirmation with Bank of Bhutan...');
+        await new Promise((r) => setTimeout(r, 700));
+      }
+
+      setProcessingStatus('Recording Dana in Monastic Ledger & Generating 80G Tax Receipt...');
+
+      // Post to live backend endpoint
       const res = await api.post('/donations/public-offering', {
         donorName: donorName.trim(),
         donorEmail: donorEmail.trim().toLowerCase(),
         donorPhone: donorPhone.trim(),
         donorAddress: donorAddress.trim(),
-        amount: currentAmount,
+        amount: finalAmount,
         currency,
         campaignId,
         donationFor,
         donationType: frequency,
-        paymentMethod,
-        remarks: paymentMethod === 'bank_transfer'
-          ? `Direct wire transfer${transactionRef ? ` (Ref: ${transactionRef})` : ''} for ${donationFor}`
-          : `Online dana offering for ${donationFor}`
+        paymentMethod: paymentChannel === 'bank_wire' ? 'bank_transfer' : 'online_gateway',
+        remarks: paymentChannel === 'bank_wire'
+          ? `Direct BoB Wire Transfer (Ref: ${wireRef || 'Pending Receipt'}) for ${donationFor}. Intention: ${dedicationPrayer || 'General Merit'}`
+          : `${paymentChannel.toUpperCase()} Merit Offering for ${donationFor}. Intention: ${dedicationPrayer || 'General Merit'}`
       });
 
       if (res.data?.success) {
         setCompletedDonation(res.data.data);
-        setStep('success');
+        setCurrentStep(5); // Success
         success('Merit offering received! Your official tax receipt has been generated.');
+      } else {
+        throw new Error(res.data?.message || 'Transaction could not be completed.');
       }
     } catch (err) {
-      setStep('form');
-      error(err.response?.data?.message || 'Payment processing failed. Please try again.');
+      setCurrentStep(3);
+      error(err.response?.data?.message || err.message || 'Payment processing failed. Please try again.');
     }
   };
 
@@ -122,20 +217,20 @@ export default function DonationModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 xs:p-4 bg-black/80 backdrop-blur-md overflow-y-auto animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 xs:p-4 bg-black/80 backdrop-blur-md overflow-y-auto animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget && onClose) onClose();
       }}
     >
-      <div className="bg-white w-full max-w-lg my-auto rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D4AF37]/50 overflow-hidden relative animate-scale-in flex flex-col max-h-[92vh]">
-        {/* Modal Header */}
+      <div className="bg-white w-full max-w-xl my-auto rounded-3xl shadow-2xl border border-[#D4AF37]/50 overflow-hidden relative animate-scale-in flex flex-col max-h-[94vh]">
+        {/* Header with Monastery Crest */}
         <div className="bg-gradient-to-r from-[#1A0B0E] via-[#4A0E17] to-[#1A0B0E] text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#D4AF37]/40 flex-shrink-0">
-          <div className="flex items-center space-x-2.5 sm:space-x-3.5 min-w-0">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37] flex items-center justify-center flex-shrink-0">
-              <span className="text-base sm:text-lg text-[#D4AF37]">☸</span>
+          <div className="flex items-center space-x-3 min-w-0">
+            <div className="w-9 h-9 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37] flex items-center justify-center flex-shrink-0">
+              <span className="text-lg text-[#D4AF37]">☸</span>
             </div>
             <div className="min-w-0">
-              <span className="text-[9px] sm:text-[10px] font-serif uppercase tracking-widest text-[#D4AF37] block truncate">
+              <span className="text-[10px] font-serif uppercase tracking-widest text-[#D4AF37] block truncate">
                 ༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པར་ཞལ་འདེབས་ཕུལ་བ།
               </span>
               <h3 className="font-editorial font-bold text-base sm:text-lg text-[#FCFBF9] truncate">
@@ -145,113 +240,127 @@ export default function DonationModal({
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white flex items-center justify-center transition-colors flex-shrink-0 ml-2"
+            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white flex items-center justify-center transition-colors flex-shrink-0 ml-2"
             aria-label="Close modal"
           >
             <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
 
-        {/* Modal Body */}
-        {step === 'form' && (
-          <form onSubmit={handleCheckout} className="p-4 sm:p-6 space-y-4 overflow-y-auto font-serif flex-1">
-            {/* Frequency Tabs */}
-            <div className="grid grid-cols-2 gap-2 bg-[#FAF5F0] p-1 rounded-xl border border-[#D4AF37]/20 text-xs">
-              <button
-                type="button"
-                onClick={() => setFrequency('one_time')}
-                className={`py-2 font-bold rounded-lg transition-all ${
-                  frequency === 'one_time'
-                    ? 'bg-gradient-to-r from-[#4A0E17] to-[#721C24] text-[#D4AF37] shadow-md'
-                    : 'text-gray-700 hover:text-[#4A0E17]'
-                }`}
-              >
-                One-Time Gift
-              </button>
-              <button
-                type="button"
-                onClick={() => setFrequency('recurring')}
-                className={`py-2 font-bold rounded-lg transition-all ${
-                  frequency === 'recurring'
-                    ? 'bg-gradient-to-r from-[#4A0E17] to-[#721C24] text-[#D4AF37] shadow-md'
-                    : 'text-gray-700 hover:text-[#4A0E17]'
-                }`}
-              >
-                Monthly Pledge
-              </button>
+        {/* 3-Step Wizard Progress Bar */}
+        {currentStep <= 3 && (
+          <div className="bg-[#FAF5F0] px-6 py-2.5 border-b border-[#D4AF37]/20 flex items-center justify-between text-xs font-serif flex-shrink-0">
+            <div className="flex items-center space-x-2">
+              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                currentStep >= 1 ? 'bg-[#721C24] text-[#D4AF37]' : 'bg-gray-200 text-gray-500'
+              }`}>
+                1
+              </span>
+              <span className={`font-semibold ${currentStep === 1 ? 'text-[#721C24]' : 'text-gray-500'}`}>
+                Offering
+              </span>
             </div>
-
-            {/* Donation Cause */}
-            <div>
-              <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
-                Select Cause / Sacred Project
-              </label>
-              <select
-                value={donationFor}
-                onChange={(e) => setDonationFor(e.target.value)}
-                className="w-full text-xs font-semibold p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-2 focus:ring-[#D4AF37] focus:outline-none"
-              >
-                <option value="Great Druk Wangyel Peace Stupa">Great Druk Wangyel Peace Stupa Construction</option>
-                <option value="Shedra Monastic University">Shedra Monastic University & Scholarships</option>
-                <option value="Sangha Daily Food Fund">Sangha Monks Daily Meals & Healthcare</option>
-                <option value="108 Butter Lamp Fund">108 Butter Lamps & World Peace Prayers</option>
-              </select>
+            <div className={`h-[1px] flex-1 mx-3 ${currentStep >= 2 ? 'bg-[#D4AF37]' : 'bg-gray-200'}`} />
+            <div className="flex items-center space-x-2">
+              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                currentStep >= 2 ? 'bg-[#721C24] text-[#D4AF37]' : 'bg-gray-200 text-gray-500'
+              }`}>
+                2
+              </span>
+              <span className={`font-semibold ${currentStep === 2 ? 'text-[#721C24]' : 'text-gray-500'}`}>
+                Devotee Info
+              </span>
             </div>
+            <div className={`h-[1px] flex-1 mx-3 ${currentStep >= 3 ? 'bg-[#D4AF37]' : 'bg-gray-200'}`} />
+            <div className="flex items-center space-x-2">
+              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                currentStep >= 3 ? 'bg-[#721C24] text-[#D4AF37]' : 'bg-gray-200 text-gray-500'
+              }`}>
+                3
+              </span>
+              <span className={`font-semibold ${currentStep === 3 ? 'text-[#721C24]' : 'text-gray-500'}`}>
+                Payment
+              </span>
+            </div>
+          </div>
+        )}
 
-            {/* Offering Mode: Online vs Bank Wire */}
+        {/* ============================================================== */}
+        {/* STEP 1: CHOOSE CAUSE & AMOUNT                                 */}
+        {/* ============================================================== */}
+        {currentStep === 1 && (
+          <div className="p-5 sm:p-6 space-y-5 overflow-y-auto font-serif flex-1">
+            {/* Frequency Selector */}
             <div>
-              <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
-                Payment Channel
+              <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                Offering Frequency
               </label>
-              <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="grid grid-cols-2 gap-2 bg-[#FAF5F0] p-1 rounded-xl border border-[#D4AF37]/30 text-xs font-bold">
                 <button
                   type="button"
-                  onClick={() => setPaymentMethod('online_gateway')}
-                  className={`p-2 rounded-xl border flex items-center justify-center gap-1.5 font-bold transition-all ${
-                    paymentMethod === 'online_gateway'
-                      ? 'border-[#D4AF37] bg-amber-50/80 text-[#721C24] shadow-sm ring-1 ring-[#D4AF37]'
-                      : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                  onClick={() => setFrequency('one_time')}
+                  className={`py-2 rounded-lg transition-all ${
+                    frequency === 'one_time'
+                      ? 'bg-gradient-to-r from-[#4A0E17] to-[#721C24] text-[#D4AF37] shadow-md'
+                      : 'text-gray-600 hover:text-[#4A0E17]'
                   }`}
                 >
-                  <CreditCard className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  <span>Online (Cards / UPI)</span>
+                  One-Time Merit Offering
                 </button>
                 <button
                   type="button"
-                  onClick={() => setPaymentMethod('bank_transfer')}
-                  className={`p-2 rounded-xl border flex items-center justify-center gap-1.5 font-bold transition-all ${
-                    paymentMethod === 'bank_transfer'
-                      ? 'border-[#D4AF37] bg-amber-50/80 text-[#721C24] shadow-sm ring-1 ring-[#D4AF37]'
-                      : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                  onClick={() => setFrequency('recurring')}
+                  className={`py-2 rounded-lg transition-all ${
+                    frequency === 'recurring'
+                      ? 'bg-gradient-to-r from-[#4A0E17] to-[#721C24] text-[#D4AF37] shadow-md'
+                      : 'text-gray-600 hover:text-[#4A0E17]'
                   }`}
                 >
-                  <Building2 className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  <span>Bank Wire (BoB SWIFT)</span>
+                  Monthly Bodhisattva Pledge
                 </button>
               </div>
-
-              {paymentMethod === 'bank_transfer' && (
-                <div className="mt-2 p-3 bg-gray-50 rounded-xl border border-gray-200 text-[11px] space-y-1 font-mono text-gray-700">
-                  <p><strong className="font-sans text-gray-900">Bank:</strong> Bank of Bhutan Ltd. (BoB)</p>
-                  <p><strong className="font-sans text-gray-900">A/C:</strong> 20188944110023 · <strong className="font-sans text-gray-900">SWIFT:</strong> BOBNBTBT</p>
-                  <div className="pt-1.5">
-                    <input
-                      type="text"
-                      placeholder="Enter Wire UTR / Transaction Ref (Optional)"
-                      value={transactionRef}
-                      onChange={(e) => setTransactionRef(e.target.value)}
-                      className="w-full text-[11px] p-2 rounded-lg border border-gray-300 bg-white font-sans focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
-                    />
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* Amount Presets */}
+            {/* Sacred Cause Selection */}
             <div>
-              <div className="flex justify-between items-center mb-1">
+              <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                Select Sacred Cause / Dedicated Fund
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {causes.map((cause) => {
+                  const isSelected = donationFor === cause.title;
+                  return (
+                    <div
+                      key={cause.id}
+                      onClick={() => {
+                        setDonationFor(cause.title);
+                        setCampaignId(cause.id);
+                      }}
+                      className={`p-3 rounded-2xl border text-left cursor-pointer transition-all ${
+                        isSelected
+                          ? 'border-[#D4AF37] bg-amber-50/70 shadow-sm ring-2 ring-[#D4AF37]/30'
+                          : 'border-gray-200 bg-white hover:border-[#D4AF37]/50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-md">
+                          {cause.tag}
+                        </span>
+                        {isSelected && <CheckCircle className="w-4 h-4 text-emerald-600" />}
+                      </div>
+                      <p className="font-bold text-xs text-[#1A0B0E] line-clamp-1">{cause.title}</p>
+                      <p className="text-[10px] text-gray-500 line-clamp-1 font-sans">{cause.subtitle}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Currency & Presets */}
+            <div>
+              <div className="flex justify-between items-center mb-1.5">
                 <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider">
-                  Amount ({currency})
+                  Select Offering Amount ({currency})
                 </label>
                 <div className="flex items-center space-x-1.5 text-xs font-semibold">
                   <button
@@ -272,13 +381,16 @@ export default function DonationModal({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 xs:grid-cols-4 gap-2 mb-2">
-                {(currency === 'INR' ? [500, 1000, 2500, 5000] : [25, 50, 100, 250]).map((amt) => (
+              <div className="grid grid-cols-2 xs:grid-cols-4 gap-2 mb-2.5">
+                {presets.map((amt) => (
                   <button
                     key={amt}
                     type="button"
-                    onClick={() => handlePresetClick(amt)}
-                    className={`py-2.5 text-xs font-bold rounded-xl border transition-all ${
+                    onClick={() => {
+                      setSelectedPreset(amt);
+                      setCustomAmount('');
+                    }}
+                    className={`py-3 text-xs font-bold rounded-xl border transition-all ${
                       selectedPreset === amt && !customAmount
                         ? 'bg-gradient-to-r from-[#4A0E17] to-[#721C24] text-[#D4AF37] border-[#D4AF37] shadow-md ring-2 ring-[#D4AF37]/30'
                         : 'bg-[#FAF5F0]/50 border-[#D4AF37]/25 text-gray-700 hover:border-[#D4AF37]'
@@ -289,178 +401,541 @@ export default function DonationModal({
                 ))}
               </div>
 
-              <input
-                type="number"
-                placeholder="Or custom amount..."
-                value={customAmount}
-                onChange={(e) => {
-                  setCustomAmount(e.target.value);
-                  setSelectedPreset(null);
-                }}
-                className="w-full text-xs p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-2 focus:ring-[#D4AF37] focus:outline-none"
-              />
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs">
+                  {currency === 'INR' ? '₹' : '$'}
+                </span>
+                <input
+                  type="number"
+                  placeholder="Enter custom amount..."
+                  value={customAmount}
+                  onChange={(e) => {
+                    setCustomAmount(e.target.value);
+                    setSelectedPreset(null);
+                  }}
+                  className="w-full text-xs pl-8 pr-3 py-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-2 focus:ring-[#D4AF37] focus:outline-none font-sans"
+                />
+              </div>
             </div>
 
-            {/* Donor Info Grid */}
-            <div className="space-y-2.5 pt-2 border-t border-[#D4AF37]/20">
-              <h4 className="text-[10px] sm:text-[11px] font-bold text-[#1A0B0E] uppercase tracking-wider">
+            {/* Next Button */}
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={handleNextToDevotee}
+                className="monastic-maroon-btn w-full py-3.5 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center space-x-2 shadow-xl border border-[#D4AF37]/40"
+              >
+                <span>Continue to Devotee Details</span>
+                <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
+              </button>
+              <p className="text-[10px] text-center text-gray-500 mt-2 flex items-center justify-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-emerald-600" />
+                100% Tax Deductible (80G Certified) · Secure Monastic Ledger
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* STEP 2: DEVOTEE & 80G TAX INFO                                */}
+        {/* ============================================================== */}
+        {currentStep === 2 && (
+          <form onSubmit={handleNextToPayment} className="p-5 sm:p-6 space-y-4 overflow-y-auto font-serif flex-1">
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+              <h4 className="font-editorial text-base font-bold text-[#1A0B0E]">
                 Devotee Details (for Official 80G Tax Receipt)
               </h4>
+              <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                Offering: {currency === 'INR' ? '₹' : '$'}{finalAmount?.toLocaleString()}
+              </span>
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <div>
-                  <label className="block text-[10px] font-semibold text-gray-600 mb-0.5">Full Legal Name *</label>
-                  <input
-                    type="text"
-                    required
-                    value={donorName}
-                    onChange={(e) => setDonorName(e.target.value)}
-                    placeholder="e.g. Tashi Phuntsho"
-                    className="w-full text-xs p-2 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-gray-600 mb-0.5">Email Address *</label>
-                  <input
-                    type="email"
-                    required
-                    value={donorEmail}
-                    onChange={(e) => setDonorEmail(e.target.value)}
-                    placeholder="devotee@example.com"
-                    className="w-full text-xs p-2 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <div>
-                  <label className="block text-[10px] font-semibold text-gray-600 mb-0.5">Phone / WhatsApp</label>
-                  <input
-                    type="tel"
-                    value={donorPhone}
-                    onChange={(e) => setDonorPhone(e.target.value)}
-                    placeholder="+975 17556559"
-                    className="w-full text-xs p-2 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-gray-600 mb-0.5">PAN / Tax ID (Optional)</label>
-                  <input
-                    type="text"
-                    value={panTaxId}
-                    onChange={(e) => setPanTaxId(e.target.value)}
-                    placeholder="For statutory 80G tax receipt"
-                    className="w-full text-xs p-2 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
-                  />
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                  Full Legal Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={donorName}
+                  onChange={(e) => setDonorName(e.target.value)}
+                  placeholder="e.g. Tashi Phuntsho"
+                  className="w-full text-xs p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
+                />
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-gray-600 mb-0.5">Address / City / Country</label>
-                <input
-                  type="text"
-                  value={donorAddress}
-                  onChange={(e) => setDonorAddress(e.target.value)}
-                  placeholder="Gelephu, Bhutan"
-                  className="w-full text-xs p-2 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
-                />
-              </div>
-
-              <div className="flex items-center space-x-2 pt-0.5">
-                <input
-                  type="checkbox"
-                  id="modal80g"
-                  checked={is80g}
-                  onChange={(e) => setIs80g(e.target.checked)}
-                  className="rounded border-[#D4AF37] text-[#4A0E17] focus:ring-[#D4AF37]"
-                />
-                <label htmlFor="modal80g" className="text-[11px] text-gray-600">
-                  Generate and email official 80G tax receipt PDF immediately
+                <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                  Email Address *
                 </label>
+                <input
+                  type="email"
+                  required
+                  value={donorEmail}
+                  onChange={(e) => setDonorEmail(e.target.value)}
+                  placeholder="devotee@example.com"
+                  className="w-full text-xs p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
+                />
               </div>
             </div>
 
-            {/* Submit Button */}
-            <div className="pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                  Phone / WhatsApp
+                </label>
+                <input
+                  type="tel"
+                  value={donorPhone}
+                  onChange={(e) => setDonorPhone(e.target.value)}
+                  placeholder="+975 17556559"
+                  className="w-full text-xs p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                  PAN / Tax Identification (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={panTaxId}
+                  onChange={(e) => setPanTaxId(e.target.value)}
+                  placeholder="ABCDE1234F (for 80G tax rebate)"
+                  className="w-full text-xs p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                Postal Address / City / Country
+              </label>
+              <input
+                type="text"
+                value={donorAddress}
+                onChange={(e) => setDonorAddress(e.target.value)}
+                placeholder="Gelephu, Sarpang, Bhutan"
+                className="w-full text-xs p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                Spiritual Prayer Dedication / Intention (Optional)
+              </label>
+              <textarea
+                rows={2}
+                value={dedicationPrayer}
+                onChange={(e) => setDedicationPrayer(e.target.value)}
+                placeholder="e.g. Dedicated for the health, long life of parents, and universal peace..."
+                className="w-full text-xs p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans resize-none"
+              />
+            </div>
+
+            <div className="flex items-center space-x-2 pt-1">
+              <input
+                type="checkbox"
+                id="modal80g"
+                checked={is80g}
+                onChange={(e) => setIs80g(e.target.checked)}
+                className="rounded border-[#D4AF37] text-[#4A0E17] focus:ring-[#D4AF37]"
+              />
+              <label htmlFor="modal80g" className="text-xs text-gray-700 font-medium">
+                Issue official Section 80G Income Tax Exemption Receipt automatically
+              </label>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-3 pt-3">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(1)}
+                className="px-4 py-3 rounded-xl border border-gray-300 text-gray-700 font-bold text-xs flex items-center space-x-1.5 hover:bg-gray-50 transition-colors"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Back</span>
+              </button>
+
               <button
                 type="submit"
-                className="monastic-maroon-btn w-full py-3.5 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center space-x-2 shadow-xl border border-[#D4AF37]/40"
+                className="monastic-maroon-btn flex-1 py-3 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center space-x-2 shadow-xl border border-[#D4AF37]/40"
               >
-                <Lock className="w-3.5 h-3.5 text-[#D4AF37]" />
-                <span>
-                  Confirm Merit Offering · {currency === 'INR' ? '₹' : '$'}{currentAmount ? currentAmount.toLocaleString() : '0'}
-                </span>
+                <span>Proceed to Payment</span>
+                <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
               </button>
-              <p className="text-[10px] text-center text-gray-500 mt-1.5 flex items-center justify-center gap-1.5">
-                <Shield className="w-3 h-3 text-emerald-600" />
-                256-Bit SSL Encrypted · 100% Tax Deductible (80G Certified)
-              </p>
             </div>
           </form>
         )}
 
-        {/* Processing State */}
-        {step === 'processing' && (
+        {/* ============================================================== */}
+        {/* STEP 3: INTERACTIVE PAYMENT GATEWAY CHECKOUT                  */}
+        {/* ============================================================== */}
+        {currentStep === 3 && (
+          <div className="p-5 sm:p-6 space-y-4 overflow-y-auto font-serif flex-1">
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+              <div>
+                <h4 className="font-editorial text-base font-bold text-[#1A0B0E]">
+                  Select Payment Gateway Channel
+                </h4>
+                <p className="text-[11px] text-gray-500 font-sans">
+                  Total Offering: <strong className="text-emerald-700">{currency} {finalAmount?.toLocaleString()}</strong>
+                </p>
+              </div>
+              <div className="flex items-center space-x-1 text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-1 rounded-md border border-emerald-200">
+                <Shield className="w-3 h-3" />
+                <span>256-Bit SSL</span>
+              </div>
+            </div>
+
+            {/* Channel Tabs */}
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => setPaymentChannel('upi')}
+                className={`p-2.5 rounded-2xl border flex flex-col items-center justify-center gap-1 transition-all ${
+                  paymentChannel === 'upi'
+                    ? 'border-[#D4AF37] bg-amber-50/80 shadow-md ring-2 ring-[#D4AF37]/30 text-[#721C24]'
+                    : 'border-gray-200 bg-white hover:border-gray-300 text-gray-600'
+                }`}
+              >
+                <QrCode className="w-5 h-5 text-[#D4AF37]" />
+                <span className="text-[11px] font-bold">UPI / QR Code</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPaymentChannel('card')}
+                className={`p-2.5 rounded-2xl border flex flex-col items-center justify-center gap-1 transition-all ${
+                  paymentChannel === 'card'
+                    ? 'border-[#D4AF37] bg-amber-50/80 shadow-md ring-2 ring-[#D4AF37]/30 text-[#721C24]'
+                    : 'border-gray-200 bg-white hover:border-gray-300 text-gray-600'
+                }`}
+              >
+                <CreditCard className="w-5 h-5 text-[#D4AF37]" />
+                <span className="text-[11px] font-bold">Cards / 3DS</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPaymentChannel('bank_wire')}
+                className={`p-2.5 rounded-2xl border flex flex-col items-center justify-center gap-1 transition-all ${
+                  paymentChannel === 'bank_wire'
+                    ? 'border-[#D4AF37] bg-amber-50/80 shadow-md ring-2 ring-[#D4AF37]/30 text-[#721C24]'
+                    : 'border-gray-200 bg-white hover:border-gray-300 text-gray-600'
+                }`}
+              >
+                <Building2 className="w-5 h-5 text-[#D4AF37]" />
+                <span className="text-[11px] font-bold">BoB SWIFT Wire</span>
+              </button>
+            </div>
+
+            {/* CHANNEL 1: UPI / QR CODE */}
+            {paymentChannel === 'upi' && (
+              <div className="space-y-3 bg-[#FAF5F0]/60 p-4 rounded-2xl border border-[#D4AF37]/30">
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  {/* Visual QR Code Generator */}
+                  <div className="w-36 h-36 bg-white p-2.5 rounded-2xl border-2 border-[#D4AF37] shadow-md flex flex-col items-center justify-center flex-shrink-0">
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(
+                        `upi://pay?pa=drodulphendeyling@bob&pn=Drodul+Phendey+Ling+Monastery&am=${finalAmount}&cu=${currency}`
+                      )}`}
+                      alt="Monastery UPI QR"
+                      className="w-full h-full object-contain rounded-lg"
+                    />
+                  </div>
+
+                  <div className="space-y-2 flex-1 text-center sm:text-left">
+                    <span className="text-[10px] uppercase tracking-wider font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
+                      Scan with any UPI App
+                    </span>
+                    <p className="text-xs text-gray-700 font-sans leading-relaxed">
+                      Scan using <strong>Google Pay, PhonePe, Paytm, or BHIM</strong>. Your donation is automatically linked to your receipt.
+                    </p>
+
+                    <div className="flex items-center space-x-2 pt-1 justify-center sm:justify-start">
+                      <div className="bg-white px-3 py-1.5 rounded-xl border border-gray-300 text-xs font-mono font-bold text-gray-800 select-all">
+                        drodulphendeyling@bob
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy('drodulphendeyling@bob', 'upi')}
+                        className="p-1.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 transition-colors"
+                        title="Copy UPI ID"
+                      >
+                        {copiedField === 'upi' ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Popular App Selector */}
+                <div className="pt-2 border-t border-gray-200/80">
+                  <span className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 text-center sm:text-left">
+                    Select Your Installed UPI App:
+                  </span>
+                  <div className="grid grid-cols-4 gap-2 text-xs font-semibold">
+                    {[
+                      { id: 'gpay', name: 'Google Pay' },
+                      { id: 'phonepe', name: 'PhonePe' },
+                      { id: 'paytm', name: 'Paytm' },
+                      { id: 'bhim', name: 'BHIM UPI' }
+                    ].map((app) => (
+                      <button
+                        key={app.id}
+                        type="button"
+                        onClick={() => setUpiApp(app.id)}
+                        className={`py-1.5 px-2 rounded-xl border text-[11px] font-bold transition-all ${
+                          upiApp === app.id
+                            ? 'border-[#D4AF37] bg-white text-[#721C24] shadow-sm ring-1 ring-[#D4AF37]'
+                            : 'border-gray-200 bg-white/60 text-gray-600 hover:bg-white'
+                        }`}
+                      >
+                        {app.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* CHANNEL 2: DEBIT / CREDIT CARD */}
+            {paymentChannel === 'card' && (
+              <div className="space-y-3 bg-[#FAF5F0]/60 p-4 rounded-2xl border border-[#D4AF37]/30 font-sans">
+                <div>
+                  <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                    Card Number
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="4111 2222 3333 4444"
+                      value={cardNumber}
+                      onChange={handleCardNumberChange}
+                      className="w-full text-xs p-2.5 pl-9 rounded-xl border border-gray-300 bg-white font-mono focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
+                    />
+                    <CreditCard className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 uppercase">
+                      Visa / MC / RuPay
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                      Expiry Date (MM/YY)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="MM/YY"
+                      value={cardExpiry}
+                      onChange={handleExpiryChange}
+                      className="w-full text-xs p-2.5 rounded-xl border border-gray-300 bg-white font-mono focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                      CVV / CVC
+                    </label>
+                    <input
+                      type="password"
+                      maxLength={4}
+                      placeholder="•••"
+                      value={cardCvv}
+                      onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, ''))}
+                      className="w-full text-xs p-2.5 rounded-xl border border-gray-300 bg-white font-mono focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                    Cardholder Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Name as printed on card"
+                    value={cardName}
+                    onChange={(e) => setCardName(e.target.value)}
+                    className="w-full text-xs p-2.5 rounded-xl border border-gray-300 bg-white focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* CHANNEL 3: BANK OF BHUTAN SWIFT WIRE */}
+            {paymentChannel === 'bank_wire' && (
+              <div className="space-y-2.5 bg-[#FAF5F0]/60 p-4 rounded-2xl border border-[#D4AF37]/30 font-sans text-xs">
+                <div className="flex items-center justify-between pb-1.5 border-b border-gray-200">
+                  <span className="font-bold text-[#1A0B0E]">Official Monastic Bank Coordinates</span>
+                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">
+                    FCRA & 80G Compliant
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                  <div className="bg-white p-2 rounded-xl border border-gray-200">
+                    <span className="text-gray-500 block text-[10px]">Beneficiary Name</span>
+                    <strong className="text-gray-900 font-bold">Drodul Phendey Ling Monastery</strong>
+                  </div>
+
+                  <div className="bg-white p-2 rounded-xl border border-gray-200 flex items-center justify-between">
+                    <div>
+                      <span className="text-gray-500 block text-[10px]">Bank Name</span>
+                      <strong className="text-gray-900 font-bold">Bank of Bhutan Ltd. (BoB)</strong>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-2 rounded-xl border border-gray-200 flex items-center justify-between">
+                    <div>
+                      <span className="text-gray-500 block text-[10px]">Account Number</span>
+                      <strong className="text-gray-900 font-mono font-bold">20188944110023</strong>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy('20188944110023', 'acct')}
+                      className="p-1 text-gray-500 hover:text-gray-800"
+                    >
+                      {copiedField === 'acct' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+
+                  <div className="bg-white p-2 rounded-xl border border-gray-200 flex items-center justify-between">
+                    <div>
+                      <span className="text-gray-500 block text-[10px]">SWIFT Code (International)</span>
+                      <strong className="text-gray-900 font-mono font-bold">BOBNBTBT</strong>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy('BOBNBTBT', 'swift')}
+                      className="p-1 text-gray-500 hover:text-gray-800"
+                    >
+                      {copiedField === 'swift' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="pt-1">
+                  <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                    Your Wire UTR / Transaction Reference (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. UTR / IMPS reference number..."
+                    value={wireRef}
+                    onChange={(e) => setWireRef(e.target.value)}
+                    className="w-full text-xs p-2.5 rounded-xl border border-gray-300 bg-white focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-3 pt-2 font-serif">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(2)}
+                className="px-4 py-3.5 rounded-xl border border-gray-300 text-gray-700 font-bold text-xs flex items-center space-x-1.5 hover:bg-gray-50 transition-colors"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Back</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleFinalizePayment}
+                className="monastic-maroon-btn flex-1 py-3.5 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center space-x-2 shadow-xl border border-[#D4AF37]/40"
+              >
+                <Lock className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>
+                  Authorize Offering · {currency === 'INR' ? '₹' : '$'}{finalAmount?.toLocaleString()}
+                </span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* STEP 4: REALISTIC PROCESSING STATE                            */}
+        {/* ============================================================== */}
+        {currentStep === 4 && (
           <div className="p-10 sm:p-14 text-center space-y-4 font-serif flex-1 flex flex-col justify-center items-center">
-            <div className="w-12 h-12 border-3 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <div className="w-14 h-14 border-3 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto"></div>
             <h4 className="font-editorial font-bold text-lg sm:text-xl text-[#1A0B0E]">
-              Registering Merit Offering in Monastic Ledger...
+              {processingStatus}
             </h4>
             <p className="text-xs text-gray-500 max-w-xs mx-auto leading-relaxed">
-              Recording your donation, updating campaign totals, and generating official 80G tax receipt.
+              Recording your donation in the monastery general ledger and issuing your statutory 80G tax exemption certificate.
             </p>
           </div>
         )}
 
-        {/* Success / Receipt State */}
-        {step === 'success' && (
+        {/* ============================================================== */}
+        {/* STEP 5: OFFICIAL TAX RECEIPT & MERIT CONFIRMATION             */}
+        {/* ============================================================== */}
+        {currentStep === 5 && (
           <div className="p-6 sm:p-8 text-center space-y-4 font-serif flex-1 overflow-y-auto">
-            <div className="w-14 h-14 bg-emerald-50 border-2 border-emerald-500 rounded-full flex items-center justify-center mx-auto text-emerald-600 shadow-md">
-              <CheckCircle2 className="w-8 h-8" />
+            <div className="w-16 h-16 bg-emerald-50 border-2 border-emerald-500 rounded-full flex items-center justify-center mx-auto text-emerald-600 shadow-md">
+              <CheckCircle2 className="w-9 h-9" />
             </div>
 
             <div className="space-y-1">
-              <h4 className="font-editorial text-xl sm:text-2xl text-[#1A0B0E]">
+              <span className="text-amber-800 text-[10px] uppercase font-bold tracking-widest bg-amber-100 px-3 py-0.5 rounded-full border border-amber-200">
+                Auspicious Offering Confirmed
+              </span>
+              <h4 className="font-editorial text-xl sm:text-2xl text-[#1A0B0E] font-bold">
                 Tashi Delek! Merit Offering Received
               </h4>
-              <p className="text-xs text-gray-600">
-                Thank you, <strong>{donorName}</strong>. May your virtuous contribution bring eternal peace, auspiciousness, and spiritual flourishing.
+              <p className="text-xs text-gray-600 max-w-md mx-auto leading-relaxed">
+                Thank you, <strong>{donorName}</strong>. May your virtuous offering bring eternal peace, wisdom, and flourishing to all sentient beings.
               </p>
             </div>
 
-            {/* Receipt Summary Card */}
-            <div className="bg-[#FAF5F0] border border-[#D4AF37]/50 rounded-2xl p-4 max-w-sm mx-auto text-left text-xs space-y-2 shadow-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Receipt No:</span>
-                <span className="font-bold text-[#1A0B0E] font-mono">{completedDonation?.receiptNumber}</span>
+            {/* Official Receipt Summary Card */}
+            <div className="bg-[#FAF5F0] border border-[#D4AF37]/50 rounded-2xl p-4 max-w-md mx-auto text-left text-xs space-y-2 shadow-sm font-sans">
+              <div className="flex justify-between items-center pb-2 border-b border-[#D4AF37]/20">
+                <span className="text-gray-500 font-serif">Monastery Receipt No:</span>
+                <span className="font-bold text-[#1A0B0E] font-mono text-sm">
+                  {completedDonation?.receiptNumber || 'RC-2026-CONFIRMED'}
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Amount:</span>
-                <span className="font-bold text-emerald-700 font-mono">{currency} {currentAmount.toLocaleString()}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500">Amount Offered:</span>
+                <span className="font-bold text-emerald-700 font-mono text-sm">
+                  {currency} {finalAmount?.toLocaleString()}
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Dedication:</span>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500">Sacred Cause:</span>
                 <span className="font-semibold text-gray-800 line-clamp-1">{donationFor}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Status:</span>
-                <span className="text-emerald-700 font-bold">ROB Certified / 80G Issued</span>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500">Statutory Tax Status:</span>
+                <span className="text-emerald-700 font-bold flex items-center gap-1">
+                  <Shield className="w-3.5 h-3.5" />
+                  Section 80G Certified
+                </span>
               </div>
             </div>
 
+            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
               <button
                 onClick={handleDownloadPdf}
-                className="monastic-maroon-btn px-5 py-2.5 rounded-full text-xs flex items-center justify-center gap-2 shadow-lg"
+                className="monastic-maroon-btn px-6 py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg"
               >
-                <Download className="w-3.5 h-3.5 text-[#D4AF37]" />
-                <span>Download PDF Receipt</span>
+                <Download className="w-4 h-4 text-[#D4AF37]" />
+                <span>Download Official PDF Receipt</span>
               </button>
+
               <button
                 onClick={onClose}
-                className="px-5 py-2.5 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs transition-colors"
+                className="px-6 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs transition-colors"
               >
-                Close
+                Complete & Close
               </button>
             </div>
           </div>

@@ -37,7 +37,8 @@ export default function Navbar({ onOpenDonate }) {
       donate: 'OFFER DANA',
       prayer: 'Light Butter Lamps',
       news: 'News & Events',
-      monkPortal: 'Shedra Monk Portal'
+      monkPortal: 'Shedra Monk Portal',
+      shedra: 'SHEDRA'
     },
     Dzongkha: {
       home: 'གདོང་ཤོག',
@@ -52,7 +53,8 @@ export default function Navbar({ onOpenDonate }) {
       donate: 'ཞལ་འདེབས།',
       prayer: 'མཆོད་མེ་ཕུལ་བ།',
       news: 'གནས་ཚུལ།',
-      monkPortal: 'བཤད་གྲྭའི་སྒོ་འབྱེད།'
+      monkPortal: 'བཤད་གྲྭའི་སྒོ་འབྱེད།',
+      shedra: 'བཤད་གྲྭ།'
     }
   };
 
@@ -245,7 +247,7 @@ export default function Navbar({ onOpenDonate }) {
                   </Link>
 
                   <Link
-                    to="/about"
+                    to="/shedra"
                     className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group"
                   >
                     <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
@@ -273,6 +275,21 @@ export default function Navbar({ onOpenDonate }) {
               </div>
             )}
           </div>
+
+          {/* SHEDRA MONASTIC ACADEMY */}
+          <Link
+            to="/shedra"
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group ${
+              isActive('/shedra') ? 'text-[#721C24]' : 'text-gray-700'
+            }`}
+          >
+            <span>{t.shedra}</span>
+            <span
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
+                isActive('/shedra') ? 'w-full' : 'w-0 group-hover:w-full'
+              }`}
+            />
+          </Link>
 
           {/* LEARNING */}
           <Link
@@ -432,6 +449,7 @@ export default function Navbar({ onOpenDonate }) {
                 {[
                   { path: '/', label: t.home, icon: Compass },
                   { path: '/about', label: t.about, icon: Landmark },
+                  { path: '/shedra', label: t.shedra, icon: GraduationCap },
                   { path: '/learning', label: t.learning, icon: BookOpen },
                   { path: '/blog', label: t.blog, icon: Newspaper },
                   { path: '/gallery', label: t.gallery, icon: ImageIcon },
