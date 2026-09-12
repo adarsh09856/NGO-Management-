@@ -170,8 +170,62 @@ async function sendCampaignEmail({ toEmails, subject, bodyHtml }) {
   }
 }
 
+// Send Pending Verification Acknowledgement Email (UTR Submitted, Awaiting Bank Reconciliation)
+async function sendPendingVerificationEmail({ toEmail, donorName, receiptNumber, amount, currency, transactionRef, cause }) {
+  try {
+    if (!toEmail) return { success: false, reason: 'No recipient email provided' };
+    const mailer = await getTransporter();
+    const mailOptions = {
+      from: process.env.SMTP_FROM || '"Drodul Phendey Ling Foundation" <donations@drodulphendeyling.org>',
+      to: toEmail,
+      subject: `Offering Proof Logged [Ref: ${transactionRef}] - Awaiting Monastic Verification`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+          <div style="background-color: #4A0E17; color: #ffffff; padding: 20px; text-align: center; border-radius: 6px 6px 0 0;">
+            <h2 style="margin: 0; color: #D4AF37;">༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པ།</h2>
+            <h3 style="margin: 5px 0 0 0;">Drodul Phendey Ling Foundation</h3>
+            <p style="margin: 5px 0 0 0; font-size: 12px; color: #f3f4f6;">Gelephu, Sarpang Dzongkhag, Kingdom of Bhutan</p>
+          </div>
+          <div style="padding: 20px; background-color: #ffffff;">
+            <p>Dear <strong>${donorName || 'Devotee'}</strong>,</p>
+            <p>Tashi Delek!</p>
+            <p>We have received your sacred merit offering submission of <strong>${currency || 'INR'} ${parseFloat(amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong> for <em>${cause || 'Great Druk Wangyel Peace Stupa'}</em>.</p>
+            
+            <div style="background-color: #FEF3C7; border: 1px solid #F59E0B; border-radius: 6px; padding: 15px; margin: 15px 0;">
+              <p style="margin: 0 0 8px 0; font-weight: bold; color: #92400E;">Payment Status: Pending Bank Reconciliation</p>
+              <p style="margin: 0; font-size: 13px; color: #78350F;">
+                Submitted Transaction Ref / UTR: <strong>${transactionRef}</strong><br>
+                Provisional Reference: <strong>${receiptNumber}</strong>
+              </p>
+            </div>
+
+            <p style="font-size: 13px; line-height: 1.6; color: #374151;">
+              Our monastic treasury team will reconcile your submitted UTR proof against our official Bank of Bhutan account statement. 
+              <strong>Once verified and confirmed by our finance administrator, your official certified Section 80G tax receipt will be automatically emailed to this address.</strong>
+            </p>
+
+            <div style="background-color: #FAF5F0; border-left: 4px solid #D4AF37; padding: 12px; margin: 15px 0;">
+              <p style="margin: 0; font-style: italic; font-size: 12px; color: #4B5563;">"Giving Dana is the gateway to liberation and boundless merit."</p>
+            </div>
+            
+            <p style="margin-top: 20px; font-size: 13px; color: #4B5563;">With heartfelt prayers and blessings,<br><strong>Drodul Phendey Ling Monastic Foundation</strong></p>
+          </div>
+        </div>
+      `
+    };
+
+    const info = await mailer.sendMail(mailOptions);
+    console.log(`[Email Service] Pending verification acknowledgement sent to ${toEmail}. Message ID: ${info.messageId}`);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error(`[Email Service Error] Failed to send pending email:`, error.message);
+    return { success: false, error: error.message };
+  }
+}
+
 module.exports = {
   sendReceiptEmail,
+  sendPendingVerificationEmail,
   sendSubscriptionAlertEmail,
   sendCampaignEmail
 };

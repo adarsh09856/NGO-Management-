@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const Razorpay = require('razorpay');
 const { pool } = require('../config/db');
 const { generateReceiptPdf } = require('./pdfService');
-const { sendReceiptEmail, sendSubscriptionAlertEmail } = require('./emailService');
+const { sendReceiptEmail, sendPendingVerificationEmail, sendSubscriptionAlertEmail } = require('./emailService');
 
 // Helper to calculate amount in words
 function numberToWords(amount) {
@@ -229,14 +229,28 @@ async function processSuccessfulDonation({
       await pool.query(`UPDATE money_receipts SET pdf_url = ? WHERE id = ?`, [pdfInfo.relativeUrl, receiptId]);
 
       if (sendReceipt && donorEmail) {
-        sendReceiptEmail({
-          toEmail: donorEmail,
-          donorName,
-          receiptNumber,
-          amount,
-          currency,
-          pdfPath: pdfInfo.filePath
-        }).catch(err => console.error('[Email Send Error]:', err.message));
+        if (finalStatus === 'completed') {
+          // Send official certified 80G tax receipt with PDF
+          sendReceiptEmail({
+            toEmail: donorEmail,
+            donorName,
+            receiptNumber,
+            amount,
+            currency,
+            pdfPath: pdfInfo ? pdfInfo.filePath : null
+          }).catch(err => console.error('[Email Send Error]:', err.message));
+        } else if (finalStatus === 'pending_verification') {
+          // Send pending verification notice ONLY (official receipt issued after admin confirms UTR)
+          sendPendingVerificationEmail({
+            toEmail: donorEmail,
+            donorName,
+            receiptNumber,
+            amount,
+            currency,
+            transactionRef: finalTransactionRef,
+            cause: donationFor
+          }).catch(err => console.error('[Pending Email Send Error]:', err.message));
+        }
       }
     } catch (pdfErr) {
       console.error('[PDF Generation Error]:', pdfErr.message);

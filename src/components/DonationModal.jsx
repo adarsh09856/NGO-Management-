@@ -923,7 +923,7 @@ export default function DonationModal({
               <button
                 type="button"
                 onClick={() => setCurrentStep(2)}
-                className="px-4 py-3.5 rounded-xl border border-gray-300 text-gray-700 font-bold text-xs flex items-center space-x-1.5 hover:bg-gray-50 transition-colors"
+                className="px-4 py-3 rounded-xl border border-gray-300 text-gray-700 font-bold text-xs flex items-center space-x-1.5 hover:bg-gray-50 transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back</span>
@@ -932,12 +932,24 @@ export default function DonationModal({
               <button
                 type="button"
                 onClick={handleFinalizePayment}
-                className="monastic-maroon-btn flex-1 py-3.5 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center space-x-2 shadow-xl border border-[#D4AF37]/40"
+                className="monastic-maroon-btn flex-1 py-3 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center space-x-2 shadow-xl border border-[#D4AF37]/40"
               >
-                <Lock className="w-3.5 h-3.5 text-[#D4AF37]" />
-                <span>
-                  Authorize Offering · {currency === 'INR' ? '₹' : '$'}{finalAmount?.toLocaleString()}
-                </span>
+                {paymentChannel === 'upi' ? (
+                  <>
+                    <CheckCircle className="w-3.5 h-3.5 text-[#D4AF37]" />
+                    <span>Submit UPI UTR for Admin Verification</span>
+                  </>
+                ) : paymentChannel === 'bank_wire' ? (
+                  <>
+                    <Building2 className="w-3.5 h-3.5 text-[#D4AF37]" />
+                    <span>Submit Wire Proof for Admin Verification</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-3.5 h-3.5 text-[#D4AF37]" />
+                    <span>Authorize Offering · {currency === 'INR' ? '₹' : '$'}{finalAmount?.toLocaleString()}</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -953,7 +965,7 @@ export default function DonationModal({
               {processingStatus}
             </h4>
             <p className="text-xs text-gray-500 max-w-xs mx-auto leading-relaxed">
-              Recording your donation in the monastery general ledger and issuing your statutory 80G tax exemption certificate.
+              Recording your donation proof in the monastery ledger for admin reconciliation against the bank statement.
             </p>
           </div>
         )}
@@ -966,32 +978,32 @@ export default function DonationModal({
             {completedDonation?.paymentStatus === 'pending_verification' ? (
               <>
                 <div className="w-16 h-16 bg-amber-50 border-2 border-amber-500 rounded-full flex items-center justify-center mx-auto text-amber-600 shadow-md">
-                  <Clock className="w-9 h-9 text-amber-600" />
+                  <Clock className="w-9 h-9 text-amber-600 animate-pulse" />
                 </div>
 
                 <div className="space-y-1">
                   <span className="text-amber-800 text-[10px] uppercase font-bold tracking-widest bg-amber-100 px-3 py-1 rounded-full border border-amber-300 inline-flex items-center gap-1.5 shadow-sm">
-                    <Clock className="w-3 h-3 text-amber-700 animate-pulse" />
-                    Payment Proof Submitted · Pending Bank Reconciliation
+                    <Clock className="w-3 h-3 text-amber-700" />
+                    Proof Submitted · Awaiting Admin Bank Verification
                   </span>
                   <h4 className="font-editorial text-xl sm:text-2xl text-[#1A0B0E] font-bold">
-                    Tashi Delek! Merit Offering Recorded
+                    Merit Offering Proof Logged
                   </h4>
                   <p className="text-xs text-gray-600 max-w-md mx-auto leading-relaxed">
-                    Thank you, <strong>{donorName}</strong>. Your offering of <strong>{currency} {finalAmount?.toLocaleString()}</strong> has been submitted with transaction reference <strong className="font-mono text-amber-900">{completedDonation?.transactionRef || upiUtr || wireRef}</strong>.
+                    Thank you, <strong>{donorName}</strong>. Your offering of <strong>{currency} {finalAmount?.toLocaleString()}</strong> has been recorded with transaction proof <strong className="font-mono text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300">{completedDonation?.transactionRef || upiUtr || wireRef}</strong>.
                   </p>
                 </div>
 
-                {/* Official Receipt Summary Card */}
+                {/* Provisional Details Card */}
                 <div className="bg-[#FAF5F0] border border-[#D4AF37]/50 rounded-2xl p-4 max-w-md mx-auto text-left text-xs space-y-2 shadow-sm font-sans">
                   <div className="flex justify-between items-center pb-2 border-b border-[#D4AF37]/20">
-                    <span className="text-gray-500 font-serif">Provisional Receipt No:</span>
+                    <span className="text-gray-500 font-serif">Provisional Ack No:</span>
                     <span className="font-bold text-[#1A0B0E] font-mono text-sm">
-                      {completedDonation?.receiptNumber || 'RC-2026-PENDING'}
+                      {completedDonation?.receiptNumber || 'ACK-PENDING'}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-500">Transaction Proof / UTR:</span>
+                    <span className="text-gray-500">Submitted UTR / Ref:</span>
                     <span className="font-bold text-amber-900 font-mono text-xs bg-amber-100/70 px-2 py-0.5 rounded border border-amber-300">
                       {completedDonation?.transactionRef || upiUtr || wireRef}
                     </span>
@@ -1003,33 +1015,30 @@ export default function DonationModal({
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-500">Sacred Cause:</span>
-                    <span className="font-semibold text-gray-800 line-clamp-1">{donationFor}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-500">Reconciliation Status:</span>
+                    <span className="text-gray-500">Verification Status:</span>
                     <span className="text-amber-800 font-bold bg-amber-100 px-2 py-0.5 rounded flex items-center gap-1 text-[11px]">
                       <Clock className="w-3 h-3 text-amber-700" />
-                      Pending Treasury Verification
+                      Pending Admin Reconciliation
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-500">Tax Deductibility:</span>
-                    <span className="text-emerald-700 font-bold flex items-center gap-1">
-                      <Shield className="w-3.5 h-3.5" />
-                      Section 80G Eligible (Provisional)
+                    <span className="text-gray-500">Email Confirmation:</span>
+                    <span className="text-blue-700 font-bold flex items-center gap-1 text-[10.5px]">
+                      Sent After Admin Verifies UTR
                     </span>
                   </div>
                 </div>
 
-                {/* Treasury Reconciliation Notice */}
-                <div className="p-3 bg-amber-50/90 border border-amber-200 rounded-xl text-[11px] text-amber-900 text-left space-y-1 max-w-md mx-auto">
+                {/* Treasury Notice */}
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 text-left space-y-1 max-w-md mx-auto">
                   <div className="font-bold flex items-center gap-1.5 text-[#721C24]">
-                    <CheckCircle className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                    <span>Real-World Bank Verification Process</span>
+                    <Shield className="w-3.5 h-3.5 text-amber-700 flex-shrink-0" />
+                    <span>How Verification & Confirmation Works:</span>
                   </div>
                   <p className="text-[10.5px] leading-relaxed text-gray-700">
-                    The monastery treasury office will match your submitted UTR reference (<strong className="font-mono text-amber-950">{completedDonation?.transactionRef || upiUtr || wireRef}</strong>) directly against our Bank of Bhutan account statement. Once verified, the donation status will automatically update to <em>Completed</em> and your permanent certified receipt will be issued.
+                    1. The monastery accountant matches your UTR (<strong className="font-mono text-amber-950">{completedDonation?.transactionRef || upiUtr || wireRef}</strong>) against our Bank of Bhutan statement.<br />
+                    2. Once confirmed, the admin certifies the donation.<br />
+                    3. Your <strong>official Section 80G tax receipt and email confirmation</strong> will then be dispatched automatically to <strong>{donorEmail}</strong>.
                   </p>
                 </div>
 
@@ -1037,15 +1046,15 @@ export default function DonationModal({
                 <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
                   <button
                     onClick={handleDownloadPdf}
-                    className="monastic-maroon-btn px-6 py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg"
+                    className="monastic-maroon-btn px-5 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg"
                   >
                     <Download className="w-4 h-4 text-[#D4AF37]" />
-                    <span>Download Provisional Receipt PDF</span>
+                    <span>Download Submission Slip (PDF)</span>
                   </button>
 
                   <button
                     onClick={onClose}
-                    className="px-6 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs transition-colors"
+                    className="px-5 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs transition-colors"
                   >
                     Close & Finish
                   </button>

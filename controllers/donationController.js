@@ -601,7 +601,13 @@ async function verifyDonationPayment(req, res) {
     const { id } = req.params;
 
     const [donationRows] = await pool.query(
-      `SELECT id, receipt_number, amount, donor_id, payment_status, transaction_ref FROM donations WHERE id = ?`,
+      `SELECT d.*, 
+              dn.full_name as donor_name, dn.email as donor_email, dn.phone as donor_phone, dn.address as donor_address,
+              mr.id as receipt_id, mr.financial_year
+       FROM donations d
+       JOIN donors dn ON d.donor_id = dn.id
+       LEFT JOIN money_receipts mr ON d.id = mr.donation_id
+       WHERE d.id = ?`,
       [id]
     );
 
@@ -609,15 +615,67 @@ async function verifyDonationPayment(req, res) {
       return res.status(404).json({ success: false, message: 'Donation record not found' });
     }
 
+    const donation = donationRows[0];
+
+    // 1. Mark donation completed in primary ledger
     await pool.query(
       `UPDATE donations SET payment_status = 'completed' WHERE id = ?`,
       [id]
     );
 
+    // 2. Mark money receipt as ISSUED
     await pool.query(
-      `UPDATE money_receipts SET status = 'ISSUED', notes = CONCAT(COALESCE(notes, ''), ' - UTR Verified by Monastic Treasury') WHERE donation_id = ?`,
+      `UPDATE money_receipts SET status = 'ISSUED', notes = CONCAT(COALESCE(notes, ''), ' - UTR Verified & Certified by Monastic Treasury') WHERE donation_id = ?`,
       [id]
     );
+
+    // 3. Generate Official Certified PDF Receipt
+    let pdfUrl = null;
+    let pdfFilePath = null;
+    try {
+      const receiptData = {
+        receipt_number: donation.receipt_number,
+        financial_year: donation.financial_year || `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
+        recipient_name: donation.donor_name,
+        recipient_email: donation.donor_email,
+        recipient_phone: donation.donor_phone,
+        recipient_address: donation.donor_address,
+        purpose: donation.donation_for,
+        amount: donation.amount,
+        currency: donation.currency,
+        amount_in_words: donation.amount_in_words,
+        payment_mode: donation.payment_method,
+        transaction_no: donation.transaction_ref,
+        receipt_date: donation.payment_date || new Date().toISOString().slice(0, 10),
+        status: 'ISSUED'
+      };
+      const pdfResult = await generateReceiptPdf(receiptData);
+      pdfUrl = pdfResult.relativeUrl;
+      pdfFilePath = pdfResult.filePath;
+      if (donation.receipt_id) {
+        await pool.query(`UPDATE money_receipts SET pdf_url = ? WHERE id = ?`, [pdfUrl, donation.receipt_id]);
+      }
+    } catch (pdfErr) {
+      console.error('[Verify PDF Generation Error]:', pdfErr.message);
+    }
+
+    // 4. Dispatch Official 80G Tax Receipt Confirmation Email via SMTP
+    let emailSent = false;
+    if (donation.donor_email) {
+      try {
+        const mailResult = await sendReceiptEmail({
+          toEmail: donation.donor_email,
+          donorName: donation.donor_name,
+          receiptNumber: donation.receipt_number,
+          amount: donation.amount,
+          currency: donation.currency,
+          pdfPath: pdfFilePath
+        });
+        emailSent = mailResult?.success || false;
+      } catch (mailErr) {
+        console.error('[Verify SMTP Email Dispatch Error]:', mailErr.message);
+      }
+    }
 
     logAudit({
       userId: req.user ? req.user.id : null,
@@ -626,13 +684,19 @@ async function verifyDonationPayment(req, res) {
       module: 'donations',
       action: 'verify_payment',
       recordId: id,
-      details: { receiptNumber: donationRows[0].receipt_number, utr: donationRows[0].transaction_ref, verifiedBy: req.user?.email || 'admin' }
+      details: {
+        receiptNumber: donation.receipt_number,
+        utr: donation.transaction_ref,
+        verifiedBy: req.user?.email || 'admin',
+        emailSent
+      }
     });
 
     return res.json({
       success: true,
-      message: `Donation payment verified successfully. Official 80G tax receipt ${donationRows[0].receipt_number} is certified.`,
-      status: 'completed'
+      message: `Donation payment verified successfully. Official 80G tax receipt ${donation.receipt_number} is certified and confirmation email sent to ${donation.donor_email}.`,
+      status: 'completed',
+      emailSent
     });
   } catch (error) {
     console.error('[Verify Donation Payment Error]:', error);
