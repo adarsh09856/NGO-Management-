@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
   CreditCard, QrCode, Building2, Shield, CheckCircle2,
-  Lock, Save, RefreshCw, ExternalLink, AlertCircle, Copy, Check, Eye, EyeOff, Sparkles
+  Lock, Save, RefreshCw, ExternalLink, AlertCircle, Copy, Check, Eye, EyeOff, Sparkles,
+  Upload, Trash2, Image as ImageIcon
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
@@ -10,6 +11,7 @@ export default function PaymentGateways() {
   const { success, error } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingQr, setUploadingQr] = useState(false);
   const [copiedField, setCopiedField] = useState(null);
   const [showRazorpaySecret, setShowRazorpaySecret] = useState(false);
   const [showStripeSecret, setShowStripeSecret] = useState(false);
@@ -21,6 +23,7 @@ export default function PaymentGateways() {
     upi_merchant_vpa: 'drodulphendeyling@bob',
     upi_merchant_name: 'Drodul Phendey Ling Monastery Foundation',
     upi_bank_name: 'Bank of Bhutan',
+    upi_qr_image_url: '',
 
     // Bank of Bhutan Wire
     payment_bank_wire_enabled: '1',
@@ -81,6 +84,27 @@ export default function PaymentGateways() {
     navigator.clipboard.writeText(text);
     setCopiedField(fieldKey);
     setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const handleQrUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      setUploadingQr(true);
+      const res = await api.post('/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (res.data?.success && res.data.fileUrl) {
+        handleChange('upi_qr_image_url', res.data.fileUrl);
+        success('Custom Bank QR image uploaded successfully! Click Save to apply.');
+      }
+    } catch (err) {
+      error('Failed to upload QR image: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setUploadingQr(false);
+    }
   };
 
   const handleSave = async (e) => {
@@ -348,30 +372,94 @@ export default function PaymentGateways() {
                   className="w-full p-2.5 rounded-xl border border-gray-300 text-xs focus:ring-2 focus:ring-[#D4AF37] focus:outline-none"
                 />
               </div>
+
+              {/* Custom Bank Standee QR (Optional) */}
+              <div className="pt-2 border-t border-gray-200">
+                <label className="block font-semibold text-gray-700 mb-1">
+                  Custom Bank Standee QR Image (Optional)
+                </label>
+                <p className="text-[10px] text-gray-500 mb-2">
+                  Leave blank to use the <strong>Dynamic Smart Amount QR</strong> (recommended: automatically embeds the devotee's exact donation amount into GPay/PhonePe). Or upload your bank's physical printed standee QR.
+                </p>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={gateways.upi_qr_image_url || ''}
+                    onChange={(e) => handleChange('upi_qr_image_url', e.target.value)}
+                    placeholder="Image URL or upload via button..."
+                    className="flex-1 p-2 rounded-xl border border-gray-300 font-mono text-xs focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
+                  />
+                  <label className="px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl cursor-pointer text-xs font-bold flex items-center gap-1.5 transition-colors">
+                    <Upload className="w-3.5 h-3.5 text-[#D4AF37]" />
+                    <span>{uploadingQr ? 'Uploading...' : 'Upload QR'}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleQrUpload}
+                      disabled={uploadingQr}
+                      className="hidden"
+                    />
+                  </label>
+                  {gateways.upi_qr_image_url && (
+                    <button
+                      type="button"
+                      onClick={() => handleChange('upi_qr_image_url', '')}
+                      className="p-2 rounded-xl border border-red-200 text-red-600 hover:bg-red-50"
+                      title="Remove Custom QR"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Live QR Preview */}
             <div className="md:col-span-6 bg-amber-50/50 rounded-2xl p-4 border border-amber-200/60 flex flex-col items-center justify-center text-center">
-              <span className="text-[10px] uppercase tracking-widest font-bold text-amber-800 mb-2">
-                Live Public QR Preview
-              </span>
-              <div className="p-3 bg-white rounded-xl shadow-sm border border-amber-300 inline-block mb-2">
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(
-                    `upi://pay?pa=${gateways.upi_merchant_vpa}&pn=${encodeURIComponent(
-                      gateways.upi_merchant_name
-                    )}&cu=INR`
-                  )}`}
-                  alt="Live UPI QR Preview"
-                  className="w-28 h-28 mx-auto"
-                />
+              <div className="flex items-center gap-1.5 mb-2">
+                <span className="text-[10px] uppercase tracking-widest font-bold text-amber-800">
+                  Live Public QR Preview
+                </span>
+                {gateways.upi_qr_image_url ? (
+                  <span className="text-[9px] bg-blue-100 text-blue-800 font-bold px-1.5 py-0.5 rounded">
+                    Custom Standee Active
+                  </span>
+                ) : (
+                  <span className="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded">
+                    Dynamic Auto-Amount Active
+                  </span>
+                )}
               </div>
+
+              <div className="p-3 bg-white rounded-xl shadow-sm border border-amber-300 inline-block mb-2">
+                {gateways.upi_qr_image_url ? (
+                  <img
+                    src={gateways.upi_qr_image_url}
+                    alt="Custom Bank Standee QR"
+                    className="w-32 h-32 mx-auto object-contain rounded-lg"
+                  />
+                ) : (
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(
+                      `upi://pay?pa=${gateways.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn=${encodeURIComponent(
+                        gateways.upi_merchant_name || 'Drodul Phendey Ling Monastery'
+                      )}&cu=INR`
+                    )}`}
+                    alt="Live UPI QR Preview"
+                    className="w-32 h-32 mx-auto object-contain rounded-lg"
+                  />
+                )}
+              </div>
+
               <p className="font-mono text-xs font-bold text-gray-800">
                 {gateways.upi_merchant_vpa || 'drodulphendeyling@bob'}
               </p>
-              <span className="text-[10.5px] text-gray-500 mt-0.5">
-                Scan with GPay / PhonePe to test merchant resolution
-              </span>
+              <p className="text-[10.5px] text-gray-500 mt-1 max-w-xs leading-relaxed">
+                {gateways.upi_qr_image_url
+                  ? 'Devotees will scan your uploaded bank standee image and enter their offering amount manually.'
+                  : 'Devotees scan this QR code and their payment app (GPay/PhonePe/Paytm) automatically locks the exact offering amount chosen on the website.'}
+              </p>
             </div>
           </div>
         </div>

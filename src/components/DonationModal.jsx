@@ -905,7 +905,7 @@ export default function DonationModal({
                   {/* Visual QR Code Generator */}
                   <div className="w-36 h-36 bg-white p-2.5 rounded-2xl border-2 border-[#D4AF37] shadow-md flex flex-col items-center justify-center flex-shrink-0">
                     <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(
+                      src={gatewaySettings.upi_qr_image_url || `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(
                         `upi://pay?pa=${gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn=${encodeURIComponent(gatewaySettings.upi_merchant_name || 'Drodul Phendey Ling Monastery')}&am=${finalAmount}&cu=${currency}`
                       )}`}
                       alt="Monastery UPI QR"

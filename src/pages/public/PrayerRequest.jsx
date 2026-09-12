@@ -632,7 +632,7 @@ export default function PrayerRequest() {
                   <div className="flex flex-col sm:flex-row items-center gap-4 pt-1">
                     <div className="w-28 h-28 bg-white p-2 rounded-xl border border-[#D4AF37] shadow-sm flex-shrink-0">
                       <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(
+                        src={gatewaySettings.upi_qr_image_url || `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(
                           `upi://pay?pa=${gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn=${encodeURIComponent(gatewaySettings.upi_merchant_name || 'Drodul Phendey Ling Monastery')}&am=${offeringAmount}&cu=INR`
                         )}`}
                         alt="Monastery UPI QR"
