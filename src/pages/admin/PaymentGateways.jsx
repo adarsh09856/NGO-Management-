@@ -12,6 +12,7 @@ export default function PaymentGateways() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingQr, setUploadingQr] = useState(false);
+  const [previewAmount, setPreviewAmount] = useState(1000);
   const [copiedField, setCopiedField] = useState(null);
   const [showRazorpaySecret, setShowRazorpaySecret] = useState(false);
   const [showStripeSecret, setShowStripeSecret] = useState(false);
@@ -415,7 +416,7 @@ export default function PaymentGateways() {
               </div>
             </div>
 
-            {/* Live QR Preview */}
+            {/* Live QR Preview & Dynamic Amount Tester */}
             <div className="md:col-span-6 bg-amber-50/50 rounded-2xl p-4 border border-amber-200/60 flex flex-col items-center justify-center text-center">
               <div className="flex items-center gap-1.5 mb-2">
                 <span className="text-[10px] uppercase tracking-widest font-bold text-amber-800">
@@ -432,7 +433,47 @@ export default function PaymentGateways() {
                 )}
               </div>
 
-              <div className="p-3 bg-white rounded-xl shadow-sm border border-amber-300 inline-block mb-2">
+              {/* Dynamic Amount Test Controls */}
+              {!gateways.upi_qr_image_url && (
+                <div className="w-full max-w-xs mb-3 space-y-1.5 bg-white p-2 rounded-xl border border-amber-200 shadow-xs">
+                  <span className="block text-[9.5px] font-bold text-gray-500 uppercase tracking-wider text-left">
+                    Test Dynamic Amount Encoding:
+                  </span>
+                  <div className="grid grid-cols-4 gap-1">
+                    {[500, 1000, 2500, 5000].map((amt) => (
+                      <button
+                        key={amt}
+                        type="button"
+                        onClick={() => setPreviewAmount(amt)}
+                        className={`py-1 rounded-lg text-[10px] font-bold transition-all ${
+                          previewAmount === amt
+                            ? 'bg-[#4A0E17] text-[#D4AF37] shadow-xs'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        ₹{amt.toLocaleString()}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-1 pt-1">
+                    <span className="text-[10px] text-gray-400 font-bold">Custom:</span>
+                    <input
+                      type="number"
+                      value={previewAmount}
+                      onChange={(e) => setPreviewAmount(Number(e.target.value) || 0)}
+                      className="w-full text-xs font-mono font-bold p-1 rounded-lg border border-gray-300 text-center"
+                      placeholder="Enter amount..."
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Standee QR Card */}
+              <div className="w-44 bg-white p-3 rounded-2xl border-2 border-amber-300 shadow-md inline-block mb-2">
+                <div className="w-full bg-[#4A0E17] text-[#D4AF37] py-0.5 px-2 rounded-lg text-[8.5px] font-bold tracking-wider uppercase mb-1.5">
+                  ☸ SCAN TO PAY
+                </div>
+
                 {gateways.upi_qr_image_url ? (
                   <img
                     src={gateways.upi_qr_image_url}
@@ -444,18 +485,44 @@ export default function PaymentGateways() {
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(
                       `upi://pay?pa=${gateways.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn=${encodeURIComponent(
                         gateways.upi_merchant_name || 'Drodul Phendey Ling Monastery'
-                      )}&cu=INR`
+                      )}&am=${previewAmount}&cu=INR`
                     )}`}
                     alt="Live UPI QR Preview"
                     className="w-32 h-32 mx-auto object-contain rounded-lg"
                   />
+                )}
+
+                {/* Dynamic Amount Pill */}
+                {!gateways.upi_qr_image_url && (
+                  <div className="w-full mt-1.5 bg-amber-50 border border-amber-300 py-1 px-1 rounded-xl">
+                    <span className="block text-[8px] text-gray-500 uppercase tracking-wider font-semibold">Dynamic Amount:</span>
+                    <strong className="block text-xs font-extrabold text-[#721C24] font-mono">
+                      ₹ {previewAmount.toLocaleString()}
+                    </strong>
+                    <span className="block text-[7.5px] text-emerald-700 font-bold">
+                      ✓ Auto-Filled in GPay / PhonePe
+                    </span>
+                  </div>
                 )}
               </div>
 
               <p className="font-mono text-xs font-bold text-gray-800">
                 {gateways.upi_merchant_vpa || 'drodulphendeyling@bob'}
               </p>
-              <p className="text-[10.5px] text-gray-500 mt-1 max-w-xs leading-relaxed">
+
+              {/* Real-time UPI URL String Box */}
+              {!gateways.upi_qr_image_url && (
+                <div className="mt-2 w-full max-w-xs bg-white p-2 rounded-xl border border-gray-200 text-left">
+                  <span className="block text-[8.5px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                    Live Encoded UPI URI:
+                  </span>
+                  <div className="font-mono text-[9px] text-gray-600 break-all bg-gray-50 p-1.5 rounded border select-all">
+                    upi://pay?pa={gateways.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn={encodeURIComponent(gateways.upi_merchant_name || 'Drodul Phendey Ling Monastery')}&am={previewAmount}&cu=INR
+                  </div>
+                </div>
+              )}
+
+              <p className="text-[10px] text-gray-500 mt-2 max-w-xs leading-relaxed">
                 {gateways.upi_qr_image_url
                   ? 'Devotees will scan your uploaded bank standee image and enter their offering amount manually.'
                   : 'Devotees scan this QR code and their payment app (GPay/PhonePe/Paytm) automatically locks the exact offering amount chosen on the website.'}

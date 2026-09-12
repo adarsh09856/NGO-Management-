@@ -630,18 +630,38 @@ export default function PrayerRequest() {
                 {/* CHANNEL 2: DIRECT UPI QR */}
                 {paymentChannel === 'upi' && (
                   <div className="flex flex-col sm:flex-row items-center gap-4 pt-1">
-                    <div className="w-28 h-28 bg-white p-2 rounded-xl border border-[#D4AF37] shadow-sm flex-shrink-0">
-                      <img
-                        src={gatewaySettings.upi_qr_image_url || `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(
-                          `upi://pay?pa=${gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn=${encodeURIComponent(gatewaySettings.upi_merchant_name || 'Drodul Phendey Ling Monastery')}&am=${offeringAmount}&cu=INR`
-                        )}`}
-                        alt="Monastery UPI QR"
-                        className="w-full h-full object-contain rounded"
-                      />
+                    {/* Monastic Visual Dynamic QR Standee */}
+                    <div className="w-40 bg-white p-2.5 rounded-2xl border-2 border-[#D4AF37] shadow-md flex flex-col items-center justify-center flex-shrink-0 text-center">
+                      <div className="w-full bg-[#4A0E17] text-[#D4AF37] py-1 px-1.5 rounded-lg text-[9px] font-bold tracking-wider uppercase mb-1.5 flex items-center justify-center gap-1">
+                        <span>☸</span>
+                        <span>SCAN TO PAY</span>
+                      </div>
+
+                      <div className="w-32 h-32 bg-white p-1 rounded-lg flex items-center justify-center border border-gray-100">
+                        <img
+                          src={gatewaySettings.upi_qr_image_url || `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(
+                            `upi://pay?pa=${gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn=${encodeURIComponent(gatewaySettings.upi_merchant_name || 'Drodul Phendey Ling Monastery')}&am=${offeringAmount}&cu=INR`
+                          )}`}
+                          alt="Monastery Dynamic UPI QR"
+                          className="w-full h-full object-contain rounded"
+                        />
+                      </div>
+
+                      {/* Prominent Dynamic Offering Amount Badge */}
+                      <div className="w-full mt-1.5 bg-gradient-to-r from-amber-50 via-amber-100 to-amber-50 border border-amber-300 py-1 px-1 rounded-xl">
+                        <span className="block text-[8px] text-gray-500 uppercase tracking-wider font-semibold">Dynamic Amount:</span>
+                        <strong className="block text-xs font-extrabold text-[#721C24] font-mono">
+                          ₹ {offeringAmount?.toLocaleString()}
+                        </strong>
+                        <span className="block text-[7.5px] text-emerald-700 font-bold">
+                          ✓ Auto-Filled in App
+                        </span>
+                      </div>
                     </div>
+
                     <div className="space-y-2 flex-1 text-xs">
                       <div className="text-gray-700">
-                        Scan QR with any UPI App and deposit <strong>₹{offeringAmount.toLocaleString()}</strong> into:
+                        Scan QR with GPay, PhonePe, Paytm, or BHIM. Your phone app will automatically load <strong>₹{offeringAmount.toLocaleString()}</strong> for:
                         <div className="font-mono font-bold text-gray-900 bg-white p-1.5 rounded border border-gray-200 mt-1 inline-block select-all">
                           {gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob'}
                         </div>
