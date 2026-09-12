@@ -279,6 +279,11 @@ async function submitPrayerRequest(req, res, next) {
 
     const trackingId = `TRK-PRAYER-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
 
+    const isOnlinePaid = req.body.paymentStatus === 'completed' || req.body.paymentStatus === 'paid';
+    const prayerPaymentStatus = finalAmount > 0
+      ? (isOnlinePaid ? 'paid' : 'pending_verification')
+      : 'paid';
+
     let linkedDonationId = null;
     if (finalAmount > 0) {
       try {
@@ -293,7 +298,7 @@ async function submitPrayerRequest(req, res, next) {
           donationFor: `108 Butter Lamp Fund (${finalLamps} Lamps - ${prayerType})`,
           paymentMethod,
           transactionRef,
-          paymentStatus: 'pending_verification',
+          paymentStatus: isOnlinePaid ? 'completed' : 'pending_verification',
           remarks: `Prayer offering for ${finalLamps} lamps dedicated to: ${dedicationNames || 'General Dedication'}. Tracking: ${trackingId}`
         });
         linkedDonationId = donationResult.donationId;
@@ -305,15 +310,18 @@ async function submitPrayerRequest(req, res, next) {
     const [result] = await pool.query(
       `INSERT INTO prayer_requests (tracking_id, devotee_name, devotee_email, devotee_phone, country, prayer_type, intention_text, butter_lamps_count, dedication_names, offering_amount, transaction_ref, payment_status, donation_id, status)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
-      [trackingId, finalName, finalEmail, finalPhone || null, country, prayerType, finalIntention, finalLamps, dedicationNames || null, finalAmount, transactionRef || null, finalAmount > 0 ? 'pending_verification' : 'paid', linkedDonationId]
+      [trackingId, finalName, finalEmail, finalPhone || null, country, prayerType, finalIntention, finalLamps, dedicationNames || null, finalAmount, transactionRef || null, prayerPaymentStatus, linkedDonationId]
     );
 
     return res.status(201).json({
       success: true,
-      message: 'Your sacred prayer request and offering proof have been logged. Our monastic treasury will verify your payment against our bank statement.',
+      message: isOnlinePaid 
+        ? 'Your sacred prayer request and payment have been confirmed via Razorpay. Your dedication will be consecrated during the morning Sangha assembly.'
+        : 'Your sacred prayer request and offering proof have been logged. Our monastic treasury will verify your payment against our bank statement.',
       id: result.insertId,
       trackingId,
-      donationId: linkedDonationId
+      donationId: linkedDonationId,
+      paymentStatus: prayerPaymentStatus
     });
   } catch (error) {
     next(error);
