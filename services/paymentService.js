@@ -167,11 +167,12 @@ async function processSuccessfulDonation({
     // 4. Insert Primary Financial Donation Record
     const finalTransactionRef = transactionRef || paymentId || orderId || `TXN${Date.now()}`;
     const finalStatus = paymentStatus || 'completed';
+    const trackingId = `TRK-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
 
     const [donationResult] = await connection.query(
-      `INSERT INTO donations (receipt_number, donor_id, campaign_id, donation_for, donation_type, amount, currency, amount_in_words, payment_method, payment_status, transaction_ref, payment_date, payment_gateway, remarks, send_receipt, is_80g_eligible)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
-      [receiptNumber, donorId, campaignId || null, donationFor, donationType, amount, currency, amountInWords, paymentMethod, finalStatus, finalTransactionRef, donationDate, gateway, remarks, sendReceipt ? 1 : 0]
+      `INSERT INTO donations (tracking_id, receipt_number, donor_id, campaign_id, donation_for, donation_type, amount, currency, amount_in_words, payment_method, payment_status, transaction_ref, payment_date, payment_gateway, remarks, send_receipt, is_80g_eligible)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+      [trackingId, receiptNumber, donorId, campaignId || null, donationFor, donationType, amount, currency, amountInWords, paymentMethod, finalStatus, finalTransactionRef, donationDate, gateway, remarks, sendReceipt ? 1 : 0]
     );
     const donationId = donationResult.insertId;
 
@@ -245,6 +246,7 @@ async function processSuccessfulDonation({
             toEmail: donorEmail,
             donorName,
             receiptNumber,
+            trackingId,
             amount,
             currency,
             transactionRef: finalTransactionRef,
@@ -261,6 +263,7 @@ async function processSuccessfulDonation({
       donationId,
       receiptId,
       receiptNumber,
+      trackingId,
       pdfUrl: pdfInfo ? pdfInfo.relativeUrl : null
     };
 

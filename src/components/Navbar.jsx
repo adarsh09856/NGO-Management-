@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Heart, MapPin, Phone, Mail, Globe, ChevronDown, ChevronRight, Menu, X,
   User, LogOut, ShieldCheck, GraduationCap, Flame, Calendar, Image as ImageIcon,
-  BookOpen, Sparkles, Building, Landmark, Compass, Award, HandHeart, Newspaper, Video
+  BookOpen, Sparkles, Building, Landmark, Compass, Award, HandHeart, Newspaper, Video, Clock
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import PrayerFlagsRibbon from './PrayerFlagsRibbon';
@@ -122,6 +122,11 @@ export default function Navbar({ onOpenDonate }) {
               <Flame className="w-3 h-3 text-[#D4AF37]" />
               <span className="hidden sm:inline">108 Butter Lamps</span>
               <span className="sm:hidden">Prayers</span>
+            </Link>
+
+            <Link to="/tracking" className="text-[#D4AF37] hover:text-white transition-colors font-medium flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              <span>Track Offering</span>
             </Link>
 
             <Link to="/news-events" className="text-gray-300 hover:text-[#D4AF37] transition-colors hidden md:inline">
@@ -269,6 +274,19 @@ export default function Navbar({ onOpenDonate }) {
                     <div>
                       <p className="font-bold text-xs text-[#1A0B0E]">Butter Lamp Offerings</p>
                       <p className="text-[10px] text-gray-500 font-sans line-clamp-1">Dedicate prayers & merit</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to="/tracking"
+                    className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
+                      <Clock className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-xs text-[#1A0B0E]">Track Offering Status</p>
+                      <p className="text-[10px] text-gray-500 font-sans line-clamp-1">Live bank & prayer progress</p>
                     </div>
                   </Link>
                 </div>

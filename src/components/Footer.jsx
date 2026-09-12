@@ -142,6 +142,12 @@ export default function Footer({ onOpenDonate }) {
                 </Link>
               </li>
               <li>
+                <Link to="/tracking" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5 text-amber-300">
+                  <span className="text-amber-400 text-[10px]">☸</span>
+                  <span>Track Offering Status</span>
+                </Link>
+              </li>
+              <li>
                 <Link to="/gallery" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
                   <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
                   <span>Sacred Photo Archive</span>

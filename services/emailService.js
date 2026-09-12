@@ -171,14 +171,17 @@ async function sendCampaignEmail({ toEmails, subject, bodyHtml }) {
 }
 
 // Send Pending Verification Acknowledgement Email (UTR Submitted, Awaiting Bank Reconciliation)
-async function sendPendingVerificationEmail({ toEmail, donorName, receiptNumber, amount, currency, transactionRef, cause }) {
+async function sendPendingVerificationEmail({ toEmail, donorName, receiptNumber, trackingId, amount, currency, transactionRef, cause }) {
   try {
     if (!toEmail) return { success: false, reason: 'No recipient email provided' };
     const mailer = await getTransporter();
+    const effectiveTrackingId = trackingId || receiptNumber || transactionRef;
+    const trackingUrl = `${process.env.FRONTEND_URL || 'https://drodulphendeyling.org'}/tracking?id=${encodeURIComponent(effectiveTrackingId)}`;
+
     const mailOptions = {
       from: process.env.SMTP_FROM || '"Drodul Phendey Ling Foundation" <donations@drodulphendeyling.org>',
       to: toEmail,
-      subject: `Offering Proof Logged [Ref: ${transactionRef}] - Awaiting Monastic Verification`,
+      subject: `Offering Proof Logged [Tracking: ${effectiveTrackingId}] - Awaiting Monastic Verification`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
           <div style="background-color: #4A0E17; color: #ffffff; padding: 20px; text-align: center; border-radius: 6px 6px 0 0;">
@@ -191,12 +194,19 @@ async function sendPendingVerificationEmail({ toEmail, donorName, receiptNumber,
             <p>Tashi Delek!</p>
             <p>We have received your sacred merit offering submission of <strong>${currency || 'INR'} ${parseFloat(amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong> for <em>${cause || 'Great Druk Wangyel Peace Stupa'}</em>.</p>
             
-            <div style="background-color: #FEF3C7; border: 1px solid #F59E0B; border-radius: 6px; padding: 15px; margin: 15px 0;">
-              <p style="margin: 0 0 8px 0; font-weight: bold; color: #92400E;">Payment Status: Pending Bank Reconciliation</p>
-              <p style="margin: 0; font-size: 13px; color: #78350F;">
-                Submitted Transaction Ref / UTR: <strong>${transactionRef}</strong><br>
-                Provisional Reference: <strong>${receiptNumber}</strong>
+            <div style="background-color: #FEF3C7; border: 1px solid #F59E0B; border-radius: 8px; padding: 15px; margin: 15px 0;">
+              <p style="margin: 0 0 6px 0; font-weight: bold; color: #92400E; font-size: 14px;">Status: Pending Bank Statement Reconciliation</p>
+              <p style="margin: 0; font-size: 13px; color: #78350F; line-height: 1.5;">
+                <strong>Unique Tracking ID:</strong> <span style="font-family: monospace; font-size: 14px; font-weight: bold; color: #451a03;">${effectiveTrackingId}</span><br>
+                <strong>Submitted UTR Proof:</strong> <span style="font-family: monospace;">${transactionRef}</span><br>
+                <strong>Provisional Reference:</strong> ${receiptNumber}
               </p>
+            </div>
+
+            <div style="text-align: center; margin: 20px 0;">
+              <a href="${trackingUrl}" style="background-color: #721C24; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 13px; display: inline-block;">
+                Track Live Reconciliation Progress →
+              </a>
             </div>
 
             <p style="font-size: 13px; line-height: 1.6; color: #374151;">

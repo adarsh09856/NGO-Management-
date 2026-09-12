@@ -25,6 +25,7 @@ import BlogDetail from './pages/public/BlogDetail';
 import Login from './pages/public/Login';
 import Register from './pages/public/Register';
 import Shedra from './pages/public/Shedra';
+import Tracking from './pages/public/Tracking';
 
 // Admin Login
 import AdminLogin from './pages/admin/AdminLogin';
@@ -102,6 +103,7 @@ export default function App() {
                   <Route path="/shedra" element={<Shedra />} />
                   <Route path="/courses" element={<Shedra />} />
                   <Route path="/verify-certificate" element={<Shedra />} />
+                  <Route path="/tracking" element={<Tracking />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="*" element={<NotFound />} />

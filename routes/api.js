@@ -58,6 +58,7 @@ const searchCtrl = require('../controllers/searchController');
 const volunteerCtrl = require('../controllers/volunteerController');
 const newsletterCtrl = require('../controllers/newsletterController');
 const healthCtrl = require('../controllers/healthController');
+const trackingCtrl = require('../controllers/trackingController');
 
 // ==========================================
 // 0. SYSTEM HEALTH & DIAGNOSTICS
@@ -109,6 +110,8 @@ router.delete('/learning/:id', authenticateToken, requirePermissionOrRole('cms:l
 // ==========================================
 router.get('/campaigns/public', donationCtrl.getCampaigns);
 router.post('/donations/public-offering', publicFormRateLimiter, donationCtrl.submitPublicOffering);
+router.get('/tracking/:query', trackingCtrl.trackOffering);
+router.get('/tracking', trackingCtrl.trackOffering);
 router.get('/donations/campaigns', authenticateToken, donationCtrl.getCampaigns);
 router.post('/donations/campaigns', authenticateToken, requirePermission('donations:campaigns'), donationCtrl.createCampaign);
 router.put('/donations/campaigns/:id', authenticateToken, requirePermission('donations:campaigns'), donationCtrl.updateCampaign);

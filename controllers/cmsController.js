@@ -254,26 +254,66 @@ async function submitPrayerRequest(req, res, next) {
   try {
     const { devoteeName, devoteeEmail, devoteePhone, country = 'Bhutan', prayerType = 'World Peace', intentionText, butterLampsCount = 108, dedicationNames, offeringAmount = 0 } = req.body;
 
-    const finalName = devoteeName || req.body.fullName || req.body.name;
-    const finalEmail = devoteeEmail || req.body.email;
-    const finalPhone = devoteePhone || req.body.phone;
-    const finalIntention = intentionText || req.body.dedicationPrayer || req.body.message;
+    const finalName = (devoteeName || req.body.fullName || req.body.name || '').trim();
+    const finalEmail = (devoteeEmail || req.body.email || '').trim().toLowerCase();
+    const finalPhone = (devoteePhone || req.body.phone || '').trim();
+    const finalIntention = (intentionText || req.body.dedicationPrayer || req.body.message || '').trim();
     const finalLamps = butterLampsCount !== undefined ? butterLampsCount : (req.body.butterLamps || 108);
+    const finalAmount = Number(offeringAmount || 0);
+    const transactionRef = (req.body.transactionRef || req.body.utr || req.body.wireRef || '').trim();
+    const paymentMethod = req.body.paymentMethod || 'upi_qr';
 
-    if (!finalName || !finalIntention) {
-      return res.status(400).json({ success: false, message: 'Devotee name and prayer intention are required' });
+    if (!finalName || !finalEmail) {
+      return res.status(400).json({ success: false, message: 'Devotee Full Legal Name and Email Address are strictly required.' });
+    }
+    if (!finalIntention) {
+      return res.status(400).json({ success: false, message: 'Prayer dedication intention is required.' });
+    }
+
+    if (finalAmount > 0 && !transactionRef) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide your 12-digit UPI UTR or Bank Transfer Reference as payment proof.'
+      });
+    }
+
+    const trackingId = `TRK-PRAYER-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    let linkedDonationId = null;
+    if (finalAmount > 0) {
+      try {
+        const paymentService = require('../services/paymentService');
+        const donationResult = await paymentService.processSuccessfulDonation({
+          donorName: finalName,
+          donorEmail: finalEmail,
+          donorPhone: finalPhone,
+          donorAddress: country,
+          amount: finalAmount,
+          currency: req.body.offeringCurrency || 'INR',
+          donationFor: `108 Butter Lamp Fund (${finalLamps} Lamps - ${prayerType})`,
+          paymentMethod,
+          transactionRef,
+          paymentStatus: 'pending_verification',
+          remarks: `Prayer offering for ${finalLamps} lamps dedicated to: ${dedicationNames || 'General Dedication'}. Tracking: ${trackingId}`
+        });
+        linkedDonationId = donationResult.donationId;
+      } catch (donErr) {
+        console.error('[Prayer Linked Donation Error]:', donErr.message);
+      }
     }
 
     const [result] = await pool.query(
-      `INSERT INTO prayer_requests (devotee_name, devotee_email, devotee_phone, country, prayer_type, intention_text, butter_lamps_count, dedication_names, offering_amount, status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
-      [finalName, finalEmail || null, finalPhone || null, country, prayerType, finalIntention, finalLamps, dedicationNames || null, offeringAmount]
+      `INSERT INTO prayer_requests (tracking_id, devotee_name, devotee_email, devotee_phone, country, prayer_type, intention_text, butter_lamps_count, dedication_names, offering_amount, transaction_ref, payment_status, donation_id, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
+      [trackingId, finalName, finalEmail, finalPhone || null, country, prayerType, finalIntention, finalLamps, dedicationNames || null, finalAmount, transactionRef || null, finalAmount > 0 ? 'pending_verification' : 'paid', linkedDonationId]
     );
 
     return res.status(201).json({
       success: true,
-      message: 'Your sacred prayer request has been received. Our Sangha will dedicate prayers and light lamps for your intentions.',
-      id: result.insertId
+      message: 'Your sacred prayer request and offering proof have been logged. Our monastic treasury will verify your payment against our bank statement.',
+      id: result.insertId,
+      trackingId,
+      donationId: linkedDonationId
     });
   } catch (error) {
     next(error);

@@ -266,7 +266,7 @@ export default function DonationModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/40 backdrop-blur-sm overflow-y-auto animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-900/30 backdrop-blur-sm overflow-y-auto animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget && onClose) onClose();
       }}
@@ -997,13 +997,13 @@ export default function DonationModal({
                 {/* Provisional Details Card */}
                 <div className="bg-[#FAF5F0] border border-[#D4AF37]/50 rounded-2xl p-4 max-w-md mx-auto text-left text-xs space-y-2 shadow-sm font-sans">
                   <div className="flex justify-between items-center pb-2 border-b border-[#D4AF37]/20">
-                    <span className="text-gray-500 font-serif">Provisional Ack No:</span>
-                    <span className="font-bold text-[#1A0B0E] font-mono text-sm">
-                      {completedDonation?.receiptNumber || 'ACK-PENDING'}
+                    <span className="text-gray-500 font-serif font-semibold">Live Tracking ID:</span>
+                    <span className="font-bold text-[#721C24] font-mono text-xs sm:text-sm bg-amber-100/90 px-2.5 py-0.5 rounded-lg border border-amber-300 select-all">
+                      {completedDonation?.trackingId || completedDonation?.receiptNumber || 'TRK-PENDING'}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-500">Submitted UTR / Ref:</span>
+                    <span className="text-gray-500">Submitted UTR Proof:</span>
                     <span className="font-bold text-amber-900 font-mono text-xs bg-amber-100/70 px-2 py-0.5 rounded border border-amber-300">
                       {completedDonation?.transactionRef || upiUtr || wireRef}
                     </span>
@@ -1024,7 +1024,7 @@ export default function DonationModal({
                   <div className="flex justify-between items-center">
                     <span className="text-gray-500">Email Confirmation:</span>
                     <span className="text-blue-700 font-bold flex items-center gap-1 text-[10.5px]">
-                      Sent After Admin Verifies UTR
+                      Dispatched after Admin verifies UTR
                     </span>
                   </div>
                 </div>
@@ -1044,19 +1044,26 @@ export default function DonationModal({
 
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
+                  <a
+                    href={`/tracking?id=${encodeURIComponent(completedDonation?.trackingId || completedDonation?.receiptNumber || '')}`}
+                    className="monastic-gold-btn px-5 py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md font-bold"
+                  >
+                    <span>Track Live Status Progress →</span>
+                  </a>
+
                   <button
                     onClick={handleDownloadPdf}
                     className="monastic-maroon-btn px-5 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg"
                   >
                     <Download className="w-4 h-4 text-[#D4AF37]" />
-                    <span>Download Submission Slip (PDF)</span>
+                    <span>Download Slip (PDF)</span>
                   </button>
 
                   <button
                     onClick={onClose}
                     className="px-5 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs transition-colors"
                   >
-                    Close & Finish
+                    Close
                   </button>
                 </div>
               </>
