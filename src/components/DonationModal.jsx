@@ -266,41 +266,41 @@ export default function DonationModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 xs:p-4 bg-black/80 backdrop-blur-md overflow-y-auto animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/40 backdrop-blur-sm overflow-y-auto animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget && onClose) onClose();
       }}
     >
-      <div className="bg-white w-full max-w-xl my-auto rounded-3xl shadow-2xl border border-[#D4AF37]/50 overflow-hidden relative animate-scale-in flex flex-col max-h-[94vh]">
+      <div className="bg-white w-full max-w-lg mx-auto my-auto rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D4AF37]/50 overflow-hidden relative animate-scale-in flex flex-col max-h-[90vh] sm:max-h-[85vh]">
         {/* Header with Monastery Crest */}
-        <div className="bg-gradient-to-r from-[#1A0B0E] via-[#4A0E17] to-[#1A0B0E] text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#D4AF37]/40 flex-shrink-0">
-          <div className="flex items-center space-x-3 min-w-0">
-            <div className="w-9 h-9 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37] flex items-center justify-center flex-shrink-0">
-              <span className="text-lg text-[#D4AF37]">☸</span>
+        <div className="bg-gradient-to-r from-[#1A0B0E] via-[#4A0E17] to-[#1A0B0E] text-white px-4 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between border-b border-[#D4AF37]/40 flex-shrink-0">
+          <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+            <div className="w-8 h-8 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37] flex items-center justify-center flex-shrink-0">
+              <span className="text-base text-[#D4AF37]">☸</span>
             </div>
             <div className="min-w-0">
-              <span className="text-[10px] font-serif uppercase tracking-widest text-[#D4AF37] block truncate">
+              <span className="text-[9px] font-serif uppercase tracking-widest text-[#D4AF37] block truncate">
                 ༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པར་ཞལ་འདེབས་ཕུལ་བ།
               </span>
-              <h3 className="font-editorial font-bold text-base sm:text-lg text-[#FCFBF9] truncate">
+              <h3 className="font-editorial font-bold text-sm sm:text-base text-[#FCFBF9] truncate">
                 Offer Sacred Dana & Merit
               </h3>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white flex items-center justify-center transition-colors flex-shrink-0 ml-2"
+            className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white flex items-center justify-center transition-colors flex-shrink-0 ml-2"
             aria-label="Close modal"
           >
-            <X className="w-4 h-4 sm:w-5 sm:h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* 3-Step Wizard Progress Bar */}
         {currentStep <= 3 && (
-          <div className="bg-[#FAF5F0] px-6 py-2.5 border-b border-[#D4AF37]/20 flex items-center justify-between text-xs font-serif flex-shrink-0">
-            <div className="flex items-center space-x-2">
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+          <div className="bg-[#FAF5F0] px-4 sm:px-6 py-2 border-b border-[#D4AF37]/20 flex items-center justify-between text-[11px] font-serif flex-shrink-0">
+            <div className="flex items-center space-x-1.5">
+              <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${
                 currentStep >= 1 ? 'bg-[#721C24] text-[#D4AF37]' : 'bg-gray-200 text-gray-500'
               }`}>
                 1
@@ -309,9 +309,9 @@ export default function DonationModal({
                 Offering
               </span>
             </div>
-            <div className={`h-[1px] flex-1 mx-3 ${currentStep >= 2 ? 'bg-[#D4AF37]' : 'bg-gray-200'}`} />
-            <div className="flex items-center space-x-2">
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+            <div className={`h-[1px] flex-1 mx-2 sm:mx-3 ${currentStep >= 2 ? 'bg-[#D4AF37]' : 'bg-gray-200'}`} />
+            <div className="flex items-center space-x-1.5">
+              <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${
                 currentStep >= 2 ? 'bg-[#721C24] text-[#D4AF37]' : 'bg-gray-200 text-gray-500'
               }`}>
                 2
@@ -320,9 +320,9 @@ export default function DonationModal({
                 Devotee Info
               </span>
             </div>
-            <div className={`h-[1px] flex-1 mx-3 ${currentStep >= 3 ? 'bg-[#D4AF37]' : 'bg-gray-200'}`} />
-            <div className="flex items-center space-x-2">
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+            <div className={`h-[1px] flex-1 mx-2 sm:mx-3 ${currentStep >= 3 ? 'bg-[#D4AF37]' : 'bg-gray-200'}`} />
+            <div className="flex items-center space-x-1.5">
+              <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${
                 currentStep >= 3 ? 'bg-[#721C24] text-[#D4AF37]' : 'bg-gray-200 text-gray-500'
               }`}>
                 3
@@ -338,44 +338,44 @@ export default function DonationModal({
         {/* STEP 1: CHOOSE CAUSE & AMOUNT                                 */}
         {/* ============================================================== */}
         {currentStep === 1 && (
-          <div className="p-5 sm:p-6 space-y-5 overflow-y-auto font-serif flex-1">
+          <div className="p-4 sm:p-5 space-y-3.5 overflow-y-auto font-serif flex-1 min-h-0">
             {/* Frequency Selector */}
             <div>
-              <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
                 Offering Frequency
               </label>
               <div className="grid grid-cols-2 gap-2 bg-[#FAF5F0] p-1 rounded-xl border border-[#D4AF37]/30 text-xs font-bold">
                 <button
                   type="button"
                   onClick={() => setFrequency('one_time')}
-                  className={`py-2 rounded-lg transition-all ${
+                  className={`py-1.5 sm:py-2 rounded-lg transition-all ${
                     frequency === 'one_time'
-                      ? 'bg-gradient-to-r from-[#4A0E17] to-[#721C24] text-[#D4AF37] shadow-md'
+                      ? 'bg-gradient-to-r from-[#4A0E17] to-[#721C24] text-[#D4AF37] shadow-sm'
                       : 'text-gray-600 hover:text-[#4A0E17]'
                   }`}
                 >
-                  One-Time Merit Offering
+                  One-Time Offering
                 </button>
                 <button
                   type="button"
                   onClick={() => setFrequency('recurring')}
-                  className={`py-2 rounded-lg transition-all ${
+                  className={`py-1.5 sm:py-2 rounded-lg transition-all ${
                     frequency === 'recurring'
-                      ? 'bg-gradient-to-r from-[#4A0E17] to-[#721C24] text-[#D4AF37] shadow-md'
+                      ? 'bg-gradient-to-r from-[#4A0E17] to-[#721C24] text-[#D4AF37] shadow-sm'
                       : 'text-gray-600 hover:text-[#4A0E17]'
                   }`}
                 >
-                  Monthly Bodhisattva Pledge
+                  Monthly Bodhisattva
                 </button>
               </div>
             </div>
 
             {/* Sacred Cause Selection */}
             <div>
-              <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
                 Select Sacred Cause / Dedicated Fund
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {causes.map((cause) => {
                   const isSelected = donationFor === cause.title;
                   return (
@@ -385,20 +385,20 @@ export default function DonationModal({
                         setDonationFor(cause.title);
                         setCampaignId(cause.id);
                       }}
-                      className={`p-3 rounded-2xl border text-left cursor-pointer transition-all ${
+                      className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
                         isSelected
-                          ? 'border-[#D4AF37] bg-amber-50/70 shadow-sm ring-2 ring-[#D4AF37]/30'
+                          ? 'border-[#D4AF37] bg-amber-50/80 shadow-sm ring-1 ring-[#D4AF37]/50'
                           : 'border-gray-200 bg-white hover:border-[#D4AF37]/50'
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-md">
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100/80 px-1.5 py-0.5 rounded">
                           {cause.tag}
                         </span>
-                        {isSelected && <CheckCircle className="w-4 h-4 text-emerald-600" />}
+                        {isSelected && <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />}
                       </div>
-                      <p className="font-bold text-xs text-[#1A0B0E] line-clamp-1">{cause.title}</p>
-                      <p className="text-[10px] text-gray-500 line-clamp-1 font-sans">{cause.subtitle}</p>
+                      <p className="font-bold text-[11.5px] text-[#1A0B0E] line-clamp-1">{cause.title}</p>
+                      <p className="text-[9.5px] text-gray-500 line-clamp-1 font-sans">{cause.subtitle}</p>
                     </div>
                   );
                 })}
@@ -407,11 +407,11 @@ export default function DonationModal({
 
             {/* Currency & Presets */}
             <div>
-              <div className="flex justify-between items-center mb-1.5">
-                <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider">
+              <div className="flex justify-between items-center mb-1">
+                <label className="text-[10.5px] font-bold text-gray-700 uppercase tracking-wider">
                   Select Offering Amount ({currency})
                 </label>
-                <div className="flex items-center space-x-1.5 text-xs font-semibold">
+                <div className="flex items-center space-x-1 text-xs font-semibold">
                   <button
                     type="button"
                     onClick={() => setCurrency('INR')}
@@ -430,7 +430,7 @@ export default function DonationModal({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 xs:grid-cols-4 gap-2 mb-2.5">
+              <div className="grid grid-cols-2 xs:grid-cols-4 gap-2 mb-2">
                 {presets.map((amt) => (
                   <button
                     key={amt}
@@ -439,9 +439,9 @@ export default function DonationModal({
                       setSelectedPreset(amt);
                       setCustomAmount('');
                     }}
-                    className={`py-3 text-xs font-bold rounded-xl border transition-all ${
+                    className={`py-2 text-xs font-bold rounded-xl border transition-all ${
                       selectedPreset === amt && !customAmount
-                        ? 'bg-gradient-to-r from-[#4A0E17] to-[#721C24] text-[#D4AF37] border-[#D4AF37] shadow-md ring-2 ring-[#D4AF37]/30'
+                        ? 'bg-gradient-to-r from-[#4A0E17] to-[#721C24] text-[#D4AF37] border-[#D4AF37] shadow-sm ring-1 ring-[#D4AF37]/50'
                         : 'bg-[#FAF5F0]/50 border-[#D4AF37]/25 text-gray-700 hover:border-[#D4AF37]'
                     }`}
                   >
@@ -462,23 +462,23 @@ export default function DonationModal({
                     setCustomAmount(e.target.value);
                     setSelectedPreset(null);
                   }}
-                  className="w-full text-xs pl-8 pr-3 py-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-2 focus:ring-[#D4AF37] focus:outline-none font-sans"
+                  className="w-full text-xs pl-8 pr-3 py-2 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-2 focus:ring-[#D4AF37] focus:outline-none font-sans"
                 />
               </div>
             </div>
 
             {/* Next Button */}
-            <div className="pt-2">
+            <div className="pt-1">
               <button
                 type="button"
                 onClick={handleNextToDevotee}
-                className="monastic-maroon-btn w-full py-3.5 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center space-x-2 shadow-xl border border-[#D4AF37]/40"
+                className="monastic-maroon-btn w-full py-3 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center space-x-2 shadow-lg border border-[#D4AF37]/40"
               >
                 <span>Continue to Devotee Details</span>
-                <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
+                <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
               </button>
-              <p className="text-[10px] text-center text-gray-500 mt-2 flex items-center justify-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-emerald-600" />
+              <p className="text-[9.5px] text-center text-gray-500 mt-1.5 flex items-center justify-center gap-1">
+                <Shield className="w-3 h-3 text-emerald-600" />
                 100% Tax Deductible (80G Certified) · Secure Monastic Ledger
               </p>
             </div>
@@ -489,19 +489,19 @@ export default function DonationModal({
         {/* STEP 2: DEVOTEE & 80G TAX INFO                                */}
         {/* ============================================================== */}
         {currentStep === 2 && (
-          <form onSubmit={handleNextToPayment} className="p-5 sm:p-6 space-y-4 overflow-y-auto font-serif flex-1">
-            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-              <h4 className="font-editorial text-base font-bold text-[#1A0B0E]">
+          <form onSubmit={handleNextToPayment} className="p-4 sm:p-5 space-y-3 overflow-y-auto font-serif flex-1 min-h-0">
+            <div className="flex items-center justify-between pb-1.5 border-b border-gray-100">
+              <h4 className="font-editorial text-sm sm:text-base font-bold text-[#1A0B0E]">
                 Devotee Details (for Official 80G Tax Receipt)
               </h4>
-              <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+              <span className="text-[10.5px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                 Offering: {currency === 'INR' ? '₹' : '$'}{finalAmount?.toLocaleString()}
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
-                <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                <label className="block text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-1">
                   Full Legal Name *
                 </label>
                 <input
@@ -510,12 +510,12 @@ export default function DonationModal({
                   value={donorName}
                   onChange={(e) => setDonorName(e.target.value)}
                   placeholder="e.g. Tashi Phuntsho"
-                  className="w-full text-xs p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
+                  className="w-full text-xs p-2 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
                 />
               </div>
 
               <div>
-                <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                <label className="block text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-1">
                   Email Address *
                 </label>
                 <input
@@ -524,14 +524,14 @@ export default function DonationModal({
                   value={donorEmail}
                   onChange={(e) => setDonorEmail(e.target.value)}
                   placeholder="devotee@example.com"
-                  className="w-full text-xs p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
+                  className="w-full text-xs p-2 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
-                <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                <label className="block text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-1">
                   Phone / WhatsApp
                 </label>
                 <input
@@ -539,26 +539,26 @@ export default function DonationModal({
                   value={donorPhone}
                   onChange={(e) => setDonorPhone(e.target.value)}
                   placeholder="+975 17556559"
-                  className="w-full text-xs p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
+                  className="w-full text-xs p-2 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
                 />
               </div>
 
               <div>
-                <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
-                  PAN / Tax Identification (Optional)
+                <label className="block text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                  PAN / Tax ID (Optional)
                 </label>
                 <input
                   type="text"
                   value={panTaxId}
                   onChange={(e) => setPanTaxId(e.target.value)}
-                  placeholder="ABCDE1234F (for 80G tax rebate)"
-                  className="w-full text-xs p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
+                  placeholder="ABCDE1234F (for 80G)"
+                  className="w-full text-xs p-2 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+              <label className="block text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-1">
                 Postal Address / City / Country
               </label>
               <input
@@ -566,12 +566,12 @@ export default function DonationModal({
                 value={donorAddress}
                 onChange={(e) => setDonorAddress(e.target.value)}
                 placeholder="Gelephu, Sarpang, Bhutan"
-                className="w-full text-xs p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
+                className="w-full text-xs p-2 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans"
               />
             </div>
 
             <div>
-              <label className="block text-[10.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+              <label className="block text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-1">
                 Spiritual Prayer Dedication / Intention (Optional)
               </label>
               <textarea
@@ -579,11 +579,11 @@ export default function DonationModal({
                 value={dedicationPrayer}
                 onChange={(e) => setDedicationPrayer(e.target.value)}
                 placeholder="e.g. Dedicated for the health, long life of parents, and universal peace..."
-                className="w-full text-xs p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans resize-none"
+                className="w-full text-xs p-2 rounded-xl border border-[#D4AF37]/30 bg-[#FAF5F0]/50 focus:ring-1 focus:ring-[#D4AF37] focus:outline-none font-sans resize-none"
               />
             </div>
 
-            <div className="flex items-center space-x-2 pt-1">
+            <div className="flex items-center space-x-2 pt-0.5">
               <input
                 type="checkbox"
                 id="modal80g"
@@ -597,11 +597,11 @@ export default function DonationModal({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center space-x-3 pt-3">
+            <div className="flex items-center space-x-3 pt-2">
               <button
                 type="button"
                 onClick={() => setCurrentStep(1)}
-                className="px-4 py-3 rounded-xl border border-gray-300 text-gray-700 font-bold text-xs flex items-center space-x-1.5 hover:bg-gray-50 transition-colors"
+                className="px-3.5 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-bold text-xs flex items-center space-x-1.5 hover:bg-gray-50 transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back</span>
@@ -609,7 +609,7 @@ export default function DonationModal({
 
               <button
                 type="submit"
-                className="monastic-maroon-btn flex-1 py-3 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center space-x-2 shadow-xl border border-[#D4AF37]/40"
+                className="monastic-maroon-btn flex-1 py-2.5 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center space-x-2 shadow-lg border border-[#D4AF37]/40"
               >
                 <span>Proceed to Payment</span>
                 <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
@@ -622,7 +622,7 @@ export default function DonationModal({
         {/* STEP 3: INTERACTIVE PAYMENT GATEWAY CHECKOUT                  */}
         {/* ============================================================== */}
         {currentStep === 3 && (
-          <div className="p-5 sm:p-6 space-y-4 overflow-y-auto font-serif flex-1">
+          <div className="p-4 sm:p-5 space-y-3.5 overflow-y-auto font-serif flex-1 min-h-0">
             <div className="flex items-center justify-between pb-2 border-b border-gray-100">
               <div>
                 <h4 className="font-editorial text-base font-bold text-[#1A0B0E]">
@@ -947,9 +947,9 @@ export default function DonationModal({
         {/* STEP 4: REALISTIC PROCESSING STATE                            */}
         {/* ============================================================== */}
         {currentStep === 4 && (
-          <div className="p-10 sm:p-14 text-center space-y-4 font-serif flex-1 flex flex-col justify-center items-center">
-            <div className="w-14 h-14 border-3 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <h4 className="font-editorial font-bold text-lg sm:text-xl text-[#1A0B0E]">
+          <div className="p-8 sm:p-12 text-center space-y-3.5 font-serif flex-1 min-h-0 flex flex-col justify-center items-center">
+            <div className="w-12 h-12 border-3 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <h4 className="font-editorial font-bold text-base sm:text-lg text-[#1A0B0E]">
               {processingStatus}
             </h4>
             <p className="text-xs text-gray-500 max-w-xs mx-auto leading-relaxed">
@@ -962,7 +962,7 @@ export default function DonationModal({
         {/* STEP 5: OFFICIAL TAX RECEIPT & MERIT CONFIRMATION             */}
         {/* ============================================================== */}
         {currentStep === 5 && (
-          <div className="p-6 sm:p-8 text-center space-y-4 font-serif flex-1 overflow-y-auto">
+          <div className="p-4 sm:p-6 text-center space-y-3 font-serif flex-1 overflow-y-auto min-h-0">
             {completedDonation?.paymentStatus === 'pending_verification' ? (
               <>
                 <div className="w-16 h-16 bg-amber-50 border-2 border-amber-500 rounded-full flex items-center justify-center mx-auto text-amber-600 shadow-md">
