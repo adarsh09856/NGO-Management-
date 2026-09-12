@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Heart, ArrowRight, Play, CheckCircle2, Shield, Globe, FileText,
@@ -846,9 +847,9 @@ export default function Home() {
       </section>
 
       {/* Video Lightbox Modal */}
-      {videoModalOpen && (
+      {videoModalOpen && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 xs:p-4 bg-black/85 backdrop-blur-md animate-fadeIn"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 xs:p-4 bg-black/85 backdrop-blur-md animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) setVideoModalOpen(false);
           }}
@@ -871,7 +872,8 @@ export default function Home() {
               />
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Donation Modal */}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Play, Search, GraduationCap, Clock, BookOpen, Compass, Flame, Sparkles, Filter, X } from 'lucide-react';
 import api from '../../services/api';
 
@@ -189,8 +190,8 @@ export default function Learning() {
       )}
 
       {/* Video Lightbox Modal */}
-      {activeVideo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 xs:p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+      {activeVideo && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 xs:p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
           <div className="relative w-full max-w-4xl bg-gray-950 rounded-2xl overflow-hidden border border-[#D4AF37]/60 shadow-2xl animate-scale-in">
             <button
               onClick={() => setActiveVideo(null)}
@@ -227,7 +228,8 @@ export default function Learning() {
               </p>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   X, Heart, Shield, CheckCircle2, Download, ArrowRight, ArrowLeft,
   Lock, Sparkles, Building2, CreditCard, QrCode, Smartphone, Copy,
@@ -20,6 +21,25 @@ export default function DonationModal({
 
   // Multi-step Wizard: 1: 'amount', 2: 'devotee', 3: 'payment', 4: 'processing', 5: 'success'
   const [currentStep, setCurrentStep] = useState(1);
+
+  // Lock body scroll and handle ESC key while modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   // Step 1: Amount & Cause
   const [frequency, setFrequency] = useState(initialType || 'one_time');
@@ -386,9 +406,11 @@ export default function DonationModal({
     }
   };
 
-  return (
+  if (!isOpen) return null;
+
+  const modalContent = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto animate-fadeIn"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget && onClose) onClose();
       }}
@@ -1397,4 +1419,8 @@ export default function DonationModal({
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined'
+    ? createPortal(modalContent, document.body)
+    : modalContent;
 }

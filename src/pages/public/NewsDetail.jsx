@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, MapPin, Clock, ArrowLeft, Share2, Eye, Sparkles, Heart, Bell, X, CheckCircle2, Users, Send } from 'lucide-react';
 import api from '../../services/api';
@@ -244,9 +245,9 @@ export default function NewsDetail() {
       </div>
 
       {/* Interactive RSVP Modal */}
-      {rsvpModalOpen && (
+      {rsvpModalOpen && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 xs:p-4 bg-black/80 backdrop-blur-md animate-fadeIn"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 xs:p-4 bg-black/80 backdrop-blur-md animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) setRsvpModalOpen(false);
           }}
@@ -366,7 +367,8 @@ export default function NewsDetail() {
               </form>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
