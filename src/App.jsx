@@ -57,6 +57,7 @@ import UsersRoles from './pages/admin/UsersRoles';
 import AuditLog from './pages/admin/AuditLog';
 import SystemSettings from './pages/admin/SystemSettings';
 import PaymentGateways from './pages/admin/PaymentGateways';
+import CurrencyManager from './pages/admin/CurrencyManager';
 import ReportsHub from './pages/admin/ReportsHub';
 import StudentsMonks from './pages/admin/StudentsMonks';
 import LMSOverview from './pages/admin/LMSOverview';
@@ -175,6 +176,7 @@ export default function App() {
           <Route path="donors" element={<DonorsDirectory />} />
           <Route path="receipts" element={<MoneyReceipts />} />
           <Route path="payment-gateways" element={<PaymentGateways />} />
+          <Route path="currency" element={<CurrencyManager />} />
 
           {/* Accounts & Finance */}
           <Route path="accounts" element={<AccountsDashboard />} />

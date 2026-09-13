@@ -4,12 +4,14 @@ import {
   LayoutDashboard, HeartHandshake, Video, Newspaper, Image as ImageIcon,
   Landmark, Warehouse, UserCheck, FolderKanban, MessageSquareShare,
   BarChart3, UserCog, Settings, ClipboardList, ChevronDown, ChevronRight, X, Flame,
-  GraduationCap, Award, BookOpen, CreditCard
+  GraduationCap, Award, BookOpen, CreditCard, Coins
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 export default function AdminSidebar({ isOpen, onClose }) {
   const { user } = useAuth();
+  const { currency, currencySymbol } = useCurrency();
   const location = useLocation();
 
   const roleSlug = user?.role?.slug || user?.role_slug || 'super_admin';
@@ -159,6 +161,18 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     • Payment Gateways & Banking
+                  </Link>
+                  <Link
+                    to="/admin/currency"
+                    onClick={handleNavClick}
+                    className={`block py-1 px-2 rounded hover:text-white flex items-center justify-between ${
+                      isActive('/admin/currency') ? 'text-[#D4AF37] font-bold bg-[#0F172A]' : 'text-gray-400'
+                    }`}
+                  >
+                    <span>• Platform Currency</span>
+                    <span className="text-[9px] px-1.5 py-0.5 bg-[#D4AF37]/20 text-[#D4AF37] rounded font-mono font-bold">
+                      {currencySymbol} {currency}
+                    </span>
                   </Link>
                 </div>
               )}
@@ -524,6 +538,24 @@ export default function AdminSidebar({ isOpen, onClose }) {
               >
                 <CreditCard className="w-4 h-4 text-[#D4AF37]" />
                 <span>Payment Gateways & Accounts</span>
+              </Link>
+
+              <Link
+                to="/admin/currency"
+                onClick={handleNavClick}
+                className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
+                  isActive('/admin/currency')
+                    ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                    : 'text-gray-300 hover:bg-[#0F172A] hover:text-white'
+                }`}
+              >
+                <div className="flex items-center space-x-2.5">
+                  <Coins className="w-4 h-4 text-[#D4AF37]" />
+                  <span>Currency Controller</span>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/40 font-mono font-bold">
+                  {currencySymbol} {currency}
+                </span>
               </Link>
 
               <Link

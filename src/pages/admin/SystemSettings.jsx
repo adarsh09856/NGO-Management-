@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Settings, Save, Database, Shield, Globe, CreditCard, Mail, Download,
   RefreshCw, CheckCircle2, FileText, Palette, Sliders, Server, Landmark, Lock,
-  Phone, MapPin, Check, AlertCircle, ArrowRight
+  Phone, MapPin, Check, AlertCircle, ArrowRight, Coins
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
@@ -573,6 +574,22 @@ export default function SystemSettings() {
                 <p className="text-[10px] text-gray-500 mt-1">
                   Active Symbol: <strong className="text-amber-800">{settings.currency_symbol || 'Nu.'}</strong>. Updating this dynamically changes all public prices and offering presets across the website.
                 </p>
+
+                <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center space-x-2">
+                    <Coins className="w-4 h-4 text-amber-700 flex-shrink-0" />
+                    <span className="text-[11px] text-amber-900 font-semibold">
+                      Looking for custom symbols, donation presets, or live preview?
+                    </span>
+                  </div>
+                  <Link
+                    to="/admin/currency"
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-900 bg-amber-200/70 hover:bg-amber-300 px-2.5 py-1 rounded transition-colors whitespace-nowrap"
+                  >
+                    <span>Open Currency Controller</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
