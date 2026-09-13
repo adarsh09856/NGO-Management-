@@ -357,40 +357,104 @@ async function getCampaigns(req, res) {
 
 async function createCampaign(req, res) {
   try {
-    const { title, description, targetAmount, currency = 'INR', startDate, endDate, isFeatured = 0 } = req.body;
-    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now();
+    const {
+      title,
+      description,
+      targetAmount,
+      target_amount,
+      currency = 'INR',
+      category = 'Monastic Fund',
+      bannerImage,
+      banner_image,
+      startDate,
+      start_date,
+      endDate,
+      end_date,
+      isFeatured = 0,
+      is_featured = 0
+    } = req.body;
+
+    const finalTarget = targetAmount !== undefined ? targetAmount : (target_amount || 1000000);
+    const finalBanner = bannerImage || banner_image || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80';
+    const finalStart = startDate || start_date || null;
+    const finalEnd = endDate || end_date || null;
+    const finalFeatured = (isFeatured || is_featured) ? 1 : 0;
+    const slug = (title || 'campaign').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now();
 
     const [result] = await pool.query(
-      `INSERT INTO campaigns (title, slug, description, target_amount, currency, start_date, end_date, is_featured)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [title, slug, description, targetAmount, currency, startDate || null, endDate || null, isFeatured ? 1 : 0]
+      `INSERT INTO campaigns (title, slug, description, target_amount, currency, category, banner_image, start_date, end_date, is_featured)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [title, slug, description || '', finalTarget, currency, category, finalBanner, finalStart, finalEnd, finalFeatured]
     );
 
     return res.status(201).json({ success: true, message: 'Campaign created successfully', id: result.insertId });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to create campaign' });
+    console.error('[Create Campaign Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to create campaign: ' + error.message });
   }
 }
 
 async function updateCampaign(req, res) {
   try {
     const { id } = req.params;
-    const { title, description, targetAmount, isActive, isFeatured } = req.body;
+    const {
+      title,
+      description,
+      targetAmount,
+      target_amount,
+      currency,
+      category,
+      bannerImage,
+      banner_image,
+      startDate,
+      start_date,
+      endDate,
+      end_date,
+      isActive,
+      is_active,
+      isFeatured,
+      is_featured
+    } = req.body;
+
+    const finalTarget = targetAmount !== undefined ? targetAmount : (target_amount !== undefined ? target_amount : null);
+    const finalBanner = bannerImage !== undefined ? bannerImage : (banner_image !== undefined ? banner_image : null);
+    const finalStart = startDate !== undefined ? startDate : (start_date !== undefined ? start_date : null);
+    const finalEnd = endDate !== undefined ? endDate : (end_date !== undefined ? end_date : null);
+    const finalActive = isActive !== undefined ? (isActive ? 1 : 0) : (is_active !== undefined ? (is_active ? 1 : 0) : null);
+    const finalFeatured = isFeatured !== undefined ? (isFeatured ? 1 : 0) : (is_featured !== undefined ? (is_featured ? 1 : 0) : null);
 
     await pool.query(
       `UPDATE campaigns 
        SET title = COALESCE(?, title),
            description = COALESCE(?, description),
            target_amount = COALESCE(?, target_amount),
+           currency = COALESCE(?, currency),
+           category = COALESCE(?, category),
+           banner_image = COALESCE(?, banner_image),
+           start_date = COALESCE(?, start_date),
+           end_date = COALESCE(?, end_date),
            is_active = COALESCE(?, is_active),
            is_featured = COALESCE(?, is_featured)
        WHERE id = ?`,
-      [title, description, targetAmount, isActive, isFeatured, id]
+      [
+        title ?? null,
+        description ?? null,
+        finalTarget,
+        currency ?? null,
+        category ?? null,
+        finalBanner,
+        finalStart,
+        finalEnd,
+        finalActive,
+        finalFeatured,
+        id
+      ]
     );
 
     return res.json({ success: true, message: 'Campaign updated successfully' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to update campaign' });
+    console.error('[Update Campaign Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to update campaign: ' + error.message });
   }
 }
 

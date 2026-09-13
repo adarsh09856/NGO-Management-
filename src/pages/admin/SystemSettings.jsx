@@ -101,9 +101,17 @@ export default function SystemSettings() {
     e.preventDefault();
     try {
       setSaving(true);
-      const res = await api.post('/settings', { settings });
+      // Clean sensitive fields: do not send empty strings for secret/password fields so backend doesn't overwrite
+      const cleanSettings = { ...settings };
+      for (const [k, v] of Object.entries(cleanSettings)) {
+        if (/secret|pass(word)?/i.test(k) && (v === '' || v === null || v === undefined)) {
+          delete cleanSettings[k];
+        }
+      }
+      const res = await api.post('/settings', { settings: cleanSettings });
       if (res.data.success) {
         success('System configuration saved successfully!');
+        await loadSettings();
         if (refreshCurrency) refreshCurrency();
       }
     } catch (err) {

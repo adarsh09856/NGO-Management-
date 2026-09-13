@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { pool, initializeDatabase } = require('../config/db');
 
-async function runMigrations() {
+async function runMigrations(closePool = false) {
   console.log('[Migration] Starting MySQL database migrations...');
   try {
     await initializeDatabase();
@@ -62,14 +62,19 @@ async function runMigrations() {
     }
   } catch (error) {
     console.error('[Migration Error] Migration failed:', error.message);
-    process.exit(1);
+    if (closePool) {
+      process.exit(1);
+    }
+    throw error;
   } finally {
-    await pool.end();
+    if (closePool) {
+      await pool.end();
+    }
   }
 }
 
 if (require.main === module) {
-  runMigrations();
+  runMigrations(true);
 }
 
 module.exports = { runMigrations };

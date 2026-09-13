@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, Plus, Image, Calendar, Flame, CheckCircle2, Edit2, Trash2, X } from 'lucide-react';
+import { Globe, Plus, Image, Calendar, Flame, CheckCircle2, Edit2, Trash2, X, UploadCloud, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 
@@ -10,6 +11,7 @@ export default function CMSManager() {
   const [newsList, setNewsList] = useState([]);
   const [galleryList, setGalleryList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
 
   // Add News Modal
   const [showNewsModal, setShowNewsModal] = useState(false);
@@ -19,6 +21,7 @@ export default function CMSManager() {
   const [newsTime, setNewsTime] = useState('08:00 AM - 04:00 PM');
   const [newsLocation, setNewsLocation] = useState('Great Druk Wangyel Peace Stupa Complex');
   const [newsContent, setNewsContent] = useState('');
+  const [newsBanner, setNewsBanner] = useState('');
 
   // Edit News Modal
   const [editingNews, setEditingNews] = useState(null);
@@ -28,6 +31,7 @@ export default function CMSManager() {
   const [editTime, setEditTime] = useState('');
   const [editLocation, setEditLocation] = useState('');
   const [editContent, setEditContent] = useState('');
+  const [editBanner, setEditBanner] = useState('');
 
   const fetchData = async () => {
     try {
@@ -51,6 +55,31 @@ export default function CMSManager() {
     fetchData();
   }, []);
 
+  const handleBannerUpload = async (e, isEdit = false) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      setUploadingBanner(true);
+      const res = await api.post('/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (res.data?.success && res.data.url) {
+        if (isEdit) {
+          setEditBanner(res.data.url);
+        } else {
+          setNewsBanner(res.data.url);
+        }
+        success('Event banner uploaded successfully!');
+      }
+    } catch (err) {
+      error('Failed to upload image: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setUploadingBanner(false);
+    }
+  };
+
   const handleDedicatePrayer = async (id) => {
     try {
       const res = await api.put(`/cms/prayer-requests/${id}/status`, { status: 'dedicated' });
@@ -72,13 +101,15 @@ export default function CMSManager() {
         eventDate: newsDate,
         eventTime: newsTime,
         location: newsLocation,
-        content: newsContent
+        content: newsContent,
+        bannerImage: newsBanner
       });
       if (res.data.success) {
         success('News & Event published to public website!');
         setShowNewsModal(false);
         setNewsTitle('');
         setNewsContent('');
+        setNewsBanner('');
         fetchData();
       }
     } catch (err) {
@@ -94,6 +125,7 @@ export default function CMSManager() {
     setEditTime(item.event_time || '');
     setEditLocation(item.location || 'Great Druk Wangyel Peace Stupa Complex');
     setEditContent(item.content || '');
+    setEditBanner(item.banner_image || '');
   };
 
   const handleUpdateNews = async (e) => {
@@ -106,7 +138,8 @@ export default function CMSManager() {
         eventDate: editDate,
         eventTime: editTime,
         location: editLocation,
-        content: editContent
+        content: editContent,
+        bannerImage: editBanner
       });
       if (res.data.success) {
         success('News & Event updated successfully!');
@@ -281,26 +314,48 @@ export default function CMSManager() {
 
       {/* Tab 3: Photo Gallery */}
       {activeTab === 'gallery' && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {galleryList.map((g) => (
-            <div key={g.id} className="monastery-card overflow-hidden">
-              <img src={g.image_url} alt={g.title} className="w-full h-36 object-cover" />
-              <div className="p-3">
-                <p className="font-bold text-xs text-gray-900 truncate">{g.title}</p>
-                <p className="text-[10px] text-gray-500">{g.category}</p>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center bg-amber-50 border border-amber-200 p-3 rounded-lg text-xs text-amber-900">
+            <span>Visual media library published to the public gallery page.</span>
+            <Link
+              to="/admin/gallery"
+              className="px-3 py-1.5 bg-[#0F172A] text-white rounded font-bold flex items-center gap-1 hover:bg-[#1E293B]"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Open Full Gallery Studio</span>
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {galleryList.map((g) => (
+              <div key={g.id} className="monastery-card overflow-hidden">
+                <img
+                  src={g.thumbnail_url || g.media_url || g.image_url || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=400&q=80'}
+                  alt={g.title}
+                  onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=400&q=80'; }}
+                  className="w-full h-36 object-cover"
+                />
+                <div className="p-3">
+                  <p className="font-bold text-xs text-gray-900 truncate">{g.title}</p>
+                  <p className="text-[10px] text-gray-500">{g.category}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
       {/* Add News Modal */}
       {showNewsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-md w-full space-y-4">
-            <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
-              Publish News & Auspicious Event
-            </h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-md w-full space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b pb-2">
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
+                Publish News & Auspicious Event
+              </h3>
+              <button type="button" onClick={() => setShowNewsModal(false)} className="text-gray-400 hover:text-gray-600 p-1">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
             <form onSubmit={handleCreateNews} className="space-y-3 text-xs">
               <div>
@@ -342,6 +397,50 @@ export default function CMSManager() {
               </div>
 
               <div>
+                <label className="block font-bold text-gray-700 mb-1">Cover / Banner Image</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newsBanner}
+                    onChange={(e) => setNewsBanner(e.target.value)}
+                    placeholder="https://... or upload"
+                    className="flex-1 p-2 rounded border border-gray-300 text-xs"
+                  />
+                  <label className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-200 border rounded flex items-center gap-1 text-xs font-bold text-gray-700">
+                    <UploadCloud className="w-3.5 h-3.5" />
+                    <span>{uploadingBanner ? '...' : 'Upload'}</span>
+                    <input type="file" accept="image/*" onChange={(e) => handleBannerUpload(e, false)} className="hidden" />
+                  </label>
+                </div>
+                {newsBanner && (
+                  <div className="mt-1.5 h-20 w-full rounded overflow-hidden border bg-gray-100">
+                    <img src={newsBanner} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Time</label>
+                  <input
+                    type="text"
+                    value={newsTime}
+                    onChange={(e) => setNewsTime(e.target.value)}
+                    className="w-full p-2 rounded border border-gray-300"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Location</label>
+                  <input
+                    type="text"
+                    value={newsLocation}
+                    onChange={(e) => setNewsLocation(e.target.value)}
+                    className="w-full p-2 rounded border border-gray-300"
+                  />
+                </div>
+              </div>
+
+              <div>
                 <label className="block font-bold text-gray-700 mb-1">Content / Announcement Details *</label>
                 <textarea
                   rows={4}
@@ -375,9 +474,9 @@ export default function CMSManager() {
 
       {/* Edit News Modal */}
       {editingNews && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-md w-full space-y-4 animate-fadeIn">
-            <div className="flex justify-between items-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-md w-full space-y-4 max-h-[90vh] overflow-y-auto animate-fadeIn">
+            <div className="flex justify-between items-center border-b pb-2">
               <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
                 Edit News & Auspicious Event
               </h3>
@@ -426,6 +525,29 @@ export default function CMSManager() {
                     className="w-full p-2 rounded border border-gray-300"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Cover / Banner Image</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={editBanner}
+                    onChange={(e) => setEditBanner(e.target.value)}
+                    placeholder="https://... or upload"
+                    className="flex-1 p-2 rounded border border-gray-300 text-xs"
+                  />
+                  <label className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-200 border rounded flex items-center gap-1 text-xs font-bold text-gray-700">
+                    <UploadCloud className="w-3.5 h-3.5" />
+                    <span>{uploadingBanner ? '...' : 'Upload'}</span>
+                    <input type="file" accept="image/*" onChange={(e) => handleBannerUpload(e, true)} className="hidden" />
+                  </label>
+                </div>
+                {editBanner && (
+                  <div className="mt-1.5 h-20 w-full rounded overflow-hidden border bg-gray-100">
+                    <img src={editBanner} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">

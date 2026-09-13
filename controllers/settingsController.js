@@ -43,6 +43,19 @@ async function updateSettings(req, res) {
     const payload = req.body.settings || req.body;
 
     for (const [key, rawValue] of Object.entries(payload)) {
+      // Sensitive keys check: never overwrite stored secrets or passwords with blank strings, null, or masked placeholders
+      const isSensitive = /secret|pass(word)?|key_secret/i.test(key);
+      if (isSensitive) {
+        if (
+          rawValue === '' ||
+          rawValue === null ||
+          rawValue === undefined ||
+          (typeof rawValue === 'string' && (/^[•\*]+$/.test(rawValue.trim()) || rawValue.trim() === ''))
+        ) {
+          continue; // Keep existing stored secret/password intact
+        }
+      }
+
       const isObj = typeof rawValue === 'object' && rawValue !== null;
       const strValue = isObj ? JSON.stringify(rawValue) : String(rawValue);
 
@@ -71,7 +84,9 @@ async function updateSettings(req, res) {
            ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_by = VALUES(updated_by)`,
           [key, group, jsonVal, req.user?.id || null]
         );
-      } catch (_) {}
+      } catch (siteErr) {
+        console.warn(`[Settings] Warning writing to site_settings for key ${key}:`, siteErr.message);
+      }
     }
 
     logAudit({

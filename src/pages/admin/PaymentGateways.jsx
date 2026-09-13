@@ -117,9 +117,16 @@ export default function PaymentGateways() {
     if (e) e.preventDefault();
     try {
       setSaving(true);
-      const res = await api.put('/settings', { settings: gateways });
+      const cleanGateways = { ...gateways };
+      for (const [k, v] of Object.entries(cleanGateways)) {
+        if (/secret|pass(word)?/i.test(k) && (v === '' || v === null || v === undefined)) {
+          delete cleanGateways[k];
+        }
+      }
+      const res = await api.put('/settings', { settings: cleanGateways });
       if (res.data.success) {
         success('Payment gateway & primary platform currency saved successfully!');
+        await loadGatewaySettings();
         if (refreshCurrency) refreshCurrency();
       } else {
         throw new Error(res.data.message || 'Failed to save settings');

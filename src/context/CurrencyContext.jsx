@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import api from '../services/api';
 
 export const SUPPORTED_CURRENCIES = {
@@ -63,7 +63,7 @@ export function CurrencyProvider({ children }) {
     return `${currencySymbol} ${formattedNum}`;
   }, [currency, currencySymbol]);
 
-  const value = {
+  const value = useMemo(() => ({
     currency,
     currencySymbol,
     currencyName,
@@ -72,7 +72,7 @@ export function CurrencyProvider({ children }) {
     refreshCurrency: loadCurrencySettings,
     setCurrencyDirectly: applyCurrency,
     SUPPORTED_CURRENCIES
-  };
+  }), [currency, currencySymbol, currencyName, loading, formatAmount, loadCurrencySettings]);
 
   return (
     <CurrencyContext.Provider value={value}>

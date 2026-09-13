@@ -115,49 +115,47 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Auto-sync verified Bhutan & Thimphu Monastic Media Assets
+// Global process error handlers to prevent unhandled rejections from crashing the process
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[Process Alert] Unhandled Rejection:', reason?.stack || reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('[Process Alert] Uncaught Exception:', err?.stack || err);
+});
+
+// Auto-sync verified Bhutan & Thimphu Monastic Media Assets (Only runs once on fresh/empty DB)
 async function autoMigrateBhutanAssets() {
   try {
     const { pool } = require('./config/db');
-    // 1. Update Campaigns
-    await pool.query(`UPDATE campaigns SET banner_image = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80' WHERE id = 1`);
-    await pool.query(`UPDATE campaigns SET banner_image = 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80' WHERE id = 2`);
-    await pool.query(`UPDATE campaigns SET banner_image = 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?auto=format&fit=crop&w=1200&q=80' WHERE id = 3`);
-    await pool.query(`UPDATE campaigns SET banner_image = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80' WHERE id = 4`);
+    // Check if campaigns already have data
+    const [existing] = await pool.query('SELECT COUNT(*) as count FROM campaigns');
+    if (existing[0]?.count > 0) {
+      console.log('ℹ️  [Startup] Database tables already populated. Skipping asset auto-migration to preserve all admin edits.');
+      return;
+    }
 
-    // 2. Update News & Events
-    await pool.query(`UPDATE news_events SET banner_image = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80' WHERE id = 1`);
-    await pool.query(`UPDATE news_events SET banner_image = 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80' WHERE id = 2`);
-    await pool.query(`UPDATE news_events SET banner_image = 'https://images.unsplash.com/photo-1560707303-4e980ce876ad?auto=format&fit=crop&w=1200&q=80' WHERE id = 3`);
-    await pool.query(`UPDATE news_events SET banner_image = 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1200&q=80' WHERE id = 4`);
+    console.log('ℹ️  [Startup] Empty database detected. Initializing authentic Bhutan baseline...');
+    // Only populate if empty
+    await pool.query(`UPDATE campaigns SET banner_image = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80' WHERE (banner_image IS NULL OR banner_image = '') AND id = 1`);
+    await pool.query(`UPDATE campaigns SET banner_image = 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80' WHERE (banner_image IS NULL OR banner_image = '') AND id = 2`);
+    await pool.query(`UPDATE campaigns SET banner_image = 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?auto=format&fit=crop&w=1200&q=80' WHERE (banner_image IS NULL OR banner_image = '') AND id = 3`);
+    await pool.query(`UPDATE campaigns SET banner_image = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80' WHERE (banner_image IS NULL OR banner_image = '') AND id = 4`);
 
-    // 3. Update Blog Posts
-    await pool.query(`UPDATE blog_posts SET cover_image = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80' WHERE id = 1`);
-    await pool.query(`UPDATE blog_posts SET cover_image = 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80' WHERE id = 2`);
-    await pool.query(`UPDATE blog_posts SET cover_image = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80' WHERE id = 3`);
-
-    // 4. Update Learning Videos
-    await pool.query(`UPDATE learning_materials SET thumbnail_url = 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1200&q=80' WHERE id = 1`);
-    await pool.query(`UPDATE learning_materials SET thumbnail_url = 'https://images.unsplash.com/photo-1560707303-4e980ce876ad?auto=format&fit=crop&w=1200&q=80' WHERE id = 2`);
-    await pool.query(`UPDATE learning_materials SET thumbnail_url = 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80' WHERE id = 3`);
-    await pool.query(`UPDATE learning_materials SET thumbnail_url = 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?auto=format&fit=crop&w=1200&q=80' WHERE id = 4`);
-
-    // 5. Update Gallery Items
-    await pool.query(`UPDATE gallery_items SET media_url = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80', thumbnail_url = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=400&q=80' WHERE id = 1`);
-    await pool.query(`UPDATE gallery_items SET media_url = 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80', thumbnail_url = 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=400&q=80' WHERE id = 2`);
-    await pool.query(`UPDATE gallery_items SET thumbnail_url = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=400&q=80' WHERE id = 3`);
-    await pool.query(`UPDATE gallery_items SET media_url = 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1200&q=80', thumbnail_url = 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=400&q=80' WHERE id = 4`);
-    await pool.query(`UPDATE gallery_items SET thumbnail_url = 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?auto=format&fit=crop&w=400&q=80' WHERE id = 5`);
-
-    console.log('✅ Automated Bhutanese media assets & operational baseline synchronized into database.');
+    console.log('✅ Automated Bhutanese media assets initialized for empty database.');
   } catch (err) {
-    // Non-fatal if tables don't exist yet
+    console.warn('[Startup Asset Sync Note]:', err.message);
   }
 }
 
 // Start Server
 async function startServer() {
   await testConnection();
+  try {
+    const { runMigrations } = require('./db/migrate');
+    await runMigrations(false);
+  } catch (migErr) {
+    console.warn('[Server Startup] Auto-migration check:', migErr.message);
+  }
   await autoMigrateBhutanAssets();
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`=======================================================`);

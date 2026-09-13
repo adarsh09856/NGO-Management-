@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Plus, Target, Calendar, CheckCircle2, TrendingUp, Edit2, Trash2, X, AlertCircle, Power } from 'lucide-react';
+import { Heart, Plus, Target, Calendar, CheckCircle2, TrendingUp, Edit2, Trash2, X, AlertCircle, Power, UploadCloud, Image as ImageIcon } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function Campaigns() {
   const { success, error } = useToast();
+  const { currencySymbol, currency: defaultCurrency } = useCurrency();
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // Add Campaign Modal
   const [showAddModal, setShowAddModal] = useState(false);
@@ -19,12 +22,18 @@ export default function Campaigns() {
     return d.toISOString().slice(0, 10);
   });
   const [description, setDescription] = useState('');
+  const [bannerImage, setBannerImage] = useState('');
+  const [category, setCategory] = useState('World Peace Monument');
+  const [campaignCurrency, setCampaignCurrency] = useState(defaultCurrency || 'BTN');
 
   // Edit Campaign Modal
   const [editingCampaign, setEditingCampaign] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editTargetAmount, setEditTargetAmount] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  const [editBannerImage, setEditBannerImage] = useState('');
+  const [editCategory, setEditCategory] = useState('World Peace Monument');
+  const [editCurrency, setEditCurrency] = useState('BTN');
   const [editIsActive, setEditIsActive] = useState(1);
   const [editIsFeatured, setEditIsFeatured] = useState(0);
 
@@ -48,6 +57,31 @@ export default function Campaigns() {
     fetchCampaigns();
   }, []);
 
+  const handleImageUpload = async (e, isEdit = false) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      setUploadingImage(true);
+      const res = await api.post('/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (res.data?.success && res.data.url) {
+        if (isEdit) {
+          setEditBannerImage(res.data.url);
+        } else {
+          setBannerImage(res.data.url);
+        }
+        success('Campaign banner uploaded successfully!');
+      }
+    } catch (err) {
+      error('Failed to upload banner: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleAddCampaign = async (e) => {
     e.preventDefault();
     try {
@@ -56,13 +90,17 @@ export default function Campaigns() {
         targetAmount: parseFloat(targetAmount),
         startDate,
         endDate,
-        description
+        description,
+        banner_image: bannerImage,
+        category,
+        currency: campaignCurrency
       });
       if (res.data.success) {
         success('New fundraising campaign created!');
         setShowAddModal(false);
         setTitle('');
         setDescription('');
+        setBannerImage('');
         fetchCampaigns();
       }
     } catch (err) {
@@ -75,6 +113,9 @@ export default function Campaigns() {
     setEditTitle(campaign.title || '');
     setEditTargetAmount(campaign.target_amount || '');
     setEditDescription(campaign.description || '');
+    setEditBannerImage(campaign.banner_image || '');
+    setEditCategory(campaign.category || 'World Peace Monument');
+    setEditCurrency(campaign.currency || defaultCurrency || 'BTN');
     setEditIsActive(campaign.is_active ? 1 : 0);
     setEditIsFeatured(campaign.is_featured ? 1 : 0);
   };
@@ -87,6 +128,9 @@ export default function Campaigns() {
         title: editTitle,
         targetAmount: parseFloat(editTargetAmount),
         description: editDescription,
+        banner_image: editBannerImage,
+        category: editCategory,
+        currency: editCurrency,
         isActive: editIsActive,
         isFeatured: editIsFeatured
       });
@@ -271,15 +315,67 @@ export default function Campaigns() {
                 />
               </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Target Goal *</label>
+                  <div className="relative">
+                    <span className="absolute left-2.5 top-2.5 text-xs text-gray-500 font-bold">{currencySymbol}</span>
+                    <input
+                      type="number"
+                      required
+                      value={targetAmount}
+                      onChange={(e) => setTargetAmount(parseFloat(e.target.value))}
+                      className="w-full pl-8 pr-2.5 py-2 rounded border border-gray-300 font-bold text-emerald-800"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Currency</label>
+                  <select
+                    value={campaignCurrency}
+                    onChange={(e) => setCampaignCurrency(e.target.value)}
+                    className="w-full p-2 rounded border border-gray-300 bg-white"
+                  >
+                    <option value="BTN">BTN (Nu. Bhutan)</option>
+                    <option value="INR">INR (₹ India)</option>
+                    <option value="USD">USD ($ International)</option>
+                    <option value="EUR">EUR (€ Europe)</option>
+                  </select>
+                </div>
+              </div>
+
               <div>
-                <label className="block font-bold text-gray-700 mb-1">Target Fundraising Goal (INR ₹) *</label>
+                <label className="block font-bold text-gray-700 mb-1">Category / Tag</label>
                 <input
-                  type="number"
-                  required
-                  value={targetAmount}
-                  onChange={(e) => setTargetAmount(parseFloat(e.target.value))}
-                  className="w-full p-2.5 rounded border border-gray-300 font-bold text-emerald-800"
+                  type="text"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  placeholder="e.g. World Peace Monument, Sangha Welfare, Shedra"
+                  className="w-full p-2 rounded border border-gray-300"
                 />
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Banner Image URL or Upload</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={bannerImage}
+                    onChange={(e) => setBannerImage(e.target.value)}
+                    placeholder="https://... or upload below"
+                    className="flex-1 p-2 rounded border border-gray-300 text-xs"
+                  />
+                  <label className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-200 border rounded flex items-center gap-1 text-xs font-bold text-gray-700">
+                    <UploadCloud className="w-3.5 h-3.5" />
+                    <span>{uploadingImage ? 'Uploading...' : 'Upload'}</span>
+                    <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, false)} className="hidden" />
+                  </label>
+                </div>
+                {bannerImage && (
+                  <div className="mt-1.5 h-20 w-full rounded overflow-hidden border bg-gray-100">
+                    <img src={bannerImage} alt="Banner Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -339,7 +435,7 @@ export default function Campaigns() {
       {/* Edit Campaign Modal */}
       {editingCampaign && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-md w-full space-y-4">
+          <div className="bg-white rounded-xl shadow-2xl border p-6 max-w-md w-full space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b pb-2">
               <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
                 Edit Campaign Details
@@ -361,15 +457,66 @@ export default function Campaigns() {
                 />
               </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Target Goal *</label>
+                  <div className="relative">
+                    <span className="absolute left-2.5 top-2.5 text-xs text-gray-500 font-bold">{currencySymbol}</span>
+                    <input
+                      type="number"
+                      required
+                      value={editTargetAmount}
+                      onChange={(e) => setEditTargetAmount(e.target.value)}
+                      className="w-full pl-8 pr-2.5 py-2 rounded border border-gray-300 font-bold text-emerald-800"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Currency</label>
+                  <select
+                    value={editCurrency}
+                    onChange={(e) => setEditCurrency(e.target.value)}
+                    className="w-full p-2 rounded border border-gray-300 bg-white"
+                  >
+                    <option value="BTN">BTN (Nu. Bhutan)</option>
+                    <option value="INR">INR (₹ India)</option>
+                    <option value="USD">USD ($ International)</option>
+                    <option value="EUR">EUR (€ Europe)</option>
+                  </select>
+                </div>
+              </div>
+
               <div>
-                <label className="block font-bold text-gray-700 mb-1">Target Goal (INR ₹) *</label>
+                <label className="block font-bold text-gray-700 mb-1">Category / Tag</label>
                 <input
-                  type="number"
-                  required
-                  value={editTargetAmount}
-                  onChange={(e) => setEditTargetAmount(e.target.value)}
-                  className="w-full p-2.5 rounded border border-gray-300 font-bold text-emerald-800"
+                  type="text"
+                  value={editCategory}
+                  onChange={(e) => setEditCategory(e.target.value)}
+                  className="w-full p-2 rounded border border-gray-300"
                 />
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Banner Image URL or Upload</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={editBannerImage}
+                    onChange={(e) => setEditBannerImage(e.target.value)}
+                    placeholder="https://... or upload"
+                    className="flex-1 p-2 rounded border border-gray-300 text-xs"
+                  />
+                  <label className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-200 border rounded flex items-center gap-1 text-xs font-bold text-gray-700">
+                    <UploadCloud className="w-3.5 h-3.5" />
+                    <span>{uploadingImage ? 'Uploading...' : 'Upload'}</span>
+                    <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, true)} className="hidden" />
+                  </label>
+                </div>
+                {editBannerImage && (
+                  <div className="mt-1.5 h-24 w-full rounded overflow-hidden border bg-gray-100">
+                    <img src={editBannerImage} alt="Banner Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
               </div>
 
               <div>

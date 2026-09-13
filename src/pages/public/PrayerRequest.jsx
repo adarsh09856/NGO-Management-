@@ -113,6 +113,7 @@ export default function PrayerRequest() {
                   butterLampsCount,
                   dedicationNames: dedicationNames.trim(),
                   offeringAmount,
+                  offeringCurrency: currency || 'BTN',
                   transactionRef: response.razorpay_payment_id || `rzp_${Date.now()}`,
                   paymentMethod: 'online_gateway',
                   paymentStatus: 'completed'
@@ -229,6 +230,7 @@ export default function PrayerRequest() {
         butterLampsCount,
         dedicationNames: dedicationNames.trim(),
         offeringAmount,
+        offeringCurrency: currency || 'BTN',
         transactionRef,
         paymentMethod: paymentChannel === 'upi' ? 'upi_qr' : 'bank_transfer',
         paymentStatus: 'pending_verification'
