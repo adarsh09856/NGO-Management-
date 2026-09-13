@@ -5,8 +5,10 @@ import {
   Sparkles, ArrowRight, Gift, Building2, HelpCircle, FileText, QrCode
 } from 'lucide-react';
 import api from '../../services/api';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function Donate() {
+  const { currency, currencySymbol } = useCurrency();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCause, setSelectedCause] = useState('Great Druk Wangyel Peace Stupa');
   const [donateAmount, setDonateAmount] = useState(1000);
@@ -193,7 +195,7 @@ export default function Donate() {
                     {/* Progress Bar */}
                     <div className="space-y-1.5 pt-2 border-t border-gray-100">
                       <div className="flex justify-between text-[11px] font-bold">
-                        <span className="text-gray-700">Raised: ₹{c.raised.toLocaleString()}</span>
+                        <span className="text-gray-700">Raised: {currencySymbol} {c.raised.toLocaleString()}</span>
                         <span className="text-[#721C24]">{c.percent}%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -202,7 +204,7 @@ export default function Donate() {
                           style={{ width: `${Math.max(c.percent, 5)}%` }}
                         />
                       </div>
-                      <div className="text-[10px] text-gray-400 text-right">Target: ₹{c.target.toLocaleString()}</div>
+                      <div className="text-[10px] text-gray-400 text-right">Target: {currencySymbol} {c.target.toLocaleString()}</div>
                     </div>
                   </div>
                 </div>

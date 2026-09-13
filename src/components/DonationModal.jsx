@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 export default function DonationModal({
   isOpen = true,
@@ -41,13 +42,23 @@ export default function DonationModal({
     };
   }, [isOpen, onClose]);
 
+  const { currency: sysCurrency, currencySymbol: sysSymbol } = useCurrency();
+
   // Step 1: Amount & Cause
   const [frequency, setFrequency] = useState(initialType || 'one_time');
-  const [currency, setCurrency] = useState('INR');
+  const [currency, setCurrency] = useState(sysCurrency || 'BTN');
+  const [currencySymbol, setCurrencySymbol] = useState(sysSymbol || 'Nu.');
   const [selectedPreset, setSelectedPreset] = useState(initialAmount || defaultAmount || 1000);
   const [customAmount, setCustomAmount] = useState('');
   const [donationFor, setDonationFor] = useState(causeTitle || 'Great Druk Wangyel Peace Stupa');
   const [campaignId, setCampaignId] = useState(defaultCampaignId || 1);
+
+  useEffect(() => {
+    if (sysCurrency) {
+      setCurrency(sysCurrency);
+      setCurrencySymbol(sysSymbol || 'Nu.');
+    }
+  }, [sysCurrency, sysSymbol]);
 
   // Step 2: Devotee & Tax Info
   const [donorName, setDonorName] = useState('');
@@ -108,7 +119,8 @@ export default function DonationModal({
   ];
 
   // Presets by currency
-  const presets = currency === 'INR' ? [500, 1000, 2500, 5000] : [25, 50, 100, 250];
+  const isSouthAsian = currency === 'INR' || currency === 'BTN';
+  const presets = isSouthAsian ? [500, 1000, 2500, 5000] : [25, 50, 100, 250];
   const finalAmount = customAmount ? parseFloat(customAmount) : selectedPreset;
 
   // Sync props when opening or switching causes
@@ -553,21 +565,27 @@ export default function DonationModal({
             <div>
               <div className="flex justify-between items-center mb-1">
                 <label className="text-[10.5px] font-bold text-gray-700 uppercase tracking-wider">
-                  Select Offering Amount ({currency})
+                  Select Offering Amount ({currencySymbol} {currency})
                 </label>
-                <div className="flex items-center space-x-1 text-xs font-semibold">
+                <div className="flex items-center space-x-1.5 text-xs font-semibold">
                   <button
                     type="button"
-                    onClick={() => setCurrency('INR')}
-                    className={currency === 'INR' ? 'font-bold text-[#721C24]' : 'text-gray-400 hover:text-gray-600'}
+                    onClick={() => {
+                      setCurrency(sysCurrency || 'BTN');
+                      setCurrencySymbol(sysSymbol || 'Nu.');
+                    }}
+                    className={currency === (sysCurrency || 'BTN') ? 'font-bold text-[#721C24] underline' : 'text-gray-400 hover:text-gray-600'}
                   >
-                    INR (₹)
+                    {sysCurrency || 'BTN'} ({sysSymbol || 'Nu.'})
                   </button>
                   <span className="text-gray-300">|</span>
                   <button
                     type="button"
-                    onClick={() => setCurrency('USD')}
-                    className={currency === 'USD' ? 'font-bold text-[#721C24]' : 'text-gray-400 hover:text-gray-600'}
+                    onClick={() => {
+                      setCurrency('USD');
+                      setCurrencySymbol('$');
+                    }}
+                    className={currency === 'USD' ? 'font-bold text-[#721C24] underline' : 'text-gray-400 hover:text-gray-600'}
                   >
                     USD ($)
                   </button>
@@ -589,14 +607,14 @@ export default function DonationModal({
                         : 'bg-[#FAF5F0]/50 border-[#D4AF37]/25 text-gray-700 hover:border-[#D4AF37]'
                     }`}
                   >
-                    {currency === 'INR' ? '₹' : '$'}{amt.toLocaleString()}
+                    {currencySymbol} {amt.toLocaleString()}
                   </button>
                 ))}
               </div>
 
               <div className="relative">
                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs">
-                  {currency === 'INR' ? '₹' : '$'}
+                  {currencySymbol}
                 </span>
                 <input
                   type="number"
@@ -859,7 +877,7 @@ export default function DonationModal({
                 <div className="flex items-center justify-between pb-2 border-b border-[#D4AF37]/20">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-[#4A0E17] text-[#D4AF37] flex items-center justify-center font-bold text-xs shadow-sm">
-                      ₹
+                      {currencySymbol}
                     </div>
                     <div>
                       <h5 className="font-editorial text-xs font-bold text-[#1A0B0E]">
@@ -934,7 +952,7 @@ export default function DonationModal({
                     <div className="w-36 h-36 bg-white p-1 rounded-xl flex items-center justify-center border border-gray-100">
                       <img
                         src={gatewaySettings.upi_qr_image_url || `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(
-                          `upi://pay?pa=${gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn=${encodeURIComponent(gatewaySettings.upi_merchant_name || 'Drodul Phendey Ling Monastery')}&am=${finalAmount}&cu=INR`
+                          `upi://pay?pa=${gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn=${encodeURIComponent(gatewaySettings.upi_merchant_name || 'Drodul Phendey Ling Monastery')}&am=${finalAmount}&cu=${currency || 'BTN'}`
                         )}`}
                         alt="Monastery Dynamic UPI QR"
                         className="w-full h-full object-contain rounded-lg"
@@ -945,7 +963,7 @@ export default function DonationModal({
                     <div className="w-full mt-2 bg-gradient-to-r from-amber-50 via-amber-100 to-amber-50 border border-amber-300 py-1.5 px-2 rounded-xl">
                       <span className="block text-[8.5px] text-gray-500 uppercase tracking-wider font-semibold">Dynamic Offering:</span>
                       <strong className="block text-sm font-extrabold text-[#721C24] font-mono">
-                        {currency === 'INR' ? '₹' : '$'} {finalAmount?.toLocaleString()}
+                        {currencySymbol} {finalAmount?.toLocaleString()}
                       </strong>
                       <span className="block text-[8px] text-emerald-700 font-bold">
                         ✓ Exact Amount Auto-Loaded
@@ -958,7 +976,7 @@ export default function DonationModal({
                       Step 1: Scan & Pay via any UPI App
                     </span>
                     <p className="text-xs text-gray-700 font-sans leading-relaxed">
-                      Scan using <strong>Google Pay, PhonePe, Paytm, or BHIM</strong>. Your phone app will automatically load <strong>{currency === 'INR' ? '₹' : '$'}{finalAmount?.toLocaleString()}</strong> for direct deposit.
+                      Scan using <strong>Google Pay, PhonePe, Paytm, or BHIM</strong>. Your phone app will automatically load <strong>{currencySymbol} {finalAmount?.toLocaleString()}</strong> for direct deposit.
                     </p>
 
                     <div className="flex items-center space-x-2 pt-1 justify-center sm:justify-start">
@@ -1379,7 +1397,7 @@ export default function DonationModal({
                   <div className="flex justify-between items-center">
                     <span className="text-gray-500">Amount Offered:</span>
                     <span className="font-bold text-emerald-700 font-mono text-sm">
-                      {currency} {finalAmount?.toLocaleString()}
+                      {currencySymbol} {finalAmount?.toLocaleString()} ({currency})
                     </span>
                   </div>
                   <div className="flex justify-between items-center">

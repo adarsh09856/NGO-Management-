@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency, SUPPORTED_CURRENCIES } from '../../context/CurrencyContext';
 
 export default function PaymentGateways() {
   const { success, error } = useToast();
@@ -14,11 +15,18 @@ export default function PaymentGateways() {
   const [uploadingQr, setUploadingQr] = useState(false);
   const [previewAmount, setPreviewAmount] = useState(1000);
   const [copiedField, setCopiedField] = useState(null);
+  const { refreshCurrency } = useCurrency();
   const [showRazorpaySecret, setShowRazorpaySecret] = useState(false);
   const [showStripeSecret, setShowStripeSecret] = useState(false);
 
-  // Gateway Configurations
+  // Gateway & Primary Currency Configurations
   const [gateways, setGateways] = useState({
+    // Primary Platform Currency
+    default_currency: 'BTN',
+    currency: 'BTN',
+    currency_symbol: 'Nu.',
+    currency_name: 'Bhutanese Ngultrum',
+
     // UPI & QR
     payment_upi_enabled: '1',
     upi_merchant_vpa: 'drodulphendeyling@bob',
@@ -50,10 +58,7 @@ export default function PaymentGateways() {
     stripe_webhook_secret: '',
 
     // Card 3DS
-    payment_cards_enabled: '1',
-
-    // Base Currency
-    default_currency: 'INR'
+    payment_cards_enabled: '1'
   });
 
   useEffect(() => {
@@ -114,7 +119,8 @@ export default function PaymentGateways() {
       setSaving(true);
       const res = await api.put('/settings', { settings: gateways });
       if (res.data.success) {
-        success('Payment gateway and banking configurations saved successfully!');
+        success('Payment gateway & primary platform currency saved successfully!');
+        if (refreshCurrency) refreshCurrency();
       } else {
         throw new Error(res.data.message || 'Failed to save settings');
       }
@@ -182,6 +188,117 @@ export default function PaymentGateways() {
               </>
             )}
           </button>
+        </div>
+      </div>
+
+      {/* 1.5. PRIMARY PLATFORM CURRENCY & SYMBOLS (GLOBAL CONTROLLER) */}
+      <div className="bg-gradient-to-br from-[#1A0B0E] via-[#2D0B12] to-[#120508] text-white p-5 sm:p-7 rounded-3xl border border-[#D4AF37]/50 shadow-2xl space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#D4AF37]/30 pb-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-bold mb-1.5">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Global Financial Engine</span>
+            </div>
+            <h2 className="font-serif-brand font-bold text-lg sm:text-xl text-white">
+              Primary Platform Currency & Display Symbol
+            </h2>
+            <p className="text-xs text-amber-200/80 max-w-2xl mt-0.5">
+              Changing this setting immediately updates all prices, donation amounts, offering presets, dynamic QR standees, and tax receipts across the entire website.
+            </p>
+          </div>
+
+          {/* Current Active Currency Badge */}
+          <div className="px-4 py-2.5 rounded-2xl bg-white/10 backdrop-blur-md border border-[#D4AF37]/50 flex items-center gap-3">
+            <div>
+              <span className="text-[10px] text-gray-300 block uppercase tracking-wider font-semibold">Active Currency</span>
+              <span className="text-base font-extrabold text-[#D4AF37] font-mono">
+                {gateways.currency_symbol || 'Nu.'} {gateways.default_currency || 'BTN'}
+              </span>
+            </div>
+            <div className="w-8 h-8 rounded-full bg-[#D4AF37]/20 flex items-center justify-center text-[#D4AF37] font-bold text-sm">
+              {gateways.currency_symbol || 'Nu.'}
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Select Buttons */}
+        <div>
+          <label className="block text-xs font-bold text-amber-200/90 mb-2">
+            Select Official Currency Preset:
+          </label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+            {Object.values(SUPPORTED_CURRENCIES).map((c) => {
+              const isSelected = (gateways.default_currency || 'BTN') === c.code;
+              return (
+                <button
+                  key={c.code}
+                  type="button"
+                  onClick={() => {
+                    setGateways(prev => ({
+                      ...prev,
+                      default_currency: c.code,
+                      currency: c.code,
+                      currency_symbol: c.symbol,
+                      currency_name: c.name
+                    }));
+                  }}
+                  className={`p-2.5 rounded-xl border text-center transition-all ${
+                    isSelected
+                      ? 'bg-gradient-to-r from-[#D4AF37] to-[#B45309] text-gray-950 font-extrabold border-amber-300 shadow-lg scale-105 ring-2 ring-[#D4AF37]/50'
+                      : 'bg-white/5 hover:bg-white/10 text-gray-200 border-white/15'
+                  }`}
+                >
+                  <div className="text-sm font-bold">{c.symbol} {c.code}</div>
+                  <div className="text-[9px] opacity-80 truncate">{c.name}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Fine Tuning Inputs */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+          <div>
+            <label className="block text-[11px] font-bold text-gray-300 mb-1">
+              3-Letter Currency Code (ISO)
+            </label>
+            <input
+              type="text"
+              value={gateways.default_currency || 'BTN'}
+              onChange={(e) => {
+                const val = e.target.value.toUpperCase();
+                setGateways(prev => ({ ...prev, default_currency: val, currency: val }));
+              }}
+              placeholder="e.g. BTN, INR, USD"
+              className="w-full p-2.5 rounded-xl bg-black/40 border border-white/20 text-white font-mono text-xs focus:ring-2 focus:ring-[#D4AF37] focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold text-gray-300 mb-1">
+              Display Currency Symbol
+            </label>
+            <input
+              type="text"
+              value={gateways.currency_symbol || 'Nu.'}
+              onChange={(e) => setGateways(prev => ({ ...prev, currency_symbol: e.target.value }))}
+              placeholder="e.g. Nu., ₹, $, €"
+              className="w-full p-2.5 rounded-xl bg-black/40 border border-white/20 text-white font-mono text-xs focus:ring-2 focus:ring-[#D4AF37] focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold text-gray-300 mb-1">
+              Full Currency Name
+            </label>
+            <input
+              type="text"
+              value={gateways.currency_name || 'Bhutanese Ngultrum'}
+              onChange={(e) => setGateways(prev => ({ ...prev, currency_name: e.target.value }))}
+              placeholder="e.g. Bhutanese Ngultrum"
+              className="w-full p-2.5 rounded-xl bg-black/40 border border-white/20 text-white text-xs focus:ring-2 focus:ring-[#D4AF37] focus:outline-none"
+            />
+          </div>
         </div>
       </div>
 
@@ -485,7 +602,7 @@ export default function PaymentGateways() {
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(
                       `upi://pay?pa=${gateways.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn=${encodeURIComponent(
                         gateways.upi_merchant_name || 'Drodul Phendey Ling Monastery'
-                      )}&am=${previewAmount}&cu=INR`
+                      )}&am=${previewAmount}&cu=${gateways.default_currency || 'BTN'}`
                     )}`}
                     alt="Live UPI QR Preview"
                     className="w-32 h-32 mx-auto object-contain rounded-lg"
@@ -497,7 +614,7 @@ export default function PaymentGateways() {
                   <div className="w-full mt-1.5 bg-amber-50 border border-amber-300 py-1 px-1 rounded-xl">
                     <span className="block text-[8px] text-gray-500 uppercase tracking-wider font-semibold">Dynamic Amount:</span>
                     <strong className="block text-xs font-extrabold text-[#721C24] font-mono">
-                      ₹ {previewAmount.toLocaleString()}
+                      {gateways.currency_symbol || 'Nu.'} {previewAmount.toLocaleString()}
                     </strong>
                     <span className="block text-[7.5px] text-emerald-700 font-bold">
                       ✓ Auto-Filled in GPay / PhonePe
@@ -517,7 +634,7 @@ export default function PaymentGateways() {
                     Live Encoded UPI URI:
                   </span>
                   <div className="font-mono text-[9px] text-gray-600 break-all bg-gray-50 p-1.5 rounded border select-all">
-                    upi://pay?pa={gateways.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn={encodeURIComponent(gateways.upi_merchant_name || 'Drodul Phendey Ling Monastery')}&am={previewAmount}&cu=INR
+                    upi://pay?pa={gateways.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn={encodeURIComponent(gateways.upi_merchant_name || 'Drodul Phendey Ling Monastery')}&am={previewAmount}&cu={gateways.default_currency || 'BTN'}
                   </div>
                 </div>
               )}

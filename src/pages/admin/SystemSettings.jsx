@@ -6,9 +6,11 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency, SUPPORTED_CURRENCIES } from '../../context/CurrencyContext';
 
 export default function SystemSettings() {
   const { success, error } = useToast();
+  const { refreshCurrency } = useCurrency();
   const [activeTab, setActiveTab] = useState('legal'); // 'legal' | 'branding' | 'header' | 'payments' | 'donations' | 'email' | 'backup'
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -40,8 +42,11 @@ export default function SystemSettings() {
     header_prayer_desk_link: '/prayer-request',
     header_shedra_link: '/student',
 
-    // 4. Payment Gateways
-    currency: 'INR',
+    // 4. Payment Gateways & Primary Currency
+    default_currency: 'BTN',
+    currency: 'BTN',
+    currency_symbol: 'Nu.',
+    currency_name: 'Bhutanese Ngultrum',
     razorpay_key_id: 'rzp_test_drodulphendeyling_sandbox',
     razorpay_key_secret: '',
     stripe_publishable_key: 'pk_test_drodulphendeyling_sandbox',
@@ -99,6 +104,7 @@ export default function SystemSettings() {
       const res = await api.post('/settings', { settings });
       if (res.data.success) {
         success('System configuration saved successfully!');
+        if (refreshCurrency) refreshCurrency();
       }
     } catch (err) {
       error(err.response?.data?.message || 'Failed to save settings');
@@ -534,16 +540,31 @@ export default function SystemSettings() {
               </div>
 
               <div>
-                <label className="block font-semibold text-gray-700 mb-1">Default Base Currency</label>
+                <label className="block font-semibold text-gray-700 mb-1">Primary Base Platform Currency</label>
                 <select
-                  value={settings.currency}
-                  onChange={(e) => handleChange('currency', e.target.value)}
-                  className="w-full p-2.5 rounded border border-gray-300 font-bold"
+                  value={settings.default_currency || settings.currency || 'BTN'}
+                  onChange={(e) => {
+                    const code = e.target.value;
+                    const preset = SUPPORTED_CURRENCIES[code] || { symbol: code, name: code };
+                    setSettings(prev => ({
+                      ...prev,
+                      default_currency: code,
+                      currency: code,
+                      currency_symbol: preset.symbol,
+                      currency_name: preset.name
+                    }));
+                  }}
+                  className="w-full p-2.5 rounded border border-gray-300 font-bold text-xs"
                 >
-                  <option value="INR">INR (₹ Indian Rupee / Bhutan Ngultrum Parity)</option>
-                  <option value="BTN">Nu. BTN (Bhutanese Ngultrum)</option>
-                  <option value="USD">USD ($ United States Dollar)</option>
+                  {Object.values(SUPPORTED_CURRENCIES).map((c) => (
+                    <option key={c.code} value={c.code}>
+                      {c.symbol} {c.code} — {c.name}
+                    </option>
+                  ))}
                 </select>
+                <p className="text-[10px] text-gray-500 mt-1">
+                  Active Symbol: <strong className="text-amber-800">{settings.currency_symbol || 'Nu.'}</strong>. Updating this dynamically changes all public prices and offering presets across the website.
+                </p>
               </div>
             </div>
           </div>

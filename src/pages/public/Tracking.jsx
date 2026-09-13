@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Search, CheckCircle2, Clock, Shield, Download, AlertCircle, ArrowRight, Flame, Heart, FileText } from 'lucide-react';
 import api from '../../services/api';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function Tracking() {
+  const { currency: sysCurrency } = useCurrency();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialId = searchParams.get('id') || '';
 
@@ -129,7 +131,7 @@ export default function Tracking() {
               <div className="text-left sm:text-right">
                 <span className="text-xs text-gray-500 block font-serif">Offering Amount</span>
                 <span className="text-xl sm:text-2xl font-bold text-emerald-700 font-mono">
-                  {result.currency} {result.amount.toLocaleString()}
+                  {result.currency || sysCurrency || 'BTN'} {result.amount?.toLocaleString()}
                 </span>
               </div>
             </div>

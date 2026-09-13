@@ -6,8 +6,10 @@ import {
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function PrayerRequest() {
+  const { currency, currencySymbol } = useCurrency();
   const { success, error } = useToast();
   const [devoteeName, setDevoteeName] = useState('');
   const [devoteeEmail, setDevoteeEmail] = useState('');
@@ -77,7 +79,7 @@ export default function PrayerRequest() {
         try {
           const orderRes = await api.post('/payments/create-order', {
             amount: offeringAmount,
-            currency: 'INR',
+            currency: currency || 'BTN',
             donorName: cleanName,
             donorEmail: cleanEmail,
             donorPhone: devoteePhone.trim(),
@@ -320,7 +322,7 @@ export default function PrayerRequest() {
             <div className="flex justify-between items-center">
               <span className="text-gray-500">Offering Amount:</span>
               <span className="font-bold text-emerald-700 font-mono text-sm">
-                ₹ {submittedData.offeringAmount?.toLocaleString()}
+                {currencySymbol} {submittedData.offeringAmount?.toLocaleString()}
               </span>
             </div>
             <div className="flex justify-between items-center">
@@ -513,7 +515,7 @@ export default function PrayerRequest() {
                   >
                     <Flame className={`w-5 h-5 mx-auto mb-1 ${butterLampsCount === tier.count ? 'text-[#D4AF37]' : 'text-amber-500'}`} />
                     <div className="font-bold text-xs">{tier.count} Lamps</div>
-                    <div className="text-[11px] text-amber-500 font-bold mt-0.5">₹ {tier.amt.toLocaleString()}</div>
+                    <div className="text-[11px] text-amber-500 font-bold mt-0.5">{currencySymbol} {tier.amt.toLocaleString()}</div>
                     <div className="text-[9px] text-gray-400 mt-0.5">{tier.label}</div>
                   </button>
                 ))}
@@ -529,7 +531,7 @@ export default function PrayerRequest() {
                     <span>4. Payment & Mandatory Proof of Deposit</span>
                   </h3>
                   <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                    Offering: ₹{offeringAmount.toLocaleString()}
+                    Offering: {currencySymbol} {offeringAmount.toLocaleString()}
                   </span>
                 </div>
 
@@ -581,7 +583,7 @@ export default function PrayerRequest() {
                     <div className="flex items-center justify-between pb-2 border-b border-gray-100">
                       <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-lg bg-[#4A0E17] text-[#D4AF37] flex items-center justify-center font-bold text-xs shadow-sm">
-                          ₹
+                          {currencySymbol}
                         </div>
                         <div>
                           <h5 className="font-serif-brand text-xs font-bold text-[#1A0B0E]">
@@ -622,7 +624,7 @@ export default function PrayerRequest() {
                     </div>
 
                     <p className="text-[11px] text-gray-600 bg-amber-50/70 p-2.5 rounded-xl border border-amber-200/60 leading-relaxed">
-                      Click the payment button below to open the secure Razorpay checkout modal. Your prayer offering of <strong>₹{offeringAmount.toLocaleString()}</strong> will be verified instantly and scheduled for the morning Sangha assembly.
+                      Click the payment button below to open the secure Razorpay checkout modal. Your prayer offering of <strong>{currencySymbol} {offeringAmount.toLocaleString()}</strong> will be verified instantly and scheduled for the morning Sangha assembly.
                     </p>
                   </div>
                 )}
@@ -640,7 +642,7 @@ export default function PrayerRequest() {
                       <div className="w-32 h-32 bg-white p-1 rounded-lg flex items-center justify-center border border-gray-100">
                         <img
                           src={gatewaySettings.upi_qr_image_url || `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(
-                            `upi://pay?pa=${gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn=${encodeURIComponent(gatewaySettings.upi_merchant_name || 'Drodul Phendey Ling Monastery')}&am=${offeringAmount}&cu=INR`
+                            `upi://pay?pa=${gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob'}&pn=${encodeURIComponent(gatewaySettings.upi_merchant_name || 'Drodul Phendey Ling Monastery')}&am=${offeringAmount}&cu=${currency || 'BTN'}`
                           )}`}
                           alt="Monastery Dynamic UPI QR"
                           className="w-full h-full object-contain rounded"
@@ -651,7 +653,7 @@ export default function PrayerRequest() {
                       <div className="w-full mt-1.5 bg-gradient-to-r from-amber-50 via-amber-100 to-amber-50 border border-amber-300 py-1 px-1 rounded-xl">
                         <span className="block text-[8px] text-gray-500 uppercase tracking-wider font-semibold">Dynamic Amount:</span>
                         <strong className="block text-xs font-extrabold text-[#721C24] font-mono">
-                          ₹ {offeringAmount?.toLocaleString()}
+                          {currencySymbol} {offeringAmount?.toLocaleString()}
                         </strong>
                         <span className="block text-[7.5px] text-emerald-700 font-bold">
                           ✓ Auto-Filled in App
@@ -661,7 +663,7 @@ export default function PrayerRequest() {
 
                     <div className="space-y-2 flex-1 text-xs">
                       <div className="text-gray-700">
-                        Scan QR with GPay, PhonePe, Paytm, or BHIM. Your phone app will automatically load <strong>₹{offeringAmount.toLocaleString()}</strong> for:
+                        Scan QR with GPay, PhonePe, Paytm, or BHIM. Your phone app will automatically load <strong>{currencySymbol} {offeringAmount.toLocaleString()}</strong> for:
                         <div className="font-mono font-bold text-gray-900 bg-white p-1.5 rounded border border-gray-200 mt-1 inline-block select-all">
                           {gatewaySettings.upi_merchant_vpa || 'drodulphendeyling@bob'}
                         </div>
@@ -733,21 +735,21 @@ export default function PrayerRequest() {
                   <>
                     <Lock className="w-4 h-4 text-[#D4AF37]" />
                     <span className="font-serif-brand">
-                      {loading ? 'Opening Razorpay Gateway...' : `PAY VIA RAZORPAY GATEWAY (₹ ${offeringAmount.toLocaleString()})`}
+                      {loading ? 'Opening Razorpay Gateway...' : `PAY VIA RAZORPAY GATEWAY (${currencySymbol} ${offeringAmount.toLocaleString()})`}
                     </span>
                   </>
                 ) : paymentChannel === 'upi' ? (
                   <>
                     <Send className="w-4 h-4 text-[#D4AF37]" />
                     <span className="font-serif-brand">
-                      {loading ? 'Transmitting Sacred Prayer Proof...' : `SUBMIT PRAYER & UPI UTR FOR VERIFICATION (₹ ${offeringAmount.toLocaleString()})`}
+                      {loading ? 'Transmitting Sacred Prayer Proof...' : `SUBMIT PRAYER & UPI UTR FOR VERIFICATION (${currencySymbol} ${offeringAmount.toLocaleString()})`}
                     </span>
                   </>
                 ) : (
                   <>
                     <Building2 className="w-4 h-4 text-[#D4AF37]" />
                     <span className="font-serif-brand">
-                      {loading ? 'Transmitting Sacred Prayer Proof...' : `SUBMIT PRAYER & WIRE PROOF FOR VERIFICATION (₹ ${offeringAmount.toLocaleString()})`}
+                      {loading ? 'Transmitting Sacred Prayer Proof...' : `SUBMIT PRAYER & WIRE PROOF FOR VERIFICATION (${currencySymbol} ${offeringAmount.toLocaleString()})`}
                     </span>
                   </>
                 )}

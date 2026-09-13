@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Heart, MapPin, Phone, Mail, Globe, ChevronDown, ChevronRight, Menu, X,
@@ -124,7 +125,7 @@ export default function Navbar({ onOpenDonate }) {
               <span className="sm:hidden">Prayers</span>
             </Link>
 
-            <Link to="/tracking" className="text-[#D4AF37] hover:text-white transition-colors font-medium flex items-center gap-1">
+            <Link to="/tracking" className="text-[#D4AF37] hover:text-white transition-colors font-medium hidden xs:flex items-center gap-1">
               <Clock className="w-3 h-3" />
               <span>Track Offering</span>
             </Link>
@@ -155,11 +156,11 @@ export default function Navbar({ onOpenDonate }) {
       </div>
 
       {/* 2. MAIN HEADER & BRAND */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-8 py-2.5 sm:py-3.5 flex items-center justify-between gap-2 sm:gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-8 py-2 sm:py-3.5 flex items-center justify-between gap-2 sm:gap-4">
         {/* Brand Crest & Logo */}
-        <Link to="/" className="flex items-center space-x-2.5 sm:space-x-3.5 group min-w-0 flex-shrink">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-[#1A0B0E] via-[#4A0E17] to-[#1A0B0E] border-2 border-[#D4AF37] flex items-center justify-center shadow-lg ring-2 ring-[#D4AF37]/20 group-hover:scale-105 group-hover:border-amber-300 transition-all flex-shrink-0">
-            <span className="text-[#D4AF37] text-xl sm:text-2xl font-serif font-bold group-hover:rotate-180 transition-transform duration-700">
+        <Link to="/" className="flex items-center space-x-2 sm:space-x-3.5 group min-w-0 flex-1 sm:flex-initial">
+          <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-[#1A0B0E] via-[#4A0E17] to-[#1A0B0E] border-2 border-[#D4AF37] flex items-center justify-center shadow-lg ring-2 ring-[#D4AF37]/20 group-hover:scale-105 group-hover:border-amber-300 transition-all flex-shrink-0">
+            <span className="text-[#D4AF37] text-lg sm:text-2xl font-serif font-bold group-hover:rotate-180 transition-transform duration-700">
               ☸
             </span>
           </div>
@@ -167,8 +168,8 @@ export default function Navbar({ onOpenDonate }) {
             <h1 className="font-serif-brand font-bold text-xs xs:text-sm sm:text-base md:text-lg text-[#0F172A] tracking-wider leading-tight truncate group-hover:text-[#721C24] transition-colors">
               DRODUL PHENDEY LING
             </h1>
-            <p className="text-[9px] sm:text-[10px] text-amber-700 font-semibold tracking-wider font-tibetan truncate">
-              ༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པ། · Gelephu, Bhutan
+            <p className="text-[8px] xs:text-[9px] sm:text-[10px] text-amber-700 font-semibold tracking-wider font-tibetan truncate">
+              ༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པ། · Bhutan
             </p>
           </div>
         </Link>
@@ -371,15 +372,15 @@ export default function Navbar({ onOpenDonate }) {
         </nav>
 
         {/* Right Action Controls */}
-        <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
-          {/* User Portal Link or Login */}
+        <div className="flex items-center space-x-1.5 xs:space-x-2 sm:space-x-3 flex-shrink-0">
+          {/* User Portal Link or Login (Hidden on mobile header, cleanly available in drawer) */}
           {user ? (
             <Link
               to={isAdmin ? '/admin' : (user?.role?.slug === 'student_monk' ? '/student' : '/user')}
-              className="flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-[#FAF5F0] border border-[#D4AF37] text-[#1A0B0E] hover:bg-[#FEF3C7] transition-all shadow-sm"
+              className="hidden sm:flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-[#FAF5F0] border border-[#D4AF37] text-[#1A0B0E] hover:bg-[#FEF3C7] transition-all shadow-sm"
             >
               {isAdmin ? <ShieldCheck className="w-3.5 h-3.5 text-[#721C24]" /> : <User className="w-3.5 h-3.5 text-[#721C24]" />}
-              <span className="hidden sm:inline max-w-[100px] truncate">
+              <span className="max-w-[100px] truncate">
                 {isAdmin ? 'Admin' : (user?.role?.slug === 'student_monk' ? 'Monk' : 'Sanctuary')}
               </span>
             </Link>
@@ -396,7 +397,7 @@ export default function Navbar({ onOpenDonate }) {
           {/* Shimmering Golden & Burgundy DONATE CTA Button */}
           <button
             onClick={onOpenDonate || (() => navigate('/donate'))}
-            className="monastic-maroon-btn relative group overflow-hidden flex items-center space-x-1.5 sm:space-x-2 px-3 xs:px-4 sm:px-5 py-2 rounded-full font-bold text-[10px] xs:text-[11px] sm:text-xs tracking-wider uppercase flex-shrink-0"
+            className="monastic-maroon-btn relative group overflow-hidden flex items-center space-x-1 xs:space-x-1.5 sm:space-x-2 px-2.5 xs:px-3.5 sm:px-5 py-1.5 xs:py-2 rounded-full font-bold text-[10px] xs:text-[11px] sm:text-xs tracking-wider uppercase flex-shrink-0 shadow-md"
           >
             {/* Shimmering Light-Sweep Effect */}
             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
@@ -410,7 +411,7 @@ export default function Navbar({ onOpenDonate }) {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(true)}
-            className="xl:hidden p-2 rounded-full text-[#1A0B0E] hover:bg-amber-50/80 border border-gray-200 transition-colors shadow-sm active:scale-95"
+            className="xl:hidden p-1.5 xs:p-2 rounded-full text-[#1A0B0E] hover:bg-amber-50/80 border border-gray-200 transition-colors shadow-sm active:scale-95 flex-shrink-0"
             aria-label="Open Navigation Menu"
           >
             <Menu className="w-5 h-5" />
@@ -427,16 +428,16 @@ export default function Navbar({ onOpenDonate }) {
       </div>
 
       {/* 4. LUXURY SLIDE-OVER MOBILE DRAWER */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 xl:hidden animate-fadeIn">
+      {mobileMenuOpen && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[9999] xl:hidden flex justify-end">
           {/* Backdrop Overlay */}
           <div
             onClick={() => setMobileMenuOpen(false)}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity animate-fadeIn"
           />
 
           {/* Drawer Container */}
-          <div className="fixed inset-y-0 right-0 w-full max-w-xs sm:max-w-sm bg-[#120508]/98 backdrop-blur-2xl border-l border-[#D4AF37]/40 shadow-2xl z-50 p-6 flex flex-col justify-between overflow-y-auto animate-fade-in-up text-[#FCFBF9]">
+          <div className="relative w-[85%] max-w-xs sm:max-w-sm h-full bg-[#120508]/98 backdrop-blur-2xl border-l border-[#D4AF37]/40 shadow-2xl z-10 p-5 sm:p-6 flex flex-col justify-between overflow-y-auto animate-fade-in-up text-[#FCFBF9]">
             <div className="space-y-6">
               {/* Drawer Header */}
               <div className="flex items-center justify-between border-b border-[#D4AF37]/30 pb-4">
@@ -576,7 +577,8 @@ export default function Navbar({ onOpenDonate }) {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </header>
   );

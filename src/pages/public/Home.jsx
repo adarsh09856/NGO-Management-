@@ -9,8 +9,10 @@ import {
 } from 'lucide-react';
 import DonationModal from '../../components/DonationModal';
 import api from '../../services/api';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function Home() {
+  const { currency, currencySymbol, formatAmount } = useCurrency();
   const [donateModalOpen, setDonateModalOpen] = useState(false);
   const [donateAmount, setDonateAmount] = useState(1000);
   const [donateFrequency, setDonateFrequency] = useState('one_time');
@@ -183,7 +185,7 @@ export default function Home() {
                         : 'bg-white text-gray-800 border-gray-200 hover:border-[#D4AF37]'
                     }`}
                   >
-                    ₹ {amt.toLocaleString()}
+                    {currencySymbol} {amt.toLocaleString()}
                   </button>
                 ))}
               </div>
@@ -191,10 +193,10 @@ export default function Home() {
               {/* Custom Input */}
               <div className="mb-4">
                 <label className="block text-[11px] font-bold text-gray-700 mb-1">
-                  Custom Offering Amount (₹ INR / BTN Nu.)
+                  Custom Offering Amount ({currencySymbol} {currency})
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-2.5 text-xs font-bold text-gray-500">₹</span>
+                  <span className="absolute left-3.5 top-2.5 text-xs font-bold text-gray-500">{currencySymbol}</span>
                   <input
                     type="number"
                     min="100"
@@ -353,7 +355,7 @@ export default function Home() {
                       {/* Progress Bar */}
                       <div className="space-y-1.5 pt-1">
                         <div className="flex justify-between text-[11px] font-semibold text-gray-700">
-                          <span>Raised: ₹{raised.toLocaleString()}</span>
+                          <span>Raised: {currencySymbol}{raised.toLocaleString()}</span>
                           <span className="text-[#721C24] font-bold">{percent}%</span>
                         </div>
                         <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -363,7 +365,7 @@ export default function Home() {
                           />
                         </div>
                         <p className="text-[10px] text-gray-500 text-right">
-                          Target: ₹{target.toLocaleString()}
+                          Target: {currencySymbol}{target.toLocaleString()}
                         </p>
                       </div>
                     </div>
