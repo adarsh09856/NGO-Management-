@@ -268,8 +268,8 @@ export default function Campaigns() {
 
                 <div className="space-y-2 pt-2 border-t">
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-500 font-medium">Raised: <strong className="text-emerald-700 font-mono">₹{raised.toLocaleString('en-IN')}</strong></span>
-                    <span className="text-gray-500 font-medium">Goal: <strong className="text-gray-800 font-mono">₹{target.toLocaleString('en-IN')}</strong></span>
+                    <span className="text-gray-500 font-medium">Raised: <strong className="text-emerald-700 font-mono">{currencySymbol} {raised.toLocaleString('en-IN')}</strong></span>
+                    <span className="text-gray-500 font-medium">Goal: <strong className="text-gray-800 font-mono">{currencySymbol} {target.toLocaleString('en-IN')}</strong></span>
                   </div>
 
                   {/* Progress Bar */}

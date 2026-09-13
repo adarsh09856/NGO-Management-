@@ -340,7 +340,7 @@ export default function Home() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
                       />
                       <div className="absolute top-3 left-3 glow-pill-gold px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-                        {camp.currency || 'INR'} Goal
+                        {camp.currency || currency || 'BTN'} Goal
                       </div>
                     </div>
 
@@ -401,7 +401,7 @@ export default function Home() {
                     </h3>
                     <div className="space-y-1.5 pt-1">
                       <div className="flex justify-between text-[11px] font-semibold text-gray-700">
-                        <span>Raised: ₹{c.raised.toLocaleString()}</span>
+                        <span>Raised: {currencySymbol}{c.raised.toLocaleString()}</span>
                         <span className="text-[#721C24] font-bold">{c.percent}%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">

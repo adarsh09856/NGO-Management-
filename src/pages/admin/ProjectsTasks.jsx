@@ -8,9 +8,11 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function ProjectsTasks() {
   const { success, error } = useToast();
+  const { currencySymbol, currency } = useCurrency();
   const [activeTab, setActiveTab] = useState('projects');
   const [loading, setLoading] = useState(true);
 
@@ -550,22 +552,22 @@ export default function ProjectsTasks() {
             <div className="bg-[#0D121F] border border-white/5 rounded-xl p-5">
               <div className="flex justify-between items-start">
                 <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">Total Sanctioned Budget</span>
-                <span className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
-                  <IndianRupee className="w-4 h-4" />
+                <span className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 font-bold text-xs">
+                  {currencySymbol}
                 </span>
               </div>
-              <p className="text-2xl font-bold text-white mt-2 font-mono">₹{totalBudget.toLocaleString('en-IN')}</p>
+              <p className="text-2xl font-bold text-white mt-2 font-mono">{currencySymbol}{totalBudget.toLocaleString('en-IN')}</p>
               <p className="text-[11px] text-[#94A3B8] mt-1">Capital grants & major pledges</p>
             </div>
 
             <div className="bg-[#0D121F] border border-white/5 rounded-xl p-5">
               <div className="flex justify-between items-start">
                 <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">Total Disbursed</span>
-                <span className="p-2 rounded-lg bg-[#E11D48]/10 text-[#E11D48]">
-                  <IndianRupee className="w-4 h-4" />
+                <span className="p-2 rounded-lg bg-[#E11D48]/10 text-[#E11D48] font-bold text-xs">
+                  {currencySymbol}
                 </span>
               </div>
-              <p className="text-2xl font-bold text-[#E11D48] mt-2 font-mono">₹{totalSpent.toLocaleString('en-IN')}</p>
+              <p className="text-2xl font-bold text-[#E11D48] mt-2 font-mono">{currencySymbol}{totalSpent.toLocaleString('en-IN')}</p>
               <p className="text-[11px] text-[#94A3B8] mt-1">{totalBudget > 0 ? ((totalSpent / totalBudget) * 100).toFixed(1) : 0}% budget utilized</p>
             </div>
 
@@ -643,11 +645,11 @@ export default function ProjectsTasks() {
                       </div>
                       <div className="flex justify-between items-center text-[#94A3B8]">
                         <span>Sanctioned Budget:</span>
-                        <span className="font-bold text-white font-mono">₹{budget.toLocaleString('en-IN')}</span>
+                        <span className="font-bold text-white font-mono">{currencySymbol}{budget.toLocaleString('en-IN')}</span>
                       </div>
                       <div className="flex justify-between items-center text-[#94A3B8]">
                         <span>Disbursed:</span>
-                        <span className="font-bold text-[#E11D48] font-mono">₹{spent.toLocaleString('en-IN')}</span>
+                        <span className="font-bold text-[#E11D48] font-mono">{currencySymbol}{spent.toLocaleString('en-IN')}</span>
                       </div>
                     </div>
                   </div>
@@ -1092,7 +1094,7 @@ export default function ProjectsTasks() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-[#CBD5E1] mb-1">Sanctioned Budget (₹) *</label>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Sanctioned Budget ({currencySymbol} {currency}) *</label>
                   <input
                     type="number"
                     step="0.01"
@@ -1103,7 +1105,7 @@ export default function ProjectsTasks() {
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-[#CBD5E1] mb-1">Disbursed Expenditure (₹)</label>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Disbursed Expenditure ({currencySymbol} {currency})</label>
                   <input
                     type="number"
                     step="0.01"

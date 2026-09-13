@@ -11,9 +11,11 @@ import {
 } from 'recharts';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function AccountsDashboard() {
   const { success, error } = useToast();
+  const { currencySymbol, currency } = useCurrency();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -132,7 +134,7 @@ export default function AccountsDashboard() {
         <div className="monastery-card p-3.5">
           <p className="text-[10px] font-bold text-gray-500 uppercase">Income (This Month)</p>
           <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">
-            ₹ {Number(stats.totalIncome || 0).toLocaleString('en-IN')}
+            {currencySymbol} {Number(stats.totalIncome || 0).toLocaleString('en-IN')}
           </h3>
           <p className={`text-[10px] font-semibold flex items-center mt-0.5 ${stats.incomeGrowth >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
             {stats.incomeGrowth >= 0 ? <ArrowUpRight className="w-3 h-3 mr-0.5" /> : <ArrowDownRight className="w-3 h-3 mr-0.5" />}
@@ -143,7 +145,7 @@ export default function AccountsDashboard() {
         <div className="monastery-card p-3.5">
           <p className="text-[10px] font-bold text-gray-500 uppercase">Expenses (This Month)</p>
           <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">
-            ₹ {Number(stats.totalExpenses || 0).toLocaleString('en-IN')}
+            {currencySymbol} {Number(stats.totalExpenses || 0).toLocaleString('en-IN')}
           </h3>
           <p className={`text-[10px] font-semibold flex items-center mt-0.5 ${stats.expenseGrowth <= 0 ? 'text-emerald-600' : 'text-amber-600'}`}>
             {stats.expenseGrowth >= 0 ? <ArrowUpRight className="w-3 h-3 mr-0.5" /> : <ArrowDownRight className="w-3 h-3 mr-0.5" />}
@@ -154,7 +156,7 @@ export default function AccountsDashboard() {
         <div className="monastery-card p-3.5">
           <p className="text-[10px] font-bold text-gray-500 uppercase">Net Surplus (Month)</p>
           <h3 className={`font-serif-brand font-bold text-lg mt-1 ${stats.netSurplus >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
-            ₹ {Number(stats.netSurplus || 0).toLocaleString('en-IN')}
+            {currencySymbol} {Number(stats.netSurplus || 0).toLocaleString('en-IN')}
           </h3>
           <p className="text-[10px] text-gray-500 font-semibold mt-0.5">
             Operational Margin
@@ -164,7 +166,7 @@ export default function AccountsDashboard() {
         <div className="monastery-card p-3.5">
           <p className="text-[10px] font-bold text-gray-500 uppercase">Total Receivables</p>
           <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">
-            ₹ {Number(stats.totalReceivables || 0).toLocaleString('en-IN')}
+            {currencySymbol} {Number(stats.totalReceivables || 0).toLocaleString('en-IN')}
           </h3>
           <p className="text-[10px] text-gray-500 font-medium mt-0.5">Pending Invoices</p>
         </div>
@@ -172,7 +174,7 @@ export default function AccountsDashboard() {
         <div className="monastery-card p-3.5">
           <p className="text-[10px] font-bold text-gray-500 uppercase">Pending Payables</p>
           <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">
-            ₹ {Number(stats.totalPayables || 0).toLocaleString('en-IN')}
+            {currencySymbol} {Number(stats.totalPayables || 0).toLocaleString('en-IN')}
           </h3>
           <p className="text-[10px] text-amber-600 font-medium mt-0.5">
             {stats.overdueBillsCount} Pending Claims
@@ -182,7 +184,7 @@ export default function AccountsDashboard() {
         <div className="monastery-card p-3.5">
           <p className="text-[10px] font-bold text-gray-500 uppercase">Total Cash & Bank</p>
           <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">
-            ₹ {Number(stats.cashInHand || 0).toLocaleString('en-IN')}
+            {currencySymbol} {Number(stats.cashInHand || 0).toLocaleString('en-IN')}
           </h3>
           <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">
             Active Vault & Bank
@@ -218,7 +220,7 @@ export default function AccountsDashboard() {
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748B' }} />
                 <YAxis tick={{ fontSize: 11, fill: '#64748B' }} />
                 <Tooltip
-                  formatter={(val) => [`₹ ${Number(val).toLocaleString('en-IN')}`, '']}
+                  formatter={(val) => [`${currencySymbol} ${Number(val).toLocaleString('en-IN')}`, '']}
                   contentStyle={{ backgroundColor: '#0F172A', borderColor: '#D4AF37', borderRadius: '8px', color: '#FFF' }}
                 />
                 <Bar dataKey="income" fill="#10B981" radius={[4, 4, 0, 0]} name="Income" />
@@ -250,9 +252,9 @@ export default function AccountsDashboard() {
                 </div>
                 <div className="text-right">
                   <p className="font-mono font-bold text-xs text-[#0F172A]">
-                    ₹ {Number(acc.current_balance || 0).toLocaleString('en-IN')}
+                    {currencySymbol} {Number(acc.current_balance || 0).toLocaleString('en-IN')}
                   </p>
-                  <span className="text-[9px] text-gray-400 uppercase font-semibold">{acc.currency || 'INR'}</span>
+                  <span className="text-[9px] text-gray-400 uppercase font-semibold">{acc.currency || currency}</span>
                 </div>
               </div>
             ))}
@@ -303,7 +305,7 @@ export default function AccountsDashboard() {
                     {t.particulars}
                   </td>
                   <td className={`py-3 px-4 font-mono font-bold ${t.voucher_type === 'receipt' ? 'text-emerald-700' : 'text-red-700'}`}>
-                    {t.voucher_type === 'receipt' ? '+' : '-'}₹ {Number(t.total_amount || 0).toLocaleString('en-IN')}
+                    {t.voucher_type === 'receipt' ? '+' : '-'}{currencySymbol} {Number(t.total_amount || 0).toLocaleString('en-IN')}
                   </td>
                   <td className="py-3 px-4 uppercase">
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-700">
@@ -368,7 +370,7 @@ export default function AccountsDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-gray-700 mb-1">Amount (₹) *</label>
+                  <label className="block font-bold text-gray-700 mb-1">Amount ({currencySymbol} {currency}) *</label>
                   <input
                     type="number"
                     required

@@ -12,9 +12,11 @@ import {
 } from 'recharts';
 import api from '../../services/api';
 import { GlassCard, GlassStatWidget, GlassBadge, GlassSkeleton } from '../../components/admin/GlassUI';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const { currencySymbol, currency } = useCurrency();
   const [loading, setLoading] = useState(true);
   const [metrics, setMetrics] = useState({
     totalDonationsMonth: 0,
@@ -94,7 +96,7 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <GlassStatWidget
             title="Donations (Month)"
-            value={`₹ ${Number(metrics.totalDonationsMonth || 0).toLocaleString()}`}
+            value={`${currencySymbol} ${Number(metrics.totalDonationsMonth || 0).toLocaleString()}`}
             subtext={`${metrics.totalDonationsCount || 0} gifts received`}
             icon={Heart}
             color="#E11D48"
@@ -123,7 +125,7 @@ export default function AdminDashboard() {
 
           <GlassStatWidget
             title="Receipts Issued"
-            value={`₹ ${Number(metrics.totalReceiptsValue || 0).toLocaleString()}`}
+            value={`${currencySymbol} ${Number(metrics.totalReceiptsValue || 0).toLocaleString()}`}
             subtext={`${metrics.totalReceiptsMonth || 0} 80G receipts`}
             icon={Receipt}
             color="#059669"
@@ -133,7 +135,7 @@ export default function AdminDashboard() {
 
           <GlassStatWidget
             title="Liquid Reserves"
-            value={`₹ ${Number(metrics.totalCashBalance || 0).toLocaleString()}`}
+            value={`${currencySymbol} ${Number(metrics.totalCashBalance || 0).toLocaleString()}`}
             subtext="BOB + HDFC + Vault"
             icon={Wallet}
             color="#7C3AED"
@@ -165,7 +167,7 @@ export default function AdminDashboard() {
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#6B5E59' }} />
                 <YAxis tick={{ fontSize: 11, fill: '#6B5E59' }} />
                 <Tooltip
-                  formatter={(val) => [`₹ ${Number(val).toLocaleString()}`, 'Inflow Amount']}
+                  formatter={(val) => [`${currencySymbol} ${Number(val).toLocaleString()}`, 'Inflow Amount']}
                   contentStyle={{ backgroundColor: '#1C060C', borderColor: '#D4AF37', borderRadius: '12px', color: '#FFF' }}
                 />
                 <Bar dataKey="amount" fill="url(#goldGradient)" radius={[8, 8, 0, 0]} />

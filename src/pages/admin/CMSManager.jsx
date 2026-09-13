@@ -3,9 +3,11 @@ import { Globe, Plus, Image, Calendar, Flame, CheckCircle2, Edit2, Trash2, X, Up
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function CMSManager() {
   const { success, error } = useToast();
+  const { currencySymbol, currency } = useCurrency();
   const [activeTab, setActiveTab] = useState('prayers'); // 'prayers', 'news', 'gallery'
   const [prayerRequests, setPrayerRequests] = useState([]);
   const [newsList, setNewsList] = useState([]);
@@ -247,7 +249,7 @@ export default function CMSManager() {
                     <td className="py-3 px-4 font-semibold text-[#0F172A]">{p.prayer_type}</td>
                     <td className="py-3 px-4 text-gray-600 max-w-xs">{p.intention_text}</td>
                     <td className="py-3 px-4 font-mono font-bold text-[#D4AF37]">{p.butter_lamps_count} Lamps</td>
-                    <td className="py-3 px-4 font-mono font-bold text-emerald-700">₹{parseFloat(p.offering_amount || 0).toLocaleString('en-IN')}</td>
+                    <td className="py-3 px-4 font-mono font-bold text-emerald-700">{currencySymbol}{parseFloat(p.offering_amount || 0).toLocaleString('en-IN')}</td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                         p.status === 'dedicated' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'

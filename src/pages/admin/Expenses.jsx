@@ -6,9 +6,11 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function Expenses() {
   const { success, error } = useToast();
+  const { currencySymbol, currency } = useCurrency();
   const [expenses, setExpenses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [bankAccounts, setBankAccounts] = useState([]);
@@ -231,14 +233,14 @@ export default function Expenses() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-[#0D121F] border border-white/5 rounded-xl p-5">
           <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">Total Disbursed</span>
-          <p className="text-2xl font-bold text-white mt-2 font-mono">₹{totalDisbursed.toLocaleString('en-IN')}</p>
+          <p className="text-2xl font-bold text-white mt-2 font-mono">{currencySymbol} {totalDisbursed.toLocaleString('en-IN')}</p>
           <p className="text-[11px] text-emerald-400 mt-1">Approved & settled payment vouchers</p>
         </div>
 
         <div className="bg-[#0D121F] border border-white/5 rounded-xl p-5">
           <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">Pending Claims</span>
           <p className="text-2xl font-bold text-amber-400 mt-2 font-mono">{pendingCount}</p>
-          <p className="text-[11px] text-[#94A3B8] mt-1">₹{pendingAmount.toLocaleString('en-IN')} awaiting authorization</p>
+          <p className="text-[11px] text-[#94A3B8] mt-1">{currencySymbol} {pendingAmount.toLocaleString('en-IN')} awaiting authorization</p>
         </div>
 
         <div className="bg-[#0D121F] border border-white/5 rounded-xl p-5">
@@ -350,7 +352,7 @@ export default function Expenses() {
                       <span className="text-[#CBD5E1] font-medium">{exp.category_name || 'General Expense'}</span>
                     </td>
                     <td className="py-3.5 px-4 font-mono font-bold text-red-400">
-                      ₹{parseFloat(exp.amount).toLocaleString('en-IN')}
+                      {currencySymbol} {parseFloat(exp.amount).toLocaleString('en-IN')}
                     </td>
                     <td className="py-3.5 px-4 text-[#94A3B8]">
                       <div>{exp.payment_method || exp.payment_mode || 'Bank Transfer'}</div>
@@ -503,7 +505,7 @@ export default function Expenses() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-[#CBD5E1] mb-1">Amount (₹ INR) *</label>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Amount ({currencySymbol} {currency}) *</label>
                   <input
                     type="number"
                     required
@@ -539,7 +541,7 @@ export default function Expenses() {
                   >
                     {bankAccounts.map(b => (
                       <option key={b.id} value={b.id}>
-                        {b.bank_name} - {b.account_number} (₹{parseFloat(b.current_balance || 0).toLocaleString('en-IN')})
+                        {b.bank_name} - {b.account_number} ({currencySymbol} {parseFloat(b.current_balance || 0).toLocaleString('en-IN')})
                       </option>
                     ))}
                   </select>
@@ -644,7 +646,7 @@ export default function Expenses() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-[#CBD5E1] mb-1">Amount (₹ INR) *</label>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Amount ({currencySymbol} {currency}) *</label>
                   <input
                     type="number"
                     required

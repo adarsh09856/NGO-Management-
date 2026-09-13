@@ -8,9 +8,11 @@ import {
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function InventoryDashboard() {
   const { success, error } = useToast();
+  const { currencySymbol, currency } = useCurrency();
   const [data, setData] = useState(null);
   const [items, setItems] = useState([]);
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'low_stock', 'out_of_stock'
@@ -328,7 +330,7 @@ export default function InventoryDashboard() {
         <div className="monastery-card p-3.5">
           <p className="text-[10px] font-bold text-gray-500 uppercase">Total Valuation</p>
           <h3 className="font-serif-brand font-bold text-lg text-gray-900 mt-1">
-            ₹ {Number(stats.totalStockValue || 0).toLocaleString('en-IN')}
+            {currencySymbol} {Number(stats.totalStockValue || 0).toLocaleString('en-IN')}
           </h3>
           <p className="text-[10px] text-gray-400 mt-0.5">At Unit Cost</p>
         </div>
@@ -336,7 +338,7 @@ export default function InventoryDashboard() {
         <div className="monastery-card p-3.5">
           <p className="text-[10px] font-bold text-gray-500 uppercase">Stock In (Month)</p>
           <h3 className="font-serif-brand font-bold text-lg text-emerald-700 mt-1">
-            ₹ {Number(stats.stockInThisMonth || 0).toLocaleString('en-IN')}
+            {currencySymbol} {Number(stats.stockInThisMonth || 0).toLocaleString('en-IN')}
           </h3>
           <p className="text-[10px] text-gray-400 mt-0.5">{stats.stockInEntries || 0} Entries</p>
         </div>
@@ -344,7 +346,7 @@ export default function InventoryDashboard() {
         <div className="monastery-card p-3.5">
           <p className="text-[10px] font-bold text-gray-500 uppercase">Stock Out (Month)</p>
           <h3 className="font-serif-brand font-bold text-lg text-red-700 mt-1">
-            ₹ {Number(stats.stockOutThisMonth || 0).toLocaleString('en-IN')}
+            {currencySymbol} {Number(stats.stockOutThisMonth || 0).toLocaleString('en-IN')}
           </h3>
           <p className="text-[10px] text-gray-400 mt-0.5">{stats.stockOutEntries || 0} Entries</p>
         </div>
@@ -482,9 +484,9 @@ export default function InventoryDashboard() {
                     {item.current_stock} {item.unit_symbol || item.unit || 'Pcs'}
                   </td>
                   <td className="py-3 px-4 font-mono text-gray-500">{item.min_stock}</td>
-                  <td className="py-3 px-4 font-mono text-gray-800">₹{parseFloat(item.unit_cost || 0).toLocaleString('en-IN')}</td>
+                  <td className="py-3 px-4 font-mono text-gray-800">{currencySymbol}{parseFloat(item.unit_cost || 0).toLocaleString('en-IN')}</td>
                   <td className="py-3 px-4 font-mono font-bold text-[#0F172A]">
-                    ₹{((parseFloat(item.current_stock) || 0) * (parseFloat(item.unit_cost) || 0)).toLocaleString('en-IN')}
+                    {currencySymbol}{((parseFloat(item.current_stock) || 0) * (parseFloat(item.unit_cost) || 0)).toLocaleString('en-IN')}
                   </td>
                   <td className="py-3 px-4">
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
@@ -604,7 +606,7 @@ export default function InventoryDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-gray-700 mb-1">Unit Cost (₹) *</label>
+                  <label className="block font-bold text-gray-700 mb-1">Unit Cost ({currencySymbol}) *</label>
                   <input
                     type="number"
                     required
@@ -753,7 +755,7 @@ export default function InventoryDashboard() {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-bold text-gray-700 mb-1">Unit Cost (₹)</label>
+                  <label className="block font-bold text-gray-700 mb-1">Unit Cost ({currencySymbol})</label>
                   <input
                     type="number"
                     step="0.01"

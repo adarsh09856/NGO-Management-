@@ -103,7 +103,7 @@ function generateReceiptPdf(receiptData) {
       doc.fontSize(12).font('Helvetica-Bold').fillColor('#5A121E')
          .text('TOTAL DONATION RECEIVED:', 60, amountBoxY + 15);
       doc.fontSize(16).font('Helvetica-Bold').fillColor('#5A121E')
-         .text(`${receiptData.currency || 'INR'} ${parseFloat(receiptData.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, 320, amountBoxY + 13, { align: 'right', width: 200 });
+         .text(`${receiptData.currency || 'BTN'} ${parseFloat(receiptData.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, 320, amountBoxY + 13, { align: 'right', width: 200 });
 
       // Legal & Tax Notice (Strictly Informational)
       const isIndianDonor = receiptData.recipient_country === 'India' || receiptData.currency === 'INR';
@@ -263,21 +263,22 @@ function generateSalarySlipPdf(slipData) {
       // Earnings & Deductions Table
       const tableY = 210;
       const colWidth = (doc.page.width - 80) / 2;
+      const slipCurrency = slipData.currency || 'BTN';
 
       // Table Headers
       doc.rect(40, tableY, colWidth, 25).fillColor('#4A0E17').fill();
       doc.fontSize(10).fillColor('#FFFFFF').font('Helvetica-Bold').text('EARNINGS', 50, tableY + 7);
-      doc.text('AMOUNT (INR)', colWidth - 60, tableY + 7, { align: 'right', width: 90 });
+      doc.text(`AMOUNT (${slipCurrency})`, colWidth - 60, tableY + 7, { align: 'right', width: 90 });
 
       doc.rect(40 + colWidth, tableY, colWidth, 25).fillColor('#5A121E').fill();
       doc.fontSize(10).fillColor('#FFFFFF').font('Helvetica-Bold').text('DEDUCTIONS', 50 + colWidth, tableY + 7);
-      doc.text('AMOUNT (INR)', doc.page.width - 130, tableY + 7, { align: 'right', width: 90 });
+      doc.text(`AMOUNT (${slipCurrency})`, doc.page.width - 130, tableY + 7, { align: 'right', width: 90 });
 
       // Rows
       let rowEarningsY = tableY + 35;
       const printEarning = (label, amt) => {
         doc.fontSize(9).font('Helvetica').fillColor('#374151').text(label, 50, rowEarningsY);
-        doc.text(`₹ ${parseFloat(amt || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, colWidth - 60, rowEarningsY, { align: 'right', width: 90 });
+        doc.text(`${slipCurrency} ${parseFloat(amt || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, colWidth - 60, rowEarningsY, { align: 'right', width: 90 });
         rowEarningsY += 20;
       };
 
@@ -289,7 +290,7 @@ function generateSalarySlipPdf(slipData) {
       let rowDeductY = tableY + 35;
       const printDeduction = (label, amt) => {
         doc.fontSize(9).font('Helvetica').fillColor('#374151').text(label, 50 + colWidth, rowDeductY);
-        doc.text(`₹ ${parseFloat(amt || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, doc.page.width - 130, rowDeductY, { align: 'right', width: 90 });
+        doc.text(`${slipCurrency} ${parseFloat(amt || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, doc.page.width - 130, rowDeductY, { align: 'right', width: 90 });
         rowDeductY += 20;
       };
 
@@ -301,17 +302,17 @@ function generateSalarySlipPdf(slipData) {
       const totalY = Math.max(rowEarningsY, rowDeductY) + 15;
       doc.rect(40, totalY, colWidth, 25).fillColor('#F3F4F6').strokeColor('#E5E7EB').fillAndStroke();
       doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('Total Gross Earnings:', 50, totalY + 7);
-      doc.text(`₹ ${parseFloat(slipData.total_earnings).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, colWidth - 60, totalY + 7, { align: 'right', width: 90 });
+      doc.text(`${slipCurrency} ${parseFloat(slipData.total_earnings).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, colWidth - 60, totalY + 7, { align: 'right', width: 90 });
 
       doc.rect(40 + colWidth, totalY, colWidth, 25).fillColor('#F3F4F6').strokeColor('#E5E7EB').fillAndStroke();
       doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('Total Deductions:', 50 + colWidth, totalY + 7);
-      doc.text(`₹ ${parseFloat(slipData.total_deductions).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, doc.page.width - 130, totalY + 7, { align: 'right', width: 90 });
+      doc.text(`${slipCurrency} ${parseFloat(slipData.total_deductions).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, doc.page.width - 130, totalY + 7, { align: 'right', width: 90 });
 
       // Net Salary Highlight
       const netY = totalY + 40;
       doc.rect(40, netY, doc.page.width - 80, 45).fillColor('#ECFDF5').strokeColor('#059669').lineWidth(1.5).fillAndStroke();
       doc.fontSize(12).font('Helvetica-Bold').fillColor('#065F46').text('NET TAKE-HOME PAY:', 55, netY + 15);
-      doc.fontSize(16).font('Helvetica-Bold').fillColor('#065F46').text(`INR ₹ ${parseFloat(slipData.net_salary).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, doc.page.width - 300, netY + 13, { align: 'right', width: 250 });
+      doc.fontSize(16).font('Helvetica-Bold').fillColor('#065F46').text(`${slipCurrency} ${parseFloat(slipData.net_salary).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, doc.page.width - 300, netY + 13, { align: 'right', width: 250 });
 
       // Signatures
       const sigY = netY + 100;

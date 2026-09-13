@@ -6,9 +6,11 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function HRMEmployees() {
   const { success, error } = useToast();
+  const { currencySymbol, currency } = useCurrency();
   const [activeTab, setActiveTab] = useState('directory'); // 'directory' | 'attendance'
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -354,7 +356,7 @@ export default function HRMEmployees() {
             <div className="bg-[#0D121F] border border-white/5 rounded-xl p-5">
               <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">Total Monthly Payroll</span>
               <p className="text-2xl font-bold text-emerald-400 mt-2 font-mono">
-                ₹{employees.reduce((acc, e) => acc + (parseFloat(e.basic_salary) || 0), 0).toLocaleString('en-IN')}
+                {currencySymbol}{employees.reduce((acc, e) => acc + (parseFloat(e.basic_salary) || 0), 0).toLocaleString('en-IN')}
               </p>
               <p className="text-[11px] text-[#94A3B8] mt-1">Base monthly compensation commitment</p>
             </div>
@@ -433,7 +435,7 @@ export default function HRMEmployees() {
                           <div className="text-[10px] text-[#94A3B8] font-mono">{emp.phone || '—'}</div>
                         </td>
                         <td className="py-3.5 px-4">
-                          <div className="font-mono font-bold text-emerald-400">₹{parseFloat(emp.basic_salary).toLocaleString('en-IN')}</div>
+                          <div className="font-mono font-bold text-emerald-400">{currencySymbol}{parseFloat(emp.basic_salary).toLocaleString('en-IN')}</div>
                           <div className="text-[10px] text-[#94A3B8]">{emp.bank_name || 'Bank of Bhutan'}</div>
                         </td>
                         <td className="py-3.5 px-4 text-center">
@@ -708,7 +710,7 @@ export default function HRMEmployees() {
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-[#CBD5E1] mb-1">Basic Salary (₹) *</label>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Basic Salary ({currencySymbol} {currency}) *</label>
                   <input
                     type="number"
                     required
@@ -868,7 +870,7 @@ export default function HRMEmployees() {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-bold text-[#CBD5E1] mb-1">Basic Salary (₹)</label>
+                  <label className="block font-bold text-[#CBD5E1] mb-1">Basic Salary ({currencySymbol} {currency})</label>
                   <input
                     type="number"
                     value={editBasicSalary}

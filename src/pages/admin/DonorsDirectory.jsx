@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Users, Plus, Mail, Phone, MapPin, Heart, Search, Edit2, Trash2, X, AlertCircle } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function DonorsDirectory() {
   const { success, error } = useToast();
+  const { currencySymbol } = useCurrency();
   const [donors, setDonors] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -251,7 +253,7 @@ export default function DonorsDirectory() {
               <div className="pt-2 border-t flex justify-between items-center text-xs">
                 <span className="text-gray-500 font-medium">Lifetime Donated:</span>
                 <span className="font-serif-brand font-bold text-emerald-700 font-mono text-sm">
-                  ₹ {parseFloat(d.total_donated || 0).toLocaleString('en-IN')}
+                  {currencySymbol} {parseFloat(d.total_donated || 0).toLocaleString('en-IN')}
                 </span>
               </div>
             </div>

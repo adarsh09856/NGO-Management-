@@ -119,8 +119,13 @@ export default function DonationModal({
   ];
 
   // Presets by currency
+  const customPresets = gatewaySettings?.donation_preset_amounts 
+    ? gatewaySettings.donation_preset_amounts.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n) && n > 0)
+    : null;
   const isSouthAsian = currency === 'INR' || currency === 'BTN';
-  const presets = isSouthAsian ? [500, 1000, 2500, 5000] : [25, 50, 100, 250];
+  const presets = (customPresets && customPresets.length > 0) 
+    ? customPresets 
+    : (isSouthAsian ? [500, 1000, 2500, 5000] : [25, 50, 100, 250]);
   const finalAmount = customAmount ? parseFloat(customAmount) : selectedPreset;
 
   // Sync props when opening or switching causes
@@ -657,7 +662,7 @@ export default function DonationModal({
                 Devotee Details (for Official 80G Tax Receipt)
               </h4>
               <span className="text-[10.5px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                Offering: {currency === 'INR' ? '₹' : '$'}{finalAmount?.toLocaleString()}
+                Offering: {currencySymbol}{finalAmount?.toLocaleString()}
               </span>
             </div>
 
@@ -1233,12 +1238,12 @@ export default function DonationModal({
                 {paymentChannel === 'razorpay' ? (
                   <>
                     <Lock className="w-3.5 h-3.5 text-[#D4AF37]" />
-                    <span>Pay with Razorpay Gateway · {currency === 'INR' ? '₹' : '$'}{finalAmount?.toLocaleString()}</span>
+                    <span>Pay with Razorpay Gateway · {currencySymbol}{finalAmount?.toLocaleString()}</span>
                   </>
                 ) : paymentChannel === 'stripe' ? (
                   <>
                     <Lock className="w-3.5 h-3.5 text-[#D4AF37]" />
-                    <span>Pay with Stripe Global · {currency === 'INR' ? '₹' : '$'}{finalAmount?.toLocaleString()}</span>
+                    <span>Pay with Stripe Global · {currencySymbol}{finalAmount?.toLocaleString()}</span>
                   </>
                 ) : paymentChannel === 'upi' ? (
                   <>

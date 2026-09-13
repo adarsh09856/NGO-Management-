@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { Heart, Plus, Download, Search, Filter, Trash2 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency, SUPPORTED_CURRENCIES } from '../../context/CurrencyContext';
 
 export default function AllDonations() {
   const { success, error } = useToast();
+  const { currencySymbol } = useCurrency();
   const [donations, setDonations] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -128,7 +130,9 @@ export default function AllDonations() {
                       <td className="py-3 px-4 font-bold text-gray-900">{d.donor_name || 'Anonymous'}</td>
                       <td className="py-3 px-4 font-semibold text-gray-700">{d.donation_for}</td>
                       <td className="py-3 px-4 text-gray-600">{new Date(d.payment_date).toLocaleDateString('en-GB')}</td>
-                      <td className="py-3 px-4 font-mono font-bold text-emerald-700">₹{parseFloat(d.amount).toLocaleString('en-IN')}</td>
+                      <td className="py-3 px-4 font-mono font-bold text-emerald-700">
+                        {d.currency && SUPPORTED_CURRENCIES[d.currency]?.symbol ? SUPPORTED_CURRENCIES[d.currency].symbol : currencySymbol} {parseFloat(d.amount).toLocaleString('en-IN')}
+                      </td>
                       <td className="py-3 px-4 capitalize">{d.payment_method?.replace('_', ' ')}</td>
                       <td className="py-3 px-4 font-mono text-[11px] text-gray-700 font-semibold select-all">
                         {d.transaction_ref || 'N/A'}

@@ -15,7 +15,7 @@ export default function PaymentGateways() {
   const [uploadingQr, setUploadingQr] = useState(false);
   const [previewAmount, setPreviewAmount] = useState(1000);
   const [copiedField, setCopiedField] = useState(null);
-  const { refreshCurrency } = useCurrency();
+  const { refreshCurrency, currencySymbol } = useCurrency();
   const [showRazorpaySecret, setShowRazorpaySecret] = useState(false);
   const [showStripeSecret, setShowStripeSecret] = useState(false);
 
@@ -575,7 +575,7 @@ export default function PaymentGateways() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        ₹{amt.toLocaleString()}
+                        {currencySymbol}{amt.toLocaleString()}
                       </button>
                     ))}
                   </div>

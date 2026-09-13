@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, FileText, Calendar, Download, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import api from '../../services/api';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function DonorDashboard() {
+  const { currencySymbol, currency, SUPPORTED_CURRENCIES } = useCurrency();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -56,7 +58,7 @@ export default function DonorDashboard() {
         <div className="monastery-card p-5">
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Donated</p>
           <h3 className="font-serif-brand font-bold text-2xl text-[#0F172A] mt-1">
-            ₹ {parseFloat(donor.total_donated || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            {currencySymbol} {parseFloat(donor.total_donated || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </h3>
           <p className="text-[11px] text-emerald-600 font-semibold mt-1 flex items-center gap-1">
             <CheckCircle2 className="w-3.5 h-3.5" /> 80G Tax Deductible
@@ -126,7 +128,9 @@ export default function DonorDashboard() {
                     <td className="py-3 px-4 font-mono font-bold text-[#0F172A]">{d.receipt_number || `RC-${d.id}`}</td>
                     <td className="py-3 px-4 font-semibold text-gray-900">{d.donation_for}</td>
                     <td className="py-3 px-4 text-gray-600">{new Date(d.payment_date).toLocaleDateString('en-GB')}</td>
-                    <td className="py-3 px-4 font-mono font-bold text-emerald-700">₹ {parseFloat(d.amount).toLocaleString('en-IN')}</td>
+                    <td className="py-3 px-4 font-mono font-bold text-emerald-700">
+                      {d.currency ? (SUPPORTED_CURRENCIES[d.currency]?.symbol || d.currency) : currencySymbol} {parseFloat(d.amount).toLocaleString('en-IN')}
+                    </td>
                     <td className="py-3 px-4 text-gray-500 font-mono text-[11px]">{d.transaction_ref || 'N/A'}</td>
                     <td className="py-3 px-4">
                       <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">

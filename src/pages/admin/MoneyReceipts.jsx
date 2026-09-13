@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Download, AlertCircle, Search, Filter, Printer, Ban, CheckCircle2 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency, SUPPORTED_CURRENCIES } from '../../context/CurrencyContext';
 
 export default function MoneyReceipts() {
   const { success, error } = useToast();
+  const { currencySymbol } = useCurrency();
   const [receipts, setReceipts] = useState([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -130,7 +132,9 @@ export default function MoneyReceipts() {
                   <td className="py-3 px-4 text-gray-600">{r.financial_year}</td>
                   <td className="py-3 px-4 font-bold text-gray-900">{r.recipient_name}</td>
                   <td className="py-3 px-4 text-gray-600">{new Date(r.receipt_date).toLocaleDateString('en-GB')}</td>
-                  <td className="py-3 px-4 font-mono font-bold text-emerald-700">₹{parseFloat(r.amount).toLocaleString('en-IN')}</td>
+                  <td className="py-3 px-4 font-mono font-bold text-emerald-700">
+                    {r.currency && SUPPORTED_CURRENCIES[r.currency]?.symbol ? SUPPORTED_CURRENCIES[r.currency].symbol : currencySymbol} {parseFloat(r.amount).toLocaleString('en-IN')}
+                  </td>
                   <td className="py-3 px-4 text-gray-600">{r.payment_mode}</td>
                   <td className="py-3 px-4">
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
@@ -185,7 +189,7 @@ export default function MoneyReceipts() {
                   Void Receipt: {selectedReceipt.receipt_number}
                 </h3>
                 <p className="text-xs text-gray-500">
-                  Recipient: {selectedReceipt.recipient_name} · Amount: ₹{parseFloat(selectedReceipt.amount).toLocaleString('en-IN')}
+                  Recipient: {selectedReceipt.recipient_name} · Amount: {selectedReceipt.currency ? (SUPPORTED_CURRENCIES[selectedReceipt.currency]?.symbol || selectedReceipt.currency) : currencySymbol}{parseFloat(selectedReceipt.amount).toLocaleString('en-IN')}
                 </p>
               </div>
             </div>

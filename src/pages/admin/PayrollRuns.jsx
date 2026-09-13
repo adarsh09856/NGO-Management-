@@ -6,9 +6,11 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function PayrollRuns() {
   const { success, error } = useToast();
+  const { currencySymbol, currency } = useCurrency();
   const [payrollRuns, setPayrollRuns] = useState([]);
   const [selectedRunId, setSelectedRunId] = useState(null);
   const [salarySlips, setSalarySlips] = useState([]);
@@ -369,7 +371,7 @@ export default function PayrollRuns() {
                 <div className="text-right text-xs">
                   <span className="text-gray-500 font-mono">Disbursed: </span>
                   <strong className="font-mono text-sm text-[#0F172A]">
-                    ₹{parseFloat(selectedRun.grand_total || 0).toLocaleString('en-IN')}
+                    {currencySymbol} {parseFloat(selectedRun.grand_total || 0).toLocaleString('en-IN')}
                   </strong>
                 </div>
 
@@ -457,16 +459,16 @@ export default function PayrollRuns() {
                         <div className="text-[10px] text-gray-400 font-mono">{s.employee_code} • {s.designation}</div>
                       </td>
                       <td className="py-3 px-4 font-mono text-gray-800">
-                        ₹{parseFloat(s.basic_salary).toLocaleString('en-IN')}
+                        {currencySymbol}{parseFloat(s.basic_salary).toLocaleString('en-IN')}
                       </td>
                       <td className="py-3 px-4 font-mono text-emerald-700">
-                        +₹{allowancesTotal.toLocaleString('en-IN')}
+                        +{currencySymbol}{allowancesTotal.toLocaleString('en-IN')}
                       </td>
                       <td className="py-3 px-4 font-mono text-red-700">
-                        -₹{deductionsTotal.toLocaleString('en-IN')}
+                        -{currencySymbol}{deductionsTotal.toLocaleString('en-IN')}
                       </td>
                       <td className="py-3 px-4 font-mono font-bold text-gray-900 text-sm">
-                        ₹{parseFloat(s.net_salary).toLocaleString('en-IN')}
+                        {currencySymbol}{parseFloat(s.net_salary).toLocaleString('en-IN')}
                       </td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
@@ -563,9 +565,9 @@ export default function PayrollRuns() {
                     <td className="py-3 px-4 font-bold text-gray-900">{w.worker_name}</td>
                     <td className="py-3 px-4 text-gray-600">{w.work_type}</td>
                     <td className="py-3 px-4 font-mono">{parseFloat(w.days_worked)} days</td>
-                    <td className="py-3 px-4 font-mono">₹{parseFloat(w.daily_rate).toFixed(2)}</td>
+                    <td className="py-3 px-4 font-mono">{currencySymbol}{parseFloat(w.daily_rate).toFixed(2)}</td>
                     <td className="py-3 px-4 font-mono font-bold text-emerald-700">
-                      ₹{parseFloat(w.total_amount).toLocaleString('en-IN')}
+                      {currencySymbol}{parseFloat(w.total_amount).toLocaleString('en-IN')}
                     </td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
@@ -604,7 +606,7 @@ export default function PayrollRuns() {
             <form onSubmit={handleUpdateSlip} className="p-6 space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-1">Basic Salary (₹) *</label>
+                  <label className="block font-semibold text-gray-700 mb-1">Basic Salary ({currencySymbol}) *</label>
                   <input
                     type="number"
                     step="0.01"
@@ -616,7 +618,7 @@ export default function PayrollRuns() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-1">Housing Allowance (₹)</label>
+                  <label className="block font-semibold text-gray-700 mb-1">Housing Allowance ({currencySymbol})</label>
                   <input
                     type="number"
                     step="0.01"
@@ -629,7 +631,7 @@ export default function PayrollRuns() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-1">Monastic Sangha Stipend (₹)</label>
+                  <label className="block font-semibold text-gray-700 mb-1">Monastic Sangha Stipend ({currencySymbol})</label>
                   <input
                     type="number"
                     step="0.01"
@@ -640,7 +642,7 @@ export default function PayrollRuns() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-1">Medical Allowance (₹)</label>
+                  <label className="block font-semibold text-gray-700 mb-1">Medical Allowance ({currencySymbol})</label>
                   <input
                     type="number"
                     step="0.01"
@@ -653,7 +655,7 @@ export default function PayrollRuns() {
 
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-1">PF Deduction (₹)</label>
+                  <label className="block font-semibold text-gray-700 mb-1">PF Deduction ({currencySymbol})</label>
                   <input
                     type="number"
                     step="0.01"
@@ -664,7 +666,7 @@ export default function PayrollRuns() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-1">Tax Deduction (₹)</label>
+                  <label className="block font-semibold text-gray-700 mb-1">Tax Deduction ({currencySymbol})</label>
                   <input
                     type="number"
                     step="0.01"
@@ -675,7 +677,7 @@ export default function PayrollRuns() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-1">Other Deductions (₹)</label>
+                  <label className="block font-semibold text-gray-700 mb-1">Other Deductions ({currencySymbol})</label>
                   <input
                     type="number"
                     step="0.01"
@@ -702,15 +704,15 @@ export default function PayrollRuns() {
               <div className="p-3 bg-[#FAF5F0] rounded-lg border border-[#D4AF37]/30 flex justify-between items-center text-xs">
                 <div>
                   <span className="text-gray-500">Gross Earnings:</span>{' '}
-                  <strong className="text-emerald-700 font-mono">₹{calcTotalEarnings.toLocaleString('en-IN')}</strong>
+                  <strong className="text-emerald-700 font-mono">{currencySymbol}{calcTotalEarnings.toLocaleString('en-IN')}</strong>
                 </div>
                 <div>
                   <span className="text-gray-500">Total Deductions:</span>{' '}
-                  <strong className="text-red-700 font-mono">₹{calcTotalDeductions.toLocaleString('en-IN')}</strong>
+                  <strong className="text-red-700 font-mono">{currencySymbol}{calcTotalDeductions.toLocaleString('en-IN')}</strong>
                 </div>
                 <div>
                   <span className="text-gray-700 font-bold">New Net Salary:</span>{' '}
-                  <strong className="text-[#0F172A] font-mono font-bold text-sm">₹{calcNetSalary.toLocaleString('en-IN')}</strong>
+                  <strong className="text-[#0F172A] font-mono font-bold text-sm">{currencySymbol}{calcNetSalary.toLocaleString('en-IN')}</strong>
                 </div>
               </div>
 
@@ -846,7 +848,7 @@ export default function PayrollRuns() {
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-gray-700 mb-1">Daily Rate (₹)</label>
+                  <label className="block font-bold text-gray-700 mb-1">Daily Rate ({currencySymbol})</label>
                   <input
                     type="number"
                     step="1"
@@ -861,7 +863,7 @@ export default function PayrollRuns() {
               <div className="p-3 bg-[#FAF5F0] rounded border border-[#D4AF37]/30 flex justify-between items-center text-xs">
                 <span className="text-gray-600 font-medium">Computed Total Wage:</span>
                 <strong className="text-emerald-800 font-mono font-bold text-sm">
-                  ₹{(daysWorked * dailyRate).toLocaleString('en-IN')}
+                  {currencySymbol} {(daysWorked * dailyRate).toLocaleString('en-IN')}
                 </strong>
               </div>
 

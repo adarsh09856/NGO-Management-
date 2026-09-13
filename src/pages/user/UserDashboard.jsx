@@ -5,10 +5,12 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency } from '../../context/CurrencyContext';
 import DonationModal from '../../components/DonationModal';
 
 export default function UserDashboard() {
   const { success, error } = useToast();
+  const { currencySymbol, currency, SUPPORTED_CURRENCIES } = useCurrency();
   const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'donations', 'pledges', 'prayers', 'profile'
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -113,7 +115,7 @@ export default function UserDashboard() {
           <span className="text-xs text-gray-500 font-medium">Total Offerings Given</span>
           <div className="flex items-baseline justify-between">
             <h3 className="font-serif-brand font-extrabold text-2xl text-[#0F172A]">
-              ₹{(givingStats?.totalDonated || 0).toLocaleString()}
+              {currencySymbol}{(givingStats?.totalDonated || 0).toLocaleString()}
             </h3>
             <Heart className="w-5 h-5 text-[#BE123C]" />
           </div>
@@ -212,7 +214,7 @@ export default function UserDashboard() {
                         </p>
                       </div>
                       <div className="text-right space-y-1">
-                        <p className="font-bold text-sm text-[#0F172A]">₹{parseFloat(d.amount).toLocaleString()}</p>
+                        <p className="font-bold text-sm text-[#0F172A]">{d.currency ? (SUPPORTED_CURRENCIES[d.currency]?.symbol || d.currency) : currencySymbol}{parseFloat(d.amount).toLocaleString()}</p>
                         {d.receipt_id && (
                           <button
                             onClick={() => downloadReceipt(d.receipt_id)}
@@ -325,7 +327,7 @@ export default function UserDashboard() {
                     <td className="p-3 text-gray-600">{new Date(r.receipt_date).toLocaleDateString()}</td>
                     <td className="p-3 text-gray-800 font-medium">{r.notes || 'Donation towards Monastery & Stupa'}</td>
                     <td className="p-3 text-gray-600">{r.payment_mode}</td>
-                    <td className="p-3 text-right font-bold text-[#0F172A]">₹{parseFloat(r.amount).toLocaleString()}</td>
+                    <td className="p-3 text-right font-bold text-[#0F172A]">{r.currency ? (SUPPORTED_CURRENCIES[r.currency]?.symbol || r.currency) : currencySymbol}{parseFloat(r.amount).toLocaleString()}</td>
                     <td className="p-3 text-center">
                       <button
                         onClick={() => downloadReceipt(r.id)}
@@ -343,25 +345,35 @@ export default function UserDashboard() {
         </div>
       )}
 
-      {/* TAB: MONTHLY PLEDGES */}
+      {/* TAB: RECURRING PLEDGES */}
       {activeTab === 'pledges' && (
         <div className="monastery-card p-6 space-y-4">
-          <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
-            Active Recurring Giving Pledges
-          </h3>
-          <p className="text-xs text-gray-500">
-            Monthly recurring offerings supporting monk scholars and daily monastery meals.
-          </p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
+                Recurring Sangha Support Pledges
+              </h3>
+              <p className="text-xs text-gray-500">
+                Automated monthly and yearly contributions sustaining monks and monastic operations.
+              </p>
+            </div>
+            <button
+              onClick={() => setDonateOpen(true)}
+              className="bg-[#D4AF37] hover:bg-[#B39029] text-[#0F172A] px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Create Pledge</span>
+            </button>
+          </div>
 
           {pledges.length === 0 ? (
-            <div className="text-center py-10 space-y-3">
-              <Calendar className="w-10 h-10 text-gray-300 mx-auto" />
-              <p className="text-xs text-gray-500">You currently have no active monthly recurring pledges.</p>
+            <div className="text-center py-10 bg-[#FAF9F5] rounded-xl border border-dashed border-[#CBD5E1]">
+              <p className="text-xs text-gray-500 font-medium">No active recurring pledges registered yet.</p>
               <button
                 onClick={() => setDonateOpen(true)}
-                className="px-4 py-2 bg-[#E11D48] text-white rounded-full text-xs font-bold shadow hover:bg-[#BE123C]"
+                className="mt-3 text-xs font-bold text-[#E11D48] hover:underline"
               >
-                + Setup Monthly Giving
+                Set up your first monthly offering →
               </button>
             </div>
           ) : (
@@ -374,7 +386,7 @@ export default function UserDashboard() {
                       {p.status}
                     </span>
                   </div>
-                  <p className="text-lg font-bold text-[#0F172A]">₹{parseFloat(p.amount).toLocaleString()} / month</p>
+                  <p className="text-lg font-bold text-[#0F172A]">{currencySymbol}{parseFloat(p.amount).toLocaleString()} / month</p>
                   <p className="text-[11px] text-gray-500">Started on {new Date(p.created_at).toLocaleDateString()}</p>
                 </div>
               ))}

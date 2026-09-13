@@ -6,10 +6,12 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useCurrency, SUPPORTED_CURRENCIES } from '../../context/CurrencyContext';
 
-// Helper to convert number to Indian words
-function convertNumberToWords(amount) {
-  if (!amount || isNaN(amount) || amount <= 0) return 'Zero Rupees Only';
+// Helper to convert number to words for active currency
+function convertNumberToWords(amount, curr = 'BTN') {
+  const currencyUnit = curr === 'BTN' ? 'Ngultrum' : curr === 'INR' ? 'Rupees' : curr === 'USD' ? 'US Dollars' : curr === 'EUR' ? 'Euros' : curr;
+  if (!amount || isNaN(amount) || amount <= 0) return `Zero ${currencyUnit} Only`;
   const num = Math.floor(amount);
   const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
   const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
@@ -28,7 +30,7 @@ function convertNumberToWords(amount) {
   }
 
   const words = inWords(num);
-  return words ? `${words} Only` : 'Zero Rupees Only';
+  return words ? `${words} ${currencyUnit} Only` : `Zero ${currencyUnit} Only`;
 }
 
 export default function AddDonation() {
@@ -48,9 +50,16 @@ export default function AddDonation() {
   const [donationFor, setDonationFor] = useState('Peace Stupa Construction');
   const [campaignId, setCampaignId] = useState('');
   const [campaignsList, setCampaignsList] = useState([]);
+  const { currency: defaultSysCurrency, currencySymbol: defaultSysSymbol } = useCurrency();
   const [donationType, setDonationType] = useState('one_time'); // one_time, recurring
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState('INR');
+  const [currency, setCurrency] = useState(defaultSysCurrency || 'BTN');
+
+  useEffect(() => {
+    if (defaultSysCurrency) {
+      setCurrency(defaultSysCurrency);
+    }
+  }, [defaultSysCurrency]);
 
   const [paymentMethod, setPaymentMethod] = useState('online_gateway'); // online_gateway, bank_transfer, cash, cheque_dd, other
   const [transactionRef, setTransactionRef] = useState('');
@@ -105,7 +114,8 @@ export default function AddDonation() {
     }
   };
 
-  const amountInWords = convertNumberToWords(parseFloat(amount) || 0);
+  const amountInWords = convertNumberToWords(parseFloat(amount) || 0, currency);
+  const activeSymbol = SUPPORTED_CURRENCIES[currency]?.symbol || defaultSysSymbol || 'Nu.';
 
   // Save Donation Handler
   const handleSave = async (printReceiptAfter = false) => {
@@ -379,16 +389,16 @@ export default function AddDonation() {
               </div>
 
               <div>
-                <label className="block font-semibold text-gray-700 mb-1">Amount (INR) *</label>
+                <label className="block font-semibold text-gray-700 mb-1">Amount ({currency}) *</label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 font-bold text-gray-500">₹</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 font-bold text-gray-500">{activeSymbol}</span>
                   <input
                     type="number"
                     required
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="25000"
-                    className="w-full pl-7 pr-3 py-2.5 rounded border border-gray-300 font-bold text-[#0F172A] focus:ring-2 focus:ring-[#D4AF37]"
+                    className="w-full pl-8 pr-3 py-2.5 rounded border border-gray-300 font-bold text-[#0F172A] focus:ring-2 focus:ring-[#D4AF37]"
                   />
                 </div>
               </div>
@@ -400,9 +410,9 @@ export default function AddDonation() {
                   onChange={(e) => setCurrency(e.target.value)}
                   className="w-full p-2.5 rounded border border-gray-300 bg-white font-medium focus:ring-2 focus:ring-[#D4AF37]"
                 >
-                  <option value="INR">INR - Indian Rupee</option>
-                  <option value="BTN">BTN - Bhutanese Ngultrum</option>
-                  <option value="USD">USD - US Dollar</option>
+                  {Object.values(SUPPORTED_CURRENCIES).map(c => (
+                    <option key={c.code} value={c.code}>{c.code} - {c.name} ({c.symbol})</option>
+                  ))}
                 </select>
               </div>
 
@@ -563,7 +573,7 @@ export default function AddDonation() {
               <div className="pt-2 border-t flex justify-between items-baseline">
                 <span className="text-gray-600 font-semibold">Amount</span>
                 <span className="font-serif-brand font-bold text-xl text-emerald-700 font-mono">
-                  ₹ {parseFloat(amount || 0).toLocaleString('en-IN')}
+                  {activeSymbol} {parseFloat(amount || 0).toLocaleString('en-IN')}
                 </span>
               </div>
 
