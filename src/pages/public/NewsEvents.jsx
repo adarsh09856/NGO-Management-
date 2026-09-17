@@ -81,7 +81,7 @@ export default function NewsEvents() {
   return (
     <div className="w-full bg-[#FCFBF9] min-h-screen pb-20">
       {/* Luxury Hero Banner */}
-      <section className="relative bg-[#1A0B0E] text-white py-12 sm:py-20 px-3 xs:px-4 sm:px-8 overflow-hidden border-b border-[#D4AF37]/30">
+      <section data-ngo-section="news-events-hero" className="relative bg-[#1A0B0E] text-white py-12 sm:py-20 px-3 xs:px-4 sm:px-8 overflow-hidden border-b border-[#D4AF37]/30">
         <div className="absolute inset-0 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:24px_24px] opacity-10"></div>
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none"></div>
 
@@ -89,7 +89,7 @@ export default function NewsEvents() {
           <SectionEditBadge
             sectionKey="media"
             sectionLabel="Manage News & Events in CMS"
-            onQuickEdit={() => window.location.href = '/admin/prayer-requests'}
+            onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'blog' } }))}
             position="top-0 right-0 sm:right-4"
           />
 
@@ -110,16 +110,22 @@ export default function NewsEvents() {
           <div className="pt-2">
             <Link
               to="/prayer-request"
-              className="monastic-gold-btn px-6 py-2.5 rounded-full text-xs inline-flex items-center gap-2 shadow-xl"
+              className="inline-flex items-center gap-2 px-5 sm:px-7 py-2.5 sm:py-3 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-[#1A0B0E] text-xs font-serif font-bold tracking-widest uppercase hover:brightness-110 shadow-lg transition-all"
             >
-              <Heart className="w-3.5 h-3.5 fill-[#2A080C]" />
-              <span>Dedicate Prayers at Next Ceremony</span>
+              <span>Submit Prayer Dedication for Next Puja</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-8 mt-8 sm:mt-12 space-y-8 sm:space-y-10">
+      <div data-ngo-section="news-events-grid" className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-8 mt-8 sm:mt-12 space-y-8 sm:space-y-10 relative">
+        <SectionEditBadge
+          sectionKey="media"
+          sectionLabel="Edit Ceremonial Calendar"
+          onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'blog' } }))}
+          position="top-0 right-0"
+        />
         {/* Category Filters */}
         <div className="flex items-center gap-2.5 overflow-x-auto pb-2 no-scrollbar sm:justify-center border-b border-[#D4AF37]/20">
           {categories.map((cat) => {

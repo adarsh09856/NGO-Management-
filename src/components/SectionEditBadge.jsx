@@ -38,7 +38,7 @@ export default function SectionEditBadge({
       case 'hero':
       case 'stats':
       case 'documentary':
-        resolvedStudioHref = '/admin/system-settings';
+        resolvedStudioHref = '/admin/settings';
         break;
       case 'campaigns':
         resolvedStudioHref = '/admin/campaigns';
@@ -46,7 +46,7 @@ export default function SectionEditBadge({
       case 'about':
       case 'pillars':
       case 'leadership':
-        resolvedStudioHref = '/admin/system-settings';
+        resolvedStudioHref = '/admin/settings';
         break;
       case 'contact':
         resolvedStudioHref = '/admin/crm';
@@ -57,7 +57,7 @@ export default function SectionEditBadge({
         break;
       case 'navbar':
       case 'footer':
-        resolvedStudioHref = '/admin/system-settings';
+        resolvedStudioHref = '/admin/settings';
         break;
       case 'prayer':
       case 'prayers':
@@ -81,7 +81,7 @@ export default function SectionEditBadge({
         resolvedStudioHref = '/admin/monks';
         break;
       default:
-        resolvedStudioHref = '/admin/system-settings';
+        resolvedStudioHref = '/admin/settings';
     }
   }
 

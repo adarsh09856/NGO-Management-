@@ -151,11 +151,11 @@ export default function Shedra() {
   return (
     <div className="py-8 sm:py-14 px-3 sm:px-8 space-y-16 max-w-7xl mx-auto font-serif">
       {/* 1. HERO BANNER */}
-      <section className="bg-gradient-to-r from-[#0B0F19] via-[#1A0B0E] to-[#0B0F19] rounded-3xl p-6 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40 animate-fadeIn">
+      <section data-ngo-section="shedra-hero" className="bg-gradient-to-r from-[#0B0F19] via-[#1A0B0E] to-[#0B0F19] rounded-3xl p-6 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40 animate-fadeIn">
         <SectionEditBadge
           sectionKey="shedra"
           sectionLabel="Manage Shedra Courses & Monks"
-          onQuickEdit={() => window.location.href = '/admin/monks'}
+          onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'shedra' } }))}
           position="top-4 right-4"
         />
         <div
@@ -206,7 +206,13 @@ export default function Shedra() {
       </section>
 
       {/* 2. THE 5 GREAT PILLARS OF BUDDHIST SCHOLARSHIP */}
-      <section className="space-y-6">
+      <section data-ngo-section="shedra-curriculum" className="space-y-6 relative" id="curriculum">
+        <SectionEditBadge
+          sectionKey="shedra"
+          sectionLabel="Edit Curriculum Shastras"
+          onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'shedra' } }))}
+          position="top-0 right-4"
+        />
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <span className="text-amber-800 font-bold uppercase text-xs tracking-widest">Scholastic Heritage</span>
           <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-[#1A0B0E]">

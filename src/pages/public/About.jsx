@@ -42,7 +42,7 @@ export default function About() {
   return (
     <div className="py-10 sm:py-16 px-3 xs:px-4 sm:px-8 space-y-12 sm:space-y-20 relative z-10 max-w-7xl mx-auto">
       {/* 1. Header Banner */}
-      <div className="max-w-4xl mx-auto text-center space-y-3 sm:space-y-4 animate-fade-in-up relative">
+      <div data-ngo-section="about-header" className="max-w-4xl mx-auto text-center space-y-3 sm:space-y-4 animate-fade-in-up relative">
         <SectionEditBadge
           sectionKey="about"
           sectionLabel="Edit About Header"
@@ -65,7 +65,7 @@ export default function About() {
       </div>
 
       {/* 2. Core Pillars (Luxury Glass Cards) */}
-      <div className="relative">
+      <div data-ngo-section="pillars" className="relative">
         <SectionEditBadge
           sectionKey="about"
           sectionLabel="Edit Core Pillars"
@@ -113,7 +113,7 @@ export default function About() {
       </div>
 
       {/* 3. Leadership & Spiritual Lineage (Frosted Glass Panel) */}
-      <div className="glass-luxury-card rounded-3xl p-8 sm:p-14 border border-gray-200/80 shadow-2xl space-y-8 max-w-5xl mx-auto relative">
+      <div data-ngo-section="leadership" className="glass-luxury-card rounded-3xl p-8 sm:p-14 border border-gray-200/80 shadow-2xl space-y-8 max-w-5xl mx-auto relative">
         <SectionEditBadge
           sectionKey="about"
           sectionLabel="Edit Leadership"
@@ -169,7 +169,13 @@ export default function About() {
       </div>
 
       {/* 4. Statutory Recognition & Bhutan Government Registration */}
-      <div className="bg-[#070A12] text-white rounded-3xl p-8 sm:p-12 border border-[#D4AF37]/30 shadow-2xl">
+      <div data-ngo-section="statutory" className="bg-[#070A12] text-white rounded-3xl p-8 sm:p-12 border border-[#D4AF37]/30 shadow-2xl relative">
+        <SectionEditBadge
+          sectionKey="about"
+          sectionLabel="Edit Accreditation"
+          onQuickEdit={openLiveEditor}
+          position="top-4 right-6"
+        />
         <div className="max-w-4xl mx-auto space-y-6 text-center">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 text-emerald-300 text-xs font-bold">
             <Shield className="w-4 h-4 text-emerald-400" />

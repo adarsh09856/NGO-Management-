@@ -3,7 +3,8 @@ import { createPortal } from 'react-dom';
 import {
   X, Save, RefreshCw, Sparkles, Image, CheckCircle2,
   Globe, Heart, Phone, Mail, MapPin, Building, BookOpen,
-  FileText, ExternalLink, Sliders, Shield, Award, Landmark
+  FileText, ExternalLink, Sliders, Shield, Award, Landmark,
+  Flame, GraduationCap, Video
 } from 'lucide-react';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';

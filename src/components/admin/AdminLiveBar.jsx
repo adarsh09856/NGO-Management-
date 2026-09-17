@@ -7,8 +7,8 @@ import {
 import { useAuth } from '../../context/AuthContext';
 
 const ROUTE_STUDIO_MAP = {
-  '/': { label: 'Homepage Studio', href: '/admin/system-settings', defaultSection: 'hero' },
-  '/about': { label: 'About Us Studio', href: '/admin/system-settings', defaultSection: 'about' },
+  '/': { label: 'Homepage Studio', href: '/admin/settings', defaultSection: 'hero' },
+  '/about': { label: 'About Us Studio', href: '/admin/settings', defaultSection: 'about' },
   '/donate': { label: 'Donations Studio', href: '/admin/donations', defaultSection: 'donate' },
   '/prayer-request': { label: 'Ceremonial Prayers', href: '/admin/prayer-requests', defaultSection: 'prayer' },
   '/shedra': { label: 'Shedra Monastic Studio', href: '/admin/monks', defaultSection: 'shedra' },
@@ -67,8 +67,8 @@ export default function AdminLiveBar({ onOpenEditor }) {
 
   // Resolve current studio
   const currentStudio = ROUTE_STUDIO_MAP[pathname] || {
-    label: 'System Settings Studio',
-    href: '/admin/system-settings',
+    label: 'Settings Studio',
+    href: '/admin/settings',
     defaultSection: 'hero'
   };
 

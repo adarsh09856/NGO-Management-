@@ -160,7 +160,7 @@ export default function Contact() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Headquarters Information */}
           <div className="lg:col-span-5 space-y-8 relative">
-            <div className="glass-luxury-card p-8 space-y-6 rounded-3xl border border-[#D4AF37]/30 shadow-xl relative">
+            <div data-ngo-section="contact-info" className="glass-luxury-card p-8 space-y-6 rounded-3xl border border-[#D4AF37]/30 shadow-xl relative">
               <SectionEditBadge
                 sectionKey="contact"
                 sectionLabel="Edit Contact Info"
@@ -178,50 +178,43 @@ export default function Contact() {
               </div>
 
               <div className="space-y-5 text-xs font-serif text-gray-700">
-                <div className="flex items-start gap-3.5">
-                  <div className="w-9 h-9 rounded-full bg-[#FAF5F0] border border-[#D4AF37]/40 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <MapPin className="w-4 h-4 text-[#721C24]" />
-                  </div>
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-[#721C24] flex-shrink-0 mt-0.5" />
                   <div>
-                    <strong className="block text-sm text-[#1A0B0E] font-editorial mb-0.5">
-                      Drodul Phendey Ling Foundation
-                    </strong>
-                    <span className="text-gray-600 leading-relaxed block">
-                      {settings.contact_address || 'Great Druk Wangyel Peace Stupa Complex, Gelephu, Sarpang Dzongkhag, Kingdom of Bhutan'}
-                    </span>
-                    <span className="text-[10px] text-gray-400 block mt-1">
-                      ROB Registered Religious Organization: ROB/CP-04/2021
-                    </span>
+                    <strong className="block text-gray-900 font-semibold mb-0.5">Physical Monastery Address</strong>
+                    <p className="font-light text-gray-600 leading-relaxed">
+                      {settings.contact_address || 'Drodul Phendey Ling Foundation, Near Peace Stupa Complex, Gelephu, Sarpang Dzongkhag, Kingdom of Bhutan'}
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3.5">
-                  <div className="w-9 h-9 rounded-full bg-[#FAF5F0] border border-[#D4AF37]/40 flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-4 h-4 text-[#721C24]" />
-                  </div>
+                <div className="flex items-start gap-3">
+                  <Phone className="w-5 h-5 text-[#721C24] flex-shrink-0 mt-0.5" />
                   <div>
-                    <strong className="block text-gray-900 font-medium">Telephone & WhatsApp:</strong>
-                    <span className="text-gray-600 font-mono">{settings.contact_phone || '+975 17556559'}</span>
+                    <strong className="block text-gray-900 font-semibold mb-0.5">Secretariat Phone</strong>
+                    <p className="font-light text-gray-600">
+                      {settings.contact_phone || '+975 17556559 / +975 06 251122'}
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3.5">
-                  <div className="w-9 h-9 rounded-full bg-[#FAF5F0] border border-[#D4AF37]/40 flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-4 h-4 text-[#721C24]" />
-                  </div>
+                <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-[#721C24] flex-shrink-0 mt-0.5" />
                   <div>
-                    <strong className="block text-gray-900 font-medium">Official Dispatch:</strong>
-                    <span className="text-gray-600 font-mono">{settings.contact_email || 'contact@drodulphendeyling.org'}</span>
+                    <strong className="block text-gray-900 font-semibold mb-0.5">Official Email Inquiries</strong>
+                    <p className="font-light text-gray-600">
+                      {settings.contact_email || 'contact@drodulphendeyling.org'}
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3.5">
-                  <div className="w-9 h-9 rounded-full bg-[#FAF5F0] border border-[#D4AF37]/40 flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-4 h-4 text-[#721C24]" />
-                  </div>
+                <div className="flex items-start gap-3">
+                  <Clock className="w-5 h-5 text-[#721C24] flex-shrink-0 mt-0.5" />
                   <div>
-                    <strong className="block text-gray-900 font-medium">Monastery Office Hours:</strong>
-                    <span className="text-gray-600">{settings.contact_hours || 'Mon - Sat: 08:00 AM - 05:00 PM BST'}</span>
+                    <strong className="block text-gray-900 font-semibold mb-0.5">Office & Shrine Visiting Hours</strong>
+                    <p className="font-light text-gray-600">
+                      {settings.contact_hours || 'Mon – Sat: 8:00 AM – 5:00 PM (BST) · Closed on Auspicious Chokhor Duchen'}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -244,7 +237,13 @@ export default function Contact() {
 
           {/* Interactive Inquiry Form */}
           <div className="lg:col-span-7">
-            <div className="glass-luxury-card p-8 sm:p-12 rounded-3xl border border-[#D4AF37]/30 shadow-2xl">
+            <div data-ngo-section="contact-form" className="glass-luxury-card p-8 sm:p-12 rounded-3xl border border-[#D4AF37]/30 shadow-2xl relative">
+              <SectionEditBadge
+                sectionKey="contact"
+                sectionLabel="Edit CRM Desk"
+                onQuickEdit={openLiveEditor}
+                position="top-4 right-4"
+              />
               {submitted ? (
                 <div className="text-center py-16 space-y-4">
                   <div className="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-500 flex items-center justify-center mx-auto shadow-md">

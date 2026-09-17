@@ -260,11 +260,11 @@ export default function PrayerRequest() {
   return (
     <div className="min-h-[85vh] py-10 sm:py-16 px-3 xs:px-4 sm:px-8 relative z-10 max-w-4xl mx-auto space-y-8 sm:space-y-12">
       {/* 1. Header Banner */}
-      <div className="text-center space-y-3 sm:space-y-4 animate-fade-in-up relative">
+      <div data-ngo-section="prayer-header" className="text-center space-y-3 sm:space-y-4 animate-fade-in-up relative">
         <SectionEditBadge
           sectionKey="prayer"
           sectionLabel="Manage Prayers in CMS"
-          onQuickEdit={() => window.location.href = '/admin/prayer-requests'}
+          onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'prayers' } }))}
           position="top-0 right-0 sm:right-4"
         />
 
@@ -390,7 +390,13 @@ export default function PrayerRequest() {
           </div>
         </div>
       ) : (
-        <div className="glass-luxury-card rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D4AF37]/30 p-4 xs:p-6 sm:p-10 animate-scale-in">
+        <div data-ngo-section="prayer-form" className="glass-luxury-card rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D4AF37]/30 p-4 xs:p-6 sm:p-10 animate-scale-in relative">
+          <SectionEditBadge
+            sectionKey="prayer"
+            sectionLabel="Edit Puja Desk"
+            onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'prayers' } }))}
+            position="top-4 right-4"
+          />
           <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
             {/* Devotee Info */}
             <div className="space-y-4">

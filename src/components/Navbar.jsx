@@ -121,7 +121,7 @@ export default function Navbar({ onOpenDonate }) {
   }, [mobileMenuOpen]);
 
   return (
-    <header className="w-full z-40 sticky top-0 bg-white/95 backdrop-blur-xl shadow-[0_4px_25px_rgba(15,23,42,0.06)] border-b border-[#D4AF37]/30 transition-all duration-300">
+    <header data-ngo-section="navbar" className="w-full z-40 sticky top-0 bg-white/95 backdrop-blur-xl shadow-[0_4px_25px_rgba(15,23,42,0.06)] border-b border-[#D4AF37]/30 transition-all duration-300 relative">
       {/* 0. BHUTANESE PRAYER FLAGS RIBBON */}
       <PrayerFlagsRibbon />
 

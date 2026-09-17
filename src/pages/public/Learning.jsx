@@ -65,11 +65,11 @@ export default function Learning() {
   return (
     <div className="w-full min-h-screen py-8 sm:py-16 px-3 xs:px-4 sm:px-8 relative z-10 max-w-7xl mx-auto space-y-8 sm:space-y-10">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-[#070A12] via-[#120508] to-[#070A12] rounded-3xl p-6 xs:p-8 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40 animate-fade-in-up">
+      <div data-ngo-section="learning-hero" className="bg-gradient-to-r from-[#070A12] via-[#120508] to-[#070A12] rounded-3xl p-6 xs:p-8 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40 animate-fade-in-up">
         <SectionEditBadge
           sectionKey="learning"
           sectionLabel="Manage LMS & Dharma Videos"
-          onQuickEdit={() => window.location.href = '/admin/learning'}
+          onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'learning' } }))}
           position="top-4 right-4"
         />
         <div className="relative z-10 max-w-3xl space-y-3 sm:space-y-4">
@@ -124,7 +124,13 @@ export default function Learning() {
           <p className="text-xs text-gray-500">Loading Dharma discourses...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div data-ngo-section="learning-grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative">
+          <SectionEditBadge
+            sectionKey="learning"
+            sectionLabel="Edit Dharma Lectures"
+            onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'learning' } }))}
+            position="top-2 right-2"
+          />
           {displayList.map((item) => (
             <div
               key={item.id}

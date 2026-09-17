@@ -142,7 +142,7 @@ export default function Donate() {
   return (
     <div className="py-10 sm:py-16 px-3 xs:px-4 sm:px-8 min-h-[85vh] space-y-12 sm:space-y-16 relative z-10 max-w-7xl mx-auto">
       {/* 1. Header Hero Banner */}
-      <div className="bg-gradient-to-r from-[#070A12] via-[#120508] to-[#070A12] rounded-3xl p-6 xs:p-8 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40 animate-fade-in-up">
+      <div data-ngo-section="donate-hero" className="bg-gradient-to-r from-[#070A12] via-[#120508] to-[#070A12] rounded-3xl p-6 xs:p-8 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40 animate-fade-in-up">
         <SectionEditBadge
           sectionKey="donate"
           sectionLabel="Edit Donate Hero"
@@ -160,17 +160,12 @@ export default function Donate() {
             <span>• Sacred Monastic Philanthropy</span>
           </div>
 
-          <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-4xl md:text-5xl text-white tracking-wide leading-tight break-words uppercase">
-            {liveSettings.donate_hero_title || (
-              <>
-                Make A Meritorious Offering for <br />
-                <span className="gold-foil-text font-serif">Peace & Buddha Dharma</span>
-              </>
-            )}
+          <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-5xl text-white leading-tight">
+            {liveSettings.donate_hero_title || 'Offer Dana: Build Sacred Merit & World Peace'}
           </h1>
 
-          <p className="text-xs sm:text-sm text-gray-200 font-light leading-relaxed">
-            {liveSettings.donate_hero_subtitle || 'Every offering directly finances the 108ft Great Druk Wangyel Peace Stupa, sustains resident monks with nutrition and education, and radiates blessings of merit across the world.'}
+          <p className="text-xs sm:text-sm text-gray-300 font-light leading-relaxed">
+            {liveSettings.donate_hero_subtitle || 'Every contribution directly funds the construction of the Great Druk Wangyel Peace Stupa, covers living and educational expenses for resident Shedra monks, and provides free community welfare services.'}
           </p>
 
           <div className="pt-2 sm:pt-3 flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-[#D4AF37]">
@@ -187,7 +182,13 @@ export default function Donate() {
       </div>
 
       {/* 2. Active Campaigns Grid */}
-      <div className="space-y-8">
+      <div data-ngo-section="campaigns" className="space-y-8 relative">
+        <SectionEditBadge
+          sectionKey="donate"
+          sectionLabel="Manage Campaigns"
+          onQuickEdit={openLiveEditor}
+          position="top-0 right-4 sm:right-8"
+        />
         <div className="text-center space-y-2 max-w-2xl mx-auto">
           <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
             Active Monastic Causes
@@ -310,7 +311,7 @@ export default function Donate() {
         </div>
 
         {/* Bank Wire Details */}
-        <div className="lg:col-span-6 glass-luxury-card p-7 sm:p-8 rounded-2xl border border-gray-200/80 space-y-4 relative">
+        <div data-ngo-section="banking" className="lg:col-span-6 glass-luxury-card p-7 sm:p-8 rounded-2xl border border-gray-200/80 space-y-4 relative">
           <SectionEditBadge
             sectionKey="donate"
             sectionLabel="Edit Bank Wire Details"

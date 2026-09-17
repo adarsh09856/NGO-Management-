@@ -68,11 +68,11 @@ export default function Gallery() {
   return (
     <div className="min-h-screen py-8 sm:py-16 px-3 xs:px-4 sm:px-8 relative z-10 max-w-7xl mx-auto space-y-8 sm:space-y-10">
       {/* Header */}
-      <div className="text-center space-y-3 max-w-2xl mx-auto animate-fade-in-up relative">
+      <div data-ngo-section="gallery-header" className="text-center space-y-3 max-w-2xl mx-auto animate-fade-in-up relative">
         <SectionEditBadge
-          sectionKey="media"
+          sectionKey="gallery"
           sectionLabel="Manage Gallery in Admin"
-          onQuickEdit={() => window.location.href = '/admin/gallery'}
+          onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'gallery' } }))}
           position="top-0 right-0 sm:right-4"
         />
 
@@ -131,7 +131,13 @@ export default function Gallery() {
           <p className="text-xs text-gray-500">Loading sacred gallery...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div data-ngo-section="gallery-grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative">
+          <SectionEditBadge
+            sectionKey="gallery"
+            sectionLabel="Edit Photos & Media"
+            onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'gallery' } }))}
+            position="top-2 right-2"
+          />
           {displayItems.map((item) => (
             <div
               key={item.id}

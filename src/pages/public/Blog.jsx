@@ -75,8 +75,8 @@ export default function Blog() {
 
   return (
     <div className="w-full bg-[#FCFBF9] min-h-screen pb-20">
-      {/* Luxury Hero Header */}
-      <section className="relative bg-[#1A0B0E] text-white py-12 sm:py-20 px-3 xs:px-4 sm:px-8 overflow-hidden border-b border-[#D4AF37]/30">
+      {/* Luxury Hero Banner */}
+      <section data-ngo-section="blog-hero" className="relative bg-[#1A0B0E] text-white py-12 sm:py-20 px-3 xs:px-4 sm:px-8 overflow-hidden border-b border-[#D4AF37]/30">
         <div className="absolute inset-0 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:24px_24px] opacity-10"></div>
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none"></div>
         <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-[#721C24]/30 blur-3xl pointer-events-none"></div>
@@ -85,7 +85,7 @@ export default function Blog() {
           <SectionEditBadge
             sectionKey="blog"
             sectionLabel="Manage Articles & Posts in Admin"
-            onQuickEdit={() => window.location.href = '/admin/blog'}
+            onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'blog' } }))}
             position="top-0 right-0 sm:right-4"
           />
 
@@ -118,7 +118,13 @@ export default function Blog() {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-8 mt-8 sm:mt-10 space-y-8 sm:space-y-12">
+      <div data-ngo-section="blog-grid" className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-8 mt-8 sm:mt-10 space-y-8 sm:space-y-12 relative">
+        <SectionEditBadge
+          sectionKey="blog"
+          sectionLabel="Edit Articles Studio"
+          onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'blog' } }))}
+          position="top-0 right-0"
+        />
         {/* Category Navigation Pills */}
         <div className="flex items-center justify-between border-b border-[#D4AF37]/20 pb-3 sm:pb-4 flex-wrap gap-3 sm:gap-4">
           <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-2 no-scrollbar w-full sm:w-auto">

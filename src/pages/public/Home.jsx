@@ -96,7 +96,7 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 1. CINEMATIC MONASTIC HERO & LUXURY GIVING CAPSULE        */}
       {/* ========================================================= */}
-      <section className="relative min-h-[640px] sm:min-h-[720px] bg-gradient-to-b from-[#070A12] via-[#0B0F19] to-[#120508] text-white overflow-hidden py-12 sm:py-20 px-3 xs:px-4 sm:px-8 flex items-center">
+      <section data-ngo-section="hero" className="relative min-h-[640px] sm:min-h-[720px] bg-gradient-to-b from-[#070A12] via-[#0B0F19] to-[#120508] text-white overflow-hidden py-12 sm:py-20 px-3 xs:px-4 sm:px-8 flex items-center">
         {/* Quick Edit Badge for Admin */}
         <SectionEditBadge
           sectionKey="hero"
@@ -279,7 +279,7 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 2. IMPACT STATS RIBBON                                    */}
       {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-8 relative z-10 -mt-6 sm:-mt-12">
+      <section data-ngo-section="stats" className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-8 relative z-10 -mt-6 sm:-mt-12">
         <SectionEditBadge
           sectionKey="about"
           sectionLabel="Edit Stats"
@@ -293,53 +293,41 @@ export default function Home() {
               <Landmark className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <div className="font-serif-brand font-extrabold text-xl xs:text-2xl sm:text-3xl text-[#0F172A] leading-none">
-                108 <span className="text-amber-600 text-sm sm:text-lg">FT</span>
-              </div>
-              <p className="text-xs font-bold text-gray-700 mt-1">Great Peace Stupa</p>
-              <p className="text-[10px] sm:text-[11px] text-gray-500 hidden xs:block">Gelephu, Bhutan</p>
+              <p className="font-serif-brand font-bold text-lg sm:text-2xl text-[#0F172A] leading-tight">108 Ft</p>
+              <p className="text-[11px] sm:text-xs text-gray-600 font-medium">Monumental Stupa</p>
             </div>
           </div>
 
-          {/* Stat 2: Shedra Monks */}
-          <div className="glass-luxury-card p-4 sm:p-6 rounded-2xl flex flex-col xs:flex-row items-start xs:items-center space-y-2 xs:space-y-0 xs:space-x-3.5 sm:space-x-4 border-l-4 border-l-blue-500 hover:-translate-y-1 transition-all duration-300">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-700 shadow-sm p-2.5 sm:p-3 flex-shrink-0">
+          {/* Stat 2: Monks */}
+          <div className="glass-luxury-card p-4 sm:p-6 rounded-2xl flex flex-col xs:flex-row items-start xs:items-center space-y-2 xs:space-y-0 xs:space-x-3.5 sm:space-x-4 border-l-4 border-l-[#721C24] hover:-translate-y-1 transition-all duration-300">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#721C24]/15 border border-[#721C24]/30 flex items-center justify-center text-[#721C24] shadow-sm p-2.5 sm:p-3 flex-shrink-0">
               <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <div className="font-serif-brand font-extrabold text-xl xs:text-2xl sm:text-3xl text-[#0F172A] leading-none">
-                350<span className="text-blue-600 text-sm sm:text-lg">+</span>
-              </div>
-              <p className="text-xs font-bold text-gray-700 mt-1">Resident Monks</p>
-              <p className="text-[10px] sm:text-[11px] text-gray-500 hidden xs:block">Shedra university scholars</p>
+              <p className="font-serif-brand font-bold text-lg sm:text-2xl text-[#0F172A] leading-tight">350+</p>
+              <p className="text-[11px] sm:text-xs text-gray-600 font-medium">Monastic Scholars</p>
             </div>
           </div>
 
           {/* Stat 3: Butter Lamps */}
-          <div className="glass-luxury-card p-4 sm:p-6 rounded-2xl flex flex-col xs:flex-row items-start xs:items-center space-y-2 xs:space-y-0 xs:space-x-3.5 sm:space-x-4 border-l-4 border-l-rose-500 hover:-translate-y-1 transition-all duration-300">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-700 shadow-sm p-2.5 sm:p-3 flex-shrink-0">
+          <div className="glass-luxury-card p-4 sm:p-6 rounded-2xl flex flex-col xs:flex-row items-start xs:items-center space-y-2 xs:space-y-0 xs:space-x-3.5 sm:space-x-4 border-l-4 border-l-amber-600 hover:-translate-y-1 transition-all duration-300">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-600/15 border border-amber-600/30 flex items-center justify-center text-amber-700 shadow-sm p-2.5 sm:p-3 flex-shrink-0">
               <Flame className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <div className="font-serif-brand font-extrabold text-xl xs:text-2xl sm:text-3xl text-[#0F172A] leading-none">
-                108 <span className="text-rose-600 text-xs sm:text-base font-bold">DAILY</span>
-              </div>
-              <p className="text-xs font-bold text-gray-700 mt-1">Butter Lamps</p>
-              <p className="text-[10px] sm:text-[11px] text-gray-500 hidden xs:block">Dedicated merit prayers</p>
+              <p className="font-serif-brand font-bold text-lg sm:text-2xl text-[#0F172A] leading-tight">100k+</p>
+              <p className="text-[11px] sm:text-xs text-gray-600 font-medium">Consecrated Prayers</p>
             </div>
           </div>
 
-          {/* Stat 4: Tax Exemption */}
-          <div className="glass-luxury-card p-4 sm:p-6 rounded-2xl flex flex-col xs:flex-row items-start xs:items-center space-y-2 xs:space-y-0 xs:space-x-3.5 sm:space-x-4 border-l-4 border-l-emerald-500 hover:-translate-y-1 transition-all duration-300">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-700 shadow-sm p-2.5 sm:p-3 flex-shrink-0">
-              <Shield className="w-5 h-5 sm:w-6 sm:h-6" />
+          {/* Stat 4: Global Donors */}
+          <div className="glass-luxury-card p-4 sm:p-6 rounded-2xl flex flex-col xs:flex-row items-start xs:items-center space-y-2 xs:space-y-0 xs:space-x-3.5 sm:space-x-4 border-l-4 border-l-emerald-600 hover:-translate-y-1 transition-all duration-300">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-600/15 border border-emerald-600/30 flex items-center justify-center text-emerald-700 shadow-sm p-2.5 sm:p-3 flex-shrink-0">
+              <Globe className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <div className="font-serif-brand font-extrabold text-xl xs:text-2xl sm:text-3xl text-emerald-800 leading-none">
-                100<span className="text-emerald-600 text-sm sm:text-lg">%</span>
-              </div>
-              <p className="text-xs font-bold text-gray-700 mt-1">Tax Deductible</p>
-              <p className="text-[10px] sm:text-[11px] text-gray-500 hidden xs:block">Official 80G tax receipt</p>
+              <p className="font-serif-brand font-bold text-lg sm:text-2xl text-[#0F172A] leading-tight">40+ Nations</p>
+              <p className="text-[11px] sm:text-xs text-gray-600 font-medium">Global Patronage</p>
             </div>
           </div>
         </div>
@@ -348,7 +336,7 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 3. DYNAMIC FEATURED CAMPAIGNS (Real DB Data)              */}
       {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 space-y-8 relative">
+      <section data-ngo-section="campaigns" className="max-w-7xl mx-auto px-4 sm:px-8 space-y-8 relative">
         <SectionEditBadge
           sectionKey="donate"
           sectionLabel="Manage Campaigns"
@@ -368,12 +356,13 @@ export default function Home() {
             to="/donate"
             className="text-xs font-bold text-[#721C24] hover:text-[#0F172A] flex items-center gap-1 group"
           >
-            <span>View All Campaigns</span>
+            <span>View All Causes</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Campaign Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {campaigns.length > 0 ? (
             campaigns.map((c) => {
               const target = Number(c.target_amount || c.targetAmount || 1000000);
@@ -463,7 +452,7 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 4. MONASTERY DOCUMENTARY STORY BANNER                      */}
       {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 relative">
+      <section data-ngo-section="documentary" className="max-w-7xl mx-auto px-4 sm:px-8 relative">
         <SectionEditBadge
           sectionKey="about"
           sectionLabel="Edit Story & Vision"
@@ -529,7 +518,8 @@ export default function Home() {
                   to="/gallery"
                   className="bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 px-6 py-3 rounded-full font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-all hover:border-[#D4AF37]"
                 >
-                  <span>EXPLORE PHOTO ARCHIVES</span>
+                  <span>PHOTO ARCHIVES</span>
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
@@ -540,7 +530,13 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 5. FOUR SACRED PILLARS OF ACTIVITY                        */}
       {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 space-y-8">
+      <section data-ngo-section="pillars" className="max-w-7xl mx-auto px-4 sm:px-8 space-y-8 relative">
+        <SectionEditBadge
+          sectionKey="about"
+          sectionLabel="Edit Pillars"
+          onQuickEdit={openLiveEditor}
+          position="top-0 right-4 sm:right-8"
+        />
         <div className="text-center space-y-2 max-w-2xl mx-auto">
           <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
             Our Noble Mission
@@ -569,76 +565,76 @@ export default function Home() {
             </div>
             <Link
               to="/donate"
-              className="text-xs font-bold text-amber-700 hover:text-amber-900 flex items-center gap-1 group/link pt-2"
+              className="text-xs font-bold text-amber-700 hover:text-amber-800 flex items-center gap-1 mt-2"
             >
-              <span>Sponsor Construction</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />
+              <span>Support Stupa Build</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          {/* Pillar 2: Sapphire (Shedra) */}
-          <div className="glass-luxury-card p-6 rounded-2xl flex flex-col justify-between space-y-4 border-t-4 border-t-blue-500">
+          {/* Pillar 2: Burgundy (Shedra) */}
+          <div className="glass-luxury-card p-6 rounded-2xl flex flex-col justify-between space-y-4 border-t-4 border-t-[#721C24]">
             <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-700">
-                <BookOpen className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-2xl bg-[#721C24]/15 border border-[#721C24]/30 flex items-center justify-center text-[#721C24]">
+                <GraduationCap className="w-6 h-6" />
               </div>
               <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
-                Shedra Monastic University
+                Shedra Monastic Institute
               </h3>
               <p className="text-xs text-gray-600 leading-relaxed font-light">
-                Providing full scholarships, classical Buddhist philosophy, Tibetan language, and debate training for over 350 enrolled monks.
+                Residential monastic higher university providing full scholarships, classical Dharma curriculum, philosophical debate, and retreat facilities.
               </p>
             </div>
             <Link
-              to="/donate"
-              className="text-xs font-bold text-blue-700 hover:text-blue-900 flex items-center gap-1 group/link pt-2"
+              to="/shedra"
+              className="text-xs font-bold text-[#721C24] hover:text-[#0F172A] flex items-center gap-1 mt-2"
             >
-              <span>Support Education</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />
+              <span>Learn About Shedra</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          {/* Pillar 3: Ruby (Butter Lamps) */}
-          <div className="glass-luxury-card p-6 rounded-2xl flex flex-col justify-between space-y-4 border-t-4 border-t-rose-500">
+          {/* Pillar 3: Saffron (Prayers) */}
+          <div className="glass-luxury-card p-6 rounded-2xl flex flex-col justify-between space-y-4 border-t-4 border-t-amber-600">
             <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-700">
+              <div className="w-12 h-12 rounded-2xl bg-amber-600/15 border border-amber-600/30 flex items-center justify-center text-amber-700">
                 <Flame className="w-6 h-6" />
               </div>
               <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
-                108 Butter Lamp Pujas
+                Consecrated Prayers & Pujas
               </h3>
               <p className="text-xs text-gray-600 leading-relaxed font-light">
-                Daily consecrated butter lamps dedicated to world peace, health, longevity, and obstacle clearance for devotees and sponsors worldwide.
+                Conducting daily Mahakala protector pujas, Medicine Buddha healing rituals, and 108 butter lamp illuminations for global sponsors.
               </p>
             </div>
             <Link
               to="/prayer-request"
-              className="text-xs font-bold text-rose-700 hover:text-rose-900 flex items-center gap-1 group/link pt-2"
+              className="text-xs font-bold text-amber-700 hover:text-amber-800 flex items-center gap-1 mt-2"
             >
               <span>Request Dedication</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />
+              <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          {/* Pillar 4: Emerald (Sangha Care) */}
-          <div className="glass-luxury-card p-6 rounded-2xl flex flex-col justify-between space-y-4 border-t-4 border-t-emerald-500">
+          {/* Pillar 4: Emerald (Heritage) */}
+          <div className="glass-luxury-card p-6 rounded-2xl flex flex-col justify-between space-y-4 border-t-4 border-t-emerald-600">
             <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-700">
-                <Heart className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-2xl bg-emerald-600/15 border border-emerald-600/30 flex items-center justify-center text-emerald-700">
+                <BookOpen className="w-6 h-6" />
               </div>
               <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
-                Sangha Care & Welfare
+                Digital Dharma & Texts
               </h3>
               <p className="text-xs text-gray-600 leading-relaxed font-light">
-                Nutritious vegetarian meals, monk robes, health checkups, and community relief initiatives for the surrounding Himalayan communities.
+                Digitizing sacred woodblock pecha manuscripts, preserving rare Vajrayana commentary texts, and translating treatises for global scholars.
               </p>
             </div>
             <Link
-              to="/donate"
-              className="text-xs font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 group/link pt-2"
+              to="/learning"
+              className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 mt-2"
             >
-              <span>Support Sangha</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />
+              <span>Explore Dharma LMS</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
@@ -647,7 +643,13 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 6. BUTTER LAMP OFFERING CALLOUT (WARM CANDLELIGHT BANNER)  */}
       {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8">
+      <section data-ngo-section="prayers" className="max-w-7xl mx-auto px-4 sm:px-8 relative">
+        <SectionEditBadge
+          sectionKey="prayers"
+          sectionLabel="Edit Puja Callout"
+          onQuickEdit={openLiveEditor}
+          position="top-2 right-6"
+        />
         <div className="bg-gradient-to-r from-[#070A12] via-[#1A0A0F] to-[#070A12] rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40">
           <div
             className="absolute inset-0 opacity-20 bg-cover bg-center pointer-events-none mix-blend-luminosity"
@@ -684,7 +686,13 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 7. OPEN DHARMA VIDEO LECTURES (Dynamic API)               */}
       {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 space-y-8">
+      <section data-ngo-section="learning" className="max-w-7xl mx-auto px-4 sm:px-8 space-y-8 relative">
+        <SectionEditBadge
+          sectionKey="learning"
+          sectionLabel="Edit Dharma LMS"
+          onQuickEdit={openLiveEditor}
+          position="top-0 right-4 sm:right-8"
+        />
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-gray-200 pb-4">
           <div>
             <span className="glow-pill-sapphire px-3 py-1 rounded-full text-xs font-bold">
@@ -715,12 +723,8 @@ export default function Home() {
                     <img
                       src={video.thumbnail_url || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80'}
                       alt={video.title}
-                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80'; }}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
                     />
-                    <div className="absolute top-3 left-3 glow-pill-sapphire px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-                      {video.category || 'Dharma Lecture'}
-                    </div>
                     {video.duration_minutes && (
                       <div className="absolute bottom-3 right-3 bg-black/80 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded">
                         {video.duration_minutes} mins
@@ -782,7 +786,13 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 8. WISDOM JOURNAL & MONASTIC NEWS (Dynamic API)           */}
       {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 space-y-8">
+      <section data-ngo-section="blog" className="max-w-7xl mx-auto px-4 sm:px-8 space-y-8 relative">
+        <SectionEditBadge
+          sectionKey="blog"
+          sectionLabel="Edit Wisdom Journal"
+          onQuickEdit={openLiveEditor}
+          position="top-0 right-4 sm:right-8"
+        />
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-gray-200 pb-4">
           <div>
             <span className="glow-pill-ruby px-3 py-1 rounded-full text-xs font-bold">
