@@ -4,7 +4,7 @@
 
 -- 1. Add must_change_password flag to users table
 ALTER TABLE users 
-  ADD COLUMN IF NOT EXISTS must_change_password TINYINT(1) DEFAULT 0 AFTER is_verified;
+  ADD COLUMN IF NOT EXISTS must_change_password TINYINT(1) DEFAULT 0;
 
 -- 2. Generic Key -> Value(JSON) Config Store for 100% Admin Dynamic Site Control
 CREATE TABLE IF NOT EXISTS site_settings (

@@ -53,10 +53,10 @@ CREATE TABLE IF NOT EXISTS newsletter_subscribers (
 
 -- 4. Certificates Table Security & Revocation Enhancements
 ALTER TABLE certificates
-  ADD COLUMN IF NOT EXISTS verification_hash VARCHAR(64) NULL AFTER certificate_number,
-  ADD COLUMN IF NOT EXISTS is_revoked TINYINT(1) DEFAULT 0 AFTER verification_hash,
-  ADD COLUMN IF NOT EXISTS revocation_reason TEXT NULL AFTER is_revoked,
-  ADD COLUMN IF NOT EXISTS revoked_at DATETIME NULL AFTER revocation_reason,
+  ADD COLUMN IF NOT EXISTS verification_hash VARCHAR(64) NULL,
+  ADD COLUMN IF NOT EXISTS is_revoked TINYINT(1) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS revocation_reason TEXT NULL,
+  ADD COLUMN IF NOT EXISTS revoked_at DATETIME NULL,
   ADD INDEX IF NOT EXISTS idx_cert_verify_hash (verification_hash),
   ADD INDEX IF NOT EXISTS idx_cert_number (certificate_number);
 
