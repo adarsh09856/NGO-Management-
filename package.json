@@ -11,7 +11,7 @@
     "db:migrate": "node db/migrate.js",
     "db:seed": "node db/seed.js",
     "db:backup": "node db/backup.js",
-    "deploy": "bash deploy.sh",
+    "deploy": "bash scripts/deploy-aapanel.sh",
     "test": "node test/integration-assertions.js"
   },
   "repository": {
