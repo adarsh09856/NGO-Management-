@@ -175,3 +175,51 @@ export function GlassSkeleton({ height = 'h-24', className = '' }) {
     />
   );
 }
+
+/**
+ * Standardized High-End Glass Modal
+ * Renders via React Portal to escape any nested stacking contexts
+ */
+export function GlassModal({ isOpen, onClose, title, subtitle, children, maxWidth = 'max-w-2xl' }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-scrollbar animate-fadeIn">
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-[#0F172A]/70 backdrop-blur-md transition-opacity"
+        onClick={onClose}
+      />
+
+      {/* Modal Container */}
+      <div
+        className={`relative w-full ${maxWidth} bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-white/80 overflow-hidden flex flex-col max-h-[92vh] z-10`}
+      >
+        {/* Header */}
+        <div className="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-100 bg-gradient-to-r from-slate-50/80 via-white to-slate-50/80 flex items-center justify-between flex-shrink-0">
+          <div>
+            <h3 className="font-serif-brand font-bold text-base sm:text-lg text-[#0F172A]">
+              {title}
+            </h3>
+            {subtitle && (
+              <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 flex items-center justify-center transition-colors text-sm font-bold"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Scrollable Content Body */}
+        <div className="p-5 sm:p-6 overflow-y-auto no-scrollbar flex-1 space-y-4">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+

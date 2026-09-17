@@ -1,12 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, MapPin, Phone, Mail, Shield, Sparkles, Send, CheckCircle2 } from 'lucide-react';
+import SectionEditBadge from './SectionEditBadge';
 import api from '../services/api';
 
 export default function Footer({ onOpenDonate }) {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSent, setNewsletterSent] = useState(false);
   const [newsletterLoading, setNewsletterLoading] = useState(false);
+
+  const [liveSettings, setLiveSettings] = useState({
+    footer_copyright: '© 2026 Drodul Phendey Ling Foundation · All Rights Reserved',
+    contact_address: 'Gelephu, Sarpang Dzongkhag, Bhutan',
+    contact_phone: '+975 17556559'
+  });
+
+  const openLiveEditor = (sec = 'footer') => {
+    window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: sec } }));
+  };
+
+  useEffect(() => {
+    api.get('/settings').then((res) => {
+      if (res.data?.success && res.data.data) {
+        setLiveSettings((prev) => ({ ...prev, ...res.data.data }));
+      }
+    }).catch(() => {});
+
+    const handleUpdate = (e) => {
+      if (e.detail?.settings) {
+        setLiveSettings((prev) => ({ ...prev, ...e.detail.settings }));
+      }
+    };
+    window.addEventListener('ngo:settings-updated', handleUpdate);
+    return () => window.removeEventListener('ngo:settings-updated', handleUpdate);
+  }, []);
 
   const handleNewsletter = async (e) => {
     e.preventDefault();
@@ -205,23 +232,30 @@ export default function Footer({ onOpenDonate }) {
             <div className="pt-2 text-xs text-gray-400 space-y-1.5 font-light">
               <p className="flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-[#D4AF37] flex-shrink-0" />
-                <span>Gelephu, Sarpang Dzongkhag, Bhutan</span>
+                <span>{liveSettings.contact_address || 'Gelephu, Sarpang Dzongkhag, Bhutan'}</span>
               </p>
               <p className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-[#D4AF37] flex-shrink-0" />
-                <span>+975 17556559 / +975 17112233</span>
+                <span className="font-mono">{liveSettings.contact_phone || '+975 17556559'}</span>
               </p>
             </div>
           </div>
         </div>
 
         {/* 3. Bottom Legal Strip */}
-        <div className="pt-8 border-t border-[#D4AF37]/15 flex flex-col sm:flex-row justify-between items-center text-[11px] text-gray-500 gap-3 text-center sm:text-left">
+        <div className="pt-8 border-t border-[#D4AF37]/15 flex flex-col sm:flex-row justify-between items-center text-[11px] text-gray-500 gap-3 text-center sm:text-left relative">
+          <SectionEditBadge
+            sectionKey="footer"
+            sectionLabel="Edit Footer"
+            onQuickEdit={openLiveEditor}
+            position="top-1 right-0 sm:right-4"
+          />
+
           <div className="font-tibetan text-amber-200/80 text-xs">
             ༄༅། །བཀྲ་ཤིས་བདེ་ལེགས་ཕུན་སུམ་ཚོགས།
           </div>
           <div>
-            © 2026 Drodul Phendey Ling Foundation · All Rights Reserved
+            {liveSettings.footer_copyright || '© 2026 Drodul Phendey Ling Foundation · All Rights Reserved'}
           </div>
           <div className="flex flex-wrap justify-center sm:justify-end items-center gap-x-3 gap-y-1">
             <Link to="/about" className="hover:text-[#D4AF37] transition-colors">Privacy Policy</Link>

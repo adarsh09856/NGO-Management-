@@ -124,16 +124,19 @@ export default function AdminTopbar({ onToggleSidebar, title = 'Dashboard', brea
         {/* Breadcrumb Path */}
         <div className="hidden sm:flex items-center space-x-1.5 text-xs text-gray-500 font-medium truncate max-w-[200px] md:max-w-none">
           <Link to="/admin" className="hover:text-[#0F172A]">Dashboard</Link>
-          {breadcrumbs.map((crumb, idx) => (
-            <React.Fragment key={idx}>
-              <ChevronRight className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-              {crumb.link ? (
-                <Link to={crumb.link} className="hover:text-[#0F172A] truncate">{crumb.label}</Link>
-              ) : (
-                <span className="text-[#0F172A] font-semibold truncate">{crumb.label}</span>
-              )}
-            </React.Fragment>
-          ))}
+          {breadcrumbs.map((crumb, idx) => {
+            const target = crumb.path || crumb.link;
+            return (
+              <React.Fragment key={idx}>
+                <ChevronRight className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                {target && !crumb.isLast ? (
+                  <Link to={target} className="hover:text-[#0F172A] truncate transition-colors">{crumb.label}</Link>
+                ) : (
+                  <span className="text-[#0F172A] font-bold truncate">{crumb.label}</span>
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
       </div>
 

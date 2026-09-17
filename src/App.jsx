@@ -9,6 +9,8 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import DonationModal from './components/DonationModal';
 import AmbientAuroraBackground from './components/AmbientAuroraBackground';
+import AdminLiveBar from './components/admin/AdminLiveBar';
+import LiveSectionEditor from './components/LiveSectionEditor';
 
 // Public Pages
 import Home from './pages/public/Home';
@@ -76,6 +78,18 @@ import NotFound from './pages/public/NotFound';
 
 export default function App() {
   const [donateModalOpen, setDonateModalOpen] = useState(false);
+  const [liveEditorOpen, setLiveEditorOpen] = useState(false);
+  const [liveEditorSection, setLiveEditorSection] = useState('hero');
+
+  // Global listener so any section badge can open the editor
+  React.useEffect(() => {
+    const handleOpen = (e) => {
+      if (e.detail?.section) setLiveEditorSection(e.detail.section);
+      setLiveEditorOpen(true);
+    };
+    window.addEventListener('ngo:open-live-editor', handleOpen);
+    return () => window.removeEventListener('ngo:open-live-editor', handleOpen);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-[#1F2937] relative">
@@ -88,6 +102,7 @@ export default function App() {
           path="/*"
           element={
             <div className="flex flex-col min-h-screen">
+              <AdminLiveBar onOpenEditor={(sec) => { setLiveEditorSection(sec); setLiveEditorOpen(true); }} />
               <Navbar onOpenDonate={() => setDonateModalOpen(true)} />
               <main className="flex-1">
                 <Routes>
@@ -113,6 +128,11 @@ export default function App() {
               </main>
               <Footer />
               {donateModalOpen && <DonationModal onClose={() => setDonateModalOpen(false)} />}
+              <LiveSectionEditor
+                isOpen={liveEditorOpen}
+                onClose={() => setLiveEditorOpen(false)}
+                initialSection={liveEditorSection}
+              />
             </div>
           }
         />

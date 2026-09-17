@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Calendar, User, ArrowRight, BookOpen, Clock, Sparkles, Feather } from 'lucide-react';
+import SectionEditBadge from '../../components/SectionEditBadge';
 import api from '../../services/api';
 
 export default function Blog() {
@@ -81,6 +82,13 @@ export default function Blog() {
         <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-[#721C24]/30 blur-3xl pointer-events-none"></div>
 
         <div className="max-w-7xl mx-auto relative z-10 space-y-4 sm:space-y-6 text-center animate-fade-in-up">
+          <SectionEditBadge
+            sectionKey="blog"
+            sectionLabel="Manage Articles & Posts in Admin"
+            onQuickEdit={() => window.location.href = '/admin/blog'}
+            position="top-0 right-0 sm:right-4"
+          />
+
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-serif uppercase tracking-widest backdrop-blur-md">
             <span className="text-sm">☸</span>
             <span className="truncate">༄༅། །ཆོས་ཀྱི་བགྲོ་གླེང་དང་དྲན་དེབ། · Wisdom Gazette</span>

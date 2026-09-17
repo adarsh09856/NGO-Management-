@@ -8,11 +8,42 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import PrayerFlagsRibbon from './PrayerFlagsRibbon';
+import SectionEditBadge from './SectionEditBadge';
+import api from '../services/api';
 
 export default function Navbar({ onOpenDonate }) {
   const { user, logout, isAdmin } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Live Settings
+  const [liveSettings, setLiveSettings] = useState({
+    header_phone: '+975 17556559',
+    header_email: 'contact@drodulphendeyling.org',
+    header_location: 'Gelephu, Bhutan',
+    header_announcement: '☸ Welcoming Devotees to the Historic 108ft Great Druk Wangyel Peace Stupa • 80G Tax Exemption Available',
+    header_announcement_on: 'true'
+  });
+
+  const openLiveEditor = (sec = 'navbar') => {
+    window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: sec } }));
+  };
+
+  useEffect(() => {
+    api.get('/settings').then((res) => {
+      if (res.data?.success && res.data.data) {
+        setLiveSettings((prev) => ({ ...prev, ...res.data.data }));
+      }
+    }).catch(() => {});
+
+    const handleUpdate = (e) => {
+      if (e.detail?.settings) {
+        setLiveSettings((prev) => ({ ...prev, ...e.detail.settings }));
+      }
+    };
+    window.addEventListener('ngo:settings-updated', handleUpdate);
+    return () => window.removeEventListener('ngo:settings-updated', handleUpdate);
+  }, []);
 
   // Scroll Progress Ribbon State
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -95,27 +126,34 @@ export default function Navbar({ onOpenDonate }) {
       <PrayerFlagsRibbon />
 
       {/* 1. TOP UTILITY BAR (Deep Monastic Obsidian) */}
-      <div className="bg-[#070A12] text-[#E2E8F0] text-[10px] sm:text-xs py-1.5 px-3 sm:px-8 border-b border-[#D4AF37]/20">
+      <div className="bg-[#070A12] text-[#E2E8F0] text-[10px] sm:text-xs py-1.5 px-3 sm:px-8 border-b border-[#D4AF37]/20 relative">
         <div className="max-w-7xl mx-auto flex justify-between items-center gap-2">
           {/* Left contact info */}
           <div className="flex items-center space-x-3 sm:space-x-6">
             <div className="flex items-center space-x-1.5 text-gray-300 hover:text-[#D4AF37] transition-colors cursor-default">
               <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#D4AF37] flex-shrink-0" />
-              <span className="hidden xs:inline truncate max-w-[130px] sm:max-w-none">Gelephu, Bhutan</span>
+              <span className="hidden xs:inline truncate max-w-[130px] sm:max-w-none">{liveSettings.header_location || 'Gelephu, Bhutan'}</span>
               <span className="xs:hidden">Bhutan</span>
             </div>
             <div className="flex items-center space-x-1.5 text-gray-300 hover:text-[#D4AF37] transition-colors cursor-default">
               <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#D4AF37] flex-shrink-0" />
-              <span>+975 17556559</span>
+              <span className="font-mono">{liveSettings.header_phone || '+975 17556559'}</span>
             </div>
             <div className="hidden lg:flex items-center space-x-1.5 text-gray-300 hover:text-[#D4AF37] transition-colors cursor-default">
               <Mail className="w-3.5 h-3.5 text-[#D4AF37] flex-shrink-0" />
-              <span>contact@drodulphendeyling.org</span>
+              <span className="font-mono">{liveSettings.header_email || 'contact@drodulphendeyling.org'}</span>
             </div>
           </div>
 
           {/* Right quick links & language switcher */}
-          <div className="flex items-center space-x-2.5 sm:space-x-5 text-[10px] sm:text-[11px]">
+          <div className="flex items-center space-x-2.5 sm:space-x-5 text-[10px] sm:text-[11px] flex-shrink-0">
+            <SectionEditBadge
+              sectionKey="navbar"
+              sectionLabel="Edit Header"
+              onQuickEdit={openLiveEditor}
+              position="relative top-0 right-0"
+            />
+
             <Link
               to="/prayer-request"
               className="text-[#F6E05E] hover:text-[#D4AF37] flex items-center gap-1 transition-colors font-medium"
@@ -154,6 +192,14 @@ export default function Navbar({ onOpenDonate }) {
           </div>
         </div>
       </div>
+
+      {/* 1.1 LIVE ANNOUNCEMENT TICKER BANNER */}
+      {liveSettings.header_announcement_on === 'true' && liveSettings.header_announcement && (
+        <div className="bg-gradient-to-r from-[#721C24] via-[#8B1E29] to-[#721C24] text-white py-1 px-3 sm:px-8 text-[11px] sm:text-xs font-serif tracking-wide border-b border-[#D4AF37]/30 shadow-inner flex items-center justify-center gap-2 animate-fadeIn text-center">
+          <span className="text-[#D4AF37] font-bold text-xs">☸</span>
+          <span className="truncate">{liveSettings.header_announcement}</span>
+        </div>
+      )}
 
       {/* 2. MAIN HEADER & BRAND */}
       <div className="max-w-7xl mx-auto px-3 sm:px-8 py-2 sm:py-3.5 flex items-center justify-between gap-2 sm:gap-4">

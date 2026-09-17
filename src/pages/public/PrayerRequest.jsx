@@ -4,6 +4,7 @@ import {
   Building2, ArrowRight, CreditCard, Lock, Check
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SectionEditBadge from '../../components/SectionEditBadge';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { useCurrency } from '../../context/CurrencyContext';
@@ -259,7 +260,14 @@ export default function PrayerRequest() {
   return (
     <div className="min-h-[85vh] py-10 sm:py-16 px-3 xs:px-4 sm:px-8 relative z-10 max-w-4xl mx-auto space-y-8 sm:space-y-12">
       {/* 1. Header Banner */}
-      <div className="text-center space-y-3 sm:space-y-4 animate-fade-in-up">
+      <div className="text-center space-y-3 sm:space-y-4 animate-fade-in-up relative">
+        <SectionEditBadge
+          sectionKey="prayer"
+          sectionLabel="Manage Prayers in CMS"
+          onQuickEdit={() => window.location.href = '/admin/prayer-requests'}
+          position="top-0 right-0 sm:right-4"
+        />
+
         <div className="inline-flex items-center space-x-2 glow-pill-gold px-3.5 py-1.5 rounded-full text-xs font-bold animate-float">
           <Flame className="w-4 h-4 text-amber-600" />
           <span className="font-tibetan text-sm">༄༅། །མར་མེ་སྨོན་ལམ།</span>

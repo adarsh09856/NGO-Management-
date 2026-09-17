@@ -5,6 +5,7 @@ import {
   ShieldCheck, ArrowRight, UserCheck, Calendar, Clock, Sparkles,
   ExternalLink, Send, ChevronDown, ChevronUp, FileText, Landmark
 } from 'lucide-react';
+import SectionEditBadge from '../../components/SectionEditBadge';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 
@@ -151,6 +152,12 @@ export default function Shedra() {
     <div className="py-8 sm:py-14 px-3 sm:px-8 space-y-16 max-w-7xl mx-auto font-serif">
       {/* 1. HERO BANNER */}
       <section className="bg-gradient-to-r from-[#0B0F19] via-[#1A0B0E] to-[#0B0F19] rounded-3xl p-6 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40 animate-fadeIn">
+        <SectionEditBadge
+          sectionKey="shedra"
+          sectionLabel="Manage Shedra Courses & Monks"
+          onQuickEdit={() => window.location.href = '/admin/monks'}
+          position="top-4 right-4"
+        />
         <div
           className="absolute inset-0 opacity-20 bg-cover bg-center pointer-events-none mix-blend-luminosity"
           style={{ backgroundImage: `url('https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1400&q=80')` }}

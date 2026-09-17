@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DonationModal from '../../components/DonationModal';
+import SectionEditBadge from '../../components/SectionEditBadge';
 import {
   Heart, Shield, CheckCircle2, Award, Landmark, BookOpen, Flame,
   Sparkles, ArrowRight, Gift, Building2, HelpCircle, FileText, QrCode
@@ -15,6 +16,20 @@ export default function Donate() {
   const [frequency, setFrequency] = useState('one_time');
   const [campaigns, setCampaigns] = useState([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
+
+  const [liveSettings, setLiveSettings] = useState({
+    donate_hero_title: 'Make A Meritorious Offering for Peace & Buddha Dharma',
+    donate_hero_subtitle: 'Every offering directly finances the 108ft Great Druk Wangyel Peace Stupa, sustains resident monks with nutrition and education, and radiates blessings of merit across the world.',
+    bank_name: 'Bank of Bhutan (BoB)',
+    bank_account_name: 'Drodul Phendey Ling Foundation',
+    bank_account_no: '200847291038',
+    bank_swift_code: 'BHUBBTBT',
+    bank_branch: 'Gelephu Main Branch'
+  });
+
+  const openLiveEditor = (sec = 'donate') => {
+    window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: sec } }));
+  };
 
   const fallbackCauses = [
     {
@@ -72,20 +87,34 @@ export default function Donate() {
   ];
 
   useEffect(() => {
-    async function loadCampaigns() {
+    async function loadData() {
       try {
         setLoadingCampaigns(true);
-        const res = await api.get('/campaigns/public');
-        if (res.data?.success && res.data.data?.length > 0) {
-          setCampaigns(res.data.data);
+        const [campRes, setRes] = await Promise.all([
+          api.get('/campaigns/public').catch(() => ({ data: { success: false } })),
+          api.get('/settings').catch(() => ({ data: { success: false } }))
+        ]);
+        if (campRes.data?.success && campRes.data.data?.length > 0) {
+          setCampaigns(campRes.data.data);
+        }
+        if (setRes.data?.success && setRes.data.data) {
+          setLiveSettings((prev) => ({ ...prev, ...setRes.data.data }));
         }
       } catch (err) {
-        console.warn('Using fallback causes on Donate page:', err?.message);
+        console.warn('Error loading donate data:', err?.message);
       } finally {
         setLoadingCampaigns(false);
       }
     }
-    loadCampaigns();
+    loadData();
+
+    const handleUpdate = (e) => {
+      if (e.detail?.settings) {
+        setLiveSettings((prev) => ({ ...prev, ...e.detail.settings }));
+      }
+    };
+    window.addEventListener('ngo:settings-updated', handleUpdate);
+    return () => window.removeEventListener('ngo:settings-updated', handleUpdate);
   }, []);
 
   const displayCauses = campaigns.length > 0
@@ -114,6 +143,13 @@ export default function Donate() {
     <div className="py-10 sm:py-16 px-3 xs:px-4 sm:px-8 min-h-[85vh] space-y-12 sm:space-y-16 relative z-10 max-w-7xl mx-auto">
       {/* 1. Header Hero Banner */}
       <div className="bg-gradient-to-r from-[#070A12] via-[#120508] to-[#070A12] rounded-3xl p-6 xs:p-8 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40 animate-fade-in-up">
+        <SectionEditBadge
+          sectionKey="donate"
+          sectionLabel="Edit Donate Hero"
+          onQuickEdit={openLiveEditor}
+          position="top-4 right-4 sm:top-6 sm:right-6"
+        />
+
         <div
           className="absolute inset-0 opacity-25 bg-cover bg-center pointer-events-none mix-blend-luminosity"
           style={{ backgroundImage: `url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1400&q=80')` }}
@@ -124,13 +160,17 @@ export default function Donate() {
             <span>• Sacred Monastic Philanthropy</span>
           </div>
 
-          <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-4xl md:text-5xl text-white tracking-wide leading-tight break-words">
-            Make A Meritorious Offering for <br />
-            <span className="gold-foil-text font-serif">Peace & Buddha Dharma</span>
+          <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-4xl md:text-5xl text-white tracking-wide leading-tight break-words uppercase">
+            {liveSettings.donate_hero_title || (
+              <>
+                Make A Meritorious Offering for <br />
+                <span className="gold-foil-text font-serif">Peace & Buddha Dharma</span>
+              </>
+            )}
           </h1>
 
           <p className="text-xs sm:text-sm text-gray-200 font-light leading-relaxed">
-            Every offering directly finances the 108ft Great Druk Wangyel Peace Stupa, sustains resident monks with nutrition and education, and radiates blessings of merit across the world.
+            {liveSettings.donate_hero_subtitle || 'Every offering directly finances the 108ft Great Druk Wangyel Peace Stupa, sustains resident monks with nutrition and education, and radiates blessings of merit across the world.'}
           </p>
 
           <div className="pt-2 sm:pt-3 flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-[#D4AF37]">
@@ -270,7 +310,14 @@ export default function Donate() {
         </div>
 
         {/* Bank Wire Details */}
-        <div className="lg:col-span-6 glass-luxury-card p-7 sm:p-8 rounded-2xl border border-gray-200/80 space-y-4">
+        <div className="lg:col-span-6 glass-luxury-card p-7 sm:p-8 rounded-2xl border border-gray-200/80 space-y-4 relative">
+          <SectionEditBadge
+            sectionKey="donate"
+            sectionLabel="Edit Bank Wire Details"
+            onQuickEdit={openLiveEditor}
+            position="top-4 right-4"
+          />
+
           <h3 className="font-serif-brand font-bold text-base text-[#0F172A] uppercase tracking-wider flex items-center gap-2">
             <Building2 className="w-5 h-5 text-[#D4AF37]" />
             <span>Direct Bank Transfer / Wire Details</span>
@@ -280,11 +327,11 @@ export default function Donate() {
           </p>
 
           <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-2 text-xs font-mono text-gray-800">
-            <p><strong className="text-gray-600 font-sans">Account Name:</strong> Drodul Phendey Ling Foundation</p>
-            <p><strong className="text-gray-600 font-sans">Bank:</strong> Bank of Bhutan Ltd. (BoB)</p>
-            <p><strong className="text-gray-600 font-sans">Account Number:</strong> 20188944110023</p>
-            <p><strong className="text-gray-600 font-sans">Branch:</strong> Gelephu Main Branch, Bhutan</p>
-            <p><strong className="text-gray-600 font-sans">SWIFT Code:</strong> BOBNBTBT</p>
+            <p><strong className="text-gray-600 font-sans">Account Name:</strong> {liveSettings.bank_account_name || 'Drodul Phendey Ling Foundation'}</p>
+            <p><strong className="text-gray-600 font-sans">Bank:</strong> {liveSettings.bank_name || 'Bank of Bhutan Ltd. (BoB)'}</p>
+            <p><strong className="text-gray-600 font-sans">Account Number:</strong> {liveSettings.bank_account_no || '200847291038'}</p>
+            <p><strong className="text-gray-600 font-sans">Branch:</strong> {liveSettings.bank_branch || 'Gelephu Main Branch, Bhutan'}</p>
+            <p><strong className="text-gray-600 font-sans">SWIFT Code:</strong> {liveSettings.bank_swift_code || 'BHUBBTBT'}</p>
           </div>
           <p className="text-[11px] text-gray-500 italic">
             * After wire transfer, please email payment confirmation to <span className="font-semibold text-gray-700">contact@drodulphendeyling.org</span> for instant 80G tax receipt issuance.

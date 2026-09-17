@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, ZoomIn, Play, Film, Image as ImageIcon, Sparkles, Filter } from 'lucide-react';
+import SectionEditBadge from '../../components/SectionEditBadge';
 import api from '../../services/api';
 
 export default function Gallery() {
@@ -67,7 +68,14 @@ export default function Gallery() {
   return (
     <div className="min-h-screen py-8 sm:py-16 px-3 xs:px-4 sm:px-8 relative z-10 max-w-7xl mx-auto space-y-8 sm:space-y-10">
       {/* Header */}
-      <div className="text-center space-y-3 max-w-2xl mx-auto animate-fade-in-up">
+      <div className="text-center space-y-3 max-w-2xl mx-auto animate-fade-in-up relative">
+        <SectionEditBadge
+          sectionKey="media"
+          sectionLabel="Manage Gallery in Admin"
+          onQuickEdit={() => window.location.href = '/admin/gallery'}
+          position="top-0 right-0 sm:right-4"
+        />
+
         <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
           Sacred Photo Archives
         </span>

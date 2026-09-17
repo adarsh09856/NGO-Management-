@@ -1,61 +1,126 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Shield, CheckCircle2, Award, Users, BookOpen, Landmark, Sparkles, MapPin, ArrowRight, Compass } from 'lucide-react';
+import SectionEditBadge from '../../components/SectionEditBadge';
+import api from '../../services/api';
 
 export default function About() {
+  const [settings, setSettings] = useState({
+    about_page_title: 'About Drodul Phendey Ling Foundation',
+    about_page_subtitle: 'Established in the tranquil Himalayan foothills of Gelephu, Sarpang Dzongkhag, Bhutan, to nurture authentic Buddha Dharma, train monk scholars, and build the historic 108ft Great Druk Wangyel Peace Stupa.',
+    about_pillar_1_title: 'Sacred Lineage & Vision',
+    about_pillar_1_desc: 'Rooted in authentic Vajrayana and Mahayana traditions, our mission is to cultivate universal compassion, wisdom, and an enlightened sanctuary where monastic and lay practitioners realize inner peace.',
+    about_pillar_2_title: 'Shedra Monastic University',
+    about_pillar_2_desc: 'Providing 350+ enrolled monks with full residential scholarships, classical Tibetan linguistics, Abhidharma, Madhyamaka philosophy, debate epistemics, and contemplative solitary retreats.',
+    about_pillar_3_title: 'Great Peace Stupa',
+    about_pillar_3_desc: 'The monumental 108-foot Great Druk Wangyel Peace Stupa serves as a beacon of harmony, housing sacred relic chambers, 108 stone-carved prayer wheels, and pacifying discord for all beings.',
+    about_leader_name: 'Khenpo Tashi Dorji',
+    about_leader_title: 'Abbot & Principal of Shedra Academy',
+    about_leader_bio: 'Having completed nine years of rigorous Shedra curriculum and traditional solitary mountain retreat, Khenpo Rinpoche oversees the monastic training, sacred stupa construction, and philanthropic welfare programs in Gelephu, Bhutan.'
+  });
+
+  const openLiveEditor = (sec = 'about') => {
+    window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: sec } }));
+  };
+
+  useEffect(() => {
+    api.get('/settings').then((res) => {
+      if (res.data?.success && res.data.data) {
+        setSettings((prev) => ({ ...prev, ...res.data.data }));
+      }
+    }).catch(() => {});
+
+    const handleUpdate = (e) => {
+      if (e.detail?.settings) {
+        setSettings((prev) => ({ ...prev, ...e.detail.settings }));
+      }
+    };
+    window.addEventListener('ngo:settings-updated', handleUpdate);
+    return () => window.removeEventListener('ngo:settings-updated', handleUpdate);
+  }, []);
+
   return (
     <div className="py-10 sm:py-16 px-3 xs:px-4 sm:px-8 space-y-12 sm:space-y-20 relative z-10 max-w-7xl mx-auto">
       {/* 1. Header Banner */}
-      <div className="max-w-4xl mx-auto text-center space-y-3 sm:space-y-4 animate-fade-in-up">
+      <div className="max-w-4xl mx-auto text-center space-y-3 sm:space-y-4 animate-fade-in-up relative">
+        <SectionEditBadge
+          sectionKey="about"
+          sectionLabel="Edit About Header"
+          onQuickEdit={openLiveEditor}
+          position="top-0 right-0 sm:right-6"
+        />
+
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glow-pill-gold text-xs font-bold animate-float">
           <span className="font-tibetan text-sm sm:text-base">༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པའི་ལོ་རྒྱུས།</span>
           <span>• Sacred Monastic Heritage</span>
         </div>
 
         <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-5xl text-[#0F172A] leading-tight break-words">
-          About Drodul Phendey Ling Foundation
+          {settings.about_page_title}
         </h1>
 
         <p className="text-xs sm:text-base text-gray-600 leading-relaxed max-w-2xl mx-auto font-light">
-          Established in the tranquil Himalayan foothills of Gelephu, Sarpang Dzongkhag, Bhutan, to nurture authentic Buddha Dharma, train monk scholars, and build the historic 108ft Great Druk Wangyel Peace Stupa.
+          {settings.about_page_subtitle}
         </p>
       </div>
 
       {/* 2. Core Pillars (Luxury Glass Cards) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="glass-luxury-card p-8 rounded-3xl space-y-4 border-t-4 border-t-rose-500">
-          <div className="w-14 h-14 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-700 flex items-center justify-center p-3 shadow-sm">
-            <Award className="w-7 h-7" />
-          </div>
-          <h3 className="font-serif-brand font-bold text-xl text-[#0F172A]">Sacred Lineage & Vision</h3>
-          <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
-            Rooted in authentic Vajrayana and Mahayana traditions, our mission is to cultivate universal compassion, wisdom, and an enlightened sanctuary where monastic and lay practitioners realize inner peace.
-          </p>
-        </div>
+      <div className="relative">
+        <SectionEditBadge
+          sectionKey="about"
+          sectionLabel="Edit Core Pillars"
+          onQuickEdit={openLiveEditor}
+          position="top-0 right-4"
+        />
 
-        <div className="glass-luxury-card p-8 rounded-3xl space-y-4 border-t-4 border-t-blue-500">
-          <div className="w-14 h-14 rounded-2xl bg-blue-500/15 border border-blue-500/30 text-blue-700 flex items-center justify-center p-3 shadow-sm">
-            <BookOpen className="w-7 h-7" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="glass-luxury-card p-8 rounded-3xl space-y-4 border-t-4 border-t-rose-500">
+            <div className="w-14 h-14 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-700 flex items-center justify-center p-3 shadow-sm">
+              <Award className="w-7 h-7" />
+            </div>
+            <h3 className="font-serif-brand font-bold text-xl text-[#0F172A]">
+              {settings.about_pillar_1_title}
+            </h3>
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
+              {settings.about_pillar_1_desc}
+            </p>
           </div>
-          <h3 className="font-serif-brand font-bold text-xl text-[#0F172A]">Shedra Monastic University</h3>
-          <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
-            Providing 350+ enrolled monks with full residential scholarships, classical Tibetan linguistics, Abhidharma, Madhyamaka philosophy, debate epistemics, and contemplative solitary retreats.
-          </p>
-        </div>
 
-        <div className="glass-luxury-card p-8 rounded-3xl space-y-4 border-t-4 border-t-amber-500">
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-700 flex items-center justify-center p-3 shadow-sm">
-            <Landmark className="w-7 h-7" />
+          <div className="glass-luxury-card p-8 rounded-3xl space-y-4 border-t-4 border-t-blue-500">
+            <div className="w-14 h-14 rounded-2xl bg-blue-500/15 border border-blue-500/30 text-blue-700 flex items-center justify-center p-3 shadow-sm">
+              <BookOpen className="w-7 h-7" />
+            </div>
+            <h3 className="font-serif-brand font-bold text-xl text-[#0F172A]">
+              {settings.about_pillar_2_title}
+            </h3>
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
+              {settings.about_pillar_2_desc}
+            </p>
           </div>
-          <h3 className="font-serif-brand font-bold text-xl text-[#0F172A]">Great Peace Stupa</h3>
-          <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
-            The monumental 108-foot Great Druk Wangyel Peace Stupa serves as a beacon of harmony, housing sacred relic chambers, 108 stone-carved prayer wheels, and pacifying discord for all beings.
-          </p>
+
+          <div className="glass-luxury-card p-8 rounded-3xl space-y-4 border-t-4 border-t-amber-500">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-700 flex items-center justify-center p-3 shadow-sm">
+              <Landmark className="w-7 h-7" />
+            </div>
+            <h3 className="font-serif-brand font-bold text-xl text-[#0F172A]">
+              {settings.about_pillar_3_title}
+            </h3>
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
+              {settings.about_pillar_3_desc}
+            </p>
+          </div>
         </div>
       </div>
 
       {/* 3. Leadership & Spiritual Lineage (Frosted Glass Panel) */}
-      <div className="glass-luxury-card rounded-3xl p-8 sm:p-14 border border-gray-200/80 shadow-2xl space-y-8 max-w-5xl mx-auto">
+      <div className="glass-luxury-card rounded-3xl p-8 sm:p-14 border border-gray-200/80 shadow-2xl space-y-8 max-w-5xl mx-auto relative">
+        <SectionEditBadge
+          sectionKey="about"
+          sectionLabel="Edit Leadership"
+          onQuickEdit={openLiveEditor}
+          position="top-4 right-6"
+        />
+
         <div className="text-center space-y-1.5">
           <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
             Monastic Leadership
@@ -69,7 +134,7 @@ export default function About() {
           <div className="sm:col-span-5 rounded-2xl overflow-hidden border-2 border-[#D4AF37] max-h-80 shadow-xl group">
             <img
               src="https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=800&q=80"
-              alt="Monastery Abbot Khenpo Tashi Dorji"
+              alt={settings.about_leader_name}
               onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80'; }}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             />
@@ -77,12 +142,12 @@ export default function About() {
 
           <div className="sm:col-span-7 space-y-4">
             <div>
-              <h3 className="font-serif-brand font-bold text-2xl text-[#0F172A]">Khenpo Tashi Dorji</h3>
-              <p className="text-xs font-bold text-amber-700 uppercase tracking-widest mt-1">Abbot & Principal of Shedra Academy</p>
+              <h3 className="font-serif-brand font-bold text-2xl text-[#0F172A]">{settings.about_leader_name}</h3>
+              <p className="text-xs font-bold text-amber-700 uppercase tracking-widest mt-1">{settings.about_leader_title}</p>
             </div>
 
             <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
-              Having completed nine years of rigorous Shedra curriculum and traditional solitary mountain retreat, Khenpo Rinpoche oversees the monastic training, sacred stupa construction, and philanthropic welfare programs in Gelephu, Bhutan.
+              {settings.about_leader_bio}
             </p>
 
             <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 font-light space-y-1">

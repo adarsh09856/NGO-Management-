@@ -47,13 +47,21 @@
   background: #B45309;
 }
 
-/* Responsive Touch Scroll Utility (hides scrollbars on mobile swiping containers) */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
+/* Responsive Touch Scroll Utility (suppresses all native scrollbars on Windows, Mac, iOS, Android) */
 .no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+.no-scrollbar::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar-button,
+.no-scrollbar::-webkit-scrollbar-thumb,
+.no-scrollbar::-webkit-scrollbar-track,
+.no-scrollbar::-webkit-scrollbar-corner {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
 }
 
 /* ===================================================

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, ShieldCheck, Compass, Heart, BookOpen, Users } from 'lucide-react';
+import SectionEditBadge from '../../components/SectionEditBadge';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 
@@ -12,6 +13,33 @@ export default function Contact() {
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [settings, setSettings] = useState({
+    contact_address: 'Great Druk Wangyel Peace Stupa Complex, Gelephu, Sarpang Dzongkhag, Kingdom of Bhutan',
+    contact_phone: '+975 17556559',
+    contact_email: 'contact@drodulphendeyling.org',
+    contact_hours: 'Mon - Sat: 08:00 AM - 05:00 PM BST'
+  });
+
+  const openLiveEditor = (sec = 'contact') => {
+    window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: sec } }));
+  };
+
+  useEffect(() => {
+    api.get('/settings').then((res) => {
+      if (res.data?.success && res.data.data) {
+        setSettings((prev) => ({ ...prev, ...res.data.data }));
+      }
+    }).catch(() => {});
+
+    const handleUpdate = (e) => {
+      if (e.detail?.settings) {
+        setSettings((prev) => ({ ...prev, ...e.detail.settings }));
+      }
+    };
+    window.addEventListener('ngo:settings-updated', handleUpdate);
+    return () => window.removeEventListener('ngo:settings-updated', handleUpdate);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -131,8 +159,15 @@ export default function Contact() {
         {/* Main Contact Grid: Info & Form */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Headquarters Information */}
-          <div className="lg:col-span-5 space-y-8">
-            <div className="glass-luxury-card p-8 space-y-6 rounded-3xl border border-[#D4AF37]/30 shadow-xl">
+          <div className="lg:col-span-5 space-y-8 relative">
+            <div className="glass-luxury-card p-8 space-y-6 rounded-3xl border border-[#D4AF37]/30 shadow-xl relative">
+              <SectionEditBadge
+                sectionKey="contact"
+                sectionLabel="Edit Contact Info"
+                onQuickEdit={openLiveEditor}
+                position="top-4 right-4"
+              />
+
               <div className="space-y-1 border-b border-[#D4AF37]/20 pb-4">
                 <span className="text-[10px] font-serif uppercase tracking-widest text-[#721C24] font-bold">
                   Official Monastic Seat
@@ -152,7 +187,7 @@ export default function Contact() {
                       Drodul Phendey Ling Foundation
                     </strong>
                     <span className="text-gray-600 leading-relaxed block">
-                      Great Druk Wangyel Peace Stupa Complex, Gelephu, Sarpang Dzongkhag, Kingdom of Bhutan
+                      {settings.contact_address || 'Great Druk Wangyel Peace Stupa Complex, Gelephu, Sarpang Dzongkhag, Kingdom of Bhutan'}
                     </span>
                     <span className="text-[10px] text-gray-400 block mt-1">
                       ROB Registered Religious Organization: ROB/CP-04/2021
@@ -166,7 +201,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <strong className="block text-gray-900 font-medium">Telephone & WhatsApp:</strong>
-                    <span className="text-gray-600">+975 17556559 / +975 17112233</span>
+                    <span className="text-gray-600 font-mono">{settings.contact_phone || '+975 17556559'}</span>
                   </div>
                 </div>
 
@@ -176,7 +211,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <strong className="block text-gray-900 font-medium">Official Dispatch:</strong>
-                    <span className="text-gray-600">contact@drodulphendeyling.org</span>
+                    <span className="text-gray-600 font-mono">{settings.contact_email || 'contact@drodulphendeyling.org'}</span>
                   </div>
                 </div>
 
@@ -186,7 +221,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <strong className="block text-gray-900 font-medium">Monastery Office Hours:</strong>
-                    <span className="text-gray-600">Mon - Sat: 08:00 AM - 05:00 PM (Bhutan Standard Time, UTC+6)</span>
+                    <span className="text-gray-600">{settings.contact_hours || 'Mon - Sat: 08:00 AM - 05:00 PM BST'}</span>
                   </div>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Play, Search, GraduationCap, Clock, BookOpen, Compass, Flame, Sparkles, Filter, X } from 'lucide-react';
+import SectionEditBadge from '../../components/SectionEditBadge';
 import api from '../../services/api';
 
 export default function Learning() {
@@ -65,6 +66,12 @@ export default function Learning() {
     <div className="w-full min-h-screen py-8 sm:py-16 px-3 xs:px-4 sm:px-8 relative z-10 max-w-7xl mx-auto space-y-8 sm:space-y-10">
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-[#070A12] via-[#120508] to-[#070A12] rounded-3xl p-6 xs:p-8 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40 animate-fade-in-up">
+        <SectionEditBadge
+          sectionKey="learning"
+          sectionLabel="Manage LMS & Dharma Videos"
+          onQuickEdit={() => window.location.href = '/admin/learning'}
+          position="top-4 right-4"
+        />
         <div className="relative z-10 max-w-3xl space-y-3 sm:space-y-4">
           <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5">
             <span>☸</span> Open Monastic Dharma Education

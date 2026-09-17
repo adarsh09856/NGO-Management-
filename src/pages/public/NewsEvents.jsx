@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, MapPin, ArrowRight, Clock, Sparkles, Bell, Heart } from 'lucide-react';
+import SectionEditBadge from '../../components/SectionEditBadge';
 import api from '../../services/api';
 
 export default function NewsEvents() {
@@ -85,6 +86,13 @@ export default function NewsEvents() {
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none"></div>
 
         <div className="max-w-5xl mx-auto relative z-10 text-center space-y-4 sm:space-y-6 animate-fade-in-up">
+          <SectionEditBadge
+            sectionKey="media"
+            sectionLabel="Manage News & Events in CMS"
+            onQuickEdit={() => window.location.href = '/admin/prayer-requests'}
+            position="top-0 right-0 sm:right-4"
+          />
+
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-serif uppercase tracking-widest backdrop-blur-md">
             <span className="text-sm">☸</span>
             <span className="truncate">༄༅། །དགེ་ལུགས་ཀྱི་མཛད་སྒོ་དང་གསལ་བསྒྲགས། · Ceremonial Gazette</span>

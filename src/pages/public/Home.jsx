@@ -8,6 +8,7 @@ import {
   TrendingUp, Clock, HelpCircle, Layers
 } from 'lucide-react';
 import DonationModal from '../../components/DonationModal';
+import SectionEditBadge from '../../components/SectionEditBadge';
 import api from '../../services/api';
 import { useCurrency } from '../../context/CurrencyContext';
 
@@ -25,26 +26,46 @@ export default function Home() {
   const [recentVideos, setRecentVideos] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
 
+  // Live Settings State from DB
+  const [liveSettings, setLiveSettings] = useState({
+    home_hero_title: 'BUILDING A SACRED LEGACY OF PEACE & WISDOM',
+    home_hero_subtitle: 'Constructing the monumental 108ft Great Druk Wangyel Peace Stupa, expanding the Shedra Monastic University, and preserving authentic Buddha Dharma for global harmony in Gelephu, Bhutan.',
+    home_hero_image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1800&q=85',
+    home_hero_cta_text: 'OFFER DANA / DONATE',
+    home_hero_cta_link: '/donate',
+    home_about_title: 'From Sacred Lineage to Global World Peace',
+    home_about_description: 'Nestled in the tranquil Himalayan foothills of Gelephu, Bhutan, Drodul Phendey Ling Foundation brings together revered Buddhist masters, dedicated monk scholars, and international patrons to preserve centuries-old Tibetan Buddhist heritage and complete the historic Great Druk Wangyel Peace Stupa.'
+  });
+
   const navigate = useNavigate();
+
+  const openLiveEditor = (sectionKey = 'hero') => {
+    window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: sectionKey } }));
+  };
 
   useEffect(() => {
     async function loadHomeData() {
       try {
         setLoadingData(true);
-        const [campaignsRes, blogRes, videoRes] = await Promise.all([
+        const [campaignsRes, blogRes, videoRes, settingsRes] = await Promise.all([
           api.get('/campaigns/public').catch(() => ({ data: { success: false } })),
-          api.get('/blog?limit=3').catch(() => ({ data: { success: false } })),
-          api.get('/learning').catch(() => ({ data: { success: false } }))
+          api.get('/blog?limit=6').catch(() => ({ data: { success: false } })),
+          api.get('/learning').catch(() => ({ data: { success: false } })),
+          api.get('/settings').catch(() => ({ data: { success: false } }))
         ]);
 
+        // Uncapped: show all active campaigns dynamically!
         if (campaignsRes.data?.success && campaignsRes.data.data?.length > 0) {
-          setCampaigns(campaignsRes.data.data.slice(0, 4));
+          setCampaigns(campaignsRes.data.data);
         }
         if (blogRes.data?.success && blogRes.data.data?.length > 0) {
           setRecentBlogs(blogRes.data.data.slice(0, 3));
         }
         if (videoRes.data?.success && videoRes.data.data?.length > 0) {
           setRecentVideos(videoRes.data.data.slice(0, 3));
+        }
+        if (settingsRes.data?.success && settingsRes.data.data) {
+          setLiveSettings((prev) => ({ ...prev, ...settingsRes.data.data }));
         }
       } catch (err) {
         console.error('Failed to load dynamic home data:', err);
@@ -53,6 +74,15 @@ export default function Home() {
       }
     }
     loadHomeData();
+
+    // Listen for instant live updates from the LiveSectionEditor
+    const handleSettingsUpdate = (e) => {
+      if (e.detail?.settings) {
+        setLiveSettings((prev) => ({ ...prev, ...e.detail.settings }));
+      }
+    };
+    window.addEventListener('ngo:settings-updated', handleSettingsUpdate);
+    return () => window.removeEventListener('ngo:settings-updated', handleSettingsUpdate);
   }, []);
 
   const handleOpenDonate = (causeTitle = 'Great Druk Wangyel Peace Stupa', defaultAmt = 1000) => {
@@ -67,10 +97,18 @@ export default function Home() {
       {/* 1. CINEMATIC MONASTIC HERO & LUXURY GIVING CAPSULE        */}
       {/* ========================================================= */}
       <section className="relative min-h-[640px] sm:min-h-[720px] bg-gradient-to-b from-[#070A12] via-[#0B0F19] to-[#120508] text-white overflow-hidden py-12 sm:py-20 px-3 xs:px-4 sm:px-8 flex items-center">
-        {/* Background Dochula Peace Stupas with High-Res Monastic Atmosphere */}
+        {/* Quick Edit Badge for Admin */}
+        <SectionEditBadge
+          sectionKey="hero"
+          sectionLabel="Edit Hero Banner"
+          onQuickEdit={openLiveEditor}
+          position="top-4 right-4 sm:top-6 sm:right-6"
+        />
+
+        {/* Background with Live Image Support */}
         <div
-          className="absolute inset-0 opacity-30 mix-blend-luminosity bg-cover bg-center pointer-events-none scale-105 transition-transform duration-1000"
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1800&q=85')` }}
+          className="absolute inset-0 opacity-35 mix-blend-luminosity bg-cover bg-center pointer-events-none scale-105 transition-all duration-1000"
+          style={{ backgroundImage: `url('${liveSettings.home_hero_image || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1800&q=85'}')` }}
         />
         {/* Ambient Radiant Glow & Vignette */}
         <div className="absolute inset-0 bg-radial-vignette opacity-80 pointer-events-none" />
@@ -87,13 +125,17 @@ export default function Home() {
               <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-amber-200 truncate">Gelephu, Bhutan</span>
             </div>
 
-            <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-wide leading-[1.15] drop-shadow-xl break-words">
-              BUILDING A SACRED LEGACY <br />
-              <span className="gold-foil-text font-serif">OF PEACE & WISDOM</span>
+            <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-wide leading-[1.15] drop-shadow-xl break-words uppercase">
+              {liveSettings.home_hero_title || (
+                <>
+                  BUILDING A SACRED LEGACY <br />
+                  <span className="gold-foil-text font-serif">OF PEACE & WISDOM</span>
+                </>
+              )}
             </h1>
 
             <p className="text-xs sm:text-base text-gray-300 max-w-xl font-light leading-relaxed">
-              Constructing the monumental 108ft Great Druk Wangyel Peace Stupa, expanding the Shedra Monastic University, and preserving authentic Buddha Dharma for global harmony in Gelephu, Bhutan.
+              {liveSettings.home_hero_subtitle || 'Constructing the monumental 108ft Great Druk Wangyel Peace Stupa, expanding the Shedra Monastic University, and preserving authentic Buddha Dharma for global harmony in Gelephu, Bhutan.'}
             </p>
 
             {/* CTAs */}
@@ -103,11 +145,11 @@ export default function Home() {
                 className="monastic-gold-btn px-6 sm:px-8 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2.5 shadow-2xl transition-all group"
               >
                 <Heart className="w-4 h-4 text-[#721C24] fill-[#721C24] group-hover:scale-125 transition-transform" />
-                <span className="font-serif-brand tracking-widest">OFFER DANA / DONATE</span>
+                <span className="font-serif-brand tracking-widest">{liveSettings.home_hero_cta_text || 'OFFER DANA / DONATE'}</span>
               </button>
 
               <Link
-                to="/about"
+                to={liveSettings.home_hero_cta_link || '/about'}
                 className="bg-white/10 hover:bg-white/20 backdrop-blur-xl text-white px-6 sm:px-7 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 border border-white/30 transition-all hover:border-[#D4AF37] shadow-lg group"
               >
                 <span>EXPLORE OUR WORK</span>
@@ -238,6 +280,12 @@ export default function Home() {
       {/* 2. IMPACT STATS RIBBON                                    */}
       {/* ========================================================= */}
       <section className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-8 relative z-10 -mt-6 sm:-mt-12">
+        <SectionEditBadge
+          sectionKey="about"
+          sectionLabel="Edit Stats"
+          onQuickEdit={openLiveEditor}
+          position="top-1 right-6"
+        />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {/* Stat 1: Stupa */}
           <div className="glass-luxury-card p-4 sm:p-6 rounded-2xl flex flex-col xs:flex-row items-start xs:items-center space-y-2 xs:space-y-0 xs:space-x-3.5 sm:space-x-4 border-l-4 border-l-amber-500 hover:-translate-y-1 transition-all duration-300">
@@ -300,7 +348,13 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 3. DYNAMIC FEATURED CAMPAIGNS (Real DB Data)              */}
       {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 space-y-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-8 space-y-8 relative">
+        <SectionEditBadge
+          sectionKey="donate"
+          sectionLabel="Manage Campaigns"
+          onQuickEdit={openLiveEditor}
+          position="top-0 right-4 sm:right-8"
+        />
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-gray-200 pb-4">
           <div>
             <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
@@ -321,59 +375,40 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {campaigns.length > 0 ? (
-            campaigns.map((camp) => {
-              const target = Number(camp.target_amount) || 1000000;
-              const raised = Number(camp.total_raised_computed) || 0;
-              const percent = Math.min(Math.round((raised / target) * 100), 100);
+            campaigns.map((c) => {
+              const target = Number(c.target_amount || c.targetAmount || 1000000);
+              const raised = Number(c.current_amount || c.currentAmount || 0);
+              const pct = target > 0 ? Math.min(100, Math.round((raised / target) * 100)) : 0;
+              const imgUrl = c.banner_image || c.image_url || c.imageUrl || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80';
 
               return (
-                <div
-                  key={camp.id}
-                  className="glass-luxury-card overflow-hidden rounded-2xl flex flex-col justify-between group border border-gray-200/80"
-                >
+                <div key={c.id} className="glass-luxury-card overflow-hidden rounded-2xl flex flex-col justify-between group border border-gray-200/80">
                   <div>
                     <div className="relative h-44 overflow-hidden bg-gray-900">
                       <img
-                        src={camp.banner_image || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80'}
-                        alt={camp.title}
-                        onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80'; }}
+                        src={imgUrl}
+                        alt={c.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
                       />
-                      <div className="absolute top-3 left-3 glow-pill-gold px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-                        {camp.currency || currency || 'BTN'} Goal
-                      </div>
                     </div>
-
                     <div className="p-5 space-y-3">
                       <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] line-clamp-2 leading-snug group-hover:text-[#721C24] transition-colors">
-                        {camp.title}
+                        {c.title}
                       </h3>
-                      <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
-                        {camp.description}
-                      </p>
-
-                      {/* Progress Bar */}
                       <div className="space-y-1.5 pt-1">
                         <div className="flex justify-between text-[11px] font-semibold text-gray-700">
                           <span>Raised: {currencySymbol}{raised.toLocaleString()}</span>
-                          <span className="text-[#721C24] font-bold">{percent}%</span>
+                          <span className="text-[#721C24] font-bold">{pct}%</span>
                         </div>
                         <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-700 rounded-full"
-                            style={{ width: `${Math.max(percent, 5)}%` }}
-                          />
+                          <div className="h-full bg-gradient-to-r from-[#D4AF37] to-[#721C24] rounded-full" style={{ width: `${pct}%` }} />
                         </div>
-                        <p className="text-[10px] text-gray-500 text-right">
-                          Target: {currencySymbol}{target.toLocaleString()}
-                        </p>
                       </div>
                     </div>
                   </div>
-
                   <div className="p-5 pt-0">
                     <button
-                      onClick={() => handleOpenDonate(camp.title, 1000)}
+                      onClick={() => handleOpenDonate(c.title, 1000)}
                       className="w-full monastic-maroon-btn py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm"
                     >
                       <Heart className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37]" />
@@ -428,7 +463,13 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 4. MONASTERY DOCUMENTARY STORY BANNER                      */}
       {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-8 relative">
+        <SectionEditBadge
+          sectionKey="about"
+          sectionLabel="Edit Story & Vision"
+          onQuickEdit={openLiveEditor}
+          position="top-4 right-8"
+        />
         <div className="glass-luxury-card overflow-hidden rounded-3xl p-6 sm:p-10 border border-gray-200/80 shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left: Video Preview */}
@@ -469,11 +510,11 @@ export default function Home() {
               </div>
 
               <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#0F172A] leading-snug">
-                From Sacred Lineage to Global World Peace
+                {liveSettings.home_about_title || 'From Sacred Lineage to Global World Peace'}
               </h2>
 
               <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-light">
-                Nestled in the tranquil Himalayan foothills of Gelephu, Bhutan, Drodul Phendey Ling Foundation brings together revered Buddhist masters, dedicated monk scholars, and international patrons to preserve centuries-old Tibetan Buddhist heritage and complete the historic Great Druk Wangyel Peace Stupa.
+                {liveSettings.home_about_description || 'Nestled in the tranquil Himalayan foothills of Gelephu, Bhutan, Drodul Phendey Ling Foundation brings together revered Buddhist masters, dedicated monk scholars, and international patrons to preserve centuries-old Tibetan Buddhist heritage and complete the historic Great Druk Wangyel Peace Stupa.'}
               </p>
 
               <div className="pt-2 flex flex-wrap gap-4">
