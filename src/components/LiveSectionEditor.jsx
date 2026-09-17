@@ -75,11 +75,41 @@ export default function LiveSectionEditor({
     footer_copyright: '',
     social_facebook: '',
     social_instagram: '',
-    social_youtube: ''
+    social_youtube: '',
+
+    // 7. Prayers & Pujas
+    prayer_hero_title: '',
+    prayer_hero_subtitle: '',
+
+    // 8. Gallery
+    gallery_hero_title: '',
+    gallery_hero_subtitle: '',
+
+    // 9. Learning Videos
+    learning_hero_title: '',
+    learning_hero_subtitle: '',
+
+    // 10. Shedra Monastic
+    shedra_hero_title: '',
+    shedra_hero_subtitle: '',
+
+    // 11. Blog & Gazette
+    blog_hero_title: '',
+    blog_hero_subtitle: ''
   });
 
   useEffect(() => {
-    if (initialSection) setActiveTab(initialSection);
+    if (initialSection) {
+      if (initialSection === 'prayer' || initialSection === 'media' || initialSection === 'news' || initialSection === 'events') {
+        setActiveTab('prayers');
+      } else if (initialSection === 'stats' || initialSection === 'documentary') {
+        setActiveTab('about');
+      } else if (initialSection === 'banking') {
+        setActiveTab('donate');
+      } else {
+        setActiveTab(initialSection);
+      }
+    }
   }, [initialSection]);
 
   // Load existing settings on open
@@ -160,8 +190,13 @@ export default function LiveSectionEditor({
     { id: 'about', label: 'About & Mandate', icon: BookOpen },
     { id: 'contact', label: 'Contact Info', icon: Phone },
     { id: 'donate', label: 'Donation & Bank', icon: Heart },
-    { id: 'navbar', label: 'Header & Announcement', icon: Globe },
-    { id: 'footer', label: 'Footer & Social', icon: Building }
+    { id: 'navbar', label: 'Header & Utility', icon: Globe },
+    { id: 'footer', label: 'Footer & Social', icon: Building },
+    { id: 'prayers', label: 'Prayers & Puja', icon: Flame },
+    { id: 'shedra', label: 'Shedra Academy', icon: GraduationCap },
+    { id: 'learning', label: 'Dharma LMS', icon: Video },
+    { id: 'gallery', label: 'Gallery Photos', icon: Image },
+    { id: 'blog', label: 'Gazette & Blog', icon: FileText }
   ];
 
   return createPortal(
@@ -788,6 +823,251 @@ export default function LiveSectionEditor({
                         className="w-full p-2 rounded-lg border border-gray-300 font-mono"
                       />
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ========================================================= */}
+              {/* 7. PRAYERS & PUJAS TAB                                    */}
+              {/* ========================================================= */}
+              {activeTab === 'prayers' && (
+                <div className="space-y-4">
+                  <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900">
+                    <p className="font-bold">Sacred Puja & 108 Butter Lamp Offerings</p>
+                    <p className="text-[11px] text-amber-700">
+                      Configure ceremonial prayer dedications and link to full CMS management.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-1">Prayer Page Headline</label>
+                    <input
+                      type="text"
+                      value={formData.prayer_hero_title || ''}
+                      onChange={(e) => handleChange('prayer_hero_title', e.target.value)}
+                      placeholder="Sacred Ceremonial Prayers & 108 Butter Lamp Offerings"
+                      className="w-full p-2.5 rounded-lg border border-gray-300"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-1">Prayer Page Subtitle</label>
+                    <textarea
+                      rows={2}
+                      value={formData.prayer_hero_subtitle || ''}
+                      onChange={(e) => handleChange('prayer_hero_subtitle', e.target.value)}
+                      placeholder="Dedicate spiritual merit, obstacle clearance pujas, and light butter lamps in Gelephu, Bhutan."
+                      className="w-full p-2.5 rounded-lg border border-gray-300"
+                    />
+                  </div>
+
+                  <div className="p-3 bg-[#FAF5F0] rounded-xl border border-[#D4AF37]/40 flex items-center justify-between">
+                    <div>
+                      <p className="font-bold text-xs text-gray-900">CMS News & Ceremonies Studio</p>
+                      <p className="text-[11px] text-gray-500">Add ceremonies, ganachakra feasts, and pujas in Admin</p>
+                    </div>
+                    <a
+                      href="/admin/prayer-requests"
+                      className="px-3 py-1 rounded-lg bg-[#721C24] text-white text-xs font-bold hover:bg-[#8B2E24] transition-colors"
+                    >
+                      Open Studio →
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {/* ========================================================= */}
+              {/* 8. SHEDRA MONASTIC ACADEMY TAB                            */}
+              {/* ========================================================= */}
+              {activeTab === 'shedra' && (
+                <div className="space-y-4">
+                  <div className="p-3 bg-blue-50 rounded-xl border border-blue-200 text-blue-900">
+                    <p className="font-bold">Shedra Monastic Academy & Scholastic Curriculum</p>
+                    <p className="text-[11px] text-blue-700">
+                      Edit Shedra overview headlines and access monk scholar records in Admin.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-1">Shedra Headline</label>
+                    <input
+                      type="text"
+                      value={formData.shedra_hero_title || ''}
+                      onChange={(e) => handleChange('shedra_hero_title', e.target.value)}
+                      placeholder="Drodul Phendey Ling Shedra Monastic Academy"
+                      className="w-full p-2.5 rounded-lg border border-gray-300"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-1">Shedra Subtitle</label>
+                    <textarea
+                      rows={2}
+                      value={formData.shedra_hero_subtitle || ''}
+                      onChange={(e) => handleChange('shedra_hero_subtitle', e.target.value)}
+                      placeholder="Rooted in the Nalanda scholastic lineage of Bhutan, our Shedra trains monk scholars in Buddhist philosophy."
+                      className="w-full p-2.5 rounded-lg border border-gray-300"
+                    />
+                  </div>
+
+                  <div className="p-3 bg-blue-50/50 rounded-xl border border-blue-200 flex items-center justify-between">
+                    <div>
+                      <p className="font-bold text-xs text-gray-900">Monk Scholars & LMS Studio</p>
+                      <p className="text-[11px] text-gray-500">Manage monk roll, courses, and certificates</p>
+                    </div>
+                    <a
+                      href="/admin/monks"
+                      className="px-3 py-1 rounded-lg bg-[#721C24] text-white text-xs font-bold hover:bg-[#8B2E24] transition-colors"
+                    >
+                      Open Studio →
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {/* ========================================================= */}
+              {/* 9. DHARMA LEARNING TAB                                    */}
+              {/* ========================================================= */}
+              {activeTab === 'learning' && (
+                <div className="space-y-4">
+                  <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
+                    <p className="font-bold">Open Dharma Video Discourses & LMS</p>
+                    <p className="text-[11px] text-emerald-700">
+                      Configure open education discourses and manage video library in Admin.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-1">Learning Page Headline</label>
+                    <input
+                      type="text"
+                      value={formData.learning_hero_title || ''}
+                      onChange={(e) => handleChange('learning_hero_title', e.target.value)}
+                      placeholder="Learning & Dharma Video Discourses"
+                      className="w-full p-2.5 rounded-lg border border-gray-300"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-1">Learning Subtitle</label>
+                    <textarea
+                      rows={2}
+                      value={formData.learning_hero_subtitle || ''}
+                      onChange={(e) => handleChange('learning_hero_subtitle', e.target.value)}
+                      placeholder="Explore authentic Tibetan Buddhist teachings, meditation instructions, and philosophical commentaries."
+                      className="w-full p-2.5 rounded-lg border border-gray-300"
+                    />
+                  </div>
+
+                  <div className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-200 flex items-center justify-between">
+                    <div>
+                      <p className="font-bold text-xs text-gray-900">Learning Videos Studio</p>
+                      <p className="text-[11px] text-gray-500">Upload and curate Dharma videos and lectures</p>
+                    </div>
+                    <a
+                      href="/admin/learning"
+                      className="px-3 py-1 rounded-lg bg-[#721C24] text-white text-xs font-bold hover:bg-[#8B2E24] transition-colors"
+                    >
+                      Open Studio →
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {/* ========================================================= */}
+              {/* 10. PHOTO GALLERY TAB                                     */}
+              {/* ========================================================= */}
+              {activeTab === 'gallery' && (
+                <div className="space-y-4">
+                  <div className="p-3 bg-slate-100 rounded-xl border border-slate-200 text-slate-900">
+                    <p className="font-bold">Sacred Photo & Video Chronicles</p>
+                    <p className="text-[11px] text-slate-600">
+                      Configure gallery headlines and manage photo albums in Admin.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-1">Gallery Page Headline</label>
+                    <input
+                      type="text"
+                      value={formData.gallery_hero_title || ''}
+                      onChange={(e) => handleChange('gallery_hero_title', e.target.value)}
+                      placeholder="Sacred Photo & Video Chronicles"
+                      className="w-full p-2.5 rounded-lg border border-gray-300"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-1">Gallery Subtitle</label>
+                    <textarea
+                      rows={2}
+                      value={formData.gallery_hero_subtitle || ''}
+                      onChange={(e) => handleChange('gallery_hero_subtitle', e.target.value)}
+                      placeholder="High-resolution moments capturing stupa construction, daily monastic pujas, and Gelephu landscape."
+                      className="w-full p-2.5 rounded-lg border border-gray-300"
+                    />
+                  </div>
+
+                  <div className="p-3 bg-gray-100 rounded-xl border border-gray-200 flex items-center justify-between">
+                    <div>
+                      <p className="font-bold text-xs text-gray-900">Gallery Media Studio</p>
+                      <p className="text-[11px] text-gray-500">Upload high-res photos and video links</p>
+                    </div>
+                    <a
+                      href="/admin/gallery"
+                      className="px-3 py-1 rounded-lg bg-[#721C24] text-white text-xs font-bold hover:bg-[#8B2E24] transition-colors"
+                    >
+                      Open Studio →
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {/* ========================================================= */}
+              {/* 11. BLOG & GAZETTE TAB                                    */}
+              {/* ========================================================= */}
+              {activeTab === 'blog' && (
+                <div className="space-y-4">
+                  <div className="p-3 bg-rose-50 rounded-xl border border-rose-200 text-rose-900">
+                    <p className="font-bold">The Bodhi Path: Sacred Journal & Articles</p>
+                    <p className="text-[11px] text-rose-700">
+                      Manage publication titles and access full blog articles editor in Admin.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-1">Blog Gazette Headline</label>
+                    <input
+                      type="text"
+                      value={formData.blog_hero_title || ''}
+                      onChange={(e) => handleChange('blog_hero_title', e.target.value)}
+                      placeholder="The Bodhi Path: Sacred Journal & Monastic Chronicles"
+                      className="w-full p-2.5 rounded-lg border border-gray-300"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-1">Blog Gazette Subtitle</label>
+                    <textarea
+                      rows={2}
+                      value={formData.blog_hero_subtitle || ''}
+                      onChange={(e) => handleChange('blog_hero_subtitle', e.target.value)}
+                      placeholder="Spiritual discourses, Buddhist philosophical reflections, and living updates on the Great Druk Wangyel Peace Stupa."
+                      className="w-full p-2.5 rounded-lg border border-gray-300"
+                    />
+                  </div>
+
+                  <div className="p-3 bg-rose-50/50 rounded-xl border border-rose-200 flex items-center justify-between">
+                    <div>
+                      <p className="font-bold text-xs text-gray-900">Articles & Posts Studio</p>
+                      <p className="text-[11px] text-gray-500">Create, publish, and format Dharma articles</p>
+                    </div>
+                    <a
+                      href="/admin/blog"
+                      className="px-3 py-1 rounded-lg bg-[#721C24] text-white text-xs font-bold hover:bg-[#8B2E24] transition-colors"
+                    >
+                      Open Studio →
+                    </a>
                   </div>
                 </div>
               )}

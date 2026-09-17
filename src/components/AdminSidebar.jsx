@@ -86,7 +86,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
               }`}
             >
               <LayoutDashboard className="w-4 h-4 text-[#D4AF37]" />
-              <span>Dashboard Overview</span>
+              <span className="flex-1">Dashboard Overview</span>
+              <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-semibold uppercase tracking-wider">Live</span>
             </Link>
           </div>
 
@@ -107,7 +108,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <HeartHandshake className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Donations</span>
+                  <span className="flex-1">Donations</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-semibold uppercase tracking-wider">Track</span>
                 </Link>
 
                 <Link
@@ -120,7 +122,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <Flame className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Campaigns & Causes</span>
+                  <span className="flex-1">Campaigns & Causes</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-semibold uppercase tracking-wider">Appeals</span>
                 </Link>
 
                 <Link
@@ -133,7 +136,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <Users className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Donors Directory</span>
+                  <span className="flex-1">Donors Directory</span>
                 </Link>
 
                 <Link
@@ -146,7 +149,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <CreditCard className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Money Receipts (80G)</span>
+                  <span className="flex-1">Money Receipts</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-semibold uppercase tracking-wider">80G</span>
                 </Link>
 
                 <Link
@@ -159,7 +163,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <Landmark className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Accounts & Expenses</span>
+                  <span className="flex-1">Accounts & Expenses</span>
                 </Link>
 
                 <Link
@@ -332,7 +336,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <GraduationCap className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Monastic Scholars</span>
+                  <span className="flex-1">Monastic Scholars</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-semibold uppercase tracking-wider">Sangha</span>
                 </Link>
 
                 <Link
@@ -345,7 +350,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <BookOpen className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Curriculum & LMS</span>
+                  <span className="flex-1">Curriculum & LMS</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-semibold uppercase tracking-wider">LMS</span>
                 </Link>
 
                 <Link
@@ -358,7 +364,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <Award className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Certificates</span>
+                  <span className="flex-1">Certificates</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-semibold uppercase tracking-wider">Verify</span>
                 </Link>
               </div>
             </div>
@@ -381,7 +388,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <UserCog className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Users & Roles</span>
+                  <span className="flex-1">Users & Roles</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-semibold uppercase tracking-wider">Security</span>
                 </Link>
 
                 <Link
@@ -394,7 +402,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <Settings className="w-4 h-4 text-[#D4AF37]" />
-                  <span>System Settings</span>
+                  <span className="flex-1">System Settings</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-semibold uppercase tracking-wider">Sync</span>
                 </Link>
 
                 <Link
@@ -407,7 +416,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <ClipboardList className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Audit Logs</span>
+                  <span className="flex-1">Audit Logs</span>
                 </Link>
 
                 <Link
@@ -420,7 +429,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <BarChart3 className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Reports & Export</span>
+                  <span className="flex-1">Reports & Export</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-semibold uppercase tracking-wider">PDF</span>
                 </Link>
               </div>
             </div>

@@ -65,6 +65,26 @@
 }
 
 /* ===================================================
+   VISUAL EDITING & IN-PAGE LIVE BADGE ENGINE (HAB STYLE)
+   =================================================== */
+.ngo-section-edit-badge {
+  display: inline-flex;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+body.ngo-visual-edit-on .ngo-section-edit-badge {
+  animation: pulse-border 2s infinite ease-in-out;
+}
+@keyframes pulse-border {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
+  }
+}
+
+
+/* ===================================================
    ULTRA-LUXURY OBSIDIAN & LIQUID GOLD DESIGN ENGINE
    =================================================== */
 
