@@ -65,6 +65,13 @@ import StudentsMonks from './pages/admin/StudentsMonks';
 import LMSOverview from './pages/admin/LMSOverview';
 import Certificates from './pages/admin/Certificates';
 
+// Dedicated CMS Page Studios (HAB Parity)
+import PagesDirectory from './pages/admin/PagesDirectory';
+import HomePageStudio from './pages/admin/HomePageStudio';
+import AboutPageStudio from './pages/admin/AboutPageStudio';
+import DonateSettingsStudio from './pages/admin/DonateSettingsStudio';
+import SiteSettingsStudio from './pages/admin/SiteSettingsStudio';
+
 // Dedicated Student / Monk Portal
 import StudentLayout from './pages/student/StudentLayout';
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -78,14 +85,26 @@ import NotFound from './pages/public/NotFound';
 
 export default function App() {
   const [donateModalOpen, setDonateModalOpen] = useState(false);
-  const [liveEditorOpen, setLiveEditorOpen] = useState(false);
-  const [liveEditorSection, setLiveEditorSection] = useState('hero');
+  const [liveEditorState, setLiveEditorState] = useState({
+    isOpen: false,
+    sectionKey: 'hero',
+    sectionTitle: '',
+    studioHref: ''
+  });
 
-  // Global listener so any section badge can open the editor
+  // Global listener so any section badge can open the in-place editor modal
   React.useEffect(() => {
     const handleOpen = (e) => {
-      if (e.detail?.section) setLiveEditorSection(e.detail.section);
-      setLiveEditorOpen(true);
+      if (e.detail) {
+        setLiveEditorState({
+          isOpen: true,
+          sectionKey: e.detail.section || 'hero',
+          sectionTitle: e.detail.sectionTitle || '',
+          studioHref: e.detail.studioHref || ''
+        });
+      } else {
+        setLiveEditorState((prev) => ({ ...prev, isOpen: true }));
+      }
     };
     window.addEventListener('ngo:open-live-editor', handleOpen);
     return () => window.removeEventListener('ngo:open-live-editor', handleOpen);
@@ -102,7 +121,16 @@ export default function App() {
           path="/*"
           element={
             <div className="flex flex-col min-h-screen">
-              <AdminLiveBar onOpenEditor={(sec) => { setLiveEditorSection(sec); setLiveEditorOpen(true); }} />
+              <AdminLiveBar
+                onOpenEditor={(sec, title, href) =>
+                  setLiveEditorState({
+                    isOpen: true,
+                    sectionKey: sec || 'hero',
+                    sectionTitle: title || '',
+                    studioHref: href || ''
+                  })
+                }
+              />
               <Navbar onOpenDonate={() => setDonateModalOpen(true)} />
               <main className="flex-1">
                 <Routes>
@@ -129,9 +157,11 @@ export default function App() {
               <Footer />
               {donateModalOpen && <DonationModal onClose={() => setDonateModalOpen(false)} />}
               <LiveSectionEditor
-                isOpen={liveEditorOpen}
-                onClose={() => setLiveEditorOpen(false)}
-                initialSection={liveEditorSection}
+                isOpen={liveEditorState.isOpen}
+                onClose={() => setLiveEditorState((prev) => ({ ...prev, isOpen: false }))}
+                sectionKey={liveEditorState.sectionKey}
+                sectionTitle={liveEditorState.sectionTitle}
+                studioHref={liveEditorState.studioHref}
               />
             </div>
           }
@@ -238,6 +268,13 @@ export default function App() {
           <Route path="audit-logs" element={<AuditLog />} />
           <Route path="settings" element={<SystemSettings />} />
           <Route path="reports" element={<ReportsHub />} />
+
+          {/* Dedicated CMS Studios (HAB Parity) */}
+          <Route path="pages" element={<PagesDirectory />} />
+          <Route path="pages/home" element={<HomePageStudio />} />
+          <Route path="pages/about" element={<AboutPageStudio />} />
+          <Route path="donate-settings" element={<DonateSettingsStudio />} />
+          <Route path="site-settings" element={<SiteSettingsStudio />} />
         </Route>
       </Routes>
     </div>

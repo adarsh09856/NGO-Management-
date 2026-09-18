@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 /**
  * Universal Section Edit Badge matching HAB specification
  * Shows a glowing amber badge for authenticated administrators/staff
- * Provides both Quick In-Page Edit (Zap) and full Admin Studio (ExternalLink)
+ * Provides both Quick In-Page Edit (Zap modal popup) and full Admin Studio (ExternalLink)
  */
 export default function SectionEditBadge({
   sectionKey,
@@ -31,57 +31,86 @@ export default function SectionEditBadge({
 
   const displayLabel = label || sectionLabel || 'Edit Section';
 
-  // Default studio mapping if not explicitly passed
+  // Section to Studio exact routing map
   let resolvedStudioHref = studioHref;
   if (!resolvedStudioHref) {
     switch (sectionKey) {
       case 'hero':
+        resolvedStudioHref = '/admin/pages/home#hero';
+        break;
       case 'stats':
-      case 'documentary':
-        resolvedStudioHref = '/admin/settings';
+        resolvedStudioHref = '/admin/pages/home#stats';
         break;
       case 'campaigns':
-        resolvedStudioHref = '/admin/campaigns';
+        resolvedStudioHref = '/admin/pages/home#campaigns';
+        break;
+      case 'documentary':
+        resolvedStudioHref = '/admin/pages/home#documentary';
+        break;
+      case 'pillars':
+        resolvedStudioHref = '/admin/pages/home#pillars';
+        break;
+      case 'prayers':
+      case 'prayer':
+        resolvedStudioHref = '/admin/pages/home#prayers';
+        break;
+      case 'shedra':
+        resolvedStudioHref = '/admin/pages/home#shedra';
+        break;
+      case 'learning':
+        resolvedStudioHref = '/admin/pages/home#learning';
+        break;
+      case 'blog':
+        resolvedStudioHref = '/admin/pages/home#blog';
+        break;
+      case 'about-header':
+        resolvedStudioHref = '/admin/pages/about#header';
         break;
       case 'about':
-      case 'pillars':
-      case 'leadership':
-        resolvedStudioHref = '/admin/settings';
+        resolvedStudioHref = '/admin/pages/about#header';
         break;
-      case 'contact':
-        resolvedStudioHref = '/admin/crm';
+      case 'about-pillars':
+        resolvedStudioHref = '/admin/pages/about#pillars';
+        break;
+      case 'leadership':
+        resolvedStudioHref = '/admin/pages/about#leadership';
+        break;
+      case 'statutory':
+        resolvedStudioHref = '/admin/pages/about#statutory';
+        break;
+      case 'donate-hero':
+        resolvedStudioHref = '/admin/donate-settings#hero';
         break;
       case 'donate':
+        resolvedStudioHref = '/admin/donate-settings#hero';
+        break;
+      case 'donate-presets':
+        resolvedStudioHref = '/admin/donate-settings#presets';
+        break;
       case 'banking':
-        resolvedStudioHref = '/admin/donations';
+        resolvedStudioHref = '/admin/donate-settings#bank';
         break;
+      case 'tax':
+        resolvedStudioHref = '/admin/donate-settings#tax';
+        break;
+      case 'header':
       case 'navbar':
-      case 'footer':
-        resolvedStudioHref = '/admin/settings';
+        resolvedStudioHref = '/admin/site-settings#header';
         break;
-      case 'prayer':
-      case 'prayers':
-        resolvedStudioHref = '/admin/prayer-requests';
+      case 'footer':
+        resolvedStudioHref = '/admin/site-settings#footer';
+        break;
+      case 'contact':
+        resolvedStudioHref = '/admin/site-settings#contact';
+        break;
+      case 'social':
+        resolvedStudioHref = '/admin/site-settings#social';
         break;
       case 'gallery':
         resolvedStudioHref = '/admin/gallery';
         break;
-      case 'media':
-      case 'news':
-      case 'events':
-        resolvedStudioHref = '/admin/prayer-requests';
-        break;
-      case 'blog':
-        resolvedStudioHref = '/admin/blog';
-        break;
-      case 'learning':
-        resolvedStudioHref = '/admin/learning';
-        break;
-      case 'shedra':
-        resolvedStudioHref = '/admin/monks';
-        break;
       default:
-        resolvedStudioHref = '/admin/settings';
+        resolvedStudioHref = '/admin/pages/home';
     }
   }
 
@@ -91,7 +120,15 @@ export default function SectionEditBadge({
     if (onQuickEdit) {
       onQuickEdit(sectionKey);
     } else {
-      window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: sectionKey } }));
+      window.dispatchEvent(
+        new CustomEvent('ngo:open-live-editor', {
+          detail: {
+            section: sectionKey,
+            sectionTitle: displayLabel,
+            studioHref: resolvedStudioHref
+          }
+        })
+      );
     }
   };
 
@@ -114,7 +151,7 @@ export default function SectionEditBadge({
           type="button"
           onClick={handleQuickClick}
           className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#D4AF37]/20 hover:bg-[#D4AF37]/30 text-[#F6E05E] font-semibold border border-[#D4AF37]/40 transition-colors cursor-pointer text-[10px] sm:text-[10.5px]"
-          title={`Quick edit ${displayLabel} in slide-over drawer`}
+          title={`Quick edit ${displayLabel} in popup modal`}
         >
           <Zap className="w-2.5 h-2.5 text-[#D4AF37]" />
           <span>Quick Edit</span>

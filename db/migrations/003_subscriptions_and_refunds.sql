@@ -2,22 +2,20 @@
 -- Migration 003: Subscriptions, Recurring Pledges & Refund Columns
 -- ===================================================================
 
--- 1. Add Refund Tracking Columns to donations Table
-ALTER TABLE donations
-  ADD COLUMN IF NOT EXISTS refund_id VARCHAR(100) NULL,
-  ADD COLUMN IF NOT EXISTS refund_status ENUM('NONE', 'REQUESTED', 'PROCESSING', 'COMPLETED', 'FAILED') DEFAULT 'NONE',
-  ADD COLUMN IF NOT EXISTS refunded_amount DECIMAL(15,2) DEFAULT 0.00,
-  ADD COLUMN IF NOT EXISTS refund_reason TEXT NULL,
-  ADD COLUMN IF NOT EXISTS refunded_at DATETIME NULL;
+-- 1. Add Refund Tracking Columns to donations Table (Single statements for broad MySQL compatibility)
+ALTER TABLE donations ADD COLUMN IF NOT EXISTS refund_id VARCHAR(100) NULL;
+ALTER TABLE donations ADD COLUMN IF NOT EXISTS refund_status ENUM('NONE', 'REQUESTED', 'PROCESSING', 'COMPLETED', 'FAILED') DEFAULT 'NONE';
+ALTER TABLE donations ADD COLUMN IF NOT EXISTS refunded_amount DECIMAL(15,2) DEFAULT 0.00;
+ALTER TABLE donations ADD COLUMN IF NOT EXISTS refund_reason TEXT NULL;
+ALTER TABLE donations ADD COLUMN IF NOT EXISTS refunded_at DATETIME NULL;
 
 -- 2. Add Subscription Gateway Tracking to recurring_pledges Table
-ALTER TABLE recurring_pledges
-  ADD COLUMN IF NOT EXISTS gateway_subscription_id VARCHAR(100) NULL,
-  ADD COLUMN IF NOT EXISTS gateway_plan_id VARCHAR(100) NULL,
-  ADD COLUMN IF NOT EXISTS next_due_date DATE NULL,
-  ADD COLUMN IF NOT EXISTS failure_count INT DEFAULT 0,
-  ADD COLUMN IF NOT EXISTS last_charged_at DATETIME NULL,
-  ADD COLUMN IF NOT EXISTS cancelled_at DATETIME NULL;
+ALTER TABLE recurring_pledges ADD COLUMN IF NOT EXISTS gateway_subscription_id VARCHAR(100) NULL;
+ALTER TABLE recurring_pledges ADD COLUMN IF NOT EXISTS gateway_plan_id VARCHAR(100) NULL;
+ALTER TABLE recurring_pledges ADD COLUMN IF NOT EXISTS next_due_date DATE NULL;
+ALTER TABLE recurring_pledges ADD COLUMN IF NOT EXISTS failure_count INT DEFAULT 0;
+ALTER TABLE recurring_pledges ADD COLUMN IF NOT EXISTS last_charged_at DATETIME NULL;
+ALTER TABLE recurring_pledges ADD COLUMN IF NOT EXISTS cancelled_at DATETIME NULL;
 
 -- 3. Create Subscription Event Audit Table
 CREATE TABLE IF NOT EXISTS subscription_events (

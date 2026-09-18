@@ -144,7 +144,7 @@ export default function Donate() {
       {/* 1. Header Hero Banner */}
       <div data-ngo-section="donate-hero" className="bg-gradient-to-r from-[#070A12] via-[#120508] to-[#070A12] rounded-3xl p-6 xs:p-8 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40 animate-fade-in-up">
         <SectionEditBadge
-          sectionKey="donate"
+          sectionKey="donate-hero"
           sectionLabel="Edit Donate Hero"
           onQuickEdit={openLiveEditor}
           position="top-4 right-4 sm:top-6 sm:right-6"
@@ -152,12 +152,11 @@ export default function Donate() {
 
         <div
           className="absolute inset-0 opacity-25 bg-cover bg-center pointer-events-none mix-blend-luminosity"
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1400&q=80')` }}
+          style={{ backgroundImage: `url('${liveSettings.donate_hero_image || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1400&q=80'}')` }}
         />
         <div className="relative z-10 max-w-3xl space-y-4 sm:space-y-5">
           <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#D4AF37]/50 text-[#D4AF37] text-xs font-semibold">
-            <span className="font-tibetan text-sm">☸ མཆོད་འབུལ།</span>
-            <span>• Sacred Monastic Philanthropy</span>
+            <span className="font-tibetan text-sm">{liveSettings.donate_hero_badge || '☸ མཆོད་འབུལ། • Sacred Monastic Philanthropy'}</span>
           </div>
 
           <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-5xl text-white leading-tight">
@@ -313,7 +312,7 @@ export default function Donate() {
         {/* Bank Wire Details */}
         <div data-ngo-section="banking" className="lg:col-span-6 glass-luxury-card p-7 sm:p-8 rounded-2xl border border-gray-200/80 space-y-4 relative">
           <SectionEditBadge
-            sectionKey="donate"
+            sectionKey="banking"
             sectionLabel="Edit Bank Wire Details"
             onQuickEdit={openLiveEditor}
             position="top-4 right-4"
@@ -321,10 +320,10 @@ export default function Donate() {
 
           <h3 className="font-serif-brand font-bold text-base text-[#0F172A] uppercase tracking-wider flex items-center gap-2">
             <Building2 className="w-5 h-5 text-[#D4AF37]" />
-            <span>Direct Bank Transfer / Wire Details</span>
+            <span>{liveSettings.bank_title || 'Direct Bank Transfer / Wire Details'}</span>
           </h3>
           <p className="text-xs text-gray-600 leading-relaxed font-light">
-            Devotees preferring direct RTGS, NEFT, or international SWIFT wire transfers may remit directly to our official institutional account:
+            {liveSettings.bank_subtitle || 'Devotees preferring direct RTGS, NEFT, or international SWIFT wire transfers may remit directly to our official institutional account:'}
           </p>
 
           <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-2 text-xs font-mono text-gray-800">
@@ -335,7 +334,7 @@ export default function Donate() {
             <p><strong className="text-gray-600 font-sans">SWIFT Code:</strong> {liveSettings.bank_swift_code || 'BHUBBTBT'}</p>
           </div>
           <p className="text-[11px] text-gray-500 italic">
-            * After wire transfer, please email payment confirmation to <span className="font-semibold text-gray-700">contact@drodulphendeyling.org</span> for instant 80G tax receipt issuance.
+            * After wire transfer, please email payment confirmation to <span className="font-semibold text-gray-700">{liveSettings.contact_email || 'contact@drodulphendeyling.org'}</span> for instant 80G tax receipt issuance.
           </p>
         </div>
       </div>

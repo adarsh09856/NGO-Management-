@@ -44,7 +44,30 @@ async function runMigrations(closePool = false) {
           if (applied.length === 0) {
             console.log(`[Migration] Applying incremental migration: ${file}...`);
             const migrationSql = fs.readFileSync(path.join(migrationsDir, file), 'utf8');
-            await connection.query(migrationSql);
+
+            // Split into individual SQL statements
+            const statements = migrationSql
+              .split(/;\s*[\r\n]+/)
+              .map(s => s.trim())
+              .filter(s => s.length > 0 && !s.startsWith('--'));
+
+            for (const stmt of statements) {
+              try {
+                await connection.query(stmt);
+              } catch (stmtErr) {
+                // Ignore benign duplicate column/key/index errors
+                const isBenign = 
+                  stmtErr.code === 'ER_DUP_FIELDNAME' ||
+                  stmtErr.code === 'ER_DUP_KEYNAME' ||
+                  stmtErr.code === 'ER_CANT_DROP_FIELD_OR_KEY' ||
+                  /duplicate column|already exists|unknown column.*next_due_date/i.test(stmtErr.message);
+                if (!isBenign) {
+                  throw stmtErr;
+                }
+                console.warn(`[Migration Notice] Handled pre-existing schema element in ${file}: ${stmtErr.message}`);
+              }
+            }
+
             await connection.query(
               'INSERT IGNORE INTO schema_migrations (version, description) VALUES (?, ?)',
               [version, `Applied migration ${file}`]

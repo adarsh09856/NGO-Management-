@@ -120,9 +120,9 @@ export default function Home() {
           <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-left animate-fade-in-up">
             {/* Authentic Dzongkha Inscription Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-xl border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-semibold tracking-wider shadow-[0_0_20px_rgba(212,175,55,0.2)]">
-              <span className="font-tibetan text-xs sm:text-base truncate">༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པ།</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] flex-shrink-0" />
-              <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-amber-200 truncate">Gelephu, Bhutan</span>
+              <span className="font-tibetan text-xs sm:text-base truncate">
+                {liveSettings.home_hero_badge || '༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པ། • Gelephu, Bhutan'}
+              </span>
             </div>
 
             <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-wide leading-[1.15] drop-shadow-xl break-words uppercase">
@@ -149,10 +149,10 @@ export default function Home() {
               </button>
 
               <Link
-                to={liveSettings.home_hero_cta_link || '/about'}
+                to={liveSettings.home_hero_cta2_link || liveSettings.home_hero_cta_link || '/about'}
                 className="bg-white/10 hover:bg-white/20 backdrop-blur-xl text-white px-6 sm:px-7 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 border border-white/30 transition-all hover:border-[#D4AF37] shadow-lg group"
               >
-                <span>EXPLORE OUR WORK</span>
+                <span>{liveSettings.home_hero_cta2_text || 'EXPLORE OUR WORK'}</span>
                 <ArrowRight className="w-4 h-4 text-[#D4AF37] group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -281,8 +281,8 @@ export default function Home() {
       {/* ========================================================= */}
       <section data-ngo-section="stats" className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-8 relative z-10 -mt-6 sm:-mt-12">
         <SectionEditBadge
-          sectionKey="about"
-          sectionLabel="Edit Stats"
+          sectionKey="stats"
+          sectionLabel="Edit Stats Ribbon"
           onQuickEdit={openLiveEditor}
           position="top-1 right-6"
         />
@@ -293,8 +293,15 @@ export default function Home() {
               <Landmark className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <p className="font-serif-brand font-bold text-lg sm:text-2xl text-[#0F172A] leading-tight">108 Ft</p>
-              <p className="text-[11px] sm:text-xs text-gray-600 font-medium">Monumental Stupa</p>
+              <p className="font-serif-brand font-bold text-lg sm:text-2xl text-[#0F172A] leading-tight">
+                {liveSettings.stat1_num || '108 Ft'}
+              </p>
+              <p className="text-[11px] sm:text-xs text-gray-600 font-medium">
+                {liveSettings.stat1_label || 'Monumental Stupa'}
+              </p>
+              {liveSettings.stat1_sub && (
+                <p className="text-[10px] text-gray-400 font-light">{liveSettings.stat1_sub}</p>
+              )}
             </div>
           </div>
 
@@ -304,8 +311,15 @@ export default function Home() {
               <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <p className="font-serif-brand font-bold text-lg sm:text-2xl text-[#0F172A] leading-tight">350+</p>
-              <p className="text-[11px] sm:text-xs text-gray-600 font-medium">Monastic Scholars</p>
+              <p className="font-serif-brand font-bold text-lg sm:text-2xl text-[#0F172A] leading-tight">
+                {liveSettings.stat2_num || '350+'}
+              </p>
+              <p className="text-[11px] sm:text-xs text-gray-600 font-medium">
+                {liveSettings.stat2_label || 'Monastic Scholars'}
+              </p>
+              {liveSettings.stat2_sub && (
+                <p className="text-[10px] text-gray-400 font-light">{liveSettings.stat2_sub}</p>
+              )}
             </div>
           </div>
 
@@ -315,8 +329,15 @@ export default function Home() {
               <Flame className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <p className="font-serif-brand font-bold text-lg sm:text-2xl text-[#0F172A] leading-tight">100k+</p>
-              <p className="text-[11px] sm:text-xs text-gray-600 font-medium">Consecrated Prayers</p>
+              <p className="font-serif-brand font-bold text-lg sm:text-2xl text-[#0F172A] leading-tight">
+                {liveSettings.stat3_num || '100k+'}
+              </p>
+              <p className="text-[11px] sm:text-xs text-gray-600 font-medium">
+                {liveSettings.stat3_label || 'Consecrated Prayers'}
+              </p>
+              {liveSettings.stat3_sub && (
+                <p className="text-[10px] text-gray-400 font-light">{liveSettings.stat3_sub}</p>
+              )}
             </div>
           </div>
 
@@ -326,8 +347,15 @@ export default function Home() {
               <Globe className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <p className="font-serif-brand font-bold text-lg sm:text-2xl text-[#0F172A] leading-tight">40+ Nations</p>
-              <p className="text-[11px] sm:text-xs text-gray-600 font-medium">Global Patronage</p>
+              <p className="font-serif-brand font-bold text-lg sm:text-2xl text-[#0F172A] leading-tight">
+                {liveSettings.stat4_num || '40+ Nations'}
+              </p>
+              <p className="text-[11px] sm:text-xs text-gray-600 font-medium">
+                {liveSettings.stat4_label || 'Global Patronage'}
+              </p>
+              {liveSettings.stat4_sub && (
+                <p className="text-[10px] text-gray-400 font-light">{liveSettings.stat4_sub}</p>
+              )}
             </div>
           </div>
         </div>
@@ -338,25 +366,28 @@ export default function Home() {
       {/* ========================================================= */}
       <section data-ngo-section="campaigns" className="max-w-7xl mx-auto px-4 sm:px-8 space-y-8 relative">
         <SectionEditBadge
-          sectionKey="donate"
-          sectionLabel="Manage Campaigns"
+          sectionKey="campaigns"
+          sectionLabel="Edit Campaigns Section"
           onQuickEdit={openLiveEditor}
           position="top-0 right-4 sm:right-8"
         />
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-gray-200 pb-4">
           <div>
             <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-              Sacred Philanthropy
+              {liveSettings.campaigns_badge || 'Sacred Philanthropy'}
             </span>
             <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#0F172A] mt-2">
-              Current Monastic & Stupa Campaigns
+              {liveSettings.campaigns_title || 'Current Monastic & Stupa Campaigns'}
             </h2>
+            {liveSettings.campaigns_subtitle && (
+              <p className="text-xs text-gray-600 mt-1 font-light">{liveSettings.campaigns_subtitle}</p>
+            )}
           </div>
           <Link
-            to="/donate"
+            to={liveSettings.campaigns_cta_link || '/donate'}
             className="text-xs font-bold text-[#721C24] hover:text-[#0F172A] flex items-center gap-1 group"
           >
-            <span>View All Causes</span>
+            <span>{liveSettings.campaigns_cta_text || 'View All Causes'}</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -454,8 +485,8 @@ export default function Home() {
       {/* ========================================================= */}
       <section data-ngo-section="documentary" className="max-w-7xl mx-auto px-4 sm:px-8 relative">
         <SectionEditBadge
-          sectionKey="about"
-          sectionLabel="Edit Story & Vision"
+          sectionKey="documentary"
+          sectionLabel="Edit Documentary Film"
           onQuickEdit={openLiveEditor}
           position="top-4 right-8"
         />
@@ -467,7 +498,7 @@ export default function Home() {
               onClick={() => setVideoModalOpen(true)}
             >
               <img
-                src="https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?auto=format&fit=crop&w=1200&q=80"
+                src={liveSettings.doc_poster_image || 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?auto=format&fit=crop&w=1200&q=80'}
                 alt="Sacred Monastery Documentary"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-85"
               />
@@ -486,7 +517,7 @@ export default function Home() {
                   Sacred Monastery Documentary
                 </span>
                 <span className="glow-pill-gold px-2 py-0.5 rounded text-[10px] font-bold">
-                  8:24 mins
+                  {liveSettings.doc_duration || '8:24 mins'}
                 </span>
               </div>
             </div>
@@ -495,7 +526,7 @@ export default function Home() {
             <div className="lg:col-span-6 space-y-4">
               <div className="inline-flex items-center space-x-2 glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                 <Award className="w-4 h-4 text-amber-700" />
-                <span>Monastery Documentary & Vision</span>
+                <span>{liveSettings.doc_badge || 'Monastery Documentary & Vision'}</span>
               </div>
 
               <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#0F172A] leading-snug">
@@ -512,13 +543,13 @@ export default function Home() {
                   className="monastic-gold-btn px-6 py-3 rounded-full font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg"
                 >
                   <Play className="w-4 h-4 fill-[#070A12] text-[#070A12]" />
-                  <span>WATCH FULL FILM</span>
+                  <span>{liveSettings.doc_cta1_text || 'WATCH FULL FILM'}</span>
                 </button>
                 <Link
-                  to="/gallery"
+                  to={liveSettings.doc_cta2_link || '/gallery'}
                   className="bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 px-6 py-3 rounded-full font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-all hover:border-[#D4AF37]"
                 >
-                  <span>PHOTO ARCHIVES</span>
+                  <span>{liveSettings.doc_cta2_text || 'PHOTO ARCHIVES'}</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -532,20 +563,20 @@ export default function Home() {
       {/* ========================================================= */}
       <section data-ngo-section="pillars" className="max-w-7xl mx-auto px-4 sm:px-8 space-y-8 relative">
         <SectionEditBadge
-          sectionKey="about"
-          sectionLabel="Edit Pillars"
+          sectionKey="pillars"
+          sectionLabel="Edit Four Pillars"
           onQuickEdit={openLiveEditor}
           position="top-0 right-4 sm:right-8"
         />
         <div className="text-center space-y-2 max-w-2xl mx-auto">
           <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-            Our Noble Mission
+            {liveSettings.home_pillars_badge || 'Our Noble Mission'}
           </span>
           <h2 className="font-serif-brand font-bold text-2xl sm:text-3xl text-[#0F172A]">
-            Four Pillars of Sacred Merit
+            {liveSettings.home_pillars_title || 'Four Pillars of Sacred Merit'}
           </h2>
           <p className="text-xs sm:text-sm text-gray-600">
-            Dedicated programs empowering Buddhist scholarship, architectural preservation, and spiritual welfare.
+            {liveSettings.home_pillars_subtitle || 'Dedicated programs empowering Buddhist scholarship, architectural preservation, and spiritual welfare.'}
           </p>
         </div>
 
@@ -557,10 +588,10 @@ export default function Home() {
                 <Landmark className="w-6 h-6" />
               </div>
               <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
-                World Peace Stupa
+                {liveSettings.home_pillar1_title || 'World Peace Stupa'}
               </h3>
               <p className="text-xs text-gray-600 leading-relaxed font-light">
-                The 108-foot Great Druk Wangyel Peace Stupa houses sacred relics, 108 prayer wheels, and serves as a spiritual sanctuary for global harmony.
+                {liveSettings.home_pillar1_desc || 'The 108-foot Great Druk Wangyel Peace Stupa houses sacred relics, 108 prayer wheels, and serves as a spiritual sanctuary for global harmony.'}
               </p>
             </div>
             <Link
@@ -579,10 +610,10 @@ export default function Home() {
                 <GraduationCap className="w-6 h-6" />
               </div>
               <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
-                Shedra Monastic Institute
+                {liveSettings.home_pillar2_title || 'Shedra Monastic Institute'}
               </h3>
               <p className="text-xs text-gray-600 leading-relaxed font-light">
-                Residential monastic higher university providing full scholarships, classical Dharma curriculum, philosophical debate, and retreat facilities.
+                {liveSettings.home_pillar2_desc || 'Residential monastic higher university providing full scholarships, classical Dharma curriculum, philosophical debate, and retreat facilities.'}
               </p>
             </div>
             <Link
@@ -601,10 +632,10 @@ export default function Home() {
                 <Flame className="w-6 h-6" />
               </div>
               <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
-                Consecrated Prayers & Pujas
+                {liveSettings.home_pillar3_title || 'Consecrated Prayers & Pujas'}
               </h3>
               <p className="text-xs text-gray-600 leading-relaxed font-light">
-                Conducting daily Mahakala protector pujas, Medicine Buddha healing rituals, and 108 butter lamp illuminations for global sponsors.
+                {liveSettings.home_pillar3_desc || 'Conducting daily Mahakala protector pujas, Medicine Buddha healing rituals, and 108 butter lamp illuminations for global sponsors.'}
               </p>
             </div>
             <Link
@@ -623,10 +654,10 @@ export default function Home() {
                 <BookOpen className="w-6 h-6" />
               </div>
               <h3 className="font-serif-brand font-bold text-base text-[#0F172A]">
-                Digital Dharma & Texts
+                {liveSettings.home_pillar4_title || 'Digital Dharma & Texts'}
               </h3>
               <p className="text-xs text-gray-600 leading-relaxed font-light">
-                Digitizing sacred woodblock pecha manuscripts, preserving rare Vajrayana commentary texts, and translating treatises for global scholars.
+                {liveSettings.home_pillar4_desc || 'Digitizing sacred woodblock pecha manuscripts, preserving rare Vajrayana commentary texts, and translating treatises for global scholars.'}
               </p>
             </div>
             <Link
@@ -658,25 +689,29 @@ export default function Home() {
           <div className="relative z-10 max-w-2xl space-y-4">
             <div className="inline-flex items-center space-x-2 bg-amber-500/20 border border-amber-500/40 text-amber-300 px-3.5 py-1.5 rounded-full text-xs font-bold">
               <Flame className="w-4 h-4 text-amber-400" />
-              <span>Consecrated Daily Prayers</span>
+              <span>{liveSettings.home_prayers_badge || 'Consecrated Daily Prayers'}</span>
             </div>
 
             <h2 className="font-serif-brand font-extrabold text-2xl sm:text-4xl text-white leading-tight">
-              Offer 108 Sacred Butter Lamps <br />
-              <span className="gold-foil-text font-serif">For World Peace & Family Health</span>
+              {liveSettings.home_prayers_title || (
+                <>
+                  Offer 108 Sacred Butter Lamps <br />
+                  <span className="gold-foil-text font-serif">For World Peace & Family Health</span>
+                </>
+              )}
             </h2>
 
             <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-light">
-              Submit personal prayer intentions and names of loved ones. Our resident Shedra monks chant consecrated prayers and illuminate 108 brass butter lamps in the holy shrine altar.
+              {liveSettings.home_prayers_subtitle || 'Submit personal prayer intentions and names of loved ones. Our resident Shedra monks chant consecrated prayers and illuminate 108 brass butter lamps in the holy shrine altar.'}
             </p>
 
             <div className="pt-3 flex flex-wrap gap-4">
               <Link
-                to="/prayer-request"
+                to={liveSettings.home_prayers_cta_link || '/prayer-request'}
                 className="monastic-gold-btn px-7 py-3 rounded-full font-bold text-xs uppercase tracking-widest flex items-center space-x-2 shadow-xl"
               >
                 <Flame className="w-4 h-4 text-[#721C24]" />
-                <span>OFFER BUTTER LAMPS NOW</span>
+                <span>{liveSettings.home_prayers_cta_text || 'OFFER BUTTER LAMPS NOW'}</span>
               </Link>
             </div>
           </div>

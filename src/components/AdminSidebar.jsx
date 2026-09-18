@@ -5,7 +5,7 @@ import {
   Landmark, Warehouse, UserCheck, FolderKanban, MessageSquareShare,
   BarChart3, UserCog, Settings, ClipboardList, X, Flame,
   GraduationCap, Award, BookOpen, CreditCard, Coins, PlusCircle,
-  Users, ChevronRight, ExternalLink
+  Users, ChevronRight, ExternalLink, Globe, Sliders, Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../context/CurrencyContext';
@@ -90,6 +90,87 @@ export default function AdminSidebar({ isOpen, onClose }) {
               <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-semibold uppercase tracking-wider">Live</span>
             </Link>
           </div>
+
+          {/* 1.5. WEB & PAGE STUDIOS (CMS) */}
+          {(isSuperAdmin || isStaff) && (
+            <div>
+              <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center justify-between">
+                <span>Web & Page Studios</span>
+                <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-[#D4AF37] font-bold tracking-wider">CMS</span>
+              </div>
+              <div className="space-y-0.5">
+                <Link
+                  to="/admin/pages"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/pages', true)
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <Globe className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Pages Directory</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-semibold">10 Pages</span>
+                </Link>
+
+                <Link
+                  to="/admin/pages/home"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/pages/home')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <Sparkles className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Homepage Studio</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-semibold">8 Sec</span>
+                </Link>
+
+                <Link
+                  to="/admin/pages/about"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/pages/about')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <BookOpen className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">About Us Studio</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-semibold">4 Sec</span>
+                </Link>
+
+                <Link
+                  to="/admin/donate-settings"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/donate-settings')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <HeartHandshake className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Donate & Banking</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-semibold">Bank / 80G</span>
+                </Link>
+
+                <Link
+                  to="/admin/site-settings"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/site-settings')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <Sliders className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Global Site Settings</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-semibold">Header/Footer</span>
+                </Link>
+              </div>
+            </div>
+          )}
 
           {/* 2. DONATIONS & FINANCE (Super Admin & Accountant) */}
           {(isSuperAdmin || isAccountant) && (
