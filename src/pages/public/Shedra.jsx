@@ -30,6 +30,38 @@ export default function Shedra() {
   const [inquiryMessage, setInquiryMessage] = useState('');
   const [inquirySubmitting, setInquirySubmitting] = useState(false);
 
+  const [settings, setSettings] = useState({
+    shedra_hero_badge: 'Center for Advanced Buddhist Epistemology & Scholastic Studies',
+    shedra_hero_title: 'Drodul Phendey Ling Shedra Monastic Academy',
+    shedra_hero_subtitle: 'Rooted in the ancient Nalanda scholastic lineage of Bhutan, our Shedra trains monk scholars in the Five Great Treatises of Buddhist Philosophy over a rigorous 9-year Master of Buddhist Studies (Acharya) curriculum.',
+    shedra_hero_image: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1400&q=80',
+    shedra_shastras_badge: 'Scholastic Heritage',
+    shedra_shastras_title: 'The Five Great Shastras',
+    shedra_shastras_subtitle: 'Every monk scholar must master debate, textual translation, and meditation upon the five comprehensive pillars of classical Indian and Tibetan Buddhism.',
+    shedra_admit_pill: 'Join the Academy',
+    shedra_admit_title: 'Study Buddhist Dialectics & Epistemology',
+    shedra_admit_desc: 'Drodul Phendey Ling Shedra welcomes applications from ordained novice monks, transferred monastic scholars, and lay devotees seeking deep immersion in Buddhist classical philosophy.',
+    shedra_benefit_1: 'Full monastic scholarship, boarding, and meals provided for all enrolled monks',
+    shedra_benefit_2: 'Degrees recognized under Bhutanese Monastic Educational Council',
+    shedra_benefit_3: 'Daily debate practice in traditional stone courtyards',
+  });
+
+  useEffect(() => {
+    api.get('/settings').then((res) => {
+      if (res.data?.success && res.data.data) {
+        setSettings((prev) => ({ ...prev, ...res.data.data }));
+      }
+    }).catch(() => {});
+
+    const handleUpdate = (e) => {
+      if (e.detail?.settings) {
+        setSettings((prev) => ({ ...prev, ...e.detail.settings }));
+      }
+    };
+    window.addEventListener('ngo:settings-updated', handleUpdate);
+    return () => window.removeEventListener('ngo:settings-updated', handleUpdate);
+  }, []);
+
   // Load public Shedra courses created in Admin LMS
   useEffect(() => {
     async function fetchPublicCourses() {
@@ -153,28 +185,27 @@ export default function Shedra() {
       {/* 1. HERO BANNER */}
       <section data-ngo-section="shedra-hero" className="bg-gradient-to-r from-[#0B0F19] via-[#1A0B0E] to-[#0B0F19] rounded-3xl p-6 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40 animate-fadeIn">
         <SectionEditBadge
-          sectionKey="shedra"
-          sectionLabel="Manage Shedra Courses & Monks"
-          onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'shedra' } }))}
+          sectionKey="shedra-hero"
+          sectionLabel="Edit Shedra Hero Banner"
+          onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'shedra-hero' } }))}
           position="top-4 right-4"
         />
         <div
           className="absolute inset-0 opacity-20 bg-cover bg-center pointer-events-none mix-blend-luminosity"
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1400&q=80')` }}
+          style={{ backgroundImage: `url('${settings.shedra_hero_image || 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1400&q=80'}')` }}
         />
         <div className="relative z-10 max-w-3xl space-y-5">
           <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#D4AF37]/50 text-[#D4AF37] text-xs font-semibold">
             <GraduationCap className="w-4 h-4" />
-            <span>Center for Advanced Buddhist Epistemology & Scholastic Studies</span>
+            <span>{settings.shedra_hero_badge || 'Center for Advanced Buddhist Epistemology & Scholastic Studies'}</span>
           </div>
 
           <h1 className="font-editorial text-2xl sm:text-4xl md:text-5xl font-bold text-[#FCFBF9] leading-tight">
-            Drodul Phendey Ling <br className="hidden sm:inline" />
-            <span className="text-[#D4AF37]">Shedra Monastic Academy</span>
+            {settings.shedra_hero_title || 'Drodul Phendey Ling Shedra Monastic Academy'}
           </h1>
 
           <p className="text-gray-300 text-xs sm:text-base leading-relaxed font-sans max-w-2xl">
-            Rooted in the ancient Nalanda scholastic lineage of Bhutan, our Shedra trains monk scholars in the Five Great Treatises of Buddhist Philosophy over a rigorous 9-year Master of Buddhist Studies (Acharya) curriculum.
+            {settings.shedra_hero_subtitle || 'Rooted in the ancient Nalanda scholastic lineage of Bhutan, our Shedra trains monk scholars in the Five Great Treatises of Buddhist Philosophy over a rigorous 9-year Master of Buddhist Studies (Acharya) curriculum.'}
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2 font-sans">
@@ -208,18 +239,18 @@ export default function Shedra() {
       {/* 2. THE 5 GREAT PILLARS OF BUDDHIST SCHOLARSHIP */}
       <section data-ngo-section="shedra-curriculum" className="space-y-6 relative" id="curriculum">
         <SectionEditBadge
-          sectionKey="shedra"
+          sectionKey="shedra-curriculum"
           sectionLabel="Edit Curriculum Shastras"
-          onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'shedra' } }))}
+          onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'shedra-curriculum' } }))}
           position="top-0 right-4"
         />
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <span className="text-amber-800 font-bold uppercase text-xs tracking-widest">Scholastic Heritage</span>
+          <span className="text-amber-800 font-bold uppercase text-xs tracking-widest">{settings.shedra_shastras_badge || 'Scholastic Heritage'}</span>
           <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-[#1A0B0E]">
-            The Five Great Shastras
+            {settings.shedra_shastras_title || 'The Five Great Shastras'}
           </h2>
           <p className="text-gray-600 text-xs sm:text-sm font-sans">
-            Every monk scholar must master debate, textual translation, and meditation upon the five comprehensive pillars of classical Indian and Tibetan Buddhism.
+            {settings.shedra_shastras_subtitle || 'Every monk scholar must master debate, textual translation, and meditation upon the five comprehensive pillars of classical Indian and Tibetan Buddhism.'}
           </p>
         </div>
 
@@ -484,29 +515,35 @@ export default function Shedra() {
       </section>
 
       {/* 5. ACADEMIC & ADMISSION INQUIRY FORM */}
-      <section className="bg-white rounded-3xl p-6 sm:p-12 border border-[#D4AF37]/30 shadow-md">
+      <section data-ngo-section="shedra-admissions" className="bg-white rounded-3xl p-6 sm:p-12 border border-[#D4AF37]/30 shadow-md relative">
+        <SectionEditBadge
+          sectionKey="shedra-admissions"
+          sectionLabel="Edit Admissions & Scholarships"
+          onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'shedra-admissions' } }))}
+          position="top-4 right-4"
+        />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center font-sans">
           <div className="space-y-4 font-serif">
-            <span className="text-amber-800 font-bold uppercase text-xs tracking-widest">Join the Academy</span>
+            <span className="text-amber-800 font-bold uppercase text-xs tracking-widest">{settings.shedra_admit_pill || 'Join the Academy'}</span>
             <h2 className="font-editorial text-2xl sm:text-4xl font-bold text-[#1A0B0E] leading-tight">
-              Study Buddhist Dialectics & Epistemology
+              {settings.shedra_admit_title || 'Study Buddhist Dialectics & Epistemology'}
             </h2>
             <p className="text-gray-600 text-xs sm:text-sm leading-relaxed font-sans">
-              Drodul Phendey Ling Shedra welcomes applications from ordained novice monks, transferred monastic scholars, and lay devotees seeking deep immersion in Buddhist classical philosophy.
+              {settings.shedra_admit_desc || 'Drodul Phendey Ling Shedra welcomes applications from ordained novice monks, transferred monastic scholars, and lay devotees seeking deep immersion in Buddhist classical philosophy.'}
             </p>
 
             <div className="space-y-2 pt-2 text-xs font-sans">
               <div className="flex items-center gap-2 text-gray-700">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                <span>Full monastic scholarship, boarding, and meals provided for all enrolled monks</span>
+                <span>{settings.shedra_benefit_1 || 'Full monastic scholarship, boarding, and meals provided for all enrolled monks'}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-700">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                <span>Degrees recognized under Bhutanese Monastic Educational Council</span>
+                <span>{settings.shedra_benefit_2 || 'Degrees recognized under Bhutanese Monastic Educational Council'}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-700">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                <span>Daily debate practice in traditional stone courtyards</span>
+                <span>{settings.shedra_benefit_3 || 'Daily debate practice in traditional stone courtyards'}</span>
               </div>
             </div>
           </div>

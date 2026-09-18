@@ -309,7 +309,126 @@ export default function LiveSectionEditor({
     },
     contact: {
       title: 'Monastery Secretariat & Contact Info',
-      studio: '/admin/site-settings#contact',
+      studio: '/admin/pages/contact#hero',
+      hasActions: true,
+      hasMedia: false,
+      hasCards: false
+    },
+    'contact-hero': {
+      title: 'Contact Desk Hero & Inscription',
+      studio: '/admin/pages/contact#hero',
+      hasActions: false,
+      hasMedia: false,
+      hasCards: false
+    },
+    'contact-seat': {
+      title: 'Secretariat Seat & Address',
+      studio: '/admin/pages/contact#seat',
+      hasActions: false,
+      hasMedia: false,
+      hasCards: false
+    },
+    'contact-dir': {
+      title: 'Department Contact Directory',
+      studio: '/admin/pages/contact#directory',
+      hasActions: false,
+      hasMedia: false,
+      hasCards: true
+    },
+    'contact-visiting': {
+      title: 'Visiting Hours & Monastery Map',
+      studio: '/admin/pages/contact#visiting',
+      hasActions: false,
+      hasMedia: false,
+      hasCards: false
+    },
+    'shedra-hero': {
+      title: 'Shedra Academy Hero Banner',
+      studio: '/admin/pages/shedra#hero',
+      hasActions: true,
+      hasMedia: true,
+      hasCards: false
+    },
+    'shedra-curriculum': {
+      title: 'Five Great Shastras of Shedra',
+      studio: '/admin/pages/shedra#curriculum',
+      hasActions: false,
+      hasMedia: false,
+      hasCards: true
+    },
+    'shedra-facilities': {
+      title: 'Monastic Campus Facilities',
+      studio: '/admin/pages/shedra#facilities',
+      hasActions: false,
+      hasMedia: false,
+      hasCards: true
+    },
+    'shedra-admissions': {
+      title: 'Shedra Admissions & Benefits',
+      studio: '/admin/pages/shedra#admissions',
+      hasActions: true,
+      hasMedia: false,
+      hasCards: true
+    },
+    'prayer-hero': {
+      title: 'Ceremonial Prayers Hero Banner',
+      studio: '/admin/pages/prayers#hero',
+      hasActions: false,
+      hasMedia: false,
+      hasCards: false
+    },
+    'prayer-lamps': {
+      title: '108 Butter Lamp Offering Tiers',
+      studio: '/admin/pages/prayers#butterlamps',
+      hasActions: false,
+      hasMedia: false,
+      hasCards: true
+    },
+    'prayer-pujas': {
+      title: 'Traditional Sacred Pujas',
+      studio: '/admin/pages/prayers#pujas',
+      hasActions: false,
+      hasMedia: false,
+      hasCards: true
+    },
+    'prayer-schedule': {
+      title: 'Shrine Daily Ritual Schedule',
+      studio: '/admin/pages/prayers#schedule',
+      hasActions: false,
+      hasMedia: false,
+      hasCards: false
+    },
+    'learning-hero': {
+      title: 'Dharma LMS Hero Banner',
+      studio: '/admin/learning',
+      hasActions: true,
+      hasMedia: false,
+      hasCards: false
+    },
+    'blog-hero': {
+      title: 'Sacred Gazette Hero Banner',
+      studio: '/admin/blog',
+      hasActions: true,
+      hasMedia: false,
+      hasCards: false
+    },
+    'gallery-hero': {
+      title: 'Sacred Media Archives Hero Banner',
+      studio: '/admin/gallery',
+      hasActions: true,
+      hasMedia: false,
+      hasCards: false
+    },
+    news: {
+      title: 'Monastery Gazette & News Events',
+      studio: '/admin/blog',
+      hasActions: true,
+      hasMedia: false,
+      hasCards: false
+    },
+    'news-hero': {
+      title: 'News & Events Hero Banner',
+      studio: '/admin/blog',
       hasActions: true,
       hasMedia: false,
       hasCards: false
@@ -893,41 +1012,439 @@ export default function LiveSectionEditor({
                     )}
 
                     {/* SECTION: CONTACT */}
-                    {sectionKey === 'contact' && (
+                    {(sectionKey === 'contact' || sectionKey === 'contact-hero') && (
                       <>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Tibetan Eyebrow Inscription</label>
+                          <input
+                            type="text"
+                            value={form.contact_hero_badge || ''}
+                            onChange={(e) => updateField('contact_hero_badge', e.target.value)}
+                            placeholder="༄༅། །འབྲེལ་གཏུགས་དང་ཞབས་ཞུ། · Sacred Connection"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-tibetan"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Contact Page Headline</label>
+                          <input
+                            type="text"
+                            value={form.contact_hero_title || ''}
+                            onChange={(e) => updateField('contact_hero_title', e.target.value)}
+                            placeholder="Connect with Drodul Phendey Ling"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Contact Page Subtitle</label>
+                          <textarea
+                            rows={3}
+                            value={form.contact_hero_subtitle || ''}
+                            onChange={(e) => updateField('contact_hero_subtitle', e.target.value)}
+                            placeholder="Whether you wish to sponsor stupa construction, request ceremonial monastic pujas, enroll in the Shedra academy..."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {sectionKey === 'contact-seat' && (
+                      <>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Official Foundation Seat Name</label>
+                          <input
+                            type="text"
+                            value={form.contact_seat_name || ''}
+                            onChange={(e) => updateField('contact_seat_name', e.target.value)}
+                            placeholder="Drodul Phendey Ling Monastic Foundation Secretariat"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Physical Campus Address</label>
+                          <textarea
+                            rows={2}
+                            value={form.contact_seat_address || form.contact_address || ''}
+                            onChange={(e) => {
+                              updateField('contact_seat_address', e.target.value);
+                              updateField('contact_address', e.target.value);
+                            }}
+                            placeholder="Great Druk Wangyel Peace Stupa Complex, Gelephu, Sarpang Dzongkhag, Kingdom of Bhutan"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                          />
+                        </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-xs font-bold text-slate-700 mb-1">Contact Office Name</label>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Postal Box</label>
                             <input
                               type="text"
-                              value={form.contact_seat_title || ''}
-                              onChange={(e) => updateField('contact_seat_title', e.target.value)}
-                              placeholder="Monastery Secretariat"
-                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                              value={form.contact_seat_pobox || ''}
+                              onChange={(e) => updateField('contact_seat_pobox', e.target.value)}
+                              placeholder="P.O. Box 210, Gelephu Post Office"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-bold text-slate-700 mb-1">Official Contact Email</label>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">ROB Registration</label>
+                            <input
+                              type="text"
+                              value={form.contact_seat_reg || ''}
+                              onChange={(e) => updateField('contact_seat_reg', e.target.value)}
+                              placeholder="ROB/2018/092"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {sectionKey === 'contact-dir' && (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">General Inquiries Phone</label>
+                            <input
+                              type="text"
+                              value={form.contact_general_phone || form.contact_phone || ''}
+                              onChange={(e) => {
+                                updateField('contact_general_phone', e.target.value);
+                                updateField('contact_phone', e.target.value);
+                              }}
+                              placeholder="+975 17556559"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">General Inquiries Email</label>
                             <input
                               type="email"
-                              value={form.contact_email || ''}
-                              onChange={(e) => updateField('contact_email', e.target.value)}
+                              value={form.contact_general_email || form.contact_email || ''}
+                              onChange={(e) => {
+                                updateField('contact_general_email', e.target.value);
+                                updateField('contact_email', e.target.value);
+                              }}
                               placeholder="contact@drodulphendeyling.org"
                               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
                             />
                           </div>
                         </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Abbot Office Email</label>
+                            <input
+                              type="email"
+                              value={form.contact_abbot_email || ''}
+                              onChange={(e) => updateField('contact_abbot_email', e.target.value)}
+                              placeholder="abbot@drodulphendeyling.org"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Stupa Dana Email</label>
+                            <input
+                              type="email"
+                              value={form.contact_dana_email || ''}
+                              onChange={(e) => updateField('contact_dana_email', e.target.value)}
+                              placeholder="donations@drodulphendeyling.org"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {sectionKey === 'contact-visiting' && (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Weekday Visiting Hours</label>
+                            <input
+                              type="text"
+                              value={form.contact_hours_weekdays || ''}
+                              onChange={(e) => updateField('contact_hours_weekdays', e.target.value)}
+                              placeholder="Mon - Sat: 08:00 AM - 05:00 PM BST"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Sunday Sanctuary Hours</label>
+                            <input
+                              type="text"
+                              value={form.contact_hours_sunday || ''}
+                              onChange={(e) => updateField('contact_hours_sunday', e.target.value)}
+                              placeholder="Sunday: 09:00 AM - 01:00 PM"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                        </div>
                         <div>
-                          <label className="block text-xs font-bold text-slate-700 mb-1">Physical Seat Address</label>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Pilgrim Etiquette Notice</label>
                           <textarea
                             rows={2}
-                            value={form.contact_address || ''}
-                            onChange={(e) => updateField('contact_address', e.target.value)}
-                            placeholder="Drodul Phendey Ling Foundation, Near Peace Stupa Complex, Gelephu, Sarpang Dzongkhag, Kingdom of Bhutan"
+                            value={form.contact_visiting_notice || ''}
+                            onChange={(e) => updateField('contact_visiting_notice', e.target.value)}
+                            placeholder="Modest attire required within the stupa inner circumambulation courtyard..."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: SHEDRA HERO */}
+                    {sectionKey === 'shedra-hero' && (
+                      <>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Shedra Hero Badge</label>
+                          <input
+                            type="text"
+                            value={form.shedra_hero_badge || ''}
+                            onChange={(e) => updateField('shedra_hero_badge', e.target.value)}
+                            placeholder="Center for Advanced Buddhist Epistemology & Scholastic Studies"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Shedra Page Title</label>
+                          <input
+                            type="text"
+                            value={form.shedra_hero_title || ''}
+                            onChange={(e) => updateField('shedra_hero_title', e.target.value)}
+                            placeholder="Drodul Phendey Ling Shedra Monastic Academy"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Shedra Lede Subtitle</label>
+                          <textarea
+                            rows={3}
+                            value={form.shedra_hero_subtitle || ''}
+                            onChange={(e) => updateField('shedra_hero_subtitle', e.target.value)}
+                            placeholder="Rooted in the ancient Nalanda scholastic lineage of Bhutan..."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed"
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {/* SECTION: SHEDRA CURRICULUM */}
+                    {sectionKey === 'shedra-curriculum' && (
+                      <>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Section Eyebrow</label>
+                          <input
+                            type="text"
+                            value={form.shedra_shastras_badge || ''}
+                            onChange={(e) => updateField('shedra_shastras_badge', e.target.value)}
+                            placeholder="Scholastic Heritage"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Section Title</label>
+                          <input
+                            type="text"
+                            value={form.shedra_shastras_title || ''}
+                            onChange={(e) => updateField('shedra_shastras_title', e.target.value)}
+                            placeholder="The Five Great Shastras"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Curriculum Summary</label>
+                          <textarea
+                            rows={2}
+                            value={form.shedra_shastras_subtitle || ''}
+                            onChange={(e) => updateField('shedra_shastras_subtitle', e.target.value)}
+                            placeholder="Every monk scholar must master debate, textual translation..."
                             className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
                           />
                         </div>
                       </>
+                    )}
+
+                    {/* SECTION: SHEDRA FACILITIES */}
+                    {sectionKey === 'shedra-facilities' && (
+                      <>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Facilities Section Title</label>
+                          <input
+                            type="text"
+                            value={form.shedra_fac_title || ''}
+                            onChange={(e) => updateField('shedra_fac_title', e.target.value)}
+                            placeholder="Monastic Campus & Sacred Architecture"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Facilities Summary</label>
+                          <textarea
+                            rows={2}
+                            value={form.shedra_fac_desc || ''}
+                            onChange={(e) => updateField('shedra_fac_desc', e.target.value)}
+                            placeholder="Purpose-built traditional stone architecture housing modern classrooms..."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {/* SECTION: SHEDRA ADMISSIONS */}
+                    {sectionKey === 'shedra-admissions' && (
+                      <>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Admissions Eyebrow Pill</label>
+                          <input
+                            type="text"
+                            value={form.shedra_admit_pill || ''}
+                            onChange={(e) => updateField('shedra_admit_pill', e.target.value)}
+                            placeholder="Join the Academy"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Admissions Main Heading</label>
+                          <input
+                            type="text"
+                            value={form.shedra_admit_title || ''}
+                            onChange={(e) => updateField('shedra_admit_title', e.target.value)}
+                            placeholder="Study Buddhist Dialectics & Epistemology"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Admissions Description</label>
+                          <textarea
+                            rows={2}
+                            value={form.shedra_admit_desc || ''}
+                            onChange={(e) => updateField('shedra_admit_desc', e.target.value)}
+                            placeholder="Drodul Phendey Ling Shedra welcomes applications from ordained novice monks..."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {/* SECTION: PRAYERS HERO */}
+                    {(sectionKey === 'prayer-hero' || sectionKey === 'prayer' || sectionKey === 'prayer-header') && (
+                      <>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Tibetan Inscription / Eyebrow</label>
+                          <input
+                            type="text"
+                            value={form.prayer_tibetan_eyebrow || ''}
+                            onChange={(e) => updateField('prayer_tibetan_eyebrow', e.target.value)}
+                            placeholder="༄༅། །མར་མེ་སྨོན་ལམ། • Consecrated Sangha Pujas & Butter Lamps"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-tibetan"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Prayers Page Heading</label>
+                          <input
+                            type="text"
+                            value={form.prayer_hero_title || ''}
+                            onChange={(e) => updateField('prayer_hero_title', e.target.value)}
+                            placeholder="Sacred Prayer Dedication & Offerings"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Prayers Lede Subtitle</label>
+                          <textarea
+                            rows={3}
+                            value={form.prayer_hero_subtitle || ''}
+                            onChange={(e) => updateField('prayer_hero_subtitle', e.target.value)}
+                            placeholder="Our resident monastic Sangha at Drodul Phendey Ling recites daily consecrated prayers..."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed"
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {/* SECTION: PRAYER LAMPS */}
+                    {sectionKey === 'prayer-lamps' && (
+                      <>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Butter Lamps Badge</label>
+                          <input
+                            type="text"
+                            value={form.prayer_lamp_badge || ''}
+                            onChange={(e) => updateField('prayer_lamp_badge', e.target.value)}
+                            placeholder="Altar Illuminations"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Section Heading</label>
+                          <input
+                            type="text"
+                            value={form.prayer_lamp_title || ''}
+                            onChange={(e) => updateField('prayer_lamp_title', e.target.value)}
+                            placeholder="108 Sacred Butter Lamp Illuminations"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {/* SECTION: PRAYER PUJAS */}
+                    {sectionKey === 'prayer-pujas' && (
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Pujas Section Heading</label>
+                        <input
+                          type="text"
+                          value={form.prayer_puja_heading || ''}
+                          onChange={(e) => updateField('prayer_puja_heading', e.target.value)}
+                          placeholder="Traditional Ceremonial Pujas Conducted"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                        />
+                      </div>
+                    )}
+
+                    {/* SECTION: PRAYER SCHEDULE */}
+                    {sectionKey === 'prayer-schedule' && (
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Schedule Section Title</label>
+                          <input
+                            type="text"
+                            value={form.prayer_schedule_title || ''}
+                            onChange={(e) => updateField('prayer_schedule_title', e.target.value)}
+                            placeholder="Daily Monastic Puja Timetable"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Schedule Summary</label>
+                          <textarea
+                            rows={2}
+                            value={form.prayer_schedule_desc || ''}
+                            onChange={(e) => updateField('prayer_schedule_desc', e.target.value)}
+                            placeholder="Consecrated offerings are conducted at dawn and dusk..."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Morning Session</label>
+                            <input
+                              type="text"
+                              value={form.prayer_schedule_morning || ''}
+                              onChange={(e) => updateField('prayer_schedule_morning', e.target.value)}
+                              placeholder="05:30 AM - 07:30 AM: Morning Sang Offering"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Evening Session</label>
+                            <input
+                              type="text"
+                              value={form.prayer_schedule_evening || ''}
+                              onChange={(e) => updateField('prayer_schedule_evening', e.target.value)}
+                              placeholder="05:00 PM - 07:00 PM: 108 Butter Lamps"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </div>
                 )}
@@ -1450,6 +1967,221 @@ export default function LiveSectionEditor({
                               className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-mono"
                             />
                           </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SHEDRA: 5 GREAT SHASTRAS */}
+                    {sectionKey === 'shedra-curriculum' && (
+                      <div className="space-y-3">
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                          <span className="text-xs font-bold text-[#721C24]">Shastra 1: Madhyamaka (Middle Way)</span>
+                          <div className="grid grid-cols-2 gap-2">
+                            <input
+                              type="text"
+                              value={form.shastra1_title || ''}
+                              onChange={(e) => updateField('shastra1_title', e.target.value)}
+                              placeholder="Title"
+                              className="text-xs p-2 rounded-lg border border-slate-200 font-bold"
+                            />
+                            <input
+                              type="text"
+                              value={form.shastra1_years || ''}
+                              onChange={(e) => updateField('shastra1_years', e.target.value)}
+                              placeholder="Years (e.g. Years 4 - 6)"
+                              className="text-xs p-2 rounded-lg border border-slate-200 font-mono"
+                            />
+                          </div>
+                          <textarea
+                            rows={2}
+                            value={form.shastra1_desc || ''}
+                            onChange={(e) => updateField('shastra1_desc', e.target.value)}
+                            placeholder="Description"
+                            className="w-full text-xs p-2 rounded-lg border border-slate-200"
+                          />
+                        </div>
+
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                          <span className="text-xs font-bold text-[#721C24]">Shastra 2: Prajnaparamita (Wisdom)</span>
+                          <div className="grid grid-cols-2 gap-2">
+                            <input
+                              type="text"
+                              value={form.shastra2_title || ''}
+                              onChange={(e) => updateField('shastra2_title', e.target.value)}
+                              placeholder="Title"
+                              className="text-xs p-2 rounded-lg border border-slate-200 font-bold"
+                            />
+                            <input
+                              type="text"
+                              value={form.shastra2_years || ''}
+                              onChange={(e) => updateField('shastra2_years', e.target.value)}
+                              placeholder="Years"
+                              className="text-xs p-2 rounded-lg border border-slate-200 font-mono"
+                            />
+                          </div>
+                          <textarea
+                            rows={2}
+                            value={form.shastra2_desc || ''}
+                            onChange={(e) => updateField('shastra2_desc', e.target.value)}
+                            placeholder="Description"
+                            className="w-full text-xs p-2 rounded-lg border border-slate-200"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SHEDRA: CAMPUS FACILITIES */}
+                    {sectionKey === 'shedra-facilities' && (
+                      <div className="space-y-3">
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                          <label className="text-xs font-bold text-slate-800">Facility 1: Debate Courtyard</label>
+                          <input
+                            type="text"
+                            value={form.shedra_fac_1_title || ''}
+                            onChange={(e) => updateField('shedra_fac_1_title', e.target.value)}
+                            placeholder="Stone Debate Courtyard"
+                            className="w-full text-xs p-2 rounded-lg border border-slate-200 font-bold"
+                          />
+                          <textarea
+                            rows={2}
+                            value={form.shedra_fac_1_desc || ''}
+                            onChange={(e) => updateField('shedra_fac_1_desc', e.target.value)}
+                            placeholder="Open-air terrace where monks assemble daily..."
+                            className="w-full text-xs p-2 rounded-lg border border-slate-200"
+                          />
+                        </div>
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                          <label className="text-xs font-bold text-slate-800">Facility 2: Scriptorium Library</label>
+                          <input
+                            type="text"
+                            value={form.shedra_fac_2_title || ''}
+                            onChange={(e) => updateField('shedra_fac_2_title', e.target.value)}
+                            placeholder="Pecha Library"
+                            className="w-full text-xs p-2 rounded-lg border border-slate-200 font-bold"
+                          />
+                          <textarea
+                            rows={2}
+                            value={form.shedra_fac_2_desc || ''}
+                            onChange={(e) => updateField('shedra_fac_2_desc', e.target.value)}
+                            placeholder="Houses rare woodblock pechas..."
+                            className="w-full text-xs p-2 rounded-lg border border-slate-200"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SHEDRA: ADMISSIONS BENEFITS */}
+                    {sectionKey === 'shedra-admissions' && (
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-800">Monastic Scholarship Benefits</label>
+                        <input
+                          type="text"
+                          value={form.shedra_benefit_1 || ''}
+                          onChange={(e) => updateField('shedra_benefit_1', e.target.value)}
+                          placeholder="Benefit 1: Full monastic scholarship, boarding, meals"
+                          className="w-full text-xs p-2 rounded-lg border border-slate-200"
+                        />
+                        <input
+                          type="text"
+                          value={form.shedra_benefit_2 || ''}
+                          onChange={(e) => updateField('shedra_benefit_2', e.target.value)}
+                          placeholder="Benefit 2: Degrees recognized under Monastic Council"
+                          className="w-full text-xs p-2 rounded-lg border border-slate-200"
+                        />
+                        <input
+                          type="text"
+                          value={form.shedra_benefit_3 || ''}
+                          onChange={(e) => updateField('shedra_benefit_3', e.target.value)}
+                          placeholder="Benefit 3: Daily debate practice in courtyards"
+                          className="w-full text-xs p-2 rounded-lg border border-slate-200"
+                        />
+                      </div>
+                    )}
+
+                    {/* PRAYERS: 108 BUTTER LAMP TIERS */}
+                    {sectionKey === 'prayer-lamps' && (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                          <div>
+                            <label className="text-[10px] text-slate-500 font-bold">Tier 1 Lamps</label>
+                            <input
+                              type="number"
+                              value={form.prayer_tier_1_count || 21}
+                              onChange={(e) => updateField('prayer_tier_1_count', Number(e.target.value))}
+                              className="w-full text-xs p-1.5 rounded-lg border border-slate-200 font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] text-slate-500 font-bold">Tier 1 Offering (BTN)</label>
+                            <input
+                              type="number"
+                              value={form.prayer_tier_1_amt || 500}
+                              onChange={(e) => updateField('prayer_tier_1_amt', Number(e.target.value))}
+                              className="w-full text-xs p-1.5 rounded-lg border border-slate-200 font-mono font-bold"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                          <div>
+                            <label className="text-[10px] text-slate-500 font-bold">Tier 2 Lamps (108)</label>
+                            <input
+                              type="number"
+                              value={form.prayer_tier_2_count || 108}
+                              onChange={(e) => updateField('prayer_tier_2_count', Number(e.target.value))}
+                              className="w-full text-xs p-1.5 rounded-lg border border-slate-200 font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] text-slate-500 font-bold">Tier 2 Offering (BTN)</label>
+                            <input
+                              type="number"
+                              value={form.prayer_tier_2_amt || 1500}
+                              onChange={(e) => updateField('prayer_tier_2_amt', Number(e.target.value))}
+                              className="w-full text-xs p-1.5 rounded-lg border border-slate-200 font-mono font-bold"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* PRAYERS: PUJAS */}
+                    {sectionKey === 'prayer-pujas' && (
+                      <div className="space-y-3">
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+                          <label className="text-xs font-bold text-slate-800">Puja 1: Mahakala Protector</label>
+                          <input
+                            type="text"
+                            value={form.prayer_puja_1_title || ''}
+                            onChange={(e) => updateField('prayer_puja_1_title', e.target.value)}
+                            placeholder="Mahakala & Dharmapala Protector Puja"
+                            className="w-full text-xs p-2 rounded-lg border border-slate-200 font-bold"
+                          />
+                          <textarea
+                            rows={2}
+                            value={form.prayer_puja_1_desc || ''}
+                            onChange={(e) => updateField('prayer_puja_1_desc', e.target.value)}
+                            placeholder="Wrathful guardian rites chanted at dusk..."
+                            className="w-full text-xs p-2 rounded-lg border border-slate-200"
+                          />
+                        </div>
+
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+                          <label className="text-xs font-bold text-slate-800">Puja 2: Medicine Buddha</label>
+                          <input
+                            type="text"
+                            value={form.prayer_puja_2_title || ''}
+                            onChange={(e) => updateField('prayer_puja_2_title', e.target.value)}
+                            placeholder="Medicine Buddha Healing Dharani"
+                            className="w-full text-xs p-2 rounded-lg border border-slate-200 font-bold"
+                          />
+                          <textarea
+                            rows={2}
+                            value={form.prayer_puja_2_desc || ''}
+                            onChange={(e) => updateField('prayer_puja_2_desc', e.target.value)}
+                            placeholder="Recitations for swift recovery..."
+                            className="w-full text-xs p-2 rounded-lg border border-slate-200"
+                          />
                         </div>
                       </div>
                     )}

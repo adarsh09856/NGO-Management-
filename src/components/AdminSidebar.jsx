@@ -5,7 +5,7 @@ import {
   Landmark, Warehouse, UserCheck, FolderKanban, MessageSquareShare,
   BarChart3, UserCog, Settings, ClipboardList, X, Flame,
   GraduationCap, Award, BookOpen, CreditCard, Coins, PlusCircle,
-  Users, ChevronRight, ExternalLink, Globe, Sliders, Sparkles
+  Users, ChevronRight, ExternalLink, Globe, Sliders, Sparkles, Phone
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../context/CurrencyContext';
@@ -139,6 +139,48 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   <BookOpen className="w-4 h-4 text-[#D4AF37]" />
                   <span className="flex-1">About Us Studio</span>
                   <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-semibold">4 Sec</span>
+                </Link>
+
+                <Link
+                  to="/admin/pages/shedra"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/pages/shedra')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <GraduationCap className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Shedra Academy</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-semibold">4 Sec</span>
+                </Link>
+
+                <Link
+                  to="/admin/pages/prayers"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/pages/prayers')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <Flame className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Ceremonial Prayers</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-semibold">4 Sec</span>
+                </Link>
+
+                <Link
+                  to="/admin/pages/contact"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/pages/contact')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <Phone className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Secretariat & Contact</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-slate-500/20 text-slate-300 font-semibold">4 Sec</span>
                 </Link>
 
                 <Link

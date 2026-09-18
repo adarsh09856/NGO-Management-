@@ -103,29 +103,42 @@ export default function Contact() {
   return (
     <div className="w-full bg-[#FCFBF9] min-h-screen pb-20">
       {/* Luxury Hero Banner */}
-      <section className="relative bg-[#1A0B0E] text-white py-12 sm:py-20 px-3 xs:px-4 sm:px-8 overflow-hidden border-b border-[#D4AF37]/30">
+      <section data-ngo-section="contact-hero" className="relative bg-[#1A0B0E] text-white py-12 sm:py-20 px-3 xs:px-4 sm:px-8 overflow-hidden border-b border-[#D4AF37]/30">
+        <SectionEditBadge
+          sectionKey="contact-hero"
+          sectionLabel="Edit Contact Hero"
+          onQuickEdit={() => openLiveEditor('contact-hero')}
+          position="top-4 right-4"
+        />
         <div className="absolute inset-0 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:24px_24px] opacity-10"></div>
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none"></div>
 
         <div className="max-w-5xl mx-auto relative z-10 text-center space-y-4 sm:space-y-6 animate-fade-in-up">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-serif uppercase tracking-widest backdrop-blur-md">
             <span className="text-sm">☸</span>
-            <span className="truncate">༄༅། །འབྲེལ་གཏུགས་དང་ཞབས་ཞུ། · Sacred Connection</span>
+            <span className="truncate">{settings.contact_hero_badge || '༄༅། །འབྲེལ་གཏུགས་དང་ཞབས་ཞུ། · Sacred Connection'}</span>
           </div>
 
           <h1 className="font-editorial text-2xl xs:text-3xl sm:text-5xl lg:text-6xl text-[#FCFBF9] tracking-tight leading-tight break-words">
-            Connect with Drodul Phendey Ling
+            {settings.contact_hero_title || 'Connect with Drodul Phendey Ling'}
           </h1>
 
           <p className="text-xs sm:text-base text-[#E6D5C3] font-light max-w-2xl mx-auto leading-relaxed">
-            Reach our Monastic Administration, Shedra Admissions, or Peace Stupa Donation Desk located in the peaceful foothills of Gelephu, Kingdom of Bhutan.
+            {settings.contact_hero_subtitle || 'Reach our Monastic Administration, Shedra Admissions, or Peace Stupa Donation Desk located in the peaceful foothills of Gelephu, Kingdom of Bhutan.'}
           </p>
         </div>
       </section>
 
       <div className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-8 mt-8 sm:mt-12 space-y-10 sm:space-y-16">
         {/* Department Directory Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div data-ngo-section="contact-departments" className="relative">
+          <SectionEditBadge
+            sectionKey="contact-dir"
+            sectionLabel="Edit Department Directory"
+            onQuickEdit={() => openLiveEditor('contact-dir')}
+            position="top-0 right-4"
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 pt-6">
           {departments.map((dep, idx) => {
             const Icon = dep.icon;
             return (
@@ -154,17 +167,18 @@ export default function Contact() {
               </div>
             );
           })}
+          </div>
         </div>
 
         {/* Main Contact Grid: Info & Form */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Headquarters Information */}
           <div className="lg:col-span-5 space-y-8 relative">
-            <div data-ngo-section="contact-info" className="glass-luxury-card p-8 space-y-6 rounded-3xl border border-[#D4AF37]/30 shadow-xl relative">
+            <div data-ngo-section="contact-seat" className="glass-luxury-card p-8 space-y-6 rounded-3xl border border-[#D4AF37]/30 shadow-xl relative">
               <SectionEditBadge
-                sectionKey="contact"
-                sectionLabel="Edit Contact Info"
-                onQuickEdit={openLiveEditor}
+                sectionKey="contact-seat"
+                sectionLabel="Edit Secretariat Seat"
+                onQuickEdit={() => openLiveEditor('contact-seat')}
                 position="top-4 right-4"
               />
 
@@ -357,6 +371,41 @@ export default function Contact() {
                 </form>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Monastery Location Map & Pilgrim Access */}
+        <div data-ngo-section="contact-visiting" className="glass-luxury-card p-6 sm:p-10 rounded-3xl border border-[#D4AF37]/30 shadow-xl relative overflow-hidden space-y-6">
+          <SectionEditBadge
+            sectionKey="contact-visiting"
+            sectionLabel="Edit Visiting Hours & Map"
+            onQuickEdit={() => openLiveEditor('contact-visiting')}
+            position="top-4 right-4"
+          />
+
+          <div className="space-y-2">
+            <span className="text-[10px] font-serif uppercase tracking-widest text-[#721C24] font-bold">
+              Sacred Geography & Pilgrimage
+            </span>
+            <h3 className="font-editorial text-2xl text-[#1A0B0E]">
+              Location & Monastery Sanctuary Map
+            </h3>
+            <p className="text-xs text-gray-600 font-serif leading-relaxed max-w-2xl">
+              {settings.contact_visiting_notice || 'Drodul Phendey Ling Foundation is situated near the Great Druk Wangyel Peace Stupa in Gelephu, Sarpang Dzongkhag. Devotees and pilgrims are welcome during official shrine hours.'}
+            </p>
+          </div>
+
+          <div className="w-full h-72 sm:h-96 rounded-2xl overflow-hidden border border-[#D4AF37]/40 shadow-inner bg-slate-900">
+            <iframe
+              title="Monastery Google Map"
+              src={settings.contact_map_url || "https://maps.google.com/maps?q=Gelephu%20Bhutan&t=&z=13&ie=UTF8&iwloc=&output=embed"}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </div>
         </div>
       </div>

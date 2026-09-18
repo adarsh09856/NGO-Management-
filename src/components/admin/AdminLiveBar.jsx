@@ -10,13 +10,13 @@ const ROUTE_STUDIO_MAP = {
   '/': { label: 'Homepage Studio', href: '/admin/pages/home', defaultSection: 'hero' },
   '/about': { label: 'About Us Studio', href: '/admin/pages/about', defaultSection: 'about-header' },
   '/donate': { label: 'Donations Studio', href: '/admin/donate-settings', defaultSection: 'donate-hero' },
-  '/prayer-request': { label: 'Ceremonial Prayers', href: '/admin/prayer-requests', defaultSection: 'prayers' },
-  '/shedra': { label: 'Shedra Monastic Studio', href: '/admin/monks', defaultSection: 'shedra' },
+  '/prayer-request': { label: 'Ceremonial Prayers Studio', href: '/admin/pages/prayers', defaultSection: 'prayers' },
+  '/shedra': { label: 'Shedra Monastic Studio', href: '/admin/pages/shedra', defaultSection: 'shedra' },
   '/learning': { label: 'Dharma LMS Studio', href: '/admin/learning', defaultSection: 'learning' },
   '/news-events': { label: 'Ceremonies & Gazette', href: '/admin/prayer-requests', defaultSection: 'media' },
   '/blog': { label: 'Sacred Gazette Studio', href: '/admin/blog', defaultSection: 'blog' },
   '/gallery': { label: 'Sacred Gallery Studio', href: '/admin/gallery', defaultSection: 'gallery' },
-  '/contact': { label: 'CRM & Site Info', href: '/admin/site-settings#contact', defaultSection: 'contact' },
+  '/contact': { label: 'Secretariat & Contact Studio', href: '/admin/pages/contact', defaultSection: 'contact' },
 };
 
 export default function AdminLiveBar({ onOpenEditor }) {

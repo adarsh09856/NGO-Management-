@@ -69,6 +69,9 @@ import Certificates from './pages/admin/Certificates';
 import PagesDirectory from './pages/admin/PagesDirectory';
 import HomePageStudio from './pages/admin/HomePageStudio';
 import AboutPageStudio from './pages/admin/AboutPageStudio';
+import ShedraPageStudio from './pages/admin/ShedraPageStudio';
+import PrayersPageStudio from './pages/admin/PrayersPageStudio';
+import ContactPageStudio from './pages/admin/ContactPageStudio';
 import DonateSettingsStudio from './pages/admin/DonateSettingsStudio';
 import SiteSettingsStudio from './pages/admin/SiteSettingsStudio';
 
@@ -273,6 +276,9 @@ export default function App() {
           <Route path="pages" element={<PagesDirectory />} />
           <Route path="pages/home" element={<HomePageStudio />} />
           <Route path="pages/about" element={<AboutPageStudio />} />
+          <Route path="pages/shedra" element={<ShedraPageStudio />} />
+          <Route path="pages/prayers" element={<PrayersPageStudio />} />
+          <Route path="pages/contact" element={<ContactPageStudio />} />
           <Route path="donate-settings" element={<DonateSettingsStudio />} />
           <Route path="site-settings" element={<SiteSettingsStudio />} />
         </Route>

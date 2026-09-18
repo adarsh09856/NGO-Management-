@@ -47,6 +47,14 @@ export default function PrayerRequest() {
         }));
       }
     }).catch(() => {});
+
+    const handleUpdate = (e) => {
+      if (e.detail?.settings) {
+        setGatewaySettings(prev => ({ ...prev, ...e.detail.settings }));
+      }
+    };
+    window.addEventListener('ngo:settings-updated', handleUpdate);
+    return () => window.removeEventListener('ngo:settings-updated', handleUpdate);
   }, []);
 
   const [loading, setLoading] = useState(false);
@@ -260,24 +268,23 @@ export default function PrayerRequest() {
   return (
     <div className="min-h-[85vh] py-10 sm:py-16 px-3 xs:px-4 sm:px-8 relative z-10 max-w-4xl mx-auto space-y-8 sm:space-y-12">
       {/* 1. Header Banner */}
-      <div data-ngo-section="prayer-header" className="text-center space-y-3 sm:space-y-4 animate-fade-in-up relative">
+      <div data-ngo-section="prayer-hero" className="text-center space-y-3 sm:space-y-4 animate-fade-in-up relative">
         <SectionEditBadge
-          sectionKey="prayer"
-          sectionLabel="Manage Prayers in CMS"
-          onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'prayers' } }))}
+          sectionKey="prayer-hero"
+          sectionLabel="Edit Prayers Hero Banner"
+          onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'prayer-hero' } }))}
           position="top-0 right-0 sm:right-4"
         />
 
         <div className="inline-flex items-center space-x-2 glow-pill-gold px-3.5 py-1.5 rounded-full text-xs font-bold animate-float">
           <Flame className="w-4 h-4 text-amber-600" />
-          <span className="font-tibetan text-sm">༄༅། །མར་མེ་སྨོན་ལམ།</span>
-          <span>• Consecrated Sangha Pujas & Butter Lamps</span>
+          <span className="font-tibetan text-sm">{gatewaySettings.prayer_tibetan_eyebrow || '༄༅། །མར་མེ་སྨོན་ལམ། • Consecrated Sangha Pujas & Butter Lamps'}</span>
         </div>
         <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-5xl text-[#0F172A] tracking-wide break-words">
-          Sacred Prayer Dedication & Offerings
+          {gatewaySettings.prayer_hero_title || 'Sacred Prayer Dedication & Offerings'}
         </h1>
         <p className="text-xs sm:text-sm text-gray-600 max-w-xl mx-auto font-light leading-relaxed">
-          Our resident monastic Sangha at Drodul Phendey Ling recites daily consecrated prayers and illuminates brass butter lamps before the holy altar for world peace, health, longevity, and obstacle clearance.
+          {gatewaySettings.prayer_hero_subtitle || 'Our resident monastic Sangha at Drodul Phendey Ling recites daily consecrated prayers and illuminates brass butter lamps before the holy altar for world peace, health, longevity, and obstacle clearance.'}
         </p>
       </div>
 
@@ -454,7 +461,13 @@ export default function PrayerRequest() {
             </div>
 
             {/* Prayer Details */}
-            <div className="space-y-4">
+            <div data-ngo-section="prayer-pujas" className="space-y-4 relative">
+              <SectionEditBadge
+                sectionKey="prayer-pujas"
+                sectionLabel="Edit Sacred Pujas"
+                onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'prayer-pujas' } }))}
+                position="top-0 right-0"
+              />
               <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] uppercase tracking-wider flex items-center gap-2 border-b border-gray-100 pb-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#721C24]" />
                 <span>2. Prayer Category & Dedication</span>
@@ -503,7 +516,13 @@ export default function PrayerRequest() {
             </div>
 
             {/* Butter Lamps & Offering */}
-            <div className="space-y-4">
+            <div data-ngo-section="prayer-lamps" className="space-y-4 relative">
+              <SectionEditBadge
+                sectionKey="prayer-lamps"
+                sectionLabel="Edit 108 Butter Lamp Tiers"
+                onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'prayer-lamps' } }))}
+                position="top-0 right-0"
+              />
               <h3 className="font-serif-brand font-bold text-sm text-[#0F172A] uppercase tracking-wider flex items-center gap-2 border-b border-gray-100 pb-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
                 <span>3. Sacred Butter Lamp Illumination</span>

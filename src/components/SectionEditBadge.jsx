@@ -51,21 +51,58 @@ export default function SectionEditBadge({
         resolvedStudioHref = '/admin/pages/home#pillars';
         break;
       case 'prayers':
-      case 'prayer':
         resolvedStudioHref = '/admin/pages/home#prayers';
         break;
+      case 'prayer':
+      case 'prayer-hero':
+      case 'prayer-header':
+        resolvedStudioHref = '/admin/pages/prayers#hero';
+        break;
+      case 'prayer-lamps':
+      case 'prayer-butterlamps':
+        resolvedStudioHref = '/admin/pages/prayers#butterlamps';
+        break;
+      case 'prayer-pujas':
+      case 'prayer-form':
+        resolvedStudioHref = '/admin/pages/prayers#pujas';
+        break;
+      case 'prayer-schedule':
+        resolvedStudioHref = '/admin/pages/prayers#schedule';
+        break;
       case 'shedra':
-        resolvedStudioHref = '/admin/pages/home#shedra';
+        resolvedStudioHref = '/admin/pages/shedra#hero';
+        break;
+      case 'shedra-hero':
+        resolvedStudioHref = '/admin/pages/shedra#hero';
+        break;
+      case 'shedra-curriculum':
+      case 'shedra-shastras':
+        resolvedStudioHref = '/admin/pages/shedra#curriculum';
+        break;
+      case 'shedra-facilities':
+        resolvedStudioHref = '/admin/pages/shedra#facilities';
+        break;
+      case 'shedra-admissions':
+      case 'shedra-verify':
+        resolvedStudioHref = '/admin/pages/shedra#admissions';
         break;
       case 'learning':
-        resolvedStudioHref = '/admin/pages/home#learning';
+      case 'learning-hero':
+        resolvedStudioHref = '/admin/learning';
         break;
       case 'blog':
-        resolvedStudioHref = '/admin/pages/home#blog';
+      case 'blog-hero':
+        resolvedStudioHref = '/admin/blog';
+        break;
+      case 'gallery':
+      case 'gallery-hero':
+        resolvedStudioHref = '/admin/gallery';
+        break;
+      case 'news':
+      case 'news-hero':
+        resolvedStudioHref = '/admin/blog';
         break;
       case 'about-header':
-        resolvedStudioHref = '/admin/pages/about#header';
-        break;
       case 'about':
         resolvedStudioHref = '/admin/pages/about#header';
         break;
@@ -79,8 +116,6 @@ export default function SectionEditBadge({
         resolvedStudioHref = '/admin/pages/about#statutory';
         break;
       case 'donate-hero':
-        resolvedStudioHref = '/admin/donate-settings#hero';
-        break;
       case 'donate':
         resolvedStudioHref = '/admin/donate-settings#hero';
         break;
@@ -101,13 +136,24 @@ export default function SectionEditBadge({
         resolvedStudioHref = '/admin/site-settings#footer';
         break;
       case 'contact':
-        resolvedStudioHref = '/admin/site-settings#contact';
+      case 'contact-hero':
+        resolvedStudioHref = '/admin/pages/contact#hero';
+        break;
+      case 'contact-seat':
+      case 'contact-info':
+        resolvedStudioHref = '/admin/pages/contact#seat';
+        break;
+      case 'contact-dir':
+      case 'contact-departments':
+        resolvedStudioHref = '/admin/pages/contact#directory';
+        break;
+      case 'contact-hours':
+      case 'contact-map':
+      case 'contact-visiting':
+        resolvedStudioHref = '/admin/pages/contact#visiting';
         break;
       case 'social':
         resolvedStudioHref = '/admin/site-settings#social';
-        break;
-      case 'gallery':
-        resolvedStudioHref = '/admin/gallery';
         break;
       default:
         resolvedStudioHref = '/admin/pages/home';
