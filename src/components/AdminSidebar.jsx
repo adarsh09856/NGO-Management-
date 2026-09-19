@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, HeartHandshake, Video, Newspaper, Image as ImageIcon,
   Landmark, Warehouse, UserCheck, FolderKanban, MessageSquareShare,
   BarChart3, UserCog, Settings, ClipboardList, X, Flame,
   GraduationCap, Award, BookOpen, CreditCard, Coins, PlusCircle,
-  Users, ChevronRight, ExternalLink, Globe, Sliders, Sparkles, Phone
+  Users, ChevronRight, ChevronDown, ExternalLink, Globe, Sliders, Sparkles, Phone
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../context/CurrencyContext';
@@ -19,6 +19,18 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const isSuperAdmin = roleSlug === 'super_admin';
   const isAccountant = roleSlug === 'accountant';
   const isStaff = roleSlug === 'staff' || roleSlug === 'hr_manager';
+
+  const isPageStudioActive = location.pathname.startsWith('/admin/pages') ||
+                             location.pathname === '/admin/donate-settings' ||
+                             location.pathname === '/admin/site-settings';
+
+  const [pagesOpen, setPagesOpen] = useState(isPageStudioActive);
+
+  useEffect(() => {
+    if (isPageStudioActive) {
+      setPagesOpen(true);
+    }
+  }, [location.pathname]);
 
   const isActive = (path, exact = false) => {
     if (exact) return location.pathname === path;
@@ -91,125 +103,156 @@ export default function AdminSidebar({ isOpen, onClose }) {
             </Link>
           </div>
 
-          {/* 1.5. WEB & PAGE STUDIOS (CMS) */}
+          {/* 1.5. WEB & PAGE STUDIOS (CMS) - SIMPLIFIED WITH COLLAPSIBLE SUB-MENUS */}
           {(isSuperAdmin || isStaff) && (
             <div>
               <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center justify-between">
-                <span>Web & Page Studios</span>
+                <span>Web & Content</span>
                 <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-[#D4AF37] font-bold tracking-wider">CMS</span>
               </div>
               <div className="space-y-0.5">
-                <Link
-                  to="/admin/pages"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/pages', true)
+                {/* Main Collapsible Item */}
+                <button
+                  type="button"
+                  onClick={() => setPagesOpen(!pagesOpen)}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all text-left ${
+                    isPageStudioActive
                       ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
                       : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
                   }`}
                 >
-                  <Globe className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Pages Directory</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-semibold">10 Pages</span>
-                </Link>
+                  <div className="flex items-center space-x-2.5 min-w-0">
+                    <Globe className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
+                    <span className="truncate">Website Pages</span>
+                  </div>
+                  <div className="flex items-center space-x-1.5 flex-shrink-0">
+                    <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-semibold">
+                      8 Pages
+                    </span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${
+                        pagesOpen ? 'transform rotate-180 text-[#D4AF37]' : ''
+                      }`}
+                    />
+                  </div>
+                </button>
 
-                <Link
-                  to="/admin/pages/home"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/pages/home')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <Sparkles className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Homepage Studio</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-semibold">8 Sec</span>
-                </Link>
+                {/* Collapsible Sub-menu items */}
+                {pagesOpen && (
+                  <div className="pl-3 pr-1 pt-1 pb-1 space-y-0.5 border-l-2 border-[#D4AF37]/30 ml-4 animate-fadeIn">
+                    <Link
+                      to="/admin/pages"
+                      onClick={handleNavClick}
+                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
+                        isActive('/admin/pages', true)
+                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                      }`}
+                    >
+                      <Globe className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      <span className="flex-1 truncate">All Pages Directory</span>
+                      <span className="text-[9px] px-1 rounded bg-amber-400/20 text-[#D4AF37] font-mono">A–Z</span>
+                    </Link>
 
-                <Link
-                  to="/admin/pages/about"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/pages/about')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <BookOpen className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">About Us Studio</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-semibold">4 Sec</span>
-                </Link>
+                    <Link
+                      to="/admin/pages/home"
+                      onClick={handleNavClick}
+                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
+                        isActive('/admin/pages/home')
+                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                      }`}
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      <span className="flex-1 truncate">Homepage Studio</span>
+                      <span className="text-[9px] px-1 rounded bg-rose-500/20 text-rose-300">8 Sec</span>
+                    </Link>
 
-                <Link
-                  to="/admin/pages/shedra"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/pages/shedra')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <GraduationCap className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Shedra Academy</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-semibold">4 Sec</span>
-                </Link>
+                    <Link
+                      to="/admin/pages/about"
+                      onClick={handleNavClick}
+                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
+                        isActive('/admin/pages/about')
+                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                      }`}
+                    >
+                      <BookOpen className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      <span className="flex-1 truncate">About Us Studio</span>
+                      <span className="text-[9px] px-1 rounded bg-blue-500/20 text-blue-300">4 Sec</span>
+                    </Link>
 
-                <Link
-                  to="/admin/pages/prayers"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/pages/prayers')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <Flame className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Ceremonial Prayers</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-semibold">4 Sec</span>
-                </Link>
+                    <Link
+                      to="/admin/pages/shedra"
+                      onClick={handleNavClick}
+                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
+                        isActive('/admin/pages/shedra')
+                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                      }`}
+                    >
+                      <GraduationCap className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      <span className="flex-1 truncate">Shedra Academy</span>
+                      <span className="text-[9px] px-1 rounded bg-indigo-500/20 text-indigo-300">4 Sec</span>
+                    </Link>
 
-                <Link
-                  to="/admin/pages/contact"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/pages/contact')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <Phone className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Secretariat & Contact</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-slate-500/20 text-slate-300 font-semibold">4 Sec</span>
-                </Link>
+                    <Link
+                      to="/admin/pages/prayers"
+                      onClick={handleNavClick}
+                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
+                        isActive('/admin/pages/prayers')
+                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                      }`}
+                    >
+                      <Flame className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      <span className="flex-1 truncate">Ceremonial Prayers</span>
+                      <span className="text-[9px] px-1 rounded bg-amber-500/20 text-amber-300">4 Sec</span>
+                    </Link>
 
-                <Link
-                  to="/admin/donate-settings"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/donate-settings')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <HeartHandshake className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Donate & Banking</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-semibold">Bank / 80G</span>
-                </Link>
+                    <Link
+                      to="/admin/pages/contact"
+                      onClick={handleNavClick}
+                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
+                        isActive('/admin/pages/contact')
+                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                      }`}
+                    >
+                      <Phone className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      <span className="flex-1 truncate">Secretariat &amp; Contact</span>
+                      <span className="text-[9px] px-1 rounded bg-slate-500/20 text-slate-300">4 Sec</span>
+                    </Link>
 
-                <Link
-                  to="/admin/site-settings"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/site-settings')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <Sliders className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Global Site Settings</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-semibold">Header/Footer</span>
-                </Link>
+                    <Link
+                      to="/admin/donate-settings"
+                      onClick={handleNavClick}
+                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
+                        isActive('/admin/donate-settings')
+                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                      }`}
+                    >
+                      <HeartHandshake className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      <span className="flex-1 truncate">Donate &amp; Banking</span>
+                      <span className="text-[9px] px-1 rounded bg-emerald-500/20 text-emerald-300">Bank/80G</span>
+                    </Link>
+
+                    <Link
+                      to="/admin/site-settings"
+                      onClick={handleNavClick}
+                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
+                        isActive('/admin/site-settings')
+                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                      }`}
+                    >
+                      <Sliders className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      <span className="flex-1 truncate">Global Site Settings</span>
+                      <span className="text-[9px] px-1 rounded bg-purple-500/20 text-purple-300">Header/Footer</span>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           )}
