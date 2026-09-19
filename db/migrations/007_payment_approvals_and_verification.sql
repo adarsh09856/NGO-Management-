@@ -73,3 +73,38 @@ SET @stmt = IF(@idx_exists = 0,
 PREPARE alter_idx_stmt FROM @stmt;
 EXECUTE alter_idx_stmt;
 DEALLOCATE PREPARE alter_idx_stmt;
+
+-- 6. Add tracking_id column to donations if not exists
+SET @col_exists = (
+  SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = 'donations'
+    AND COLUMN_NAME = 'tracking_id'
+);
+SET @stmt = IF(@col_exists = 0,
+  'ALTER TABLE donations ADD COLUMN tracking_id VARCHAR(60) NULL UNIQUE AFTER receipt_number',
+  'SELECT 1'
+);
+PREPARE alter_stmt FROM @stmt;
+EXECUTE alter_stmt;
+DEALLOCATE PREPARE alter_stmt;
+
+-- 7. Add tracking_id column to prayer_requests if not exists
+SET @tbl_exists = (
+  SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES
+  WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = 'prayer_requests'
+);
+SET @col_exists = (
+  SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = 'prayer_requests'
+    AND COLUMN_NAME = 'tracking_id'
+);
+SET @stmt = IF(@tbl_exists > 0 AND @col_exists = 0,
+  'ALTER TABLE prayer_requests ADD COLUMN tracking_id VARCHAR(60) NULL UNIQUE AFTER id',
+  'SELECT 1'
+);
+PREPARE alter_stmt FROM @stmt;
+EXECUTE alter_stmt;
+DEALLOCATE PREPARE alter_stmt;

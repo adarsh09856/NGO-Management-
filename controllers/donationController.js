@@ -659,6 +659,37 @@ async function submitPublicOffering(req, res) {
   }
 }
 
+// Column caching & auto-provisioning helper for payment approvals and tracking
+let donationColumnsCache = null;
+
+async function ensureDonationApprovalColumns() {
+  if (donationColumnsCache) return donationColumnsCache;
+  try {
+    const [cols] = await pool.query("SHOW COLUMNS FROM donations");
+    const colSet = new Set(cols.map(c => c.Field));
+
+    if (!colSet.has('tracking_id')) {
+      await pool.query("ALTER TABLE donations ADD COLUMN tracking_id VARCHAR(60) NULL UNIQUE AFTER receipt_number").catch(() => {});
+    }
+    if (!colSet.has('rejection_reason')) {
+      await pool.query("ALTER TABLE donations ADD COLUMN rejection_reason TEXT NULL AFTER remarks").catch(() => {});
+    }
+    if (!colSet.has('verified_by_user_id')) {
+      await pool.query("ALTER TABLE donations ADD COLUMN verified_by_user_id INT NULL AFTER rejection_reason").catch(() => {});
+    }
+    if (!colSet.has('verified_at')) {
+      await pool.query("ALTER TABLE donations ADD COLUMN verified_at DATETIME NULL AFTER verified_by_user_id").catch(() => {});
+    }
+
+    const [finalCols] = await pool.query("SHOW COLUMNS FROM donations");
+    donationColumnsCache = new Set(finalCols.map(c => c.Field));
+    return donationColumnsCache;
+  } catch (err) {
+    console.warn('[DonationController] Column verification warning:', err.message);
+    return new Set(['id', 'receipt_number', 'donor_id', 'amount', 'currency', 'payment_method', 'payment_status', 'transaction_ref', 'payment_date', 'remarks', 'created_at']);
+  }
+}
+
 // 11. Admin Verification of Donation Payment (Reconciliation against Bank Statement / UTR proof)
 async function verifyDonationPayment(req, res) {
   try {
@@ -683,14 +714,26 @@ async function verifyDonationPayment(req, res) {
     const userId = req.user ? req.user.id : null;
 
     // 1. Mark donation completed in primary ledger with verifier info
+    const cols = await ensureDonationApprovalColumns();
+    const updateSets = [`payment_status = 'completed'`];
+    const updateParams = [];
+    if (cols.has('rejection_reason')) {
+      updateSets.push('rejection_reason = NULL');
+    }
+    if (cols.has('verified_by_user_id')) {
+      updateSets.push('verified_by_user_id = ?');
+      updateParams.push(userId);
+    }
+    if (cols.has('verified_at')) {
+      updateSets.push('verified_at = NOW()');
+    }
+    updateParams.push(id);
+
     await pool.query(
       `UPDATE donations 
-       SET payment_status = 'completed',
-           rejection_reason = NULL,
-           verified_by_user_id = ?,
-           verified_at = NOW()
+       SET ${updateSets.join(', ')}
        WHERE id = ?`,
-      [userId, id]
+      updateParams
     );
 
     // 2. Mark money receipt as ISSUED
@@ -777,6 +820,12 @@ async function verifyDonationPayment(req, res) {
 // 12. Get Centralized Payment Approvals & Treasury Feed with KPI Summary
 async function getPaymentApprovals(req, res) {
   try {
+    const cols = await ensureDonationApprovalColumns();
+    const hasTrackingId = cols.has('tracking_id');
+    const hasRejectionReason = cols.has('rejection_reason');
+    const hasVerifiedAt = cols.has('verified_at');
+    const hasVerifiedBy = cols.has('verified_by_user_id');
+
     const {
       status = 'all',
       method = 'all',
@@ -809,15 +858,18 @@ async function getPaymentApprovals(req, res) {
 
     if (search && search.trim()) {
       const q = `%${search.trim()}%`;
-      whereClauses.push(`(
-        d.transaction_ref LIKE ? OR 
-        d.receipt_number LIKE ? OR 
-        d.tracking_id LIKE ? OR 
-        dn.full_name LIKE ? OR 
-        dn.email LIKE ? OR 
-        dn.phone LIKE ?
-      )`);
-      params.push(q, q, q, q, q, q);
+      const searchFields = [
+        'd.transaction_ref LIKE ?',
+        'd.receipt_number LIKE ?',
+        ...(hasTrackingId ? ['d.tracking_id LIKE ?'] : []),
+        'dn.full_name LIKE ?',
+        'dn.email LIKE ?',
+        'dn.phone LIKE ?'
+      ];
+      whereClauses.push(`(${searchFields.join(' OR ')})`);
+      for (let i = 0; i < searchFields.length; i++) {
+        params.push(q);
+      }
     }
 
     if (dateFrom) {
@@ -832,22 +884,28 @@ async function getPaymentApprovals(req, res) {
 
     const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
+    const trackingCol = hasTrackingId ? 'd.tracking_id' : 'NULL as tracking_id';
+    const rejectionCol = hasRejectionReason ? 'd.rejection_reason' : 'NULL as rejection_reason';
+    const verifiedAtCol = hasVerifiedAt ? 'd.verified_at' : 'NULL as verified_at';
+    const userJoin = hasVerifiedBy ? 'LEFT JOIN users u ON d.verified_by_user_id = u.id' : '';
+    const userNameCol = hasVerifiedBy ? 'u.full_name as verified_by_name' : 'NULL as verified_by_name';
+
     // Main records query
     const listQuery = `
-      SELECT d.id, d.tracking_id, d.receipt_number, d.amount, d.currency, d.amount_in_words,
+      SELECT d.id, ${trackingCol}, d.receipt_number, d.amount, d.currency, d.amount_in_words,
              d.payment_method, d.payment_status, d.transaction_ref, d.payment_date, d.payment_gateway,
-             d.bank_name, d.remarks, d.rejection_reason, d.created_at, d.verified_at,
+             d.bank_name, d.remarks, ${rejectionCol}, d.created_at, ${verifiedAtCol},
              d.donation_for, d.donation_type,
              dn.id as donor_id, dn.full_name as donor_name, dn.email as donor_email,
              dn.phone as donor_phone, dn.address as donor_address, dn.country as donor_country,
              c.title as campaign_title,
              mr.id as receipt_id, mr.status as receipt_status, mr.pdf_url as receipt_pdf_url,
-             u.full_name as verified_by_name
+             ${userNameCol}
       FROM donations d
       LEFT JOIN donors dn ON d.donor_id = dn.id
       LEFT JOIN campaigns c ON d.campaign_id = c.id
       LEFT JOIN money_receipts mr ON d.id = mr.donation_id
-      LEFT JOIN users u ON d.verified_by_user_id = u.id
+      ${userJoin}
       ${whereSql}
       ORDER BY 
         CASE 
@@ -958,14 +1016,27 @@ async function rejectDonationPayment(req, res) {
     const cleanReason = rejectionReason.trim();
 
     // 1. Mark donation as rejected with timestamp, user ID, and reason
+    const cols = await ensureDonationApprovalColumns();
+    const updateSets = [`payment_status = 'rejected'`];
+    const updateParams = [];
+    if (cols.has('rejection_reason')) {
+      updateSets.push('rejection_reason = ?');
+      updateParams.push(cleanReason);
+    }
+    if (cols.has('verified_by_user_id')) {
+      updateSets.push('verified_by_user_id = ?');
+      updateParams.push(userId);
+    }
+    if (cols.has('verified_at')) {
+      updateSets.push('verified_at = NOW()');
+    }
+    updateParams.push(id);
+
     await pool.query(
       `UPDATE donations 
-       SET payment_status = 'rejected', 
-           rejection_reason = ?, 
-           verified_by_user_id = ?, 
-           verified_at = NOW() 
+       SET ${updateSets.join(', ')} 
        WHERE id = ?`,
-      [cleanReason, userId, id]
+      updateParams
     );
 
     // 2. Void preliminary money receipt if exists

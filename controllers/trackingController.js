@@ -1,4 +1,19 @@
-const { pool } = require('../config/db');
+let trackingColumnsCache = null;
+
+async function checkTrackingColumns() {
+  if (trackingColumnsCache) return trackingColumnsCache;
+  try {
+    const [dCols] = await pool.query("SHOW COLUMNS FROM donations LIKE 'tracking_id'").catch(() => [[]]);
+    const [pCols] = await pool.query("SHOW COLUMNS FROM prayer_requests LIKE 'tracking_id'").catch(() => [[]]);
+    trackingColumnsCache = {
+      hasDonationTracking: dCols.length > 0,
+      hasPrayerTracking: pCols.length > 0
+    };
+    return trackingColumnsCache;
+  } catch (err) {
+    return { hasDonationTracking: false, hasPrayerTracking: false };
+  }
+}
 
 /**
  * Public Offering & Prayer Tracking Controller
@@ -16,18 +31,26 @@ async function trackOffering(req, res) {
       });
     }
 
+    const { hasDonationTracking, hasPrayerTracking } = await checkTrackingColumns();
+
     // 1. Search in Donations Table
+    const trackingCol = hasDonationTracking ? 'd.tracking_id' : 'NULL as tracking_id';
+    const whereMatch = hasDonationTracking 
+      ? 'WHERE d.tracking_id = ? OR d.receipt_number = ? OR d.transaction_ref = ?'
+      : 'WHERE d.receipt_number = ? OR d.transaction_ref = ?';
+    const matchParams = hasDonationTracking ? [rawQuery, rawQuery, rawQuery] : [rawQuery, rawQuery];
+
     const [donationRows] = await pool.query(
-      `SELECT d.id, d.tracking_id, d.receipt_number, d.donation_for, d.donation_type, d.amount, d.currency,
+      `SELECT d.id, ${trackingCol}, d.receipt_number, d.donation_for, d.donation_type, d.amount, d.currency,
               d.payment_method, d.payment_status, d.transaction_ref, d.created_at, d.payment_date,
               dn.full_name as donor_name, dn.email as donor_email,
               mr.id as receipt_id, mr.status as receipt_status, mr.pdf_url
        FROM donations d
        LEFT JOIN donors dn ON d.donor_id = dn.id
        LEFT JOIN money_receipts mr ON d.id = mr.donation_id
-       WHERE d.tracking_id = ? OR d.receipt_number = ? OR d.transaction_ref = ?
+       ${whereMatch}
        LIMIT 1`,
-      [rawQuery, rawQuery, rawQuery]
+      matchParams
     );
 
     if (donationRows.length > 0) {
@@ -112,15 +135,21 @@ async function trackOffering(req, res) {
     }
 
     // 2. Search in Prayer Requests Table
+    const prayerTrackingCol = hasPrayerTracking ? 'pr.tracking_id' : 'NULL as tracking_id';
+    const prayerWhere = hasPrayerTracking
+      ? 'WHERE pr.tracking_id = ? OR pr.transaction_ref = ?'
+      : 'WHERE pr.transaction_ref = ?';
+    const prayerParams = hasPrayerTracking ? [rawQuery, rawQuery] : [rawQuery];
+
     const [prayerRows] = await pool.query(
-      `SELECT pr.id, pr.tracking_id, pr.prayer_type, pr.butter_lamps_count, pr.offering_amount,
+      `SELECT pr.id, ${prayerTrackingCol}, pr.prayer_type, pr.butter_lamps_count, pr.offering_amount,
               pr.offering_currency, pr.payment_status, pr.status as prayer_status,
               pr.transaction_ref, pr.created_at, pr.dedication_names,
               pr.devotee_name, pr.devotee_email
        FROM prayer_requests pr
-       WHERE pr.tracking_id = ? OR pr.transaction_ref = ?
+       ${prayerWhere}
        LIMIT 1`,
-      [rawQuery, rawQuery]
+      prayerParams
     );
 
     if (prayerRows.length > 0) {
