@@ -953,6 +953,73 @@ async function runAllAssertions() {
   });
 
   // -------------------------------------------------------------
+  // SECTION 13: PAYMENT APPROVALS & TREASURY CONTROLS
+  // -------------------------------------------------------------
+  console.log('\n[13/13] Testing Payment Approvals, UTR Verification & Rejection Controls...');
+
+  await test('Migration 007 exists and declares rejection_reason, verified_by_user_id, verified_at', () => {
+    const migrationPath = path.join(__dirname, '..', 'db', 'migrations', '007_payment_approvals_and_verification.sql');
+    assert.strictEqual(fs.existsSync(migrationPath), true, '007 migration file must exist');
+    const content = fs.readFileSync(migrationPath, 'utf8');
+    assert.ok(content.includes('rejection_reason'), 'Must declare rejection_reason column');
+    assert.ok(content.includes('verified_by_user_id'), 'Must declare verified_by_user_id column');
+    assert.ok(content.includes('verified_at'), 'Must declare verified_at column');
+    assert.ok(content.includes('rejected'), 'Must include rejected status enum');
+  });
+
+  await test('Payment approvals controller exports getPaymentApprovals, rejectDonationPayment, updateDonationUtr, resendReceiptEmail', () => {
+    const donationCtrl = require('../controllers/donationController');
+    assert.strictEqual(typeof donationCtrl.getPaymentApprovals, 'function');
+    assert.strictEqual(typeof donationCtrl.rejectDonationPayment, 'function');
+    assert.strictEqual(typeof donationCtrl.updateDonationUtr, 'function');
+    assert.strictEqual(typeof donationCtrl.resendReceiptEmail, 'function');
+    assert.strictEqual(typeof donationCtrl.verifyDonationPayment, 'function');
+  });
+
+  await test('rejectDonationPayment rejects missing or under-5-char rejection reason with HTTP 400', async () => {
+    const donationCtrl = require('../controllers/donationController');
+    const { req, res } = createMockContext({ rejectionReason: 'bad' }, {}, null, { id: 999 });
+    await donationCtrl.rejectDonationPayment(req, res);
+    assert.strictEqual(res.getStatusCode(), 400);
+    assert.ok(res.getBody().message.includes('5 characters'));
+  });
+
+  await test('updateDonationUtr rejects missing or under-4-char transaction reference with HTTP 400', async () => {
+    const donationCtrl = require('../controllers/donationController');
+    const { req, res } = createMockContext({ transactionRef: '12' }, {}, null, { id: 999 });
+    await donationCtrl.updateDonationUtr(req, res);
+    assert.strictEqual(res.getStatusCode(), 400);
+    assert.ok(res.getBody().message.includes('at least 4 characters'));
+  });
+
+  await test('emailService exports sendPaymentRejectionEmail and handles valid invocation', async () => {
+    const emailService = require('../services/emailService');
+    assert.strictEqual(typeof emailService.sendPaymentRejectionEmail, 'function');
+    const result = await emailService.sendPaymentRejectionEmail({
+      toEmail: 'test.devotee@example.com',
+      donorName: 'Karma Dorji',
+      receiptNumber: 'RC-2026-TEST',
+      amount: 1500,
+      currency: 'BTN',
+      rejectionReason: 'UTR reference not found on bank statement',
+      transactionRef: 'UTR12345678'
+    });
+    assert.strictEqual(typeof result, 'object');
+    assert.ok('success' in result);
+  });
+
+  await test('Frontend PaymentApprovals.jsx exists with complete approvals and rejection workflows', () => {
+    const componentPath = path.join(__dirname, '..', 'src', 'pages', 'admin', 'PaymentApprovals.jsx');
+    assert.strictEqual(fs.existsSync(componentPath), true, 'PaymentApprovals.jsx must exist');
+    const content = fs.readFileSync(componentPath, 'utf8');
+    assert.ok(content.includes('Payment Approvals & Treasury Hub'), 'Must have treasury header');
+    assert.ok(content.includes('handleApprove'), 'Must have approve handler');
+    assert.ok(content.includes('handleConfirmReject'), 'Must have reject handler');
+    assert.ok(content.includes('handleConfirmEditUtr'), 'Must have UTR editing handler');
+    assert.ok(content.includes('/payments/approvals'), 'Must call approvals endpoint');
+  });
+
+  // -------------------------------------------------------------
   // TEST SUMMARY
   // -------------------------------------------------------------
   console.log('\n======================================================================');

@@ -59,6 +59,7 @@ import UsersRoles from './pages/admin/UsersRoles';
 import AuditLog from './pages/admin/AuditLog';
 import SystemSettings from './pages/admin/SystemSettings';
 import PaymentGateways from './pages/admin/PaymentGateways';
+import PaymentApprovals from './pages/admin/PaymentApprovals';
 import CurrencyManager from './pages/admin/CurrencyManager';
 import ReportsHub from './pages/admin/ReportsHub';
 import StudentsMonks from './pages/admin/StudentsMonks';
@@ -225,6 +226,8 @@ export default function App() {
           {/* Donations & Receipts */}
           <Route path="donations/new" element={<AddDonation />} />
           <Route path="donations" element={<AllDonations />} />
+          <Route path="payments" element={<PaymentApprovals />} />
+          <Route path="payment-approvals" element={<PaymentApprovals />} />
           <Route path="campaigns" element={<Campaigns />} />
           <Route path="donors" element={<DonorsDirectory />} />
           <Route path="receipts" element={<MoneyReceipts />} />

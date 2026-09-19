@@ -5,8 +5,10 @@ import {
   Landmark, Warehouse, UserCheck, FolderKanban, MessageSquareShare,
   BarChart3, UserCog, Settings, ClipboardList, X, Flame,
   GraduationCap, Award, BookOpen, CreditCard, Coins, PlusCircle,
-  Users, ChevronRight, ChevronDown, ExternalLink, Globe, Sliders, Sparkles, Phone
+  Users, ChevronRight, ChevronDown, ExternalLink, Globe, Sliders, Sparkles, Phone,
+  ShieldCheck
 } from 'lucide-react';
+import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../context/CurrencyContext';
 
@@ -25,12 +27,34 @@ export default function AdminSidebar({ isOpen, onClose }) {
                              location.pathname === '/admin/site-settings';
 
   const [pagesOpen, setPagesOpen] = useState(isPageStudioActive);
+  const [pendingApprovalsCount, setPendingApprovalsCount] = useState(0);
 
   useEffect(() => {
     if (isPageStudioActive) {
       setPagesOpen(true);
     }
   }, [location.pathname]);
+
+  // Periodically fetch pending UTR count for live treasury notification badge
+  useEffect(() => {
+    let isMounted = true;
+    async function loadPendingCount() {
+      try {
+        const res = await api.get('/payments/approvals?limit=1&status=pending');
+        if (isMounted && res.data?.success && res.data?.data?.summary) {
+          setPendingApprovalsCount(res.data.data.summary.pendingCount || 0);
+        }
+      } catch (e) {
+        // silent fail if unauthenticated or network error
+      }
+    }
+    loadPendingCount();
+    const interval = setInterval(loadPendingCount, 25000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   const isActive = (path, exact = false) => {
     if (exact) return location.pathname === path;
@@ -264,6 +288,28 @@ export default function AdminSidebar({ isOpen, onClose }) {
                 Donations & Finance
               </div>
               <div className="space-y-0.5">
+                <Link
+                  to="/admin/payments"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/payments') || isActive('/admin/payment-approvals')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Payment Approvals</span>
+                  {pendingApprovalsCount > 0 ? (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500 text-black font-extrabold uppercase tracking-wider animate-pulse shadow-xs">
+                      {pendingApprovalsCount}
+                    </span>
+                  ) : (
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-semibold uppercase tracking-wider">
+                      Treasury
+                    </span>
+                  )}
+                </Link>
+
                 <Link
                   to="/admin/donations"
                   onClick={handleNavClick}

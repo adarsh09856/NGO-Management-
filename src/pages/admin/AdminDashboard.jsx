@@ -4,7 +4,7 @@ import {
   Heart, Users, GraduationCap, FileText, Wallet, ArrowUpRight, ArrowDownRight,
   PlusCircle, UserPlus, Receipt, UserCheck, CalendarCheck, PackagePlus,
   FolderPlus, Grid, Calendar, Clock, AlertTriangle, ArrowRight, Download,
-  RefreshCw, CheckCircle2, DollarSign, Sparkles
+  RefreshCw, CheckCircle2, DollarSign, Sparkles, ChevronRight
 } from 'lucide-react';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis,
@@ -18,6 +18,7 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const { currencySymbol, currency } = useCurrency();
   const [loading, setLoading] = useState(true);
+  const [pendingApprovalsCount, setPendingApprovalsCount] = useState(0);
   const [metrics, setMetrics] = useState({
     totalDonationsMonth: 0,
     totalDonationsCount: 0,
@@ -36,9 +37,15 @@ export default function AdminDashboard() {
   const fetchDashboardMetrics = async () => {
     try {
       setLoading(true);
-      const res = await api.get('/admin/dashboard');
+      const [res, approvalsRes] = await Promise.all([
+        api.get('/admin/dashboard'),
+        api.get('/payments/approvals?limit=1&status=pending').catch(() => null)
+      ]);
       if (res.data.success) {
         setMetrics(res.data.data);
+      }
+      if (approvalsRes?.data?.success && approvalsRes.data?.data?.summary) {
+        setPendingApprovalsCount(approvalsRes.data.data.summary.pendingCount || 0);
       }
     } catch (err) {
       console.error('Failed to fetch admin dashboard metrics:', err);
@@ -84,6 +91,32 @@ export default function AdminDashboard() {
           </Link>
         </div>
       </div>
+
+      {/* Pending Payment Approvals Alert Banner */}
+      {pendingApprovalsCount > 0 && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 to-amber-600/10 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm animate-fadeIn">
+          <div className="flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-600 flex items-center justify-center flex-shrink-0">
+              <Clock className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-[#451A03] font-serif-brand">
+                {pendingApprovalsCount} Payment {pendingApprovalsCount === 1 ? 'Proof' : 'Proofs'} Awaiting Treasury Approval
+              </h4>
+              <p className="text-xs text-amber-800">
+                Devotees have submitted UPI UTRs or Bank Wire receipts requiring bank statement verification.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/admin/payments"
+            className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs rounded-xl flex items-center gap-1.5 shadow transition-all whitespace-nowrap self-stretch sm:self-auto justify-center"
+          >
+            <span>Review Approvals Queue</span>
+            <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
+      )}
 
       {/* 1. TOP STAT CARDS (Live Data from MySQL with Real SVG Sparklines) */}
       {loading ? (

@@ -1,7 +1,7 @@
 const { pool, withTransaction } = require('../config/db');
 const { getNextReceiptNumber, numberToWords, processDonationRefund, processSuccessfulDonation } = require('../services/paymentService');
 const { generateReceiptPdf } = require('../services/pdfService');
-const { sendReceiptEmail } = require('../services/emailService');
+const { sendReceiptEmail, sendPaymentRejectionEmail } = require('../services/emailService');
 const { logAudit } = require('../middleware/auditLogger');
 
 // 1. Add New Donation (Matching form layout & behavior)
@@ -680,11 +680,17 @@ async function verifyDonationPayment(req, res) {
     }
 
     const donation = donationRows[0];
+    const userId = req.user ? req.user.id : null;
 
-    // 1. Mark donation completed in primary ledger
+    // 1. Mark donation completed in primary ledger with verifier info
     await pool.query(
-      `UPDATE donations SET payment_status = 'completed' WHERE id = ?`,
-      [id]
+      `UPDATE donations 
+       SET payment_status = 'completed',
+           rejection_reason = NULL,
+           verified_by_user_id = ?,
+           verified_at = NOW()
+       WHERE id = ?`,
+      [userId, id]
     );
 
     // 2. Mark money receipt as ISSUED
@@ -742,7 +748,7 @@ async function verifyDonationPayment(req, res) {
     }
 
     logAudit({
-      userId: req.user ? req.user.id : null,
+      userId,
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'],
       module: 'donations',
@@ -768,6 +774,385 @@ async function verifyDonationPayment(req, res) {
   }
 }
 
+// 12. Get Centralized Payment Approvals & Treasury Feed with KPI Summary
+async function getPaymentApprovals(req, res) {
+  try {
+    const {
+      status = 'all',
+      method = 'all',
+      search = '',
+      dateFrom,
+      dateTo,
+      page = 1,
+      limit = 25
+    } = req.query;
+
+    const offset = (Math.max(1, parseInt(page, 10)) - 1) * parseInt(limit, 10);
+    const parsedLimit = Math.min(100, Math.max(1, parseInt(limit, 10)));
+
+    let whereClauses = ['d.is_deleted = 0'];
+    const params = [];
+
+    if (status && status !== 'all') {
+      if (status === 'pending') {
+        whereClauses.push(`(d.payment_status = 'pending_verification' OR d.payment_status = 'pending')`);
+      } else {
+        whereClauses.push(`d.payment_status = ?`);
+        params.push(status);
+      }
+    }
+
+    if (method && method !== 'all') {
+      whereClauses.push(`d.payment_method = ?`);
+      params.push(method);
+    }
+
+    if (search && search.trim()) {
+      const q = `%${search.trim()}%`;
+      whereClauses.push(`(
+        d.transaction_ref LIKE ? OR 
+        d.receipt_number LIKE ? OR 
+        d.tracking_id LIKE ? OR 
+        dn.full_name LIKE ? OR 
+        dn.email LIKE ? OR 
+        dn.phone LIKE ?
+      )`);
+      params.push(q, q, q, q, q, q);
+    }
+
+    if (dateFrom) {
+      whereClauses.push(`d.payment_date >= ?`);
+      params.push(dateFrom);
+    }
+
+    if (dateTo) {
+      whereClauses.push(`d.payment_date <= ?`);
+      params.push(dateTo);
+    }
+
+    const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+    // Main records query
+    const listQuery = `
+      SELECT d.id, d.tracking_id, d.receipt_number, d.amount, d.currency, d.amount_in_words,
+             d.payment_method, d.payment_status, d.transaction_ref, d.payment_date, d.payment_gateway,
+             d.bank_name, d.remarks, d.rejection_reason, d.created_at, d.verified_at,
+             d.donation_for, d.donation_type,
+             dn.id as donor_id, dn.full_name as donor_name, dn.email as donor_email,
+             dn.phone as donor_phone, dn.address as donor_address, dn.country as donor_country,
+             c.title as campaign_title,
+             mr.id as receipt_id, mr.status as receipt_status, mr.pdf_url as receipt_pdf_url,
+             u.full_name as verified_by_name
+      FROM donations d
+      LEFT JOIN donors dn ON d.donor_id = dn.id
+      LEFT JOIN campaigns c ON d.campaign_id = c.id
+      LEFT JOIN money_receipts mr ON d.id = mr.donation_id
+      LEFT JOIN users u ON d.verified_by_user_id = u.id
+      ${whereSql}
+      ORDER BY 
+        CASE 
+          WHEN d.payment_status = 'pending_verification' THEN 1
+          WHEN d.payment_status = 'pending' THEN 2
+          ELSE 3
+        END,
+        d.created_at DESC
+      LIMIT ? OFFSET ?
+    `;
+
+    // Count query for pagination
+    const countQuery = `
+      SELECT COUNT(*) as total
+      FROM donations d
+      LEFT JOIN donors dn ON d.donor_id = dn.id
+      ${whereSql}
+    `;
+
+    // Global summary metrics
+    const summaryQuery = `
+      SELECT 
+        SUM(CASE WHEN payment_status IN ('pending_verification', 'pending') THEN 1 ELSE 0 END) as pendingCount,
+        SUM(CASE WHEN payment_status IN ('pending_verification', 'pending') THEN amount ELSE 0 END) as pendingAmount,
+        SUM(CASE WHEN payment_status = 'completed' THEN 1 ELSE 0 END) as verifiedCount,
+        SUM(CASE WHEN payment_status = 'completed' THEN amount ELSE 0 END) as verifiedAmount,
+        SUM(CASE WHEN payment_status = 'rejected' THEN 1 ELSE 0 END) as rejectedCount,
+        SUM(CASE WHEN payment_date = CURDATE() AND payment_status = 'completed' THEN 1 ELSE 0 END) as todayCount,
+        SUM(CASE WHEN payment_date = CURDATE() AND payment_status = 'completed' THEN amount ELSE 0 END) as todayAmount
+      FROM donations
+      WHERE is_deleted = 0
+    `;
+
+    const [[countRows], [listRows], [summaryRows]] = await Promise.all([
+      pool.query(countQuery, params),
+      pool.query(listQuery, [...params, parsedLimit, offset]),
+      pool.query(summaryQuery)
+    ]);
+
+    const total = countRows[0]?.total || 0;
+    const summary = summaryRows[0] || {
+      pendingCount: 0,
+      pendingAmount: 0,
+      verifiedCount: 0,
+      verifiedAmount: 0,
+      rejectedCount: 0,
+      todayCount: 0,
+      todayAmount: 0
+    };
+
+    return res.json({
+      success: true,
+      data: {
+        payments: listRows,
+        pagination: {
+          total,
+          page: parseInt(page, 10),
+          limit: parsedLimit,
+          totalPages: Math.ceil(total / parsedLimit) || 1
+        },
+        summary: {
+          pendingCount: parseInt(summary.pendingCount || 0, 10),
+          pendingAmount: parseFloat(summary.pendingAmount || 0),
+          verifiedCount: parseInt(summary.verifiedCount || 0, 10),
+          verifiedAmount: parseFloat(summary.verifiedAmount || 0),
+          rejectedCount: parseInt(summary.rejectedCount || 0, 10),
+          todayCount: parseInt(summary.todayCount || 0, 10),
+          todayAmount: parseFloat(summary.todayAmount || 0)
+        }
+      }
+    });
+  } catch (error) {
+    console.error('[Get Payment Approvals Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to fetch payment approvals: ' + error.message });
+  }
+}
+
+// 13. Reject Donation Payment (e.g. UTR not found on bank statement, bad proof)
+async function rejectDonationPayment(req, res) {
+  try {
+    const { id } = req.params;
+    const { rejectionReason } = req.body;
+
+    if (!rejectionReason || rejectionReason.trim().length < 5) {
+      return res.status(400).json({
+        success: false,
+        message: 'A clear rejection reason of at least 5 characters is required for treasury auditing.'
+      });
+    }
+
+    const [donationRows] = await pool.query(
+      `SELECT d.*, 
+              dn.full_name as donor_name, dn.email as donor_email, dn.phone as donor_phone,
+              mr.id as receipt_id
+       FROM donations d
+       LEFT JOIN donors dn ON d.donor_id = dn.id
+       LEFT JOIN money_receipts mr ON d.id = mr.donation_id
+       WHERE d.id = ?`,
+      [id]
+    );
+
+    if (donationRows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Donation record not found' });
+    }
+
+    const donation = donationRows[0];
+    const userId = req.user ? req.user.id : null;
+    const cleanReason = rejectionReason.trim();
+
+    // 1. Mark donation as rejected with timestamp, user ID, and reason
+    await pool.query(
+      `UPDATE donations 
+       SET payment_status = 'rejected', 
+           rejection_reason = ?, 
+           verified_by_user_id = ?, 
+           verified_at = NOW() 
+       WHERE id = ?`,
+      [cleanReason, userId, id]
+    );
+
+    // 2. Void preliminary money receipt if exists
+    if (donation.receipt_id) {
+      await pool.query(
+        `UPDATE money_receipts 
+         SET status = 'VOIDED', 
+             notes = CONCAT(COALESCE(notes, ''), ' - Voided due to UTR rejection: ', ?) 
+         WHERE id = ?`,
+        [cleanReason, donation.receipt_id]
+      );
+    }
+
+    // 3. Dispatch professional rejection notice to donor if email exists
+    let emailSent = false;
+    if (donation.donor_email) {
+      try {
+        const mailResult = await sendPaymentRejectionEmail({
+          toEmail: donation.donor_email,
+          donorName: donation.donor_name,
+          receiptNumber: donation.receipt_number,
+          amount: donation.amount,
+          currency: donation.currency,
+          rejectionReason: cleanReason,
+          transactionRef: donation.transaction_ref
+        });
+        emailSent = mailResult?.success || false;
+      } catch (mailErr) {
+        console.error('[Rejection Email Dispatch Error]:', mailErr.message);
+      }
+    }
+
+    logAudit({
+      userId,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'donations',
+      action: 'reject_payment',
+      recordId: id,
+      details: {
+        receiptNumber: donation.receipt_number,
+        utr: donation.transaction_ref,
+        rejectionReason: cleanReason,
+        rejectedBy: req.user?.email || 'admin',
+        emailSent
+      }
+    });
+
+    return res.json({
+      success: true,
+      message: `Payment marked as rejected. Rejection reason recorded and donor notified.`,
+      emailSent
+    });
+  } catch (error) {
+    console.error('[Reject Payment Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to reject payment: ' + error.message });
+  }
+}
+
+// 14. Update / Correct UTR Reference (e.g. devotee typo)
+async function updateDonationUtr(req, res) {
+  try {
+    const { id } = req.params;
+    const { transactionRef, remarks } = req.body;
+
+    if (!transactionRef || transactionRef.trim().length < 4) {
+      return res.status(400).json({ success: false, message: 'Valid UTR / transaction reference is required (at least 4 characters).' });
+    }
+
+    const cleanRef = transactionRef.trim();
+
+    const [existing] = await pool.query(`SELECT id, transaction_ref, receipt_number FROM donations WHERE id = ?`, [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Donation record not found' });
+    }
+
+    const oldRef = existing[0].transaction_ref;
+
+    await pool.query(
+      `UPDATE donations 
+       SET transaction_ref = ?, 
+           remarks = CONCAT(COALESCE(remarks, ''), IF(? != '', CONCAT(' | ', ?), ''))
+       WHERE id = ?`,
+      [cleanRef, remarks || '', remarks || '', id]
+    );
+
+    await pool.query(
+      `UPDATE money_receipts SET transaction_no = ? WHERE donation_id = ?`,
+      [cleanRef, id]
+    );
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'donations',
+      action: 'update_utr',
+      recordId: id,
+      details: { oldRef, newRef: cleanRef, updatedBy: req.user?.email || 'admin' }
+    });
+
+    return res.json({
+      success: true,
+      message: `Transaction reference updated to ${cleanRef} successfully.`
+    });
+  } catch (error) {
+    console.error('[Update UTR Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to update transaction reference: ' + error.message });
+  }
+}
+
+// 15. Resend Certified Receipt Email to Devotee
+async function resendReceiptEmail(req, res) {
+  try {
+    const { id } = req.params;
+    const [donationRows] = await pool.query(
+      `SELECT d.*, 
+              dn.full_name as donor_name, dn.email as donor_email, dn.phone as donor_phone, dn.address as donor_address,
+              mr.id as receipt_id, mr.financial_year, mr.pdf_url
+       FROM donations d
+       JOIN donors dn ON d.donor_id = dn.id
+       LEFT JOIN money_receipts mr ON d.id = mr.donation_id
+       WHERE d.id = ?`,
+      [id]
+    );
+
+    if (donationRows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Donation record not found' });
+    }
+
+    const donation = donationRows[0];
+    if (!donation.donor_email) {
+      return res.status(400).json({ success: false, message: 'No email address registered for this devotee.' });
+    }
+
+    // Ensure PDF exists or regenerate
+    const receiptData = {
+      receipt_number: donation.receipt_number,
+      financial_year: donation.financial_year || `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
+      recipient_name: donation.donor_name,
+      recipient_email: donation.donor_email,
+      recipient_phone: donation.donor_phone,
+      recipient_address: donation.donor_address,
+      purpose: donation.donation_for,
+      amount: donation.amount,
+      currency: donation.currency,
+      amount_in_words: donation.amount_in_words,
+      payment_mode: donation.payment_method,
+      transaction_no: donation.transaction_ref,
+      receipt_date: donation.payment_date || new Date().toISOString().slice(0, 10),
+      status: 'ISSUED'
+    };
+
+    const pdfResult = await generateReceiptPdf(receiptData);
+    if (donation.receipt_id) {
+      await pool.query(`UPDATE money_receipts SET pdf_url = ? WHERE id = ?`, [pdfResult.relativeUrl, donation.receipt_id]);
+    }
+
+    const mailResult = await sendReceiptEmail({
+      toEmail: donation.donor_email,
+      donorName: donation.donor_name,
+      receiptNumber: donation.receipt_number,
+      amount: donation.amount,
+      currency: donation.currency,
+      pdfPath: pdfResult.filePath
+    });
+
+    logAudit({
+      userId: req.user ? req.user.id : null,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      module: 'donations',
+      action: 'resend_receipt_email',
+      recordId: id,
+      details: { recipientEmail: donation.donor_email, receiptNumber: donation.receipt_number }
+    });
+
+    return res.json({
+      success: true,
+      message: `Certified 80G tax receipt re-sent successfully to ${donation.donor_email}.`
+    });
+  } catch (error) {
+    console.error('[Resend Receipt Email Error]:', error);
+    return res.status(500).json({ success: false, message: 'Failed to re-send receipt email: ' + error.message });
+  }
+}
+
 module.exports = {
   addDonation,
   getAllDonations,
@@ -782,5 +1167,9 @@ module.exports = {
   getRecurringPledges,
   updatePledgeStatus,
   submitPublicOffering,
-  verifyDonationPayment
+  verifyDonationPayment,
+  getPaymentApprovals,
+  rejectDonationPayment,
+  updateDonationUtr,
+  resendReceiptEmail
 };

@@ -233,9 +233,68 @@ async function sendPendingVerificationEmail({ toEmail, donorName, receiptNumber,
   }
 }
 
+// Send Payment Proof Rejection Notice Email
+async function sendPaymentRejectionEmail({ toEmail, donorName, receiptNumber, amount, currency, rejectionReason, transactionRef }) {
+  try {
+    if (!toEmail) return { success: false, reason: 'No recipient email' };
+    const mailer = await getTransporter();
+
+    const mailOptions = {
+      from: process.env.SMTP_FROM || '"Drodul Phendey Ling Foundation" <donations@drodulphendeyling.org>',
+      to: toEmail,
+      subject: `Payment Verification Notice [${receiptNumber || 'Offering Proof'}] - Action Required`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #f87171; border-radius: 8px;">
+          <div style="background-color: #7f1d1d; color: #ffffff; padding: 20px; text-align: center; border-radius: 6px 6px 0 0;">
+            <h2 style="margin: 0; color: #fca5a5;">Payment Verification Notice</h2>
+            <h3 style="margin: 5px 0 0 0; color: #ffffff;">Drodul Phendey Ling Foundation</h3>
+          </div>
+          <div style="padding: 20px; background-color: #ffffff;">
+            <p>Dear <strong>${donorName || 'Noble Devotee'}</strong>,</p>
+            <p>Tashi Delek.</p>
+            <p>We are writing regarding your submitted offering of <strong>${currency || 'BTN'} ${parseFloat(amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong> (Ref / UTR: <code style="background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px;">${transactionRef || 'N/A'}</code>).</p>
+            
+            <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0; border-radius: 4px;">
+              <h4 style="margin: 0 0 8px 0; color: #991b1b; font-size: 14px;">Treasury Verification Status: Unverified / Rejected</h4>
+              <p style="margin: 0; color: #7f1d1d; font-size: 13px; line-height: 1.5;">
+                <strong>Reason:</strong> ${rejectionReason || 'The transaction reference or UTR provided could not be matched with incoming deposits on our official bank statement.'}
+              </p>
+            </div>
+
+            <p style="font-size: 13px; line-height: 1.6; color: #374151;">
+              <strong>What should you do next?</strong>
+            </p>
+            <ul style="font-size: 13px; color: #374151; line-height: 1.6; padding-left: 20px;">
+              <li>If you mistyped your UTR / transaction reference, please reply directly to this email with your updated bank transfer receipt or UTR.</li>
+              <li>If your payment was debited from your account, please attach a screenshot showing the transaction details or bank reference number.</li>
+              <li>Alternatively, you may submit a new offering through our verified online payment gateway.</li>
+            </ul>
+
+            <p style="margin-top: 25px; font-size: 13px; color: #4B5563;">
+              For any questions, feel free to contact our treasury team at <a href="mailto:finance@drodulphendeyling.org" style="color: #991b1b;">finance@drodulphendeyling.org</a>.
+            </p>
+            <p style="margin-top: 20px; font-size: 13px; color: #4B5563;">
+              With prayers and blessings,<br>
+              <strong>Treasury & Finance Office<br>Drodul Phendey Ling Foundation</strong>
+            </p>
+          </div>
+        </div>
+      `
+    };
+
+    const info = await mailer.sendMail(mailOptions);
+    console.log(`[Email Service] Rejection notification sent to ${toEmail}. Message ID: ${info.messageId}`);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error(`[Email Service Error] Failed to send rejection email:`, error.message);
+    return { success: false, error: error.message };
+  }
+}
+
 module.exports = {
   sendReceiptEmail,
   sendPendingVerificationEmail,
+  sendPaymentRejectionEmail,
   sendSubscriptionAlertEmail,
   sendCampaignEmail
 };

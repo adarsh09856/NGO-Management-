@@ -120,8 +120,12 @@ router.put('/donations/campaigns/:id/status', authenticateToken, requirePermissi
 
 router.post('/donations', authenticateToken, requirePermission('donations:create'), donationCtrl.addDonation);
 router.get('/donations', authenticateToken, requirePermission('donations:view'), donationCtrl.getAllDonations);
+router.get('/payments/approvals', authenticateToken, requirePermissionOrRole('donations:view', 'super_admin', 'accountant', 'admin'), donationCtrl.getPaymentApprovals);
 router.post('/donations/:id/refund', authenticateToken, requirePermissionOrRole('donations:refund', 'super_admin', 'accountant'), donationCtrl.refundDonation);
 router.put('/donations/:id/verify', authenticateToken, requirePermissionOrRole('donations:create', 'super_admin', 'accountant'), donationCtrl.verifyDonationPayment);
+router.put('/donations/:id/reject', authenticateToken, requirePermissionOrRole('donations:create', 'super_admin', 'accountant'), donationCtrl.rejectDonationPayment);
+router.put('/donations/:id/utr', authenticateToken, requirePermissionOrRole('donations:create', 'super_admin', 'accountant'), donationCtrl.updateDonationUtr);
+router.post('/donations/:id/resend-receipt', authenticateToken, requirePermissionOrRole('donations:view', 'super_admin', 'accountant'), donationCtrl.resendReceiptEmail);
 router.get('/donations/recurring', authenticateToken, donationCtrl.getRecurringPledges);
 router.post('/donations/recurring/:id/status', authenticateToken, donationCtrl.updatePledgeStatus);
 router.get('/donations/:id', authenticateToken, donationCtrl.getDonationById);
