@@ -45,6 +45,23 @@ export default function Navbar({ onOpenDonate }) {
     return () => window.removeEventListener('ngo:settings-updated', handleUpdate);
   }, []);
 
+  // Dynamic Navigation Items
+  const [navItems, setNavItems] = useState([]);
+
+  useEffect(() => {
+    const loadNav = () => {
+      api.get('/navigation').then((res) => {
+        const headerList = res.data?.data?.header || res.data?.header;
+        if (Array.isArray(headerList) && headerList.length > 0) {
+          setNavItems(headerList.filter(item => (item.isActive ?? item.is_active ?? true)));
+        }
+      }).catch(() => {});
+    };
+    loadNav();
+    window.addEventListener('ngo:navigation-updated', loadNav);
+    return () => window.removeEventListener('ngo:navigation-updated', loadNav);
+  }, []);
+
   // Scroll Progress Ribbon State
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -222,13 +239,48 @@ export default function Navbar({ onOpenDonate }) {
 
         {/* Desktop Navigation Links */}
         <nav className="hidden xl:flex items-center space-x-5 2xl:space-x-7 text-xs font-bold text-[#1E293B] tracking-wider uppercase">
-          {/* HOME */}
-          <Link
-            to="/"
-            className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group ${
-              isActive('/') ? 'text-[#721C24]' : 'text-gray-700'
-            }`}
-          >
+          {navItems.length > 0 ? (
+            navItems.map((item) => {
+              const isExt = item.url?.startsWith('http');
+              const active = isActive(item.url);
+              return isExt ? (
+                <a
+                  key={item.id || item.url}
+                  href={item.url}
+                  target={item.target || '_blank'}
+                  rel="noreferrer"
+                  className="relative py-1.5 transition-all duration-200 hover:text-[#721C24] group text-gray-700"
+                >
+                  <span>{item.label || item.title}</span>
+                  <span className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 w-0 group-hover:w-full" />
+                </a>
+              ) : (
+                <Link
+                  key={item.id || item.url}
+                  to={item.url}
+                  target={item.target || '_self'}
+                  className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group ${
+                    active ? 'text-[#721C24]' : 'text-gray-700'
+                  }`}
+                >
+                  <span>{item.label || item.title}</span>
+                  <span
+                    className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
+                      active ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
+                  />
+                </Link>
+              );
+            })
+          ) : (
+            <>
+              {/* HOME */}
+              <Link
+                to="/"
+                className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group ${
+                  isActive('/') ? 'text-[#721C24]' : 'text-gray-700'
+                }`}
+              >
             <span>{t.home}</span>
             <span
               className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
@@ -415,6 +467,8 @@ export default function Navbar({ onOpenDonate }) {
               }`}
             />
           </Link>
+            </>
+          )}
         </nav>
 
         {/* Right Action Controls */}
@@ -511,36 +565,76 @@ export default function Navbar({ onOpenDonate }) {
 
               {/* Navigation Links */}
               <nav className="space-y-1 font-serif text-sm">
-                {[
-                  { path: '/', label: t.home, icon: Compass },
-                  { path: '/about', label: t.about, icon: Landmark },
-                  { path: '/shedra', label: t.shedra, icon: GraduationCap },
-                  { path: '/learning', label: t.learning, icon: BookOpen },
-                  { path: '/blog', label: t.blog, icon: Newspaper },
-                  { path: '/gallery', label: t.gallery, icon: ImageIcon },
-                  { path: '/contact', label: t.contact, icon: MapPin },
-                ].map((item) => {
-                  const Icon = item.icon;
-                  const active = isActive(item.path);
-                  return (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
-                        active
-                          ? 'bg-gradient-to-r from-[#4A0E17] to-[#721C24] text-[#D4AF37] border border-[#D4AF37]/50 shadow-md font-bold'
-                          : 'text-gray-300 hover:text-white hover:bg-white/5'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Icon className={`w-4 h-4 ${active ? 'text-[#D4AF37]' : 'text-gray-400'}`} />
-                        <span>{item.label}</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-gray-500" />
-                    </Link>
-                  );
-                })}
+                {navItems.length > 0 ? (
+                  navItems.map((item) => {
+                    const isExt = item.url?.startsWith('http');
+                    const active = isActive(item.url);
+                    return isExt ? (
+                      <a
+                        key={item.id || item.url}
+                        href={item.url}
+                        target={item.target || '_blank'}
+                        rel="noreferrer"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center justify-between px-4 py-3 rounded-xl transition-all text-gray-300 hover:text-white hover:bg-white/5"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Compass className="w-4 h-4 text-gray-400" />
+                          <span>{item.label || item.title}</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-500" />
+                      </a>
+                    ) : (
+                      <Link
+                        key={item.id || item.url}
+                        to={item.url}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+                          active
+                            ? 'bg-gradient-to-r from-[#4A0E17] to-[#721C24] text-[#D4AF37] border border-[#D4AF37]/50 shadow-md font-bold'
+                            : 'text-gray-300 hover:text-white hover:bg-white/5'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Compass className={`w-4 h-4 ${active ? 'text-[#D4AF37]' : 'text-gray-400'}`} />
+                          <span>{item.label || item.title}</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-500" />
+                      </Link>
+                    );
+                  })
+                ) : (
+                  [
+                    { path: '/', label: t.home, icon: Compass },
+                    { path: '/about', label: t.about, icon: Landmark },
+                    { path: '/shedra', label: t.shedra, icon: GraduationCap },
+                    { path: '/learning', label: t.learning, icon: BookOpen },
+                    { path: '/blog', label: t.blog, icon: Newspaper },
+                    { path: '/gallery', label: t.gallery, icon: ImageIcon },
+                    { path: '/contact', label: t.contact, icon: MapPin },
+                  ].map((item) => {
+                    const Icon = item.icon;
+                    const active = isActive(item.path);
+                    return (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+                          active
+                            ? 'bg-gradient-to-r from-[#4A0E17] to-[#721C24] text-[#D4AF37] border border-[#D4AF37]/50 shadow-md font-bold'
+                            : 'text-gray-300 hover:text-white hover:bg-white/5'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon className={`w-4 h-4 ${active ? 'text-[#D4AF37]' : 'text-gray-400'}`} />
+                          <span>{item.label}</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-500" />
+                      </Link>
+                    );
+                  })
+                )}
               </nav>
 
               {/* Auspicious Quick Actions Box */}

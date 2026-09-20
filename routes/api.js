@@ -59,6 +59,8 @@ const volunteerCtrl = require('../controllers/volunteerController');
 const newsletterCtrl = require('../controllers/newsletterController');
 const healthCtrl = require('../controllers/healthController');
 const trackingCtrl = require('../controllers/trackingController');
+const pagesCtrl = require('../controllers/pagesController');
+const navigationCtrl = require('../controllers/navigationController');
 
 // ==========================================
 // 0. SYSTEM HEALTH & DIAGNOSTICS
@@ -96,6 +98,24 @@ router.get('/blog/:slug', blogCtrl.getBlogPostBySlug);
 router.post('/blog', authenticateToken, requirePermissionOrRole('cms:blog', 'super_admin', 'staff'), blogCtrl.createBlogPost);
 router.put('/blog/:id', authenticateToken, requirePermissionOrRole('cms:blog', 'super_admin', 'staff'), blogCtrl.updateBlogPost);
 router.delete('/blog/:id', authenticateToken, requirePermissionOrRole('cms:blog', 'super_admin', 'staff'), blogCtrl.deleteBlogPost);
+
+// ==========================================
+// 3.1. DYNAMIC CUSTOM PAGES (Public & Admin)
+// ==========================================
+router.get('/pages', optionalAuth, pagesCtrl.getPages);
+router.get('/pages/:slug', optionalAuth, pagesCtrl.getPageBySlug);
+router.post('/pages', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin', 'staff'), pagesCtrl.createPage);
+router.put('/pages/:id', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin', 'staff'), pagesCtrl.updatePage);
+router.delete('/pages/:id', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin', 'staff'), pagesCtrl.deletePage);
+
+// ==========================================
+// 3.2. HEADER & FOOTER NAVIGATION MENUS
+// ==========================================
+router.get('/navigation', navigationCtrl.getNavigation);
+router.post('/navigation', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin', 'staff'), navigationCtrl.createNavigationItem);
+router.put('/navigation/reorder', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin', 'staff'), navigationCtrl.reorderNavigation);
+router.put('/navigation/:id', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin', 'staff'), navigationCtrl.updateNavigationItem);
+router.delete('/navigation/:id', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin', 'staff'), navigationCtrl.deleteNavigationItem);
 
 // ==========================================
 // 4. LEARNING & DHARMA VIDEOS (Public & Admin)

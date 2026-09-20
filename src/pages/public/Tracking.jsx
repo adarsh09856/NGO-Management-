@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { Search, CheckCircle2, Clock, Shield, Download, AlertCircle, ArrowRight, Flame, Heart, FileText } from 'lucide-react';
 import api from '../../services/api';
 import { useCurrency } from '../../context/CurrencyContext';
+import SectionEditBadge from '../../components/SectionEditBadge';
 
 export default function Tracking() {
   const { currency: sysCurrency } = useCurrency();
@@ -53,11 +54,19 @@ export default function Tracking() {
   return (
     <div className="min-h-[85vh] py-10 sm:py-16 px-3 xs:px-4 sm:px-8 relative z-10 max-w-4xl mx-auto space-y-8 sm:space-y-12">
       {/* Header Banner */}
-      <div className="text-center space-y-3 sm:space-y-4 animate-fade-in-up">
-        <div className="inline-flex items-center space-x-2 glow-pill-gold px-3.5 py-1.5 rounded-full text-xs font-bold animate-float">
-          <Shield className="w-4 h-4 text-amber-600" />
-          <span className="font-tibetan text-sm">༄༅། །རྗེས་འདེད་ལྟ་རྟོགས།</span>
-          <span>• Monastic Treasury Reconciliation Ledger</span>
+      <div className="text-center space-y-3 sm:space-y-4 animate-fade-in-up relative">
+        <div className="flex items-center justify-center gap-2">
+          <div className="inline-flex items-center space-x-2 glow-pill-gold px-3.5 py-1.5 rounded-full text-xs font-bold animate-float">
+            <Shield className="w-4 h-4 text-amber-600" />
+            <span className="font-tibetan text-sm">༄༅། །རྗེས་འདེད་ལྟ་རྟོགས།</span>
+            <span>• Monastic Treasury Reconciliation Ledger</span>
+          </div>
+          <SectionEditBadge
+            sectionKey="donate"
+            label="Treasury Approvals"
+            studioHref="/admin/payments"
+            position="relative top-0 right-0"
+          />
         </div>
         <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-5xl text-[#0F172A] tracking-wide break-words">
           Live Offering & Prayer Tracking

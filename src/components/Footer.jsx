@@ -35,6 +35,23 @@ export default function Footer({ onOpenDonate }) {
     return () => window.removeEventListener('ngo:settings-updated', handleUpdate);
   }, []);
 
+  // Dynamic Footer Navigation
+  const [footerNav, setFooterNav] = useState([]);
+
+  useEffect(() => {
+    const loadNav = () => {
+      api.get('/navigation').then((res) => {
+        const footerList = res.data?.data?.footer_programs || res.data?.data?.footer || res.data?.footer;
+        if (Array.isArray(footerList) && footerList.length > 0) {
+          setFooterNav(footerList.filter(item => (item.isActive ?? item.is_active ?? true)));
+        }
+      }).catch(() => {});
+    };
+    loadNav();
+    window.addEventListener('ngo:navigation-updated', loadNav);
+    return () => window.removeEventListener('ngo:navigation-updated', loadNav);
+  }, []);
+
   const handleNewsletter = async (e) => {
     e.preventDefault();
     if (!newsletterEmail) return;
@@ -105,36 +122,68 @@ export default function Footer({ onOpenDonate }) {
               Sacred Programs
             </h4>
             <ul className="space-y-2 text-xs text-gray-400 font-medium">
-              <li>
-                <Link to="/about" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
-                  <span>108ft Peace Stupa</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/shedra" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
-                  <span>Shedra Monastic Academy</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/prayer-request" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
-                  <span>108 Butter Lamps</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/donate" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
-                  <span>Sangha Welfare Fund</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/learning" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
-                  <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
-                  <span>Digital Dharma Library</span>
-                </Link>
-              </li>
+              {footerNav.length > 0 ? (
+                footerNav.map((item) => {
+                  const isExt = item.url?.startsWith('http');
+                  return (
+                    <li key={item.id || item.url}>
+                      {isExt ? (
+                        <a
+                          href={item.url}
+                          target={item.target || '_blank'}
+                          rel="noreferrer"
+                          className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5"
+                        >
+                          <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                          <span>{item.label || item.title}</span>
+                        </a>
+                      ) : (
+                        <Link
+                          to={item.url}
+                          target={item.target || '_self'}
+                          className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5"
+                        >
+                          <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                          <span>{item.label || item.title}</span>
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })
+              ) : (
+                <>
+                  <li>
+                    <Link to="/about" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                      <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                      <span>108ft Peace Stupa</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/shedra" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                      <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                      <span>Shedra Monastic Academy</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/prayer-request" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                      <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                      <span>108 Butter Lamps</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/donate" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                      <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                      <span>Sangha Welfare Fund</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/learning" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5">
+                      <span className="text-[#D4AF37]/60 text-[10px]">☸</span>
+                      <span>Digital Dharma Library</span>
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
 

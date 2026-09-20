@@ -28,6 +28,7 @@ import Login from './pages/public/Login';
 import Register from './pages/public/Register';
 import Shedra from './pages/public/Shedra';
 import Tracking from './pages/public/Tracking';
+import CustomPage from './pages/public/CustomPage';
 
 // Admin Login
 import AdminLogin from './pages/admin/AdminLogin';
@@ -68,6 +69,7 @@ import Certificates from './pages/admin/Certificates';
 
 // Dedicated CMS Page Studios (HAB Parity)
 import PagesDirectory from './pages/admin/PagesDirectory';
+import NavigationManager from './pages/admin/NavigationManager';
 import HomePageStudio from './pages/admin/HomePageStudio';
 import AboutPageStudio from './pages/admin/AboutPageStudio';
 import ShedraPageStudio from './pages/admin/ShedraPageStudio';
@@ -93,7 +95,8 @@ export default function App() {
     isOpen: false,
     sectionKey: 'hero',
     sectionTitle: '',
-    studioHref: ''
+    studioHref: '',
+    customPageData: null
   });
 
   // Global listener so any section badge can open the in-place editor modal
@@ -104,7 +107,8 @@ export default function App() {
           isOpen: true,
           sectionKey: e.detail.section || 'hero',
           sectionTitle: e.detail.sectionTitle || '',
-          studioHref: e.detail.studioHref || ''
+          studioHref: e.detail.studioHref || '',
+          customPageData: e.detail.customPageData || null
         });
       } else {
         setLiveEditorState((prev) => ({ ...prev, isOpen: true }));
@@ -126,12 +130,13 @@ export default function App() {
           element={
             <div className="flex flex-col min-h-screen">
               <AdminLiveBar
-                onOpenEditor={(sec, title, href) =>
+                onOpenEditor={(sec, title, href, pageData) =>
                   setLiveEditorState({
                     isOpen: true,
                     sectionKey: sec || 'hero',
                     sectionTitle: title || '',
-                    studioHref: href || ''
+                    studioHref: href || '',
+                    customPageData: pageData || null
                   })
                 }
               />
@@ -149,6 +154,8 @@ export default function App() {
                   <Route path="/learning" element={<Learning />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/blog/:slug" element={<BlogDetail />} />
+                  <Route path="/pages/:slug" element={<CustomPage />} />
+                  <Route path="/pages" element={<Navigate to="/" replace />} />
                   <Route path="/shedra" element={<Shedra />} />
                   <Route path="/courses" element={<Shedra />} />
                   <Route path="/verify-certificate" element={<Shedra />} />
@@ -162,10 +169,11 @@ export default function App() {
               {donateModalOpen && <DonationModal onClose={() => setDonateModalOpen(false)} />}
               <LiveSectionEditor
                 isOpen={liveEditorState.isOpen}
-                onClose={() => setLiveEditorState((prev) => ({ ...prev, isOpen: false }))}
+                onClose={() => setLiveEditorState((prev) => ({ ...prev, isOpen: false, customPageData: null }))}
                 sectionKey={liveEditorState.sectionKey}
                 sectionTitle={liveEditorState.sectionTitle}
                 studioHref={liveEditorState.studioHref}
+                customPageData={liveEditorState.customPageData}
               />
             </div>
           }
@@ -275,8 +283,9 @@ export default function App() {
           <Route path="settings" element={<SystemSettings />} />
           <Route path="reports" element={<ReportsHub />} />
 
-          {/* Dedicated CMS Studios (HAB Parity) */}
+          {/* Dedicated CMS Studios & Menus */}
           <Route path="pages" element={<PagesDirectory />} />
+          <Route path="navigation" element={<NavigationManager />} />
           <Route path="pages/home" element={<HomePageStudio />} />
           <Route path="pages/about" element={<AboutPageStudio />} />
           <Route path="pages/shedra" element={<ShedraPageStudio />} />

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Calendar, User, ArrowLeft, Tag, Share2, Eye, Heart, BookOpen, Clock, Sparkles } from 'lucide-react';
 import api from '../../services/api';
 import DonationModal from '../../components/DonationModal';
+import SectionEditBadge from '../../components/SectionEditBadge';
 
 export default function BlogDetail() {
   const { slug } = useParams();
@@ -86,13 +87,21 @@ export default function BlogDetail() {
             <span className="truncate">← Back to Journal</span>
           </Link>
 
-          <button
-            onClick={handleShare}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#D4AF37]/30 text-xs font-serif text-gray-700 hover:border-[#D4AF37] transition-all shadow-sm flex-shrink-0"
-          >
-            <Share2 className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>{copied ? 'Copied!' : 'Share'}</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <SectionEditBadge
+              sectionKey="blog"
+              label="Edit in Blog Studio"
+              studioHref="/admin/blog"
+              position="relative top-0 right-0"
+            />
+            <button
+              onClick={handleShare}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#D4AF37]/30 text-xs font-serif text-gray-700 hover:border-[#D4AF37] transition-all shadow-sm flex-shrink-0"
+            >
+              <Share2 className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>{copied ? 'Copied!' : 'Share'}</span>
+            </button>
+          </div>
         </div>
 
         {/* Article Container */}

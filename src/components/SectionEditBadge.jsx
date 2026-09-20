@@ -13,6 +13,7 @@ export default function SectionEditBadge({
   sectionLabel,
   label,
   studioHref,
+  customPageData,
   onQuickEdit,
   position = 'top-3 right-3',
   className
@@ -155,6 +156,9 @@ export default function SectionEditBadge({
       case 'social':
         resolvedStudioHref = '/admin/site-settings#social';
         break;
+      case 'custom-page':
+        resolvedStudioHref = '/admin/pages';
+        break;
       default:
         resolvedStudioHref = '/admin/pages/home';
     }
@@ -171,7 +175,8 @@ export default function SectionEditBadge({
           detail: {
             section: sectionKey,
             sectionTitle: displayLabel,
-            studioHref: resolvedStudioHref
+            studioHref: resolvedStudioHref,
+            customPageData: customPageData || null
           }
         })
       );

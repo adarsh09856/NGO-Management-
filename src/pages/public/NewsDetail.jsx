@@ -4,6 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Calendar, MapPin, Clock, ArrowLeft, Share2, Eye, Sparkles, Heart, Bell, X, CheckCircle2, Users, Send } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import SectionEditBadge from '../../components/SectionEditBadge';
 
 export default function NewsDetail() {
   const { slug } = useParams();
@@ -126,13 +127,21 @@ export default function NewsDetail() {
             <span className="truncate">← Back to Ceremonies</span>
           </Link>
 
-          <button
-            onClick={handleShare}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#D4AF37]/30 text-xs font-serif text-gray-700 hover:border-[#D4AF37] transition-all shadow-sm flex-shrink-0"
-          >
-            <Share2 className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>{copied ? 'Copied!' : 'Share'}</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <SectionEditBadge
+              sectionKey="news"
+              label="Edit in News Studio"
+              studioHref="/admin/prayer-requests?tab=news"
+              position="relative top-0 right-0"
+            />
+            <button
+              onClick={handleShare}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#D4AF37]/30 text-xs font-serif text-gray-700 hover:border-[#D4AF37] transition-all shadow-sm flex-shrink-0"
+            >
+              <Share2 className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>{copied ? 'Copied!' : 'Share'}</span>
+            </button>
+          </div>
         </div>
 
         {/* Hero Image */}

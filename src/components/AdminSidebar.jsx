@@ -6,7 +6,7 @@ import {
   BarChart3, UserCog, Settings, ClipboardList, X, Flame,
   GraduationCap, Award, BookOpen, CreditCard, Coins, PlusCircle,
   Users, ChevronRight, ChevronDown, ExternalLink, Globe, Sliders, Sparkles, Phone,
-  ShieldCheck
+  ShieldCheck, Menu as MenuIcon, Compass, FileText, CheckCircle2
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -23,10 +23,12 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const isStaff = roleSlug === 'staff' || roleSlug === 'hr_manager';
 
   const isPageStudioActive = location.pathname.startsWith('/admin/pages') ||
+                             location.pathname === '/admin/navigation' ||
                              location.pathname === '/admin/donate-settings' ||
                              location.pathname === '/admin/site-settings';
 
   const [pagesOpen, setPagesOpen] = useState(isPageStudioActive);
+  const [operationsOpen, setOperationsOpen] = useState(false);
   const [pendingApprovalsCount, setPendingApprovalsCount] = useState(0);
 
   useEffect(() => {
@@ -105,187 +107,295 @@ export default function AdminSidebar({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* Scrollable Navigation Menu */}
+        {/* Scrollable Navigation Menu (5 Structured Client-Friendly Categories) */}
         <nav className="flex-1 overflow-y-auto p-3 space-y-4 text-xs no-scrollbar">
-          {/* 1. OVERVIEW */}
+
+          {/* ========================================================= */}
+          {/* CATEGORY 1: WEBSITE & PAGES                               */}
+          {/* ========================================================= */}
           <div>
-            <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-              Overview
+            <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center justify-between">
+              <span>1. Website & Pages</span>
+              <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-[#D4AF37] font-bold tracking-wider">CMS</span>
             </div>
-            <Link
-              to="/admin"
-              onClick={handleNavClick}
-              className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                isActive('/admin', true)
-                  ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                  : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-              }`}
-            >
-              <LayoutDashboard className="w-4 h-4 text-[#D4AF37]" />
-              <span className="flex-1">Dashboard Overview</span>
-              <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-semibold uppercase tracking-wider">Live</span>
-            </Link>
+            <div className="space-y-0.5">
+              {/* Dashboard Overview */}
+              <Link
+                to="/admin"
+                onClick={handleNavClick}
+                className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                  isActive('/admin', true)
+                    ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                    : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                }`}
+              >
+                <LayoutDashboard className="w-4 h-4 text-[#D4AF37]" />
+                <span className="flex-1">Dashboard Overview</span>
+                <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-semibold uppercase tracking-wider">Live</span>
+              </Link>
+
+              {/* Website Pages Directory */}
+              <Link
+                to="/admin/pages"
+                onClick={handleNavClick}
+                className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                  isActive('/admin/pages', true)
+                    ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                    : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                }`}
+              >
+                <Globe className="w-4 h-4 text-[#D4AF37]" />
+                <span className="flex-1">Website Pages</span>
+                <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-bold">
+                  + Create
+                </span>
+              </Link>
+
+              {/* Navigation & Menus Manager */}
+              <Link
+                to="/admin/navigation"
+                onClick={handleNavClick}
+                className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                  isActive('/admin/navigation')
+                    ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                    : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                }`}
+              >
+                <MenuIcon className="w-4 h-4 text-[#D4AF37]" />
+                <span className="flex-1">Navigation & Menus</span>
+                <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-medium">
+                  Header/Footer
+                </span>
+              </Link>
+
+              {/* Collapsible Core Page Editors */}
+              <button
+                type="button"
+                onClick={() => setPagesOpen(!pagesOpen)}
+                className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg transition-all text-left ${
+                  isPageStudioActive && !isActive('/admin/pages', true) && !isActive('/admin/navigation')
+                    ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-semibold'
+                    : 'text-gray-400 hover:bg-[#1E293B]/40 hover:text-gray-200'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <FileText className="w-3.5 h-3.5 text-gray-400" />
+                  <span className="text-[11px]">Core Page Sections</span>
+                </div>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${
+                    pagesOpen ? 'transform rotate-180 text-[#D4AF37]' : ''
+                  }`}
+                />
+              </button>
+
+              {pagesOpen && (
+                <div className="pl-3 pr-1 pt-0.5 pb-0.5 space-y-0.5 border-l-2 border-[#D4AF37]/30 ml-4 animate-fadeIn">
+                  <Link
+                    to="/admin/pages/home"
+                    onClick={handleNavClick}
+                    className={`flex items-center space-x-2 px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                      isActive('/admin/pages/home')
+                        ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                        : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                    }`}
+                  >
+                    <Sparkles className="w-3 h-3 text-[#D4AF37]" />
+                    <span className="flex-1 truncate">Edit Homepage</span>
+                  </Link>
+
+                  <Link
+                    to="/admin/pages/about"
+                    onClick={handleNavClick}
+                    className={`flex items-center space-x-2 px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                      isActive('/admin/pages/about')
+                        ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                        : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                    }`}
+                  >
+                    <BookOpen className="w-3 h-3 text-[#D4AF37]" />
+                    <span className="flex-1 truncate">Edit About Us</span>
+                  </Link>
+
+                  <Link
+                    to="/admin/pages/shedra"
+                    onClick={handleNavClick}
+                    className={`flex items-center space-x-2 px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                      isActive('/admin/pages/shedra')
+                        ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                        : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                    }`}
+                  >
+                    <GraduationCap className="w-3 h-3 text-[#D4AF37]" />
+                    <span className="flex-1 truncate">Edit Shedra Academy</span>
+                  </Link>
+
+                  <Link
+                    to="/admin/pages/prayers"
+                    onClick={handleNavClick}
+                    className={`flex items-center space-x-2 px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                      isActive('/admin/pages/prayers')
+                        ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                        : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                    }`}
+                  >
+                    <Flame className="w-3 h-3 text-[#D4AF37]" />
+                    <span className="flex-1 truncate">Edit Ceremonial Prayers</span>
+                  </Link>
+
+                  <Link
+                    to="/admin/pages/contact"
+                    onClick={handleNavClick}
+                    className={`flex items-center space-x-2 px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                      isActive('/admin/pages/contact')
+                        ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                        : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                    }`}
+                  >
+                    <Phone className="w-3 h-3 text-[#D4AF37]" />
+                    <span className="flex-1 truncate">Edit Secretariat & Contact</span>
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* 1.5. WEB & PAGE STUDIOS (CMS) - SIMPLIFIED WITH COLLAPSIBLE SUB-MENUS */}
+          {/* ========================================================= */}
+          {/* CATEGORY 2: STORIES & MEDIA                               */}
+          {/* ========================================================= */}
           {(isSuperAdmin || isStaff) && (
             <div>
-              <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center justify-between">
-                <span>Web & Content</span>
-                <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-[#D4AF37] font-bold tracking-wider">CMS</span>
+              <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                2. Stories & Media
               </div>
               <div className="space-y-0.5">
-                {/* Main Collapsible Item */}
-                <button
-                  type="button"
-                  onClick={() => setPagesOpen(!pagesOpen)}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all text-left ${
-                    isPageStudioActive
+                <Link
+                  to="/admin/prayer-requests?tab=news"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    location.pathname === '/admin/prayer-requests' && location.search.includes('tab=news')
                       ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
                       : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
                   }`}
                 >
-                  <div className="flex items-center space-x-2.5 min-w-0">
-                    <Globe className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
-                    <span className="truncate">Website Pages</span>
-                  </div>
-                  <div className="flex items-center space-x-1.5 flex-shrink-0">
-                    <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-semibold">
-                      8 Pages
-                    </span>
-                    <ChevronDown
-                      className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${
-                        pagesOpen ? 'transform rotate-180 text-[#D4AF37]' : ''
-                      }`}
-                    />
-                  </div>
-                </button>
+                  <ClipboardList className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">News & Announcements</span>
+                </Link>
 
-                {/* Collapsible Sub-menu items */}
-                {pagesOpen && (
-                  <div className="pl-3 pr-1 pt-1 pb-1 space-y-0.5 border-l-2 border-[#D4AF37]/30 ml-4 animate-fadeIn">
-                    <Link
-                      to="/admin/pages"
-                      onClick={handleNavClick}
-                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
-                        isActive('/admin/pages', true)
-                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
-                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
-                      }`}
-                    >
-                      <Globe className="w-3.5 h-3.5 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">All Pages Directory</span>
-                      <span className="text-[9px] px-1 rounded bg-amber-400/20 text-[#D4AF37] font-mono">A–Z</span>
-                    </Link>
+                <Link
+                  to="/admin/blog"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/blog')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <Newspaper className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Sacred Gazette & Articles</span>
+                </Link>
 
-                    <Link
-                      to="/admin/pages/home"
-                      onClick={handleNavClick}
-                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
-                        isActive('/admin/pages/home')
-                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
-                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
-                      }`}
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Homepage Studio</span>
-                      <span className="text-[9px] px-1 rounded bg-rose-500/20 text-rose-300">8 Sec</span>
-                    </Link>
+                <Link
+                  to="/admin/gallery"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/gallery')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <ImageIcon className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Photo & Media Archives</span>
+                </Link>
 
-                    <Link
-                      to="/admin/pages/about"
-                      onClick={handleNavClick}
-                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
-                        isActive('/admin/pages/about')
-                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
-                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
-                      }`}
-                    >
-                      <BookOpen className="w-3.5 h-3.5 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">About Us Studio</span>
-                      <span className="text-[9px] px-1 rounded bg-blue-500/20 text-blue-300">4 Sec</span>
-                    </Link>
-
-                    <Link
-                      to="/admin/pages/shedra"
-                      onClick={handleNavClick}
-                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
-                        isActive('/admin/pages/shedra')
-                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
-                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
-                      }`}
-                    >
-                      <GraduationCap className="w-3.5 h-3.5 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Shedra Academy</span>
-                      <span className="text-[9px] px-1 rounded bg-indigo-500/20 text-indigo-300">4 Sec</span>
-                    </Link>
-
-                    <Link
-                      to="/admin/pages/prayers"
-                      onClick={handleNavClick}
-                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
-                        isActive('/admin/pages/prayers')
-                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
-                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
-                      }`}
-                    >
-                      <Flame className="w-3.5 h-3.5 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Ceremonial Prayers</span>
-                      <span className="text-[9px] px-1 rounded bg-amber-500/20 text-amber-300">4 Sec</span>
-                    </Link>
-
-                    <Link
-                      to="/admin/pages/contact"
-                      onClick={handleNavClick}
-                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
-                        isActive('/admin/pages/contact')
-                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
-                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
-                      }`}
-                    >
-                      <Phone className="w-3.5 h-3.5 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Secretariat &amp; Contact</span>
-                      <span className="text-[9px] px-1 rounded bg-slate-500/20 text-slate-300">4 Sec</span>
-                    </Link>
-
-                    <Link
-                      to="/admin/donate-settings"
-                      onClick={handleNavClick}
-                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
-                        isActive('/admin/donate-settings')
-                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
-                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
-                      }`}
-                    >
-                      <HeartHandshake className="w-3.5 h-3.5 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Donate &amp; Banking</span>
-                      <span className="text-[9px] px-1 rounded bg-emerald-500/20 text-emerald-300">Bank/80G</span>
-                    </Link>
-
-                    <Link
-                      to="/admin/site-settings"
-                      onClick={handleNavClick}
-                      className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-[11.5px] transition-all ${
-                        isActive('/admin/site-settings')
-                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
-                          : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
-                      }`}
-                    >
-                      <Sliders className="w-3.5 h-3.5 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Global Site Settings</span>
-                      <span className="text-[9px] px-1 rounded bg-purple-500/20 text-purple-300">Header/Footer</span>
-                    </Link>
-                  </div>
-                )}
+                <Link
+                  to="/admin/learning"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/learning')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <Video className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Dharma Video Discourses</span>
+                </Link>
               </div>
             </div>
           )}
 
-          {/* 2. DONATIONS & FINANCE (Super Admin & Accountant) */}
+          {/* ========================================================= */}
+          {/* CATEGORY 3: MONASTIC ACADEMY & SANGHA                     */}
+          {/* ========================================================= */}
+          {(isSuperAdmin || isStaff) && (
+            <div>
+              <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                3. Monastic Academy & Sangha
+              </div>
+              <div className="space-y-0.5">
+                <Link
+                  to="/admin/monks"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/monks')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <GraduationCap className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Monk Scholars & Students</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-semibold uppercase tracking-wider">Sangha</span>
+                </Link>
+
+                <Link
+                  to="/admin/lms"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/lms')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <BookOpen className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Courses & LMS Curriculum</span>
+                </Link>
+
+                <Link
+                  to="/admin/certificates"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/certificates')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <Award className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Consecrated Certificates</span>
+                </Link>
+
+                <Link
+                  to="/admin/prayer-requests"
+                  onClick={handleNavClick}
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                    isActive('/admin/prayer-requests') && !location.search.includes('tab=news')
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                  }`}
+                >
+                  <Flame className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1">Prayer Requests & Pujas</span>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* CATEGORY 4: DONATIONS & TREASURY                          */}
+          {/* ========================================================= */}
           {(isSuperAdmin || isAccountant) && (
             <div>
-              <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                Donations & Finance
+              <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                4. Donations & Treasury
               </div>
               <div className="space-y-0.5">
                 <Link
@@ -320,7 +430,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <HeartHandshake className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Donations</span>
+                  <span className="flex-1">Donation Records</span>
                   <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-semibold uppercase tracking-wider">Track</span>
                 </Link>
 
@@ -335,7 +445,6 @@ export default function AdminSidebar({ isOpen, onClose }) {
                 >
                   <Flame className="w-4 h-4 text-[#D4AF37]" />
                   <span className="flex-1">Campaigns & Causes</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-semibold uppercase tracking-wider">Appeals</span>
                 </Link>
 
                 <Link
@@ -388,208 +497,60 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <Coins className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Payment Gateways</span>
+                  <span className="flex-1">Payment Gateways & Currency</span>
                 </Link>
               </div>
             </div>
           )}
 
-          {/* 3. OPERATIONS & HR (Super Admin & Staff) */}
-          {(isSuperAdmin || isStaff || isAccountant) && (
-            <div>
-              <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                Operations & Management
-              </div>
-              <div className="space-y-0.5">
-                <Link
-                  to="/admin/inventory"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/inventory')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <Warehouse className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Inventory & Store</span>
-                </Link>
-
-                <Link
-                  to="/admin/hrm/employees"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/hrm')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <UserCheck className="w-4 h-4 text-[#D4AF37]" />
-                  <span>HRM & Attendance</span>
-                </Link>
-
-                <Link
-                  to="/admin/payroll"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/payroll')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <Coins className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Payroll & Wages</span>
-                </Link>
-
-                <Link
-                  to="/admin/projects"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/projects')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <FolderKanban className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Projects & Tasks</span>
-                </Link>
-
-                <Link
-                  to="/admin/crm"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/crm')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <MessageSquareShare className="w-4 h-4 text-[#D4AF37]" />
-                  <span>CRM & Inquiries</span>
-                </Link>
-              </div>
+          {/* ========================================================= */}
+          {/* CATEGORY 5: SETTINGS & GOVERNANCE                         */}
+          {/* ========================================================= */}
+          <div>
+            <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+              5. Settings & Governance
             </div>
-          )}
+            <div className="space-y-0.5">
+              <Link
+                to="/admin/site-settings"
+                onClick={handleNavClick}
+                className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                  isActive('/admin/site-settings')
+                    ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                    : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                }`}
+              >
+                <Sliders className="w-4 h-4 text-[#D4AF37]" />
+                <span className="flex-1">Global Site Details</span>
+              </Link>
 
-          {/* 4. CONTENT & DHARMA MEDIA */}
-          {(isSuperAdmin || isStaff) && (
-            <div>
-              <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                Content & Dharma Media
-              </div>
-              <div className="space-y-0.5">
-                <Link
-                  to="/admin/prayer-requests"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/prayer-requests')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <ClipboardList className="w-4 h-4 text-[#D4AF37]" />
-                  <span>CMS News & Prayers</span>
-                </Link>
+              <Link
+                to="/admin/donate-settings"
+                onClick={handleNavClick}
+                className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                  isActive('/admin/donate-settings')
+                    ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                    : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                }`}
+              >
+                <HeartHandshake className="w-4 h-4 text-[#D4AF37]" />
+                <span className="flex-1">Legal &amp; Statutory Policies</span>
+              </Link>
 
-                <Link
-                  to="/admin/blog"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/blog')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <Newspaper className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Blog & Articles</span>
-                </Link>
+              <Link
+                to="/admin/crm"
+                onClick={handleNavClick}
+                className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+                  isActive('/admin/crm')
+                    ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                    : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+                }`}
+              >
+                <MessageSquareShare className="w-4 h-4 text-[#D4AF37]" />
+                <span className="flex-1">Devotee Inquiries & CRM</span>
+              </Link>
 
-                <Link
-                  to="/admin/gallery"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/gallery')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <ImageIcon className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Gallery Photos</span>
-                </Link>
-
-                <Link
-                  to="/admin/learning"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/learning')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <Video className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Learning Videos</span>
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {/* 5. SHEDRA ACADEMY */}
-          {(isSuperAdmin || isStaff) && (
-            <div>
-              <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                Shedra Monastic Sangha
-              </div>
-              <div className="space-y-0.5">
-                <Link
-                  to="/admin/monks"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/monks')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <GraduationCap className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Monastic Scholars</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-semibold uppercase tracking-wider">Sangha</span>
-                </Link>
-
-                <Link
-                  to="/admin/lms"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/lms')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <BookOpen className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Curriculum & LMS</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-semibold uppercase tracking-wider">LMS</span>
-                </Link>
-
-                <Link
-                  to="/admin/certificates"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/certificates')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <Award className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Certificates</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-semibold uppercase tracking-wider">Verify</span>
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {/* 6. ADMINISTRATION & SYSTEM */}
-          {isSuperAdmin && (
-            <div>
-              <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                Administration
-              </div>
-              <div className="space-y-0.5">
+              {isSuperAdmin && (
                 <Link
                   to="/admin/users"
                   onClick={handleNavClick}
@@ -600,10 +561,12 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <UserCog className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Users & Roles</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-semibold uppercase tracking-wider">Security</span>
+                  <span className="flex-1">Staff User Accounts & Roles</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-semibold uppercase tracking-wider">RBAC</span>
                 </Link>
+              )}
 
+              {isSuperAdmin && (
                 <Link
                   to="/admin/settings"
                   onClick={handleNavClick}
@@ -614,39 +577,84 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <Settings className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">System Settings</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-semibold uppercase tracking-wider">Sync</span>
+                  <span className="flex-1">System Settings & Audit Logs</span>
                 </Link>
+              )}
 
-                <Link
-                  to="/admin/audit-logs"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/audit-logs')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+              {/* Collapsible Operations Submenu (Store, HRM, Payroll, Reports) */}
+              <button
+                type="button"
+                onClick={() => setOperationsOpen(!operationsOpen)}
+                className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-gray-400 hover:bg-[#1E293B]/40 hover:text-gray-200 transition-all text-left"
+              >
+                <div className="flex items-center space-x-2">
+                  <Warehouse className="w-3.5 h-3.5 text-gray-400" />
+                  <span className="text-[11px]">Operations & Inventory</span>
+                </div>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${
+                    operationsOpen ? 'transform rotate-180 text-[#D4AF37]' : ''
                   }`}
-                >
-                  <ClipboardList className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Audit Logs</span>
-                </Link>
+                />
+              </button>
 
-                <Link
-                  to="/admin/reports"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin/reports')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <BarChart3 className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Reports & Export</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-semibold uppercase tracking-wider">PDF</span>
-                </Link>
-              </div>
+              {operationsOpen && (
+                <div className="pl-3 pr-1 pt-0.5 pb-0.5 space-y-0.5 border-l-2 border-[#D4AF37]/30 ml-4 animate-fadeIn">
+                  <Link
+                    to="/admin/inventory"
+                    onClick={handleNavClick}
+                    className={`flex items-center space-x-2 px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                      isActive('/admin/inventory')
+                        ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                        : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                    }`}
+                  >
+                    <Warehouse className="w-3 h-3 text-[#D4AF37]" />
+                    <span className="flex-1 truncate">Inventory & Store</span>
+                  </Link>
+
+                  <Link
+                    to="/admin/hrm/employees"
+                    onClick={handleNavClick}
+                    className={`flex items-center space-x-2 px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                      isActive('/admin/hrm')
+                        ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                        : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                    }`}
+                  >
+                    <UserCheck className="w-3 h-3 text-[#D4AF37]" />
+                    <span className="flex-1 truncate">HRM & Attendance</span>
+                  </Link>
+
+                  <Link
+                    to="/admin/payroll"
+                    onClick={handleNavClick}
+                    className={`flex items-center space-x-2 px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                      isActive('/admin/payroll')
+                        ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                        : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                    }`}
+                  >
+                    <Coins className="w-3 h-3 text-[#D4AF37]" />
+                    <span className="flex-1 truncate">Payroll & Wages</span>
+                  </Link>
+
+                  <Link
+                    to="/admin/reports"
+                    onClick={handleNavClick}
+                    className={`flex items-center space-x-2 px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                      isActive('/admin/reports')
+                        ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
+                        : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                    }`}
+                  >
+                    <BarChart3 className="w-3 h-3 text-[#D4AF37]" />
+                    <span className="flex-1 truncate">Reports & Export</span>
+                  </Link>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </nav>
 
         {/* Quick Action Pinned Footer */}

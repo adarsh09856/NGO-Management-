@@ -66,11 +66,42 @@ export default function AdminLiveBar({ onOpenEditor }) {
   }
 
   // Resolve current studio
-  const currentStudio = ROUTE_STUDIO_MAP[pathname] || {
-    label: 'Site Studios',
-    href: '/admin/pages',
-    defaultSection: 'hero'
-  };
+  let currentStudio = ROUTE_STUDIO_MAP[pathname];
+  if (!currentStudio && pathname.startsWith('/pages/')) {
+    const pageSlug = pathname.replace('/pages/', '');
+    currentStudio = {
+      label: `Page: ${pageSlug}`,
+      href: '/admin/pages',
+      defaultSection: 'custom-page',
+      isCustomPage: true,
+      slug: pageSlug
+    };
+  } else if (!currentStudio && pathname.startsWith('/blog/')) {
+    currentStudio = {
+      label: 'Sacred Gazette Studio',
+      href: '/admin/blog',
+      defaultSection: 'blog'
+    };
+  } else if (!currentStudio && pathname.startsWith('/news-events/')) {
+    currentStudio = {
+      label: 'Ceremonies & Gazette',
+      href: '/admin/prayer-requests?tab=news',
+      defaultSection: 'news'
+    };
+  } else if (!currentStudio && pathname === '/tracking') {
+    currentStudio = {
+      label: 'Treasury & Tracking',
+      href: '/admin/payments',
+      defaultSection: 'donate'
+    };
+  }
+  if (!currentStudio) {
+    currentStudio = {
+      label: 'Site Studios',
+      href: '/admin/pages',
+      defaultSection: 'hero'
+    };
+  }
 
   const handleQuickDrawer = () => {
     if (onOpenEditor) {

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
+import AdvancedEditorSuite from './admin/AdvancedEditorSuite';
 
 export default function LiveSectionEditor({
   isOpen,
@@ -16,7 +17,8 @@ export default function LiveSectionEditor({
   sectionKey = 'hero',
   sectionTitle,
   studioHref,
-  onSaved
+  onSaved,
+  customPageData
 }) {
   const { success: toastSuccess, error: toastError } = useToast();
   const [mounted, setMounted] = useState(false);
@@ -28,6 +30,12 @@ export default function LiveSectionEditor({
 
   // Sub-tabs: CONTENT | ACTIONS | MEDIA | CARDS
   const [activeTab, setActiveTab] = useState('CONTENT');
+
+  // Custom Page State for in-place live editing of /pages/:slug
+  const isCustomPage = sectionKey === 'custom-page' || Boolean(customPageData);
+  const [customPageForm, setCustomPageForm] = useState(customPageData || {});
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+  const [customCategoryInput, setCustomCategoryInput] = useState('');
 
   // Form State
   const [form, setForm] = useState({});
@@ -54,6 +62,53 @@ export default function LiveSectionEditor({
     setSavedSuccess(false);
     setActiveTab('CONTENT');
 
+    if (isCustomPage) {
+      if (customPageData) {
+        setCustomPageForm({
+          ...customPageData,
+          gallery_images: Array.isArray(customPageData.gallery_images) ? customPageData.gallery_images : [],
+          social_links: customPageData.social_links || { facebook: '', instagram: '', youtube: '', whatsapp: '' },
+          cta_button: customPageData.cta_button || { label: '', url: '', style: 'primary' },
+          is_published: Boolean(customPageData.is_published),
+          show_in_header_nav: Boolean(customPageData.show_in_header_nav ?? customPageData.show_in_header),
+          show_in_footer_nav: Boolean(customPageData.show_in_footer_nav ?? customPageData.show_in_footer),
+        });
+        setLoading(false);
+      } else {
+        const path = window.location.pathname;
+        if (path.startsWith('/pages/')) {
+          const slug = path.replace('/pages/', '');
+          api.get(`/pages/${slug}`).then(res => {
+            if (isMounted && res.data?.success && res.data.page) {
+              const p = res.data.page;
+              let gallery = p.gallery_images;
+              if (typeof gallery === 'string') { try { gallery = JSON.parse(gallery); } catch (_) { gallery = []; } }
+              let soc = p.social_links;
+              if (typeof soc === 'string') { try { soc = JSON.parse(soc); } catch (_) { soc = {}; } }
+              let cta = p.cta_button;
+              if (typeof cta === 'string') { try { cta = JSON.parse(cta); } catch (_) { cta = null; } }
+              setCustomPageForm({
+                ...p,
+                gallery_images: Array.isArray(gallery) ? gallery : [],
+                social_links: soc || { facebook: '', instagram: '', youtube: '', whatsapp: '' },
+                cta_button: cta || { label: '', url: '', style: 'primary' },
+                is_published: Boolean(p.is_published),
+                show_in_header_nav: Boolean(p.show_in_header),
+                show_in_footer_nav: Boolean(p.show_in_footer),
+              });
+            }
+          }).catch(err => {
+            console.error('Failed to load custom page data:', err);
+          }).finally(() => {
+            if (isMounted) setLoading(false);
+          });
+        } else {
+          setLoading(false);
+        }
+      }
+      return;
+    }
+
     async function loadData() {
       try {
         const res = await api.get('/settings');
@@ -74,7 +129,7 @@ export default function LiveSectionEditor({
     return () => {
       isMounted = false;
     };
-  }, [isOpen, sectionKey]);
+  }, [isOpen, sectionKey, isCustomPage, customPageData]);
 
   if (!isOpen || !mounted) return null;
 
@@ -115,6 +170,46 @@ export default function LiveSectionEditor({
     setSavedSuccess(false);
 
     try {
+      if (isCustomPage) {
+        const pageId = customPageData?.id || customPageForm?.id;
+        if (!pageId) throw new Error('Missing page identifier for custom page update.');
+
+        const finalCategory = isCreatingCategory && customCategoryInput.trim()
+          ? customCategoryInput.trim()
+          : customPageForm.category || 'General';
+
+        const payload = {
+          ...customPageForm,
+          category: finalCategory,
+        };
+
+        const res = await api.put(`/pages/${pageId}`, payload);
+        if (!res.data?.success) {
+          throw new Error(res.data?.message || 'Failed to save custom page');
+        }
+
+        window.dispatchEvent(
+          new CustomEvent('ngo:page-updated', {
+            detail: { page: payload }
+          })
+        );
+        window.dispatchEvent(new CustomEvent('ngo:content-updated'));
+
+        if (onSaved) onSaved(payload);
+
+        setSavedSuccess(true);
+        toastSuccess('Custom page updated & live instantly across website!');
+        setTimeout(() => {
+          onClose();
+          if (payload.slug && payload.slug !== customPageData?.slug) {
+            window.location.href = `/pages/${payload.slug}`;
+          } else {
+            window.location.reload();
+          }
+        }, 800);
+        return;
+      }
+
       const res = await api.put('/settings', { settings: form });
       if (!res.data?.success) {
         throw new Error(res.data?.message || 'Failed to save settings');
@@ -461,7 +556,7 @@ export default function LiveSectionEditor({
       }}
     >
       <div
-        className="relative w-full max-w-3xl bg-white rounded-2xl border border-slate-200 shadow-2xl my-auto flex flex-col max-h-[92vh] overflow-hidden select-text animate-scaleIn"
+        className={`relative w-full ${isCustomPage ? 'max-w-4xl xl:max-w-5xl' : 'max-w-3xl'} bg-white rounded-2xl border border-slate-200 shadow-2xl my-auto flex flex-col max-h-[92vh] overflow-hidden select-text animate-scaleIn`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
@@ -473,7 +568,7 @@ export default function LiveSectionEditor({
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base sm:text-lg font-bold text-white leading-tight font-serif-brand">
-                  {displayTitle}
+                  {isCustomPage ? (customPageForm.title || customPageData?.title || 'Custom Page') : displayTitle}
                 </h2>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-950 uppercase tracking-wider">
                   In-Place Quick Edit
@@ -494,66 +589,68 @@ export default function LiveSectionEditor({
           </button>
         </div>
 
-        {/* Modal Sub-Tabs */}
-        <div className="flex border-b border-slate-200 bg-slate-50 px-5 pt-3 gap-2 overflow-x-auto no-scrollbar flex-shrink-0">
-          <button
-            type="button"
-            onClick={() => setActiveTab('CONTENT')}
-            className={`pb-2.5 px-3 text-xs font-bold flex items-center gap-1.5 border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
-              activeTab === 'CONTENT'
-                ? 'border-[#721C24] text-[#721C24]'
-                : 'border-transparent text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            <Type className="w-3.5 h-3.5" />
-            <span>Headlines & Text</span>
-          </button>
-
-          {meta.hasActions && (
+        {/* Modal Sub-Tabs (only for standard sections) */}
+        {!isCustomPage && (
+          <div className="flex border-b border-slate-200 bg-slate-50 px-5 pt-3 gap-2 overflow-x-auto no-scrollbar flex-shrink-0">
             <button
               type="button"
-              onClick={() => setActiveTab('ACTIONS')}
+              onClick={() => setActiveTab('CONTENT')}
               className={`pb-2.5 px-3 text-xs font-bold flex items-center gap-1.5 border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
-                activeTab === 'ACTIONS'
+                activeTab === 'CONTENT'
                   ? 'border-[#721C24] text-[#721C24]'
                   : 'border-transparent text-slate-500 hover:text-slate-900'
               }`}
             >
-              <Link2 className="w-3.5 h-3.5" />
-              <span>Call-to-Action Buttons</span>
+              <Type className="w-3.5 h-3.5" />
+              <span>Headlines & Text</span>
             </button>
-          )}
 
-          {meta.hasMedia && (
-            <button
-              type="button"
-              onClick={() => setActiveTab('MEDIA')}
-              className={`pb-2.5 px-3 text-xs font-bold flex items-center gap-1.5 border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
-                activeTab === 'MEDIA'
-                  ? 'border-[#721C24] text-[#721C24]'
-                  : 'border-transparent text-slate-500 hover:text-slate-900'
-              }`}
-            >
-              <ImageIcon className="w-3.5 h-3.5" />
-              <span>Media & Visuals</span>
-            </button>
-          )}
+            {meta.hasActions && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('ACTIONS')}
+                className={`pb-2.5 px-3 text-xs font-bold flex items-center gap-1.5 border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
+                  activeTab === 'ACTIONS'
+                    ? 'border-[#721C24] text-[#721C24]'
+                    : 'border-transparent text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                <Link2 className="w-3.5 h-3.5" />
+                <span>Call-to-Action Buttons</span>
+              </button>
+            )}
 
-          {meta.hasCards && (
-            <button
-              type="button"
-              onClick={() => setActiveTab('CARDS')}
-              className={`pb-2.5 px-3 text-xs font-bold flex items-center gap-1.5 border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
-                activeTab === 'CARDS'
-                  ? 'border-[#721C24] text-[#721C24]'
-                  : 'border-transparent text-slate-500 hover:text-slate-900'
-              }`}
-            >
-              <BarChart2 className="w-3.5 h-3.5" />
-              <span>Stats & Cards Details</span>
-            </button>
-          )}
-        </div>
+            {meta.hasMedia && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('MEDIA')}
+                className={`pb-2.5 px-3 text-xs font-bold flex items-center gap-1.5 border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
+                  activeTab === 'MEDIA'
+                    ? 'border-[#721C24] text-[#721C24]'
+                    : 'border-transparent text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                <ImageIcon className="w-3.5 h-3.5" />
+                <span>Media & Visuals</span>
+              </button>
+            )}
+
+            {meta.hasCards && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('CARDS')}
+                className={`pb-2.5 px-3 text-xs font-bold flex items-center gap-1.5 border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
+                  activeTab === 'CARDS'
+                    ? 'border-[#721C24] text-[#721C24]'
+                    : 'border-transparent text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                <BarChart2 className="w-3.5 h-3.5" />
+                <span>Stats & Cards Details</span>
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Modal Form Body */}
         <form onSubmit={handleSave} className="flex flex-col flex-1 overflow-hidden">
@@ -572,7 +669,16 @@ export default function LiveSectionEditor({
               </div>
             )}
 
-            {loading ? (
+            {isCustomPage ? (
+              <AdvancedEditorSuite
+                form={customPageForm}
+                onChange={(updated) => setCustomPageForm((prev) => ({ ...prev, ...updated }))}
+                isCreatingCategory={isCreatingCategory}
+                setIsCreatingCategory={setIsCreatingCategory}
+                customCategoryInput={customCategoryInput}
+                setCustomCategoryInput={setCustomCategoryInput}
+              />
+            ) : loading ? (
               <div className="py-16 text-center text-slate-500 space-y-3">
                 <Loader2 className="w-8 h-8 animate-spin mx-auto text-[#721C24]" />
                 <p className="text-xs font-medium">Fetching section fields from database...</p>
