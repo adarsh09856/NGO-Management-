@@ -165,85 +165,6 @@ export default function PagesDirectory() {
     return matchesSearch && matchesCategory;
   });
 
-  // Filtered Core Studios
-  const filteredCoreStudios = [
-    {
-      id: 'home',
-      name: 'Homepage Portal',
-      tibetan: 'གཙོ་ངོས།',
-      route: '/',
-      studioUrl: '/admin/pages/home',
-      sectionsCount: 8,
-      sections: ['Hero Showcase', 'Impact Stats', 'Campaigns', 'Documentary', '4 Pillars', 'Butter Lamps', 'Dharma Videos', 'Wisdom Journal'],
-    },
-    {
-      id: 'about',
-      name: 'About Monastery & Mandate',
-      tibetan: 'ལོ་རྒྱུས།',
-      route: '/about',
-      studioUrl: '/admin/pages/about',
-      sectionsCount: 4,
-      sections: ['Header Banner', '3 Sacred Pillars', 'Abbot & Spiritual Leadership', 'Statutory Trust & 80G'],
-    },
-    {
-      id: 'shedra',
-      name: 'Shedra Monastic Academy',
-      tibetan: 'བཤད་གྲྭ།',
-      route: '/shedra',
-      studioUrl: '/admin/pages/shedra',
-      sectionsCount: 4,
-      sections: ['Monastic Hero', '5 Great Shastras', 'Monastic Facilities', 'Admissions & Scholarships'],
-    },
-    {
-      id: 'prayers',
-      name: 'Ceremonial Prayers & Butter Lamps',
-      tibetan: 'མར་མེ་སྨོན་ལམ།',
-      route: '/prayer-request',
-      studioUrl: '/admin/pages/prayers',
-      sectionsCount: 4,
-      sections: ['Hero Banner', '108 Butter Lamps', 'Puja Categories', 'Shrine Daily Schedule'],
-    },
-    {
-      id: 'donate',
-      name: 'Donations & Banking Wire',
-      tibetan: 'མཆོད་འབུལ།',
-      route: '/donate',
-      studioUrl: '/admin/donate-settings',
-      sectionsCount: 3,
-      sections: ['Hero Banner', 'Active Causes', 'Official Bank Wire & 80G'],
-    },
-    {
-      id: 'contact',
-      name: 'Secretariat & Inquiries',
-      tibetan: 'འབྲེལ་གཏུགས།',
-      route: '/contact',
-      studioUrl: '/admin/pages/contact',
-      sectionsCount: 4,
-      sections: ['Hero & Inscription', 'Secretariat Seat Address', 'Department Directory', 'Visiting Hours & Map'],
-    },
-  ].filter((p) => {
-    const q = searchQuery.toLowerCase();
-    return (
-      (p.name || '').toLowerCase().includes(q) ||
-      (p.route || '').toLowerCase().includes(q) ||
-      (p.tibetan || '').includes(searchQuery)
-    );
-  });
-
-  const availableCategories = Array.from(
-    new Set([
-      'General',
-      'Sacred Stupa',
-      'Shedra Academy',
-      'Butter Lamps',
-      'Monastic Heritage',
-      'Rituals & Pujas',
-      'Pilgrimage',
-      'Announcements',
-      ...customPages.map((p) => p.category).filter(Boolean)
-    ])
-  );
-
   // Core Monastic Studios
   const coreStudios = [
     {
@@ -307,6 +228,30 @@ export default function PagesDirectory() {
       sections: ['Hero & Inscription', 'Secretariat Seat Address', 'Department Directory', 'Visiting Hours & Map'],
     },
   ];
+
+  // Filtered Core Studios
+  const filteredCoreStudios = coreStudios.filter((p) => {
+    const q = searchQuery.toLowerCase();
+    return (
+      (p.name || '').toLowerCase().includes(q) ||
+      (p.route || '').toLowerCase().includes(q) ||
+      (p.tibetan || '').includes(searchQuery)
+    );
+  });
+
+  const availableCategories = Array.from(
+    new Set([
+      'General',
+      'Sacred Stupa',
+      'Shedra Academy',
+      'Butter Lamps',
+      'Monastic Heritage',
+      'Rituals & Pujas',
+      'Pilgrimage',
+      'Announcements',
+      ...customPages.map((p) => p.category).filter(Boolean)
+    ])
+  );
 
   return (
     <div className="space-y-8 animate-fadeIn pb-12">
@@ -462,7 +407,7 @@ export default function PagesDirectory() {
                 <tbody className="divide-y divide-gray-100 font-medium">
                   {/* Core Studios Rows */}
                   {filteredCoreStudios.map((studio) => {
-                    const Icon = studio.icon;
+                    const Icon = studio.icon || Layout;
                     return (
                       <tr key={`core-${studio.id}`} className="hover:bg-amber-50/30 transition-colors">
                         <td className="px-4 py-3">
@@ -846,7 +791,7 @@ export default function PagesDirectory() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredCoreStudios.map((p) => {
-              const Icon = p.icon;
+              const Icon = p.icon || Layout;
               return (
                 <div
                   key={p.id}
