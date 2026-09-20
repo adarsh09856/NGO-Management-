@@ -11,6 +11,27 @@ export default function Learning() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [activeVideo, setActiveVideo] = useState(null);
+  const [liveSettings, setLiveSettings] = useState({});
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await api.get('/settings');
+        if (res.data?.success && res.data.data) {
+          setLiveSettings(res.data.data);
+        }
+      } catch (_) {}
+    }
+    loadSettings();
+
+    const handleSettingsUpdate = (e) => {
+      if (e.detail?.settings) {
+        setLiveSettings(e.detail.settings);
+      }
+    };
+    window.addEventListener('ngo:settings-updated', handleSettingsUpdate);
+    return () => window.removeEventListener('ngo:settings-updated', handleSettingsUpdate);
+  }, []);
 
   useEffect(() => {
     async function loadMaterials() {
@@ -66,6 +87,15 @@ export default function Learning() {
     <div className="w-full min-h-screen py-8 sm:py-16 px-3 xs:px-4 sm:px-8 relative z-10 max-w-7xl mx-auto space-y-8 sm:space-y-10">
       {/* Header Banner */}
       <div data-ngo-section="learning-hero" className="bg-gradient-to-r from-[#070A12] via-[#120508] to-[#070A12] rounded-3xl p-6 xs:p-8 sm:p-14 text-white relative overflow-hidden shadow-2xl border border-[#D4AF37]/40 animate-fade-in-up">
+        {/* Dynamic Background Banner Image */}
+        {liveSettings.learning_hero_image && (
+          <div
+            className="absolute inset-0 opacity-25 mix-blend-luminosity bg-cover bg-center pointer-events-none"
+            style={{ backgroundImage: `url('${liveSettings.learning_hero_image}')` }}
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent pointer-events-none" />
+
         <SectionEditBadge
           sectionKey="learning"
           sectionLabel="Manage LMS & Dharma Videos"
@@ -74,13 +104,18 @@ export default function Learning() {
         />
         <div className="relative z-10 max-w-3xl space-y-3 sm:space-y-4">
           <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5">
-            <span>☸</span> Open Monastic Dharma Education
+            <span>☸</span>
+            <span>{liveSettings.learning_hero_eyebrow || 'Open Monastic Dharma Education'}</span>
+            {liveSettings.learning_hero_tibetan && (
+              <span className="font-serif ml-1 opacity-90">{liveSettings.learning_hero_tibetan}</span>
+            )}
           </span>
           <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-5xl text-white tracking-wide leading-tight break-words">
-            Learning & Dharma Video Discourses
+            {liveSettings.learning_hero_title || 'Learning & Dharma Video Discourses'}
           </h1>
           <p className="text-xs sm:text-sm text-gray-200 font-light leading-relaxed">
-            Explore authentic Tibetan Buddhist teachings, meditation instructions, and philosophical commentaries presented by our revered Khenpos and resident masters in Bhutan.
+            {liveSettings.learning_hero_subtitle ||
+              'Explore authentic Tibetan Buddhist teachings, meditation instructions, and philosophical commentaries presented by our revered Khenpos and resident masters in Bhutan.'}
           </p>
         </div>
       </div>

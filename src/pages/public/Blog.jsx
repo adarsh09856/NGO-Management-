@@ -9,6 +9,27 @@ export default function Blog() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
   const [loading, setLoading] = useState(true);
+  const [liveSettings, setLiveSettings] = useState({});
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await api.get('/settings');
+        if (res.data?.success && res.data.data) {
+          setLiveSettings(res.data.data);
+        }
+      } catch (_) {}
+    }
+    loadSettings();
+
+    const handleSettingsUpdate = (e) => {
+      if (e.detail?.settings) {
+        setLiveSettings(e.detail.settings);
+      }
+    };
+    window.addEventListener('ngo:settings-updated', handleSettingsUpdate);
+    return () => window.removeEventListener('ngo:settings-updated', handleSettingsUpdate);
+  }, []);
 
   useEffect(() => {
     async function loadPosts() {
@@ -77,7 +98,14 @@ export default function Blog() {
     <div className="w-full bg-[#FCFBF9] min-h-screen pb-20">
       {/* Luxury Hero Banner */}
       <section data-ngo-section="blog-hero" className="relative bg-[#1A0B0E] text-white py-12 sm:py-20 px-3 xs:px-4 sm:px-8 overflow-hidden border-b border-[#D4AF37]/30">
-        <div className="absolute inset-0 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:24px_24px] opacity-10"></div>
+        {/* Dynamic Background Banner Image */}
+        {liveSettings.blog_hero_image && (
+          <div
+            className="absolute inset-0 opacity-30 mix-blend-luminosity bg-cover bg-center pointer-events-none"
+            style={{ backgroundImage: `url('${liveSettings.blog_hero_image}')` }}
+          />
+        )}
+        <div className="absolute inset-0 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none"></div>
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none"></div>
         <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-[#721C24]/30 blur-3xl pointer-events-none"></div>
 
@@ -91,15 +119,18 @@ export default function Blog() {
 
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-serif uppercase tracking-widest backdrop-blur-md">
             <span className="text-sm">☸</span>
-            <span className="truncate">༄༅། །ཆོས་ཀྱི་བགྲོ་གླེང་དང་དྲན་དེབ། · Wisdom Gazette</span>
+            <span className="truncate">
+              {liveSettings.blog_hero_tibetan || '༄༅། །ཆོས་ཀྱི་བགྲོ་གླེང་དང་དྲན་དེབ།'} · {liveSettings.blog_hero_eyebrow || 'Wisdom Gazette'}
+            </span>
           </div>
 
           <h1 className="font-editorial text-2xl xs:text-3xl sm:text-5xl lg:text-6xl text-[#FCFBF9] tracking-tight leading-tight max-w-4xl mx-auto break-words">
-            The Bodhi Path: Sacred Journal & Monastic Chronicles
+            {liveSettings.blog_hero_title || 'The Bodhi Path: Sacred Journal & Monastic Chronicles'}
           </h1>
 
           <p className="text-xs sm:text-base text-[#E6D5C3] font-light max-w-2xl mx-auto leading-relaxed">
-            Spiritual discourses, Buddhist philosophical reflections, and living updates on the Great Druk Wangyel Peace Stupa from Gelephu, Bhutan.
+            {liveSettings.blog_hero_subtitle ||
+              'Spiritual discourses, Buddhist philosophical reflections, and living updates on the Great Druk Wangyel Peace Stupa from Gelephu, Bhutan.'}
           </p>
 
           {/* Quick Search in Hero */}

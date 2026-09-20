@@ -8,6 +8,27 @@ export default function NewsEvents() {
   const [items, setItems] = useState([]);
   const [category, setCategory] = useState('All');
   const [loading, setLoading] = useState(true);
+  const [liveSettings, setLiveSettings] = useState({});
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await api.get('/settings');
+        if (res.data?.success && res.data.data) {
+          setLiveSettings(res.data.data);
+        }
+      } catch (_) {}
+    }
+    loadSettings();
+
+    const handleSettingsUpdate = (e) => {
+      if (e.detail?.settings) {
+        setLiveSettings(e.detail.settings);
+      }
+    };
+    window.addEventListener('ngo:settings-updated', handleSettingsUpdate);
+    return () => window.removeEventListener('ngo:settings-updated', handleSettingsUpdate);
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -82,28 +103,38 @@ export default function NewsEvents() {
     <div className="w-full bg-[#FCFBF9] min-h-screen pb-20">
       {/* Luxury Hero Banner */}
       <section data-ngo-section="news-events-hero" className="relative bg-[#1A0B0E] text-white py-12 sm:py-20 px-3 xs:px-4 sm:px-8 overflow-hidden border-b border-[#D4AF37]/30">
-        <div className="absolute inset-0 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:24px_24px] opacity-10"></div>
+        {/* Dynamic Background Banner Image */}
+        {liveSettings.news_hero_image && (
+          <div
+            className="absolute inset-0 opacity-30 mix-blend-luminosity bg-cover bg-center pointer-events-none"
+            style={{ backgroundImage: `url('${liveSettings.news_hero_image}')` }}
+          />
+        )}
+        <div className="absolute inset-0 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none"></div>
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none"></div>
 
         <div className="max-w-5xl mx-auto relative z-10 text-center space-y-4 sm:space-y-6 animate-fade-in-up">
           <SectionEditBadge
-            sectionKey="media"
-            sectionLabel="Manage News & Events in CMS"
-            onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'blog' } }))}
+            sectionKey="news"
+            sectionLabel="Manage News & Ceremonies"
+            onQuickEdit={() => window.dispatchEvent(new CustomEvent('ngo:open-live-editor', { detail: { section: 'news' } }))}
             position="top-0 right-0 sm:right-4"
           />
 
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-serif uppercase tracking-widest backdrop-blur-md">
             <span className="text-sm">☸</span>
-            <span className="truncate">༄༅། །དགེ་ལུགས་ཀྱི་མཛད་སྒོ་དང་གསལ་བསྒྲགས། · Ceremonial Gazette</span>
+            <span className="truncate">
+              {liveSettings.news_hero_tibetan || '༄༅། །དགེ་ལུགས་ཀྱི་མཛད་སྒོ་དང་གསལ་བསྒྲགས།'} · {liveSettings.news_hero_eyebrow || 'Ceremonial Gazette'}
+            </span>
           </div>
 
           <h1 className="font-editorial text-2xl xs:text-3xl sm:text-5xl lg:text-6xl text-[#FCFBF9] tracking-tight leading-tight break-words">
-            Auspicious Ceremonies & Dharma Teachings
+            {liveSettings.news_hero_title || 'Auspicious Ceremonies & Dharma Teachings'}
           </h1>
 
           <p className="text-xs sm:text-base text-[#E6D5C3] font-light max-w-2xl mx-auto leading-relaxed">
-            Stay aligned with monthly astrological tsog offerings, peace stupa consecrations, and open discourses by Khenpo Tashi Dorji in Gelephu, Bhutan.
+            {liveSettings.news_hero_subtitle ||
+              'Stay aligned with monthly astrological tsog offerings, peace stupa consecrations, and open discourses by Khenpo Tashi Dorji in Gelephu, Bhutan.'}
           </p>
 
           {/* Quick Prayer Dedication Link */}

@@ -80,6 +80,9 @@ export default function Footer({ onOpenDonate }) {
 
   return (
     <footer data-ngo-section="footer" className="bg-[#070A12] text-[#E2E8F0] relative overflow-hidden border-t-2 border-[#D4AF37]/50 pt-16 pb-8">
+      {/* Admin Quick Edit Badge */}
+      <SectionEditBadge sectionKey="footer" sectionLabel="Edit Footer & Ashtamangala" position="top-4 right-4 sm:top-6 sm:right-6" />
+
       {/* Background Sacred Geometric Mandala Overlay */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1E1B4B]/30 via-[#070A12] to-[#05070D] pointer-events-none" />
 

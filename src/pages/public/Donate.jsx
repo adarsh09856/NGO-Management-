@@ -265,15 +265,23 @@ export default function Donate() {
       </div>
 
       {/* 3. Transparency & Bank Wire Information */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Transparency Breakdown */}
-        <div className="lg:col-span-6 glass-luxury-card p-7 sm:p-8 rounded-2xl border border-gray-200/80 space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
+        {/* Transparency Breakdown & 80G Tax */}
+        <div data-ngo-section="tax" className="lg:col-span-6 glass-luxury-card p-6 sm:p-8 rounded-2xl border border-gray-200/80 space-y-4 relative">
+          <SectionEditBadge
+            sectionKey="tax"
+            sectionLabel="Edit 80G Tax & Governance"
+            onQuickEdit={openLiveEditor}
+            position="top-4 right-4"
+          />
+
           <h3 className="font-serif-brand font-bold text-base text-[#0F172A] uppercase tracking-wider flex items-center gap-2">
             <Shield className="w-5 h-5 text-emerald-600" />
-            <span>Financial Governance & Allocation</span>
+            <span>{liveSettings.tax_exempt_title || 'Financial Governance & 80G Tax Exemption'}</span>
           </h3>
           <p className="text-xs text-gray-600 leading-relaxed font-light">
-            Drodul Phendey Ling Foundation is governed by an independent Board of Trustees and audited annually under the strict statutory oversight of the Religious Organizations of Bhutan (ROB).
+            {liveSettings.tax_exempt_subtitle ||
+              'Drodul Phendey Ling Foundation is governed by an independent Board of Trustees and audited annually under the strict statutory oversight of the Religious Organizations of Bhutan (ROB).'}
           </p>
 
           <div className="space-y-3 pt-2">
@@ -307,10 +315,15 @@ export default function Donate() {
               </div>
             </div>
           </div>
+
+          <div className="pt-2 text-[11px] text-emerald-800 font-medium bg-emerald-50/80 p-2.5 rounded-xl border border-emerald-200">
+            Reg. No: <span className="font-mono font-bold">{liveSettings.tax_exempt_reg || 'ROB/CH-048/2021'}</span> ·{' '}
+            {liveSettings.tax_exempt_percent || '50% Tax Exemption for Eligible Donors'}
+          </div>
         </div>
 
         {/* Bank Wire Details */}
-        <div data-ngo-section="banking" className="lg:col-span-6 glass-luxury-card p-7 sm:p-8 rounded-2xl border border-gray-200/80 space-y-4 relative">
+        <div data-ngo-section="banking" className="lg:col-span-6 glass-luxury-card p-6 sm:p-8 rounded-2xl border border-gray-200/80 space-y-4 relative">
           <SectionEditBadge
             sectionKey="banking"
             sectionLabel="Edit Bank Wire Details"
@@ -320,19 +333,37 @@ export default function Donate() {
 
           <h3 className="font-serif-brand font-bold text-base text-[#0F172A] uppercase tracking-wider flex items-center gap-2">
             <Building2 className="w-5 h-5 text-[#D4AF37]" />
-            <span>{liveSettings.bank_title || 'Direct Bank Transfer / Wire Details'}</span>
+            <span>{liveSettings.donate_bank_title || liveSettings.bank_title || 'Direct Bank Transfer / Wire Details'}</span>
           </h3>
           <p className="text-xs text-gray-600 leading-relaxed font-light">
-            {liveSettings.bank_subtitle || 'Devotees preferring direct RTGS, NEFT, or international SWIFT wire transfers may remit directly to our official institutional account:'}
+            {liveSettings.donate_bank_subtitle ||
+              liveSettings.bank_subtitle ||
+              'Devotees preferring direct RTGS, NEFT, or international SWIFT wire transfers may remit directly to our official institutional account:'}
           </p>
 
-          <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-2 text-xs font-mono text-gray-800">
-            <p><strong className="text-gray-600 font-sans">Account Name:</strong> {liveSettings.bank_account_name || 'Drodul Phendey Ling Foundation'}</p>
-            <p><strong className="text-gray-600 font-sans">Bank:</strong> {liveSettings.bank_name || 'Bank of Bhutan Ltd. (BoB)'}</p>
-            <p><strong className="text-gray-600 font-sans">Account Number:</strong> {liveSettings.bank_account_no || '200847291038'}</p>
-            <p><strong className="text-gray-600 font-sans">Branch:</strong> {liveSettings.bank_branch || 'Gelephu Main Branch, Bhutan'}</p>
-            <p><strong className="text-gray-600 font-sans">SWIFT Code:</strong> {liveSettings.bank_swift_code || 'BHUBBTBT'}</p>
+          <div className="flex flex-col sm:flex-row gap-4 items-start">
+            <div className="flex-1 p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-2 text-xs font-mono text-gray-800 w-full">
+              <p><strong className="text-gray-600 font-sans">Account Name:</strong> {liveSettings.bank_account_name || 'Drodul Phendey Ling Foundation'}</p>
+              <p><strong className="text-gray-600 font-sans">Bank:</strong> {liveSettings.bank_name || 'Bank of Bhutan Ltd. (BoB)'}</p>
+              <p><strong className="text-gray-600 font-sans">Account Number:</strong> {liveSettings.bank_account_no || '200847291038'}</p>
+              <p><strong className="text-gray-600 font-sans">Branch:</strong> {liveSettings.bank_branch || 'Gelephu Main Branch, Bhutan'}</p>
+              <p><strong className="text-gray-600 font-sans">SWIFT Code:</strong> {liveSettings.bank_swift_code || 'BHUBBTBT'}</p>
+              {liveSettings.bank_upi_id && (
+                <p><strong className="text-gray-600 font-sans">UPI ID:</strong> {liveSettings.bank_upi_id}</p>
+              )}
+            </div>
+
+            {liveSettings.bank_qr_image && (
+              <div className="w-28 h-28 sm:w-32 sm:h-32 p-2 bg-white rounded-xl border border-[#D4AF37]/50 shadow-sm flex flex-col items-center justify-center flex-shrink-0 self-center sm:self-start">
+                <img
+                  src={liveSettings.bank_qr_image}
+                  alt="Official Bank UPI QR"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
           </div>
+
           <p className="text-[11px] text-gray-500 italic">
             * After wire transfer, please email payment confirmation to <span className="font-semibold text-gray-700">{liveSettings.contact_email || 'contact@drodulphendeyling.org'}</span> for instant 80G tax receipt issuance.
           </p>

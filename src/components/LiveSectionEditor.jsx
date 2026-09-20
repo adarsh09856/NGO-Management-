@@ -299,16 +299,16 @@ export default function LiveSectionEditor({
     },
     learning: {
       title: 'Dharma LMS & Video Teachings',
-      studio: '/admin/pages/home#learning',
+      studio: '/admin/learning',
       hasActions: true,
-      hasMedia: false,
+      hasMedia: true,
       hasCards: false
     },
     blog: {
       title: 'Sacred Gazette & Articles',
-      studio: '/admin/pages/home#blog',
+      studio: '/admin/blog',
       hasActions: true,
-      hasMedia: false,
+      hasMedia: true,
       hasCards: false
     },
     'about-header': {
@@ -371,7 +371,7 @@ export default function LiveSectionEditor({
       title: 'Direct Bank Wire & Remittance Details',
       studio: '/admin/donate-settings#bank',
       hasActions: false,
-      hasMedia: false,
+      hasMedia: true,
       hasCards: true
     },
     tax: {
@@ -491,41 +491,48 @@ export default function LiveSectionEditor({
       studio: '/admin/pages/prayers#schedule',
       hasActions: false,
       hasMedia: false,
-      hasCards: false
+      hasCards: true
     },
     'learning-hero': {
       title: 'Dharma LMS Hero Banner',
       studio: '/admin/learning',
       hasActions: true,
-      hasMedia: false,
+      hasMedia: true,
       hasCards: false
     },
     'blog-hero': {
       title: 'Sacred Gazette Hero Banner',
       studio: '/admin/blog',
       hasActions: true,
-      hasMedia: false,
+      hasMedia: true,
+      hasCards: false
+    },
+    gallery: {
+      title: 'Sacred Photo Gallery & Visual Archives',
+      studio: '/admin/gallery',
+      hasActions: true,
+      hasMedia: true,
       hasCards: false
     },
     'gallery-hero': {
       title: 'Sacred Media Archives Hero Banner',
       studio: '/admin/gallery',
       hasActions: true,
-      hasMedia: false,
+      hasMedia: true,
       hasCards: false
     },
     news: {
       title: 'Monastery Gazette & News Events',
-      studio: '/admin/blog',
+      studio: '/admin/prayer-requests?tab=news',
       hasActions: true,
-      hasMedia: false,
+      hasMedia: true,
       hasCards: false
     },
     'news-hero': {
       title: 'News & Events Hero Banner',
-      studio: '/admin/blog',
+      studio: '/admin/prayer-requests?tab=news',
       hasActions: true,
-      hasMedia: false,
+      hasMedia: true,
       hasCards: false
     },
     social: {
@@ -1044,41 +1051,131 @@ export default function LiveSectionEditor({
 
                     {/* SECTION: HEADER / NAVBAR */}
                     {(sectionKey === 'header' || sectionKey === 'navbar') && (
-                      <>
-                        <div>
-                          <label className="block text-xs font-bold text-slate-700 mb-1">Top Announcement Banner Text</label>
-                          <input
-                            type="text"
-                            value={form.header_announcement || ''}
-                            onChange={(e) => updateField('header_announcement', e.target.value)}
-                            placeholder="༄༅། །108-Foot Great Druk Wangyel Peace Stupa Consecration & Daily Butter Lamp Prayers"
-                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
-                          />
-                        </div>
+                      <div className="space-y-3.5">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-xs font-bold text-slate-700 mb-1">Announcement Link Target</label>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Monastery Brand Heading</label>
                             <input
                               type="text"
-                              value={form.header_announcement_link || ''}
-                              onChange={(e) => updateField('header_announcement_link', e.target.value)}
-                              placeholder="/prayer-request"
-                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                              value={form.site_name || ''}
+                              onChange={(e) => updateField('site_name', e.target.value)}
+                              placeholder="DRODUL PHENDEY LING"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-bold text-slate-700 mb-1">Announcement Visibility</label>
-                            <select
-                              value={form.header_announcement_on || 'true'}
-                              onChange={(e) => updateField('header_announcement_on', e.target.value)}
-                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold"
-                            >
-                              <option value="true">Enabled (Visible)</option>
-                              <option value="false">Hidden (Disabled)</option>
-                            </select>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Tibetan Sacred Title</label>
+                            <input
+                              type="text"
+                              value={form.site_tibetan_name || ''}
+                              onChange={(e) => updateField('site_tibetan_name', e.target.value)}
+                              placeholder="འགྲོ་འདུལ་ཕན་བདེ་གླིང་།"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-serif"
+                            />
                           </div>
                         </div>
-                      </>
+
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
+                          <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                            Top Golden Announcement Bar
+                          </span>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Banner Announcement Text</label>
+                            <input
+                              type="text"
+                              value={form.header_announcement || ''}
+                              onChange={(e) => updateField('header_announcement', e.target.value)}
+                              placeholder="༄༅། །108-Foot Great Druk Wangyel Peace Stupa Consecration & Daily Butter Lamp Prayers"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-bold text-slate-700 mb-1">Link Target</label>
+                              <input
+                                type="text"
+                                value={form.header_announcement_link || ''}
+                                onChange={(e) => updateField('header_announcement_link', e.target.value)}
+                                placeholder="/prayer-request"
+                                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold text-slate-700 mb-1">Banner Visibility</label>
+                              <select
+                                value={form.header_announcement_on || 'true'}
+                                onChange={(e) => updateField('header_announcement_on', e.target.value)}
+                                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold"
+                              >
+                                <option value="true">Enabled (Visible)</option>
+                                <option value="false">Hidden (Disabled)</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
+                          <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                            Header Action Call to Action
+                          </span>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                              <label className="block text-xs font-bold text-slate-700 mb-1">Button Label</label>
+                              <input
+                                type="text"
+                                value={form.header_cta_label || ''}
+                                onChange={(e) => updateField('header_cta_label', e.target.value)}
+                                placeholder="Offer Dana"
+                                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold text-slate-700 mb-1">Destination URL</label>
+                              <input
+                                type="text"
+                                value={form.header_cta_link || ''}
+                                onChange={(e) => updateField('header_cta_link', e.target.value)}
+                                placeholder="/donate"
+                                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold text-slate-700 mb-1">Button Status</label>
+                              <select
+                                value={form.header_cta_on || 'true'}
+                                onChange={(e) => updateField('header_cta_on', e.target.value)}
+                                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold"
+                              >
+                                <option value="true">Enabled (Visible)</option>
+                                <option value="false">Hidden</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Secretariat Helpline Phone</label>
+                            <input
+                              type="text"
+                              value={form.contact_phone || ''}
+                              onChange={(e) => updateField('contact_phone', e.target.value)}
+                              placeholder="+975 6 251 222"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Official Secretariat Email</label>
+                            <input
+                              type="email"
+                              value={form.contact_email || ''}
+                              onChange={(e) => updateField('contact_email', e.target.value)}
+                              placeholder="secretariat@drodulphendeyling.bt"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     )}
 
                     {/* SECTION: FOOTER */}
@@ -1690,6 +1787,584 @@ export default function LiveSectionEditor({
                         </div>
                       </div>
                     )}
+
+                    {/* SECTION: DHARMA LEARNING & LMS */}
+                    {(sectionKey === 'learning' || sectionKey === 'learning-hero') && (
+                      <div className="space-y-3.5">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Customize Dharma Learning headline, Tibetan inscription, and video course catalog intro.
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Section Eyebrow Tag</label>
+                            <input
+                              type="text"
+                              value={form.learning_hero_eyebrow || ''}
+                              onChange={(e) => updateField('learning_hero_eyebrow', e.target.value)}
+                              placeholder="SACRED DHARMA ARCHIVES & LMS"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Tibetan Sacred Title</label>
+                            <input
+                              type="text"
+                              value={form.learning_hero_tibetan || ''}
+                              onChange={(e) => updateField('learning_hero_tibetan', e.target.value)}
+                              placeholder="ཆོས་ཀྱི་བཀའ་ཁྲིད།"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-serif"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Main Heading</label>
+                          <input
+                            type="text"
+                            value={form.learning_hero_title || ''}
+                            onChange={(e) => updateField('learning_hero_title', e.target.value)}
+                            placeholder="Buddhist Teachings, Sutras & Sacred Audio-Visual Discourses"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Subtitle & Course Catalog Overview</label>
+                          <textarea
+                            rows={3}
+                            value={form.learning_hero_subtitle || ''}
+                            onChange={(e) => updateField('learning_hero_subtitle', e.target.value)}
+                            placeholder="Explore foundational Buddhist philosophy, meditation guides, and traditional monastic chantings recorded directly at Drodul Phendey Ling Monastery."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: BLOG & SACRED GAZETTE */}
+                    {(sectionKey === 'blog' || sectionKey === 'blog-hero') && (
+                      <div className="space-y-3.5">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Customize Monastery Blog, spiritual articles headline, and Gazette editorial text.
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Section Eyebrow Tag</label>
+                            <input
+                              type="text"
+                              value={form.blog_hero_eyebrow || ''}
+                              onChange={(e) => updateField('blog_hero_eyebrow', e.target.value)}
+                              placeholder="MONASTIC CHRONICLES & DHARMA WRITINGS"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Tibetan Sacred Title</label>
+                            <input
+                              type="text"
+                              value={form.blog_hero_tibetan || ''}
+                              onChange={(e) => updateField('blog_hero_tibetan', e.target.value)}
+                              placeholder="དགོན་པའི་གནས་ཚུལ།"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-serif"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Main Heading</label>
+                          <input
+                            type="text"
+                            value={form.blog_hero_title || ''}
+                            onChange={(e) => updateField('blog_hero_title', e.target.value)}
+                            placeholder="Sacred Gazette & Spiritual Reflections"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Subtitle & Introduction</label>
+                          <textarea
+                            rows={3}
+                            value={form.blog_hero_subtitle || ''}
+                            onChange={(e) => updateField('blog_hero_subtitle', e.target.value)}
+                            placeholder="Essays, abbot dharma discourses, and historical accounts from our monastic lineage."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: NEWS & EVENTS */}
+                    {(sectionKey === 'news' || sectionKey === 'news-hero') && (
+                      <div className="space-y-3.5">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Customize Ceremonies, auspicious feast days, and official news announcements.
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Section Eyebrow Tag</label>
+                            <input
+                              type="text"
+                              value={form.news_hero_eyebrow || ''}
+                              onChange={(e) => updateField('news_hero_eyebrow', e.target.value)}
+                              placeholder="SACRED FEAST DAYS & GATHERINGS"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Tibetan Sacred Title</label>
+                            <input
+                              type="text"
+                              value={form.news_hero_tibetan || ''}
+                              onChange={(e) => updateField('news_hero_tibetan', e.target.value)}
+                              placeholder="དུས་ཆེན་དང་མཛད་སྒོ།"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-serif"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Main Heading</label>
+                          <input
+                            type="text"
+                            value={form.news_hero_title || ''}
+                            onChange={(e) => updateField('news_hero_title', e.target.value)}
+                            placeholder="Monastic Ceremonies, Pujas & Official Gazette"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Subtitle & Intro</label>
+                          <textarea
+                            rows={3}
+                            value={form.news_hero_subtitle || ''}
+                            onChange={(e) => updateField('news_hero_subtitle', e.target.value)}
+                            placeholder="Stay informed about upcoming lunar calendar pujas, annual Drubchen retreats, and consecrations."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: SACRED GALLERY */}
+                    {(sectionKey === 'gallery' || sectionKey === 'gallery-hero') && (
+                      <div className="space-y-3.5">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Customize Sacred Gallery headlines, photographic archival descriptions, and category tags.
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Section Eyebrow Tag</label>
+                            <input
+                              type="text"
+                              value={form.gallery_hero_eyebrow || ''}
+                              onChange={(e) => updateField('gallery_hero_eyebrow', e.target.value)}
+                              placeholder="SACRED VISUAL ARCHIVES"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Tibetan Sacred Title</label>
+                            <input
+                              type="text"
+                              value={form.gallery_hero_tibetan || ''}
+                              onChange={(e) => updateField('gallery_hero_tibetan', e.target.value)}
+                              placeholder="སྐུ་པར་མཛོད་ཁང་།"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-serif"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Main Heading</label>
+                          <input
+                            type="text"
+                            value={form.gallery_hero_title || ''}
+                            onChange={(e) => updateField('gallery_hero_title', e.target.value)}
+                            placeholder="Sacred Photographs, Shrine Consecrations & Monastic Life"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Subtitle & Introduction</label>
+                          <textarea
+                            rows={3}
+                            value={form.gallery_hero_subtitle || ''}
+                            onChange={(e) => updateField('gallery_hero_subtitle', e.target.value)}
+                            placeholder="A visual journey across our sacred monastery, Abbot blessings, Stupa construction, and daily monastic disciplines."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: DONATE PRESETS & TIERS */}
+                    {sectionKey === 'donate-presets' && (
+                      <div className="space-y-3.5">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Configure donation tier presets and offering dedications.
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Section Heading</label>
+                          <input
+                            type="text"
+                            value={form.donate_presets_title || ''}
+                            onChange={(e) => updateField('donate_presets_title', e.target.value)}
+                            placeholder="Sacred Offering Tiers & Generosity Presets"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Subtitle / Offering Rationale</label>
+                          <textarea
+                            rows={2}
+                            value={form.donate_presets_subtitle || ''}
+                            onChange={(e) => updateField('donate_presets_subtitle', e.target.value)}
+                            placeholder="Choose an auspicious offering amount to support monastic Sangha food, medicine, and Stupa construction."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Merit Dedication Notice</label>
+                          <input
+                            type="text"
+                            value={form.donate_presets_merit_note || ''}
+                            onChange={(e) => updateField('donate_presets_merit_note', e.target.value)}
+                            placeholder="All offerings are dedicated daily in perpetual Sangha prayers."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: BANKING & UPI REMITTANCE */}
+                    {sectionKey === 'banking' && (
+                      <div className="space-y-3.5">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Direct Bank Wire and UPI Remittance details displayed on public donation portal.
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Section Title</label>
+                            <input
+                              type="text"
+                              value={form.donate_bank_title || ''}
+                              onChange={(e) => updateField('donate_bank_title', e.target.value)}
+                              placeholder="Direct Bank Wire & Electronic Remittance"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Bank Name</label>
+                            <input
+                              type="text"
+                              value={form.bank_name || ''}
+                              onChange={(e) => updateField('bank_name', e.target.value)}
+                              placeholder="Bank of Bhutan (BoB)"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Beneficiary Account Name</label>
+                            <input
+                              type="text"
+                              value={form.bank_account_name || ''}
+                              onChange={(e) => updateField('bank_account_name', e.target.value)}
+                              placeholder="Drodul Phendey Ling Foundation"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Account Number</label>
+                            <input
+                              type="text"
+                              value={form.bank_account_no || ''}
+                              onChange={(e) => updateField('bank_account_no', e.target.value)}
+                              placeholder="202888999123"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono"
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">IFSC Code</label>
+                            <input
+                              type="text"
+                              value={form.bank_ifsc || ''}
+                              onChange={(e) => updateField('bank_ifsc', e.target.value)}
+                              placeholder="BOBT0000101"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">SWIFT / BIC Code</label>
+                            <input
+                              type="text"
+                              value={form.bank_swift_code || ''}
+                              onChange={(e) => updateField('bank_swift_code', e.target.value)}
+                              placeholder="BOBTBT22"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">UPI ID (VPA)</label>
+                            <input
+                              type="text"
+                              value={form.bank_upi_id || ''}
+                              onChange={(e) => updateField('bank_upi_id', e.target.value)}
+                              placeholder="drodul@bob"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Bank Branch Address</label>
+                          <input
+                            type="text"
+                            value={form.bank_branch || ''}
+                            onChange={(e) => updateField('bank_branch', e.target.value)}
+                            placeholder="Gelephu Main Branch, Sarpang Dzongkhag, Bhutan"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: 80G TAX EXEMPTION & GOVERNANCE */}
+                    {sectionKey === 'tax' && (
+                      <div className="space-y-3.5">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Configure 80G Tax Exemption, Income Tax Act clause, and receipt certification policies.
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Section Title</label>
+                            <input
+                              type="text"
+                              value={form.tax_exempt_title || ''}
+                              onChange={(e) => updateField('tax_exempt_title', e.target.value)}
+                              placeholder="80G Tax Exemption & Statutory Governance"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">80G Registration / Order Number</label>
+                            <input
+                              type="text"
+                              value={form.tax_exempt_reg || ''}
+                              onChange={(e) => updateField('tax_exempt_reg', e.target.value)}
+                              placeholder="ROB/CH-048/2021"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold"
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Income Tax Act Clause</label>
+                            <input
+                              type="text"
+                              value={form.tax_exempt_clause || ''}
+                              onChange={(e) => updateField('tax_exempt_clause', e.target.value)}
+                              placeholder="Section 80G(5)(vi) / Religious Organization Exemption"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Exemption Percentage</label>
+                            <input
+                              type="text"
+                              value={form.tax_exempt_percent || ''}
+                              onChange={(e) => updateField('tax_exempt_percent', e.target.value)}
+                              placeholder="50% Deduction for Eligible Donors"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Issuing Authority</label>
+                          <input
+                            type="text"
+                            value={form.tax_exempt_authority || ''}
+                            onChange={(e) => updateField('tax_exempt_authority', e.target.value)}
+                            placeholder="Commission for Religious Organizations (CRO), Royal Government of Bhutan"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Receipt Issuance Timeline</label>
+                            <input
+                              type="text"
+                              value={form.tax_exempt_timeline || ''}
+                              onChange={(e) => updateField('tax_exempt_timeline', e.target.value)}
+                              placeholder="Official 80G tax receipt dispatched via email within 24 hours"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Tax Inquiries Email</label>
+                            <input
+                              type="email"
+                              value={form.tax_exempt_email || ''}
+                              onChange={(e) => updateField('tax_exempt_email', e.target.value)}
+                              placeholder="treasury@drodulphendeyling.bt"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: STATUTORY TRUST & GOVERNANCE */}
+                    {sectionKey === 'statutory' && (
+                      <div className="space-y-3.5">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Trust deed registration, NPO compliance, and governance summary.
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Section Title</label>
+                          <input
+                            type="text"
+                            value={form.about_statutory_title || ''}
+                            onChange={(e) => updateField('about_statutory_title', e.target.value)}
+                            placeholder="Statutory Trust & Legal Transparency"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Trust Registration Number</label>
+                            <input
+                              type="text"
+                              value={form.tax_exempt_reg || ''}
+                              onChange={(e) => updateField('tax_exempt_reg', e.target.value)}
+                              placeholder="ROB/CH-048/2021"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">FCRA Foreign Inflow Compliance</label>
+                            <input
+                              type="text"
+                              value={form.about_statutory_fcra || ''}
+                              onChange={(e) => updateField('about_statutory_fcra', e.target.value)}
+                              placeholder="Registered for Overseas Wire Donations"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Trust Governance Summary</label>
+                          <textarea
+                            rows={3}
+                            value={form.about_statutory_summary || ''}
+                            onChange={(e) => updateField('about_statutory_summary', e.target.value)}
+                            placeholder="Drodul Phendey Ling is governed by an independent Board of Trustees and Abbot Council, audited annually by certified chartered accountants."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: THREE SACRED PILLARS */}
+                    {sectionKey === 'about-pillars' && (
+                      <div className="space-y-3.5">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Configure Three Pillars of Monastery Mandate (Dharma, Sangha, Humanitarian Aid).
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Section Title</label>
+                            <input
+                              type="text"
+                              value={form.about_pillars_title || ''}
+                              onChange={(e) => updateField('about_pillars_title', e.target.value)}
+                              placeholder="Three Sacred Pillars of Our Mandate"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Tibetan Subtitle</label>
+                            <input
+                              type="text"
+                              value={form.about_pillars_tibetan || ''}
+                              onChange={(e) => updateField('about_pillars_tibetan', e.target.value)}
+                              placeholder="དམ་ཆོས་འཛིན་སྐྱོང་།"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-serif"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Pillars Narrative Overview</label>
+                          <textarea
+                            rows={2}
+                            value={form.about_pillars_intro || ''}
+                            onChange={(e) => updateField('about_pillars_intro', e.target.value)}
+                            placeholder="Our mission embodies authentic Buddhist preservation, monastic university scholarship, and compassionate outreach."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: SOCIAL MEDIA CHANNELS */}
+                    {sectionKey === 'social' && (
+                      <div className="space-y-3.5">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Configure public social media portals, YouTube live stream, and WhatsApp Sangha hotline.
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Facebook Page URL</label>
+                            <input
+                              type="text"
+                              value={form.social_facebook || ''}
+                              onChange={(e) => updateField('social_facebook', e.target.value)}
+                              placeholder="https://facebook.com/drodulphendeyling"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">YouTube Channel URL</label>
+                            <input
+                              type="text"
+                              value={form.social_youtube || ''}
+                              onChange={(e) => updateField('social_youtube', e.target.value)}
+                              placeholder="https://youtube.com/@drodulphendeyling"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Instagram URL</label>
+                            <input
+                              type="text"
+                              value={form.social_instagram || ''}
+                              onChange={(e) => updateField('social_instagram', e.target.value)}
+                              placeholder="https://instagram.com/drodulphendeyling"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Twitter / X URL</label>
+                            <input
+                              type="text"
+                              value={form.social_twitter || ''}
+                              onChange={(e) => updateField('social_twitter', e.target.value)}
+                              placeholder="https://x.com/drodulphendey"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">WhatsApp Sangha Helpline</label>
+                            <input
+                              type="text"
+                              value={form.social_whatsapp || ''}
+                              onChange={(e) => updateField('social_whatsapp', e.target.value)}
+                              placeholder="+97517112233"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -1916,6 +2591,206 @@ export default function LiveSectionEditor({
                         </div>
                       </div>
                     )}
+
+                    {/* SECTION: HEADER / NAVBAR ACTIONS */}
+                    {(sectionKey === 'header' || sectionKey === 'navbar') && (
+                      <div className="space-y-4">
+                        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
+                          <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                            Navigation Menus & Public Pages
+                          </span>
+                          <p className="text-xs text-slate-600 leading-relaxed">
+                            Organize all dropdown menus, reorder links, or add new navigation routes in Navigation Studio.
+                          </p>
+                          <div className="flex flex-wrap gap-2 pt-1">
+                            <Link
+                              to="/admin/navigation"
+                              onClick={onClose}
+                              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#721C24] hover:bg-[#8B2E24] text-white text-xs font-bold transition-colors shadow-xs cursor-pointer"
+                            >
+                              <span>Open Navigation Studio</span>
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </Link>
+                            <Link
+                              to="/admin/pages"
+                              onClick={onClose}
+                              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition-colors shadow-xs cursor-pointer"
+                            >
+                              <span>All Pages Directory</span>
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: DHARMA LEARNING ACTIONS */}
+                    {(sectionKey === 'learning' || sectionKey === 'learning-hero') && (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Catalog Action Button Label</label>
+                            <input
+                              type="text"
+                              value={form.learning_cta_label || ''}
+                              onChange={(e) => updateField('learning_cta_label', e.target.value)}
+                              placeholder="Explore Video Teachings"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Button Link Destination</label>
+                            <input
+                              type="text"
+                              value={form.learning_cta_url || ''}
+                              onChange={(e) => updateField('learning_cta_url', e.target.value)}
+                              placeholder="/learning#catalog"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                        </div>
+                        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+                          <div>
+                            <span className="text-xs font-bold text-slate-800 block">Manage Learning Videos</span>
+                            <span className="text-[11px] text-slate-500">Upload and organize Dharma lectures in Learning Studio</span>
+                          </div>
+                          <Link
+                            to="/admin/learning"
+                            onClick={onClose}
+                            className="px-3 py-1.5 rounded-lg bg-[#721C24] text-white text-xs font-bold hover:bg-[#8B2E24] transition-colors inline-flex items-center gap-1 flex-shrink-0"
+                          >
+                            <span>Open LMS Studio</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: BLOG ACTIONS */}
+                    {(sectionKey === 'blog' || sectionKey === 'blog-hero') && (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Read Teachings Button Label</label>
+                            <input
+                              type="text"
+                              value={form.blog_cta_label || ''}
+                              onChange={(e) => updateField('blog_cta_label', e.target.value)}
+                              placeholder="Browse Spiritual Gazette"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Button Link Destination</label>
+                            <input
+                              type="text"
+                              value={form.blog_cta_url || ''}
+                              onChange={(e) => updateField('blog_cta_url', e.target.value)}
+                              placeholder="/blog#articles"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                        </div>
+                        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+                          <div>
+                            <span className="text-xs font-bold text-slate-800 block">Manage Monastery Blog</span>
+                            <span className="text-[11px] text-slate-500">Write, publish, and edit spiritual articles in Blog Studio</span>
+                          </div>
+                          <Link
+                            to="/admin/blog"
+                            onClick={onClose}
+                            className="px-3 py-1.5 rounded-lg bg-[#721C24] text-white text-xs font-bold hover:bg-[#8B2E24] transition-colors inline-flex items-center gap-1 flex-shrink-0"
+                          >
+                            <span>Open Blog Studio</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: NEWS & EVENTS ACTIONS */}
+                    {(sectionKey === 'news' || sectionKey === 'news-hero') && (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Ceremonies CTA Button Label</label>
+                            <input
+                              type="text"
+                              value={form.news_cta_label || ''}
+                              onChange={(e) => updateField('news_cta_label', e.target.value)}
+                              placeholder="View Consecration Calendar"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Button Link Destination</label>
+                            <input
+                              type="text"
+                              value={form.news_cta_url || ''}
+                              onChange={(e) => updateField('news_cta_url', e.target.value)}
+                              placeholder="/news-events#calendar"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                        </div>
+                        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+                          <div>
+                            <span className="text-xs font-bold text-slate-800 block">Manage Ceremonies & Events</span>
+                            <span className="text-[11px] text-slate-500">Schedule pujas, Drubchen retreats, and RSVP rosters</span>
+                          </div>
+                          <Link
+                            to="/admin/prayer-requests?tab=news"
+                            onClick={onClose}
+                            className="px-3 py-1.5 rounded-lg bg-[#721C24] text-white text-xs font-bold hover:bg-[#8B2E24] transition-colors inline-flex items-center gap-1 flex-shrink-0"
+                          >
+                            <span>Ceremonies Desk</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: SACRED GALLERY ACTIONS */}
+                    {(sectionKey === 'gallery' || sectionKey === 'gallery-hero') && (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Archives Button Label</label>
+                            <input
+                              type="text"
+                              value={form.gallery_cta_label || ''}
+                              onChange={(e) => updateField('gallery_cta_label', e.target.value)}
+                              placeholder="View Photo Archive"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Button Link Destination</label>
+                            <input
+                              type="text"
+                              value={form.gallery_cta_url || ''}
+                              onChange={(e) => updateField('gallery_cta_url', e.target.value)}
+                              placeholder="/gallery#photos"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                        </div>
+                        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+                          <div>
+                            <span className="text-xs font-bold text-slate-800 block">Upload Sacred Photos</span>
+                            <span className="text-[11px] text-slate-500">Upload high-resolution monastic photography into Gallery Studio</span>
+                          </div>
+                          <Link
+                            to="/admin/gallery"
+                            onClick={onClose}
+                            className="px-3 py-1.5 rounded-lg bg-[#721C24] text-white text-xs font-bold hover:bg-[#8B2E24] transition-colors inline-flex items-center gap-1 flex-shrink-0"
+                          >
+                            <span>Gallery Studio</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </Link>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -2064,6 +2939,186 @@ export default function LiveSectionEditor({
                               type="file"
                               accept="image/*"
                               onChange={(e) => handleImageUpload(e, 'donate_hero_image')}
+                              className="hidden"
+                              disabled={uploading}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Learning Banner Image */}
+                    {(sectionKey === 'learning' || sectionKey === 'learning-hero') && (
+                      <div className="space-y-3">
+                        <label className="block text-xs font-bold text-slate-700">Dharma LMS Hero Banner Image</label>
+                        {form.learning_hero_image && (
+                          <div className="relative rounded-xl overflow-hidden aspect-video max-h-48 border border-slate-200 bg-slate-900">
+                            <img
+                              src={form.learning_hero_image}
+                              alt="Learning Banner"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={form.learning_hero_image || ''}
+                            onChange={(e) => updateField('learning_hero_image', e.target.value)}
+                            placeholder="https://... or /uploads/..."
+                            className="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs"
+                          />
+                          <label className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold cursor-pointer inline-flex items-center gap-1.5 flex-shrink-0 transition-colors">
+                            <UploadCloud className="w-4 h-4" />
+                            <span>{uploading ? 'Uploading...' : 'Upload'}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleImageUpload(e, 'learning_hero_image')}
+                              className="hidden"
+                              disabled={uploading}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Blog Banner Image */}
+                    {(sectionKey === 'blog' || sectionKey === 'blog-hero') && (
+                      <div className="space-y-3">
+                        <label className="block text-xs font-bold text-slate-700">Gazette Hero Banner Image</label>
+                        {form.blog_hero_image && (
+                          <div className="relative rounded-xl overflow-hidden aspect-video max-h-48 border border-slate-200 bg-slate-900">
+                            <img
+                              src={form.blog_hero_image}
+                              alt="Blog Banner"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={form.blog_hero_image || ''}
+                            onChange={(e) => updateField('blog_hero_image', e.target.value)}
+                            placeholder="https://... or /uploads/..."
+                            className="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs"
+                          />
+                          <label className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold cursor-pointer inline-flex items-center gap-1.5 flex-shrink-0 transition-colors">
+                            <UploadCloud className="w-4 h-4" />
+                            <span>{uploading ? 'Uploading...' : 'Upload'}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleImageUpload(e, 'blog_hero_image')}
+                              className="hidden"
+                              disabled={uploading}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* News Banner Image */}
+                    {(sectionKey === 'news' || sectionKey === 'news-hero') && (
+                      <div className="space-y-3">
+                        <label className="block text-xs font-bold text-slate-700">Ceremonies Hero Banner Image</label>
+                        {form.news_hero_image && (
+                          <div className="relative rounded-xl overflow-hidden aspect-video max-h-48 border border-slate-200 bg-slate-900">
+                            <img
+                              src={form.news_hero_image}
+                              alt="News Banner"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={form.news_hero_image || ''}
+                            onChange={(e) => updateField('news_hero_image', e.target.value)}
+                            placeholder="https://... or /uploads/..."
+                            className="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs"
+                          />
+                          <label className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold cursor-pointer inline-flex items-center gap-1.5 flex-shrink-0 transition-colors">
+                            <UploadCloud className="w-4 h-4" />
+                            <span>{uploading ? 'Uploading...' : 'Upload'}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleImageUpload(e, 'news_hero_image')}
+                              className="hidden"
+                              disabled={uploading}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Gallery Banner Image */}
+                    {(sectionKey === 'gallery' || sectionKey === 'gallery-hero') && (
+                      <div className="space-y-3">
+                        <label className="block text-xs font-bold text-slate-700">Gallery Hero Banner Image</label>
+                        {form.gallery_hero_image && (
+                          <div className="relative rounded-xl overflow-hidden aspect-video max-h-48 border border-slate-200 bg-slate-900">
+                            <img
+                              src={form.gallery_hero_image}
+                              alt="Gallery Banner"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={form.gallery_hero_image || ''}
+                            onChange={(e) => updateField('gallery_hero_image', e.target.value)}
+                            placeholder="https://... or /uploads/..."
+                            className="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs"
+                          />
+                          <label className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold cursor-pointer inline-flex items-center gap-1.5 flex-shrink-0 transition-colors">
+                            <UploadCloud className="w-4 h-4" />
+                            <span>{uploading ? 'Uploading...' : 'Upload'}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleImageUpload(e, 'gallery_hero_image')}
+                              className="hidden"
+                              disabled={uploading}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Banking UPI QR Code */}
+                    {sectionKey === 'banking' && (
+                      <div className="space-y-3">
+                        <label className="block text-xs font-bold text-slate-700">Official UPI Payment QR Code Image</label>
+                        {form.bank_qr_image && (
+                          <div className="w-32 h-32 rounded-xl overflow-hidden border-2 border-[#D4AF37] bg-white p-2 flex items-center justify-center">
+                            <img
+                              src={form.bank_qr_image}
+                              alt="Bank QR Code"
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                        )}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={form.bank_qr_image || ''}
+                            onChange={(e) => updateField('bank_qr_image', e.target.value)}
+                            placeholder="https://... or /uploads/..."
+                            className="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs"
+                          />
+                          <label className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold cursor-pointer inline-flex items-center gap-1.5 flex-shrink-0 transition-colors">
+                            <UploadCloud className="w-4 h-4" />
+                            <span>{uploading ? 'Uploading...' : 'Upload'}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleImageUpload(e, 'bank_qr_image')}
                               className="hidden"
                               disabled={uploading}
                             />
@@ -2555,6 +3610,101 @@ export default function LiveSectionEditor({
                             </div>
                           </div>
                         </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: DONATE PRESETS & OFFERING TIERS */}
+                    {sectionKey === 'donate-presets' && (
+                      <div className="space-y-4">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Configure the 5 standard donation preset buttons shown on the donation checkout form.
+                        </div>
+
+                        {[
+                          { tier: 1, defaultAmount: 500, defaultLabel: 'Daily Sangha Meals & Tea' },
+                          { tier: 2, defaultAmount: 1100, defaultLabel: 'Perpetual Butter Lamp Offering' },
+                          { tier: 3, defaultAmount: 2500, defaultLabel: 'Monk Robes & Sacred Study Texts' },
+                          { tier: 4, defaultAmount: 5000, defaultLabel: 'Monthly Sangha Medical Care' },
+                          { tier: 5, defaultAmount: 10000, defaultLabel: '108ft Peace Stupa Gold Leaf Plating' }
+                        ].map(({ tier, defaultAmount, defaultLabel }) => (
+                          <div key={tier} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+                            <div>
+                              <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                                Tier #{tier} Amount (₹ / Nu.)
+                              </label>
+                              <input
+                                type="number"
+                                value={form[`donate_tier_${tier}_amount`] ?? defaultAmount}
+                                onChange={(e) => updateField(`donate_tier_${tier}_amount`, e.target.value)}
+                                placeholder={String(defaultAmount)}
+                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-mono font-bold"
+                              />
+                            </div>
+                            <div className="sm:col-span-2">
+                              <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                                Merit Dedication Description
+                              </label>
+                              <input
+                                type="text"
+                                value={form[`donate_tier_${tier}_label`] ?? defaultLabel}
+                                onChange={(e) => updateField(`donate_tier_${tier}_label`, e.target.value)}
+                                placeholder={defaultLabel}
+                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* SECTION: SHRINE DAILY RITUAL SCHEDULE CARDS */}
+                    {sectionKey === 'prayer-schedule' && (
+                      <div className="space-y-4">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Daily Shrine Ritual Session Cards (Dawn, Midday, Afternoon, Dusk).
+                        </div>
+
+                        {[
+                          { id: 1, session: 'Dawn Sang & Tara Puja', defaultTime: '05:30 AM - 07:30 AM', defaultDesc: 'Purification smoke offering and recitation of the 21 Praises to Tara.' },
+                          { id: 2, session: 'Midday Monastic Study & Debate', defaultTime: '10:00 AM - 12:30 PM', defaultDesc: 'Traditional epistemological dialectic debate by Shedra monks.' },
+                          { id: 3, session: 'Afternoon Mahakala Dharmapala Puja', defaultTime: '03:00 PM - 04:30 PM', defaultDesc: 'Sacred wrathful protector offerings for world peace and overcoming obstacles.' },
+                          { id: 4, session: 'Evening 108 Butter Lamp Illumination', defaultTime: '05:00 PM - 07:00 PM', defaultDesc: 'Lighting of consecrated brass butter lamps with perpetual dedication chantings.' }
+                        ].map(({ id, session, defaultTime, defaultDesc }) => (
+                          <div key={id} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              <div>
+                                <label className="block text-[11px] font-bold text-slate-600 mb-1">Session #{id} Name</label>
+                                <input
+                                  type="text"
+                                  value={form[`prayer_session_${id}_title`] ?? session}
+                                  onChange={(e) => updateField(`prayer_session_${id}_title`, e.target.value)}
+                                  placeholder={session}
+                                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-bold"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[11px] font-bold text-slate-600 mb-1">Daily Timetable</label>
+                                <input
+                                  type="text"
+                                  value={form[`prayer_session_${id}_time`] ?? defaultTime}
+                                  onChange={(e) => updateField(`prayer_session_${id}_time`, e.target.value)}
+                                  placeholder={defaultTime}
+                                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-mono"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <label className="block text-[11px] font-bold text-slate-600 mb-1">Session Ritual Description</label>
+                              <textarea
+                                rows={2}
+                                value={form[`prayer_session_${id}_desc`] ?? defaultDesc}
+                                onChange={(e) => updateField(`prayer_session_${id}_desc`, e.target.value)}
+                                placeholder={defaultDesc}
+                                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs"
+                              />
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>

@@ -10,6 +10,27 @@ export default function Gallery() {
   const [mediaTypeFilter, setMediaTypeFilter] = useState('All');
   const [lightboxItem, setLightboxItem] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [liveSettings, setLiveSettings] = useState({});
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await api.get('/settings');
+        if (res.data?.success && res.data.data) {
+          setLiveSettings(res.data.data);
+        }
+      } catch (_) {}
+    }
+    loadSettings();
+
+    const handleSettingsUpdate = (e) => {
+      if (e.detail?.settings) {
+        setLiveSettings(e.detail.settings);
+      }
+    };
+    window.addEventListener('ngo:settings-updated', handleSettingsUpdate);
+    return () => window.removeEventListener('ngo:settings-updated', handleSettingsUpdate);
+  }, []);
 
   useEffect(() => {
     async function fetchGallery() {
@@ -68,7 +89,7 @@ export default function Gallery() {
   return (
     <div className="min-h-screen py-8 sm:py-16 px-3 xs:px-4 sm:px-8 relative z-10 max-w-7xl mx-auto space-y-8 sm:space-y-10">
       {/* Header */}
-      <div data-ngo-section="gallery-header" className="text-center space-y-3 max-w-2xl mx-auto animate-fade-in-up relative">
+      <div data-ngo-section="gallery-header" className="text-center space-y-3 max-w-3xl mx-auto animate-fade-in-up relative">
         <SectionEditBadge
           sectionKey="gallery"
           sectionLabel="Manage Gallery in Admin"
@@ -76,14 +97,18 @@ export default function Gallery() {
           position="top-0 right-0 sm:right-4"
         />
 
-        <span className="glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-          Sacred Photo Archives
-        </span>
+        <div className="inline-flex items-center gap-1.5 glow-pill-gold px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+          <span>{liveSettings.gallery_hero_eyebrow || 'Sacred Photo Archives'}</span>
+          {liveSettings.gallery_hero_tibetan && (
+            <span className="font-serif ml-1 opacity-90">{liveSettings.gallery_hero_tibetan}</span>
+          )}
+        </div>
         <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-5xl text-[#0F172A] tracking-wide break-words">
-          Monastery Photo & Video Gallery
+          {liveSettings.gallery_hero_title || 'Monastery Photo & Video Gallery'}
         </h1>
-        <p className="text-xs sm:text-sm text-gray-600 font-light leading-relaxed">
-          Witness the sacred construction of the Great Druk Wangyel Peace Stupa, Shedra monastic student life, and sacred ceremonies in Gelephu, Bhutan.
+        <p className="text-xs sm:text-sm text-gray-600 font-light leading-relaxed max-w-2xl mx-auto">
+          {liveSettings.gallery_hero_subtitle ||
+            'Witness the sacred construction of the Great Druk Wangyel Peace Stupa, Shedra monastic student life, and sacred ceremonies in Gelephu, Bhutan.'}
         </p>
       </div>
 

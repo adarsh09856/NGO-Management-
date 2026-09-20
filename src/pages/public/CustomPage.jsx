@@ -242,30 +242,54 @@ export default function CustomPage() {
       </header>
 
       {/* Main Page Body */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 space-y-12">
+      <main className="max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 space-y-10 sm:space-y-12 min-w-0">
         {/* Narrative Content */}
         {page.content ? (
-          <div className="glass-luxury-card p-6 sm:p-10 rounded-3xl border border-[#D4AF37]/20 shadow-xl bg-white/90 backdrop-blur-sm">
-            <div className="prose prose-slate prose-lg max-w-none text-gray-700 leading-relaxed font-serif whitespace-pre-line">
+          <div className="relative group glass-luxury-card p-5 sm:p-8 md:p-10 rounded-3xl border border-[#D4AF37]/20 shadow-xl bg-white/90 backdrop-blur-sm min-w-0">
+            {isAuthorized && (
+              <SectionEditBadge
+                sectionKey="custom-page"
+                label="Edit Page Narrative"
+                customPageData={page}
+                position="top-3 right-3 sm:top-4 sm:right-4"
+              />
+            )}
+            <div className="prose prose-slate prose-base sm:prose-lg max-w-none text-gray-700 leading-relaxed font-serif whitespace-pre-line break-words">
               {page.content}
             </div>
           </div>
         ) : (
-          <div className="text-center py-12 text-gray-500 font-serif italic">
-            This consecrated page has no narrative text yet.
+          <div className="relative group text-center py-12 text-gray-500 font-serif italic border border-dashed border-[#D4AF37]/30 rounded-2xl bg-white/50">
+            {isAuthorized && (
+              <SectionEditBadge
+                sectionKey="custom-page"
+                label="Add Narrative Content"
+                customPageData={page}
+                position="top-3 right-3"
+              />
+            )}
+            This consecrated page has no narrative text yet. Click above to add sacred narrative.
           </div>
         )}
 
         {/* Playable Video Section */}
         {page.video_url && videoEmbed && (
-          <section className="space-y-3">
+          <section className="relative group space-y-3 min-w-0">
+            {isAuthorized && (
+              <SectionEditBadge
+                sectionKey="custom-page"
+                label="Edit Video Discourse"
+                customPageData={page}
+                position="top-0 right-0"
+              />
+            )}
             <div className="flex items-center gap-2">
               <Play className="w-4 h-4 text-[#721C24]" />
-              <h2 className="font-editorial text-xl font-bold text-[#1A0B0E]">
+              <h2 className="font-editorial text-lg sm:text-xl font-bold text-[#1A0B0E]">
                 Multimedia & Dharma Discourse
               </h2>
             </div>
-            <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-[#D4AF37]/40 bg-black aspect-video">
+            <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-[#D4AF37]/40 bg-black aspect-video w-full">
               {videoEmbed.endsWith('.mp4') || videoEmbed.endsWith('.webm') ? (
                 <video
                   src={videoEmbed}
@@ -287,11 +311,19 @@ export default function CustomPage() {
 
         {/* Consecrated Gallery Section */}
         {gallery.length > 0 && (
-          <section className="space-y-4">
-            <div className="flex items-center justify-between border-b border-[#D4AF37]/30 pb-3">
+          <section className="relative group space-y-4 min-w-0">
+            {isAuthorized && (
+              <SectionEditBadge
+                sectionKey="custom-page"
+                label="Edit Sacred Gallery"
+                customPageData={page}
+                position="top-0 right-0"
+              />
+            )}
+            <div className="flex flex-wrap items-center justify-between border-b border-[#D4AF37]/30 pb-3 gap-2">
               <div className="flex items-center gap-2">
                 <ImageIcon className="w-4 h-4 text-[#721C24]" />
-                <h2 className="font-editorial text-xl font-bold text-[#1A0B0E]">
+                <h2 className="font-editorial text-lg sm:text-xl font-bold text-[#1A0B0E]">
                   Sacred Gallery & Visual Archives
                 </h2>
               </div>
@@ -300,7 +332,7 @@ export default function CustomPage() {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
               {gallery.map((img, idx) => (
                 <div
                   key={idx}
@@ -329,8 +361,16 @@ export default function CustomPage() {
 
         {/* Social Connection Links */}
         {social && Object.keys(social).some((k) => social[k]) && (
-          <section className="p-6 rounded-2xl bg-[#FCFBF9] border border-[#D4AF37]/30 shadow-sm flex flex-wrap items-center justify-between gap-4">
-            <div className="space-y-0.5">
+          <section className="relative group p-5 sm:p-6 rounded-2xl bg-[#FCFBF9] border border-[#D4AF37]/30 shadow-sm flex flex-wrap items-center justify-between gap-4 min-w-0">
+            {isAuthorized && (
+              <SectionEditBadge
+                sectionKey="custom-page"
+                label="Edit Social Links"
+                customPageData={page}
+                position="top-3 right-3"
+              />
+            )}
+            <div className="space-y-0.5 min-w-0 max-w-md">
               <h3 className="font-editorial font-bold text-sm text-[#1A0B0E]">
                 Connect with this Mandate
               </h3>
@@ -344,7 +384,7 @@ export default function CustomPage() {
                   href={social.facebook}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-colors inline-flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-colors inline-flex items-center gap-1.5 whitespace-nowrap"
                 >
                   Facebook
                   <ExternalLink className="w-3 h-3 opacity-80" />
@@ -355,7 +395,7 @@ export default function CustomPage() {
                   href={social.youtube}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition-colors inline-flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition-colors inline-flex items-center gap-1.5 whitespace-nowrap"
                 >
                   YouTube
                   <ExternalLink className="w-3 h-3 opacity-80" />
@@ -366,7 +406,7 @@ export default function CustomPage() {
                   href={social.instagram}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white text-xs font-semibold hover:opacity-90 transition-opacity inline-flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white text-xs font-semibold hover:opacity-90 transition-opacity inline-flex items-center gap-1.5 whitespace-nowrap"
                 >
                   Instagram
                   <ExternalLink className="w-3 h-3 opacity-80" />
@@ -377,7 +417,7 @@ export default function CustomPage() {
                   href={social.twitter}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-semibold hover:bg-black transition-colors inline-flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-semibold hover:bg-black transition-colors inline-flex items-center gap-1.5 whitespace-nowrap"
                 >
                   X (Twitter)
                   <ExternalLink className="w-3 h-3 opacity-80" />
@@ -389,7 +429,15 @@ export default function CustomPage() {
 
         {/* Call To Action Banner */}
         {cta && cta.text && cta.url && (
-          <section className="p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-[#1A0B0E] via-[#4A0E17] to-[#1A0B0E] border-2 border-[#D4AF37]/50 shadow-2xl text-center text-white space-y-4 relative overflow-hidden">
+          <section className="relative group p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-[#1A0B0E] via-[#4A0E17] to-[#1A0B0E] border-2 border-[#D4AF37]/50 shadow-2xl text-center text-white space-y-4 overflow-hidden min-w-0">
+            {isAuthorized && (
+              <SectionEditBadge
+                sectionKey="custom-page"
+                label="Edit Call to Action"
+                customPageData={page}
+                position="top-3 right-3 sm:top-4 sm:right-4"
+              />
+            )}
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none" />
             <span className="text-[#D4AF37] text-xl font-serif">༄༅། །</span>
             <h3 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight">
@@ -403,7 +451,7 @@ export default function CustomPage() {
                 href={cta.url}
                 target={cta.url.startsWith('http') ? '_blank' : '_self'}
                 rel="noreferrer"
-                className="monastic-gold-btn px-8 py-3 rounded-full text-xs uppercase tracking-widest font-bold inline-flex items-center gap-2 shadow-2xl hover:scale-105 transition-transform"
+                className="monastic-gold-btn px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs uppercase tracking-widest font-bold inline-flex items-center gap-2 shadow-2xl hover:scale-105 transition-transform"
               >
                 <span>{cta.text}</span>
                 <ExternalLink className="w-3.5 h-3.5 text-slate-950" />
