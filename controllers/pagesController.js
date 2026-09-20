@@ -45,7 +45,96 @@ async function getPages(req, res, next) {
 
     query += ` ORDER BY id DESC`;
 
-    const [rows] = await pool.query(query, params);
+    let [rows] = await pool.query(query, params);
+
+    // Self-healing auto-seed if custom_pages table is completely empty
+    if (rows.length === 0 && (!category || category === 'All') && (!search || !search.trim())) {
+      const [countCheck] = await pool.query('SELECT COUNT(*) as cnt FROM custom_pages');
+      if (countCheck[0]?.cnt === 0) {
+        const defaultPages = [
+          [
+            'great-druk-wangyel-peace-stupa',
+            '108ft Great Druk Wangyel Peace Stupa',
+            'Sacred Stupa',
+            'Monumental 108ft World Peace Stupa consecrated in Gelephu, Bhutan, housing 108 sacred prayer wheels and rare relics.',
+            '༄༅། །The Great Druk Wangyel Peace Stupa stands as a monumental beacon of global compassion and inner tranquility.\n\nRising 108 feet above the sacred foothills of Gelephu, Bhutan, this architectural jewel was consecrated under the spiritual patronage of the Royal Grandmother and venerated Buddhist masters.\n\nEvery visitor and pilgrim who circumambulates this sacred sanctuary generates boundless merit for the peace, harmony, and longevity of all sentient beings.',
+            'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1600&q=80',
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            JSON.stringify([
+              { url: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800', caption: 'Consecration ceremony of the Great Peace Stupa pinnacle' },
+              { url: 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=800', caption: '108 Bronze Prayer Wheels installed along outer circumambulation path' },
+              { url: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=800', caption: 'Twilight butter lamp offering at the stupa sanctum' }
+            ]),
+            JSON.stringify({ facebook: 'https://facebook.com', youtube: 'https://youtube.com', instagram: '', whatsapp: '' }),
+            JSON.stringify({ label: 'Support Stupa Construction', url: '/donate', style: 'primary' }),
+            '108ft Great Druk Wangyel Peace Stupa · Drodul Phendey Ling',
+            'Discover the historic 108ft Great Druk Wangyel Peace Stupa in Gelephu, Bhutan. Relics, 108 prayer wheels, and global world peace mandate.',
+            'peace stupa, druk wangyel, bhutan monastery, buddhist relics, gelephu',
+            1, 1, 1
+          ],
+          [
+            'shedra-monastic-university',
+            'Shedra Monastic Higher University & Curriculum',
+            'Shedra Academy',
+            '9-year higher Buddhist philosophy degree programs providing full scholarships, residential quarters, and classical debate.',
+            '༄༅། །Drodul Phendey Ling Shedra Monastic Institute provides authentic higher education in the classical Madhyamaka, Prajnaparamita, Abhidharma, Pramana, and Vinaya disciplines.\n\nOver 350 monk scholars undergo intensive daily debate, scriptural memorization, and contemplative practice under qualified Lopons and Khenpos.',
+            'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1600&q=80',
+            null,
+            JSON.stringify([]),
+            JSON.stringify({}),
+            JSON.stringify({ label: 'Shedra Admissions & Scholarships', url: '/shedra', style: 'primary' }),
+            'Shedra Monastic University · Buddhist Higher Education Bhutan',
+            'Explore the 9-year Buddhist philosophy curriculum at Drodul Phendey Ling Shedra Monastic University.',
+            'shedra, buddhist university, monk education, shastras, debate',
+            1, 1, 1
+          ],
+          [
+            'perpetual-butter-lamp-prayers',
+            'Perpetual Butter Lamp Puja & Merit Offerings',
+            'Butter Lamps',
+            'Daily consecration of 108 butter lamps dedicated to all sentient beings for the eradication of darkness and obstacles.',
+            '༄༅། །Lighting a sacred butter lamp represents the illumination of primordial wisdom and the dispelling of the darkness of ignorance.\n\nIn our monastery shrine, butter lamps burn continuously day and night, consecrated by prayers recited for world peace, longevity, and liberation.',
+            'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?auto=format&fit=crop&w=1600&q=80',
+            null,
+            JSON.stringify([]),
+            JSON.stringify({}),
+            JSON.stringify({ label: 'Light 108 Butter Lamps', url: '/prayer-request', style: 'primary' }),
+            'Perpetual Butter Lamp Offerings · Sacred Pujas Bhutan',
+            'Dedicate 108 consecrated butter lamps at Drodul Phendey Ling Monastery for your loved ones.',
+            'butter lamps, puja, buddhist prayers, merit offering',
+            1, 0, 1
+          ],
+          [
+            'monastic-sangha-welfare',
+            'Monastic Sangha Welfare & Healthcare Mandate',
+            'Monastic Heritage',
+            'Ensuring comprehensive healthcare, clean nutrition, robing, and living facilities for young novice monks and senior scholars.',
+            '༄༅། །The preservation of the Buddha Dharma depends fundamentally on the physical and spiritual welfare of the Sangha community.\n\nOur healthcare and sustenance program covers all residential monks with medical insurance, clinic visits, nutritious vegetarian dining, and monastic robes.',
+            'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=80',
+            null,
+            JSON.stringify([]),
+            JSON.stringify({}),
+            JSON.stringify({ label: 'Support Monk Healthcare Fund', url: '/donate', style: 'primary' }),
+            'Monastic Sangha Welfare & Healthcare · Drodul Phendey Ling',
+            'Directly support young monks and scholar healthcare, nutrition, and education in Bhutan.',
+            'monk welfare, sangha health, monastic care, donation',
+            1, 0, 1
+          ]
+        ];
+
+        await pool.query(
+          `INSERT INTO custom_pages (
+            slug, title, category, excerpt, content, banner_url, video_url,
+            gallery_images, social_links, cta_button, seo_title, seo_description, seo_keywords,
+            is_published, show_in_header_nav, show_in_footer_nav
+          ) VALUES ?`,
+          [defaultPages]
+        );
+
+        const [reloaded] = await pool.query(query, params);
+        rows = reloaded;
+      }
+    }
 
     const formatted = rows.map((row) => ({
       ...row,
@@ -222,6 +311,7 @@ async function createPage(req, res, next) {
       message: 'Custom page published successfully.',
       id: newPageId,
       slug: finalSlug,
+      data: { id: newPageId, slug: finalSlug },
     });
   } catch (error) {
     next(error);

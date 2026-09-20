@@ -70,10 +70,14 @@ async function addCommunication(req, res) {
       return res.status(400).json({ success: false, message: 'Communication type and subject are required' });
     }
 
+    let mappedType = commType;
+    if (mappedType === 'phone_call') mappedType = 'phone';
+    if (mappedType === 'meeting') mappedType = 'in_person_meeting';
+
     const [result] = await pool.query(
       `INSERT INTO contact_communications (contact_id, comm_type, subject, notes, scheduled_followup_date, followup_status, created_by)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [id, commType, subject, notes || null, scheduledFollowupDate || null, followupStatus, req.user ? req.user.id : null]
+      [id, mappedType, subject, notes || null, scheduledFollowupDate || null, followupStatus, req.user ? req.user.id : null]
     );
 
     await pool.query(`UPDATE contacts SET last_contact_date = CURDATE() WHERE id = ?`, [id]);

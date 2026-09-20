@@ -103,6 +103,7 @@ router.delete('/blog/:id', authenticateToken, requirePermissionOrRole('cms:blog'
 // 3.1. DYNAMIC CUSTOM PAGES (Public & Admin)
 // ==========================================
 router.get('/pages', optionalAuth, pagesCtrl.getPages);
+router.get('/pages/by-slug/:slug', optionalAuth, pagesCtrl.getPageBySlug);
 router.get('/pages/:slug', optionalAuth, pagesCtrl.getPageBySlug);
 router.post('/pages', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin', 'staff'), pagesCtrl.createPage);
 router.put('/pages/:id', authenticateToken, requirePermissionOrRole('cms:manage', 'super_admin', 'admin', 'staff'), pagesCtrl.updatePage);

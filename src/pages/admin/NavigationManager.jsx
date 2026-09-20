@@ -40,7 +40,7 @@ export default function NavigationManager() {
     try {
       setLoading(true);
       const [navRes, pagesRes] = await Promise.all([
-        api.get('/navigation'),
+        api.get('/navigation?all=true'),
         api.get('/pages?all=true')
       ]);
 

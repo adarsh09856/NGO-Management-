@@ -3,11 +3,57 @@ const { pool } = require('../config/db');
 // 1. GET STRUCTURED NAVIGATION (Public & Admin)
 async function getNavigation(req, res, next) {
   try {
-    const [rows] = await pool.query(
+    const showAll = req.query.all === 'true';
+
+    let [allRows] = await pool.query(
+      `SELECT * FROM navigation_items ORDER BY menu_location ASC, sort_order ASC, id ASC`
+    );
+
+    // Self-healing auto-seed if table is empty
+    if (allRows.length === 0) {
+      const defaultSeeds = [
+        ['header', 'Home', '/', 0, 0, 1, 1],
+        ['header', 'About Us', '/about', 0, 0, 2, 1],
+        ['header', 'Shedra Academy', '/shedra', 0, 0, 3, 1],
+        ['header', 'Butter Lamps & Prayers', '/prayer-request', 0, 0, 4, 1],
+        ['header', 'Dharma LMS', '/learning', 0, 0, 5, 1],
+        ['header', 'Sacred Gazette', '/blog', 0, 0, 6, 1],
+        ['header', 'Photo Archives', '/gallery', 0, 0, 7, 1],
+        ['header', 'Secretariat & Contact', '/contact', 0, 0, 8, 1],
+
+        ['footer_programs', '108ft Peace Stupa', '/about', 0, 0, 1, 1],
+        ['footer_programs', 'Shedra Monastic Academy', '/shedra', 0, 0, 2, 1],
+        ['footer_programs', 'Butter Lamp Illuminations', '/prayer-request', 0, 0, 3, 1],
+        ['footer_programs', 'Dharma LMS Video Hub', '/learning', 0, 0, 4, 1],
+
+        ['footer_about', 'Sacred Mandate & Abbot', '/about', 0, 0, 1, 1],
+        ['footer_about', 'Tax Exemption & 80G', '/donate', 0, 0, 2, 1],
+        ['footer_about', 'Monastic Photo Archives', '/gallery', 0, 0, 3, 1],
+        ['footer_about', 'Track Offering (UTR)', '/tracking', 0, 0, 4, 1],
+
+        ['footer_legal', 'Terms of Consecration', '/contact', 0, 0, 1, 1],
+        ['footer_legal', 'Donor Privacy Policy', '/contact', 0, 0, 2, 1],
+        ['footer_legal', 'Secretariat Verification', '/contact', 0, 0, 3, 1],
+      ];
+
+      await pool.query(
+        `INSERT INTO navigation_items (menu_location, label, url, is_external, target_blank, sort_order, is_active) VALUES ?`,
+        [defaultSeeds]
+      );
+
+      const [reloadedAll] = await pool.query(
+        `SELECT * FROM navigation_items ORDER BY menu_location ASC, sort_order ASC, id ASC`
+      );
+      allRows = reloadedAll;
+    }
+
+    const [activeRows] = await pool.query(
       `SELECT * FROM navigation_items 
        WHERE is_active = 1 
        ORDER BY sort_order ASC, id ASC`
     );
+
+    const sourceRows = showAll ? allRows : activeRows;
 
     const nav = {
       header: [],
@@ -16,7 +62,7 @@ async function getNavigation(req, res, next) {
       footer_legal: [],
     };
 
-    rows.forEach((item) => {
+    sourceRows.forEach((item) => {
       const loc = item.menu_location || 'header';
       if (nav[loc]) {
         nav[loc].push({
@@ -31,11 +77,6 @@ async function getNavigation(req, res, next) {
         });
       }
     });
-
-    // Also return all items flat for the admin manager
-    const [allRows] = await pool.query(
-      `SELECT * FROM navigation_items ORDER BY menu_location ASC, sort_order ASC, id ASC`
-    );
 
     return res.json({
       success: true,
@@ -96,6 +137,7 @@ async function createNavigationItem(req, res, next) {
       success: true,
       message: 'Navigation item added successfully.',
       id: result.insertId,
+      data: { id: result.insertId },
     });
   } catch (error) {
     next(error);
