@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import AdminSidebar from '../../components/AdminSidebar';
 import AdminTopbar from '../../components/AdminTopbar';
+import AdminErrorBoundary from '../../components/admin/AdminErrorBoundary';
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -34,9 +35,11 @@ export default function AdminLayout() {
           breadcrumbs={breadcrumbs}
         />
 
-        {/* Page View Area - fully responsive padding */}
+        {/* Page View Area - protected with error boundary */}
         <main className="flex-1 p-3 sm:p-5 lg:p-7 max-w-7xl w-full mx-auto">
-          <Outlet />
+          <AdminErrorBoundary>
+            <Outlet />
+          </AdminErrorBoundary>
         </main>
 
         {/* Admin Footer */}

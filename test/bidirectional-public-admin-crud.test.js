@@ -514,7 +514,7 @@ async function runBidirectionalTests() {
 
     // [C.2] Store & Inventory: Create Item -> Stock-In -> Stock-Out -> Transactions
     console.log('\n[C.2] Store Inventory CRUD:');
-    const itmCode = `ITM-E2E-${Date.now().toString().slice(-4)}`;
+    const itmCode = `ITM-E2E-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const itemRes = await axios.post(`${baseURL}/inventory/items`, {
       itemCode: itmCode,
       name: 'Tibetan Meditation Cushions (Zafu)',

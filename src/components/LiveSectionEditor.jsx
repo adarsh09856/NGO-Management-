@@ -400,7 +400,7 @@ export default function LiveSectionEditor({
       studio: '/admin/site-settings#footer',
       hasActions: true,
       hasMedia: false,
-      hasCards: false
+      hasCards: true
     },
     contact: {
       title: 'Monastery Secretariat & Contact Info',
@@ -1083,38 +1083,176 @@ export default function LiveSectionEditor({
 
                     {/* SECTION: FOOTER */}
                     {sectionKey === 'footer' && (
-                      <>
-                        <div>
-                          <label className="block text-xs font-bold text-slate-700 mb-1">Tibetan Ashtamangala Blessing</label>
-                          <input
-                            type="text"
-                            value={form.footer_tibetan_blessing || ''}
-                            onChange={(e) => updateField('footer_tibetan_blessing', e.target.value)}
-                            placeholder="༄༅། །བཀྲ་ཤིས་བདེ་ལེགས་ཕུན་སུམ་ཚོགས།"
-                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
-                          />
+                      <div className="space-y-4">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Configure all public footer settings: mandate summary, statutory tax exemption, Ashtamangala symbol accent bar, secretariat contact details, and newsletter dispatches.
                         </div>
-                        <div>
-                          <label className="block text-xs font-bold text-slate-700 mb-1">Footer Monastic Summary</label>
-                          <textarea
-                            rows={3}
-                            value={form.footer_description || ''}
-                            onChange={(e) => updateField('footer_description', e.target.value)}
-                            placeholder="Registered Religious Organization (ROB) in the Kingdom of Bhutan dedicated to the preservation of Buddhist heritage..."
-                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed"
-                          />
+
+                        {/* 1. Monastery Mandate & Blessing */}
+                        <div className="space-y-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                          <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                            1. Monastic Mission & Inscription
+                          </span>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">
+                              Tibetan Ashtamangala Blessing Script
+                            </label>
+                            <input
+                              type="text"
+                              value={form.footer_tibetan_blessing || ''}
+                              onChange={(e) => updateField('footer_tibetan_blessing', e.target.value)}
+                              placeholder="༄༅། །བཀྲ་ཤིས་བདེ་ལེགས་ཕུན་སུམ་ཚོགས།"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-tibetan"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">
+                              Foundation Mandate Summary Description
+                            </label>
+                            <textarea
+                              rows={3}
+                              value={form.footer_description || ''}
+                              onChange={(e) => updateField('footer_description', e.target.value)}
+                              placeholder="Registered Buddhist charitable foundation dedicated to constructing the 108ft Great Druk Wangyel Peace Stupa..."
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">
+                              Copyright Notice
+                            </label>
+                            <input
+                              type="text"
+                              value={form.footer_copyright || ''}
+                              onChange={(e) => updateField('footer_copyright', e.target.value)}
+                              placeholder="© 2026 Drodul Phendey Ling Foundation · All Rights Reserved"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-xs font-bold text-slate-700 mb-1">Copyright Line</label>
-                          <input
-                            type="text"
-                            value={form.footer_copyright || ''}
-                            onChange={(e) => updateField('footer_copyright', e.target.value)}
-                            placeholder="© 2026 Drodul Phendey Ling Foundation · All Rights Reserved"
-                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
-                          />
+
+                        {/* 2. Statutory Charity & 80G Tax Exemption */}
+                        <div className="space-y-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                          <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                            2. Statutory Charity Registration & 80G Tax Exemption
+                          </span>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-bold text-slate-700 mb-1">
+                                Charity Badge Title
+                              </label>
+                              <input
+                                type="text"
+                                value={form.footer_charity_title || ''}
+                                onChange={(e) => updateField('footer_charity_title', e.target.value)}
+                                placeholder="Kingdom of Bhutan Registered Charity"
+                                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold text-slate-700 mb-1">
+                                ROB Registration & Tax Status
+                              </label>
+                              <input
+                                type="text"
+                                value={form.footer_charity_reg || ''}
+                                onChange={(e) => updateField('footer_charity_reg', e.target.value)}
+                                placeholder="ROB Reg: ROB/CP-04/2021 · 100% Tax Deductible"
+                                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">
+                              Eight Auspicious Symbols (Ashtamangala) Accent Bar
+                            </label>
+                            <select
+                              value={form.footer_show_ashtamangala || 'true'}
+                              onChange={(e) => updateField('footer_show_ashtamangala', e.target.value)}
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold"
+                            >
+                              <option value="true">Visible (Display 8 Golden Auspicious Symbols ☸ 🪷 ♾ 🏺 🎏 🚩 ☂ 🐚)</option>
+                              <option value="false">Hidden (Do not display accent bar)</option>
+                            </select>
+                          </div>
                         </div>
-                      </>
+
+                        {/* 3. Dharma Dispatches Newsletter */}
+                        <div className="space-y-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                          <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                            3. Dharma Dispatches Newsletter
+                          </span>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">
+                              Newsletter Section Title
+                            </label>
+                            <input
+                              type="text"
+                              value={form.footer_newsletter_title || ''}
+                              onChange={(e) => updateField('footer_newsletter_title', e.target.value)}
+                              placeholder="Dharma Dispatches"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">
+                              Newsletter Description Subtext
+                            </label>
+                            <textarea
+                              rows={2}
+                              value={form.footer_newsletter_desc || ''}
+                              onChange={(e) => updateField('footer_newsletter_desc', e.target.value)}
+                              placeholder="Receive auspicious lunar calendar notices, puja live-stream links, and stupa construction reports directly in your inbox."
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                        </div>
+
+                        {/* 4. Secretariat Contact Details */}
+                        <div className="space-y-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                          <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                            4. Official Secretariat Contact Info
+                          </span>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">
+                              Secretariat Campus Address
+                            </label>
+                            <input
+                              type="text"
+                              value={form.contact_address || ''}
+                              onChange={(e) => updateField('contact_address', e.target.value)}
+                              placeholder="Gelephu, Sarpang Dzongkhag, Bhutan"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-bold text-slate-700 mb-1">
+                                Helpline Phone Number
+                              </label>
+                              <input
+                                type="text"
+                                value={form.contact_phone || ''}
+                                onChange={(e) => updateField('contact_phone', e.target.value)}
+                                placeholder="+975 17556559"
+                                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold text-slate-700 mb-1">
+                                Official Email Address
+                              </label>
+                              <input
+                                type="email"
+                                value={form.contact_email || ''}
+                                onChange={(e) => updateField('contact_email', e.target.value)}
+                                placeholder="contact@drodulphendeyling.org"
+                                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     )}
 
                     {/* SECTION: CONTACT */}
@@ -1716,6 +1854,68 @@ export default function LiveSectionEditor({
                         </div>
                       </div>
                     )}
+
+                    {/* SECTION: FOOTER ACTIONS & NAVIGATION */}
+                    {sectionKey === 'footer' && (
+                      <div className="space-y-4">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Manage footer navigation columns and public legal links.
+                        </div>
+
+                        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
+                          <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                            Dynamic Footer Program Columns
+                          </span>
+                          <p className="text-xs text-slate-600 leading-relaxed">
+                            The footer displays dynamic column menus (Sacred Programs, Devotee Portals, etc.) managed centrally in the Navigation Studio.
+                          </p>
+                          <Link
+                            to="/admin/navigation"
+                            onClick={onClose}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#721C24] hover:bg-[#8B2E24] text-white text-xs font-bold transition-colors shadow-xs cursor-pointer"
+                          >
+                            <span>Open Navigation Studio</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </Link>
+                        </div>
+
+                        <div className="space-y-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                          <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                            Legal & Policy Link Targets
+                          </span>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Privacy Policy Link Target</label>
+                            <input
+                              type="text"
+                              value={form.footer_privacy_url || ''}
+                              onChange={(e) => updateField('footer_privacy_url', e.target.value)}
+                              placeholder="/about"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Terms of Dana Link Target</label>
+                            <input
+                              type="text"
+                              value={form.footer_terms_url || ''}
+                              onChange={(e) => updateField('footer_terms_url', e.target.value)}
+                              placeholder="/about"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Contact Office Link Target</label>
+                            <input
+                              type="text"
+                              value={form.footer_contact_url || ''}
+                              onChange={(e) => updateField('footer_contact_url', e.target.value)}
+                              placeholder="/contact"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -2288,6 +2488,72 @@ export default function LiveSectionEditor({
                             placeholder="Recitations for swift recovery..."
                             className="w-full text-xs p-2 rounded-lg border border-slate-200"
                           />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: FOOTER ASHTAMANGALA SYMBOLS & PREVIEW */}
+                    {sectionKey === 'footer' && (
+                      <div className="space-y-4">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Eight Auspicious Symbols (Ashtamangala / བཀྲ་ཤིས་རྟགས་བརྒྱད) sacred visual preview.
+                        </div>
+
+                        <div className="p-4 rounded-xl bg-slate-900 text-white border border-[#D4AF37]/40 space-y-3">
+                          <div className="flex items-center justify-between border-b border-[#D4AF37]/20 pb-2">
+                            <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+                              Auspicious Accent Bar Preview
+                            </span>
+                            <span className="text-[10px] text-gray-400 font-tibetan">
+                              བཀྲ་ཤིས་རྟགས་བརྒྱད།
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-around py-3 text-2xl text-[#D4AF37] bg-black/40 rounded-xl border border-[#D4AF37]/20 select-none">
+                            <span title="☸ Dharmachakra (Wheel of Law)">☸</span>
+                            <span title="🪷 Padma (Lotus of Purity)">🪷</span>
+                            <span title="♾ Shrivatsa (Endless Knot)">♾</span>
+                            <span title="🏺 Kalasha (Treasure Vase)">🏺</span>
+                            <span title="🎏 Matsyayugma (Golden Fishes)">🎏</span>
+                            <span title="🚩 Dhvaja (Victory Banner)">🚩</span>
+                            <span title="☂ Chatra (Parasol)">☂</span>
+                            <span title="🐚 Shankha (Conch Shell)">🐚</span>
+                          </div>
+
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 text-[10px] text-gray-300 font-light">
+                            <div className="p-2 rounded-lg bg-white/5 border border-white/5">
+                              <strong className="text-[#D4AF37] block font-medium">☸ Dharmachakra</strong>
+                              <span>Buddha's teaching</span>
+                            </div>
+                            <div className="p-2 rounded-lg bg-white/5 border border-white/5">
+                              <strong className="text-[#D4AF37] block font-medium">🪷 Lotus</strong>
+                              <span>Spiritual purity</span>
+                            </div>
+                            <div className="p-2 rounded-lg bg-white/5 border border-white/5">
+                              <strong className="text-[#D4AF37] block font-medium">♾ Endless Knot</strong>
+                              <span>Interdependence</span>
+                            </div>
+                            <div className="p-2 rounded-lg bg-white/5 border border-white/5">
+                              <strong className="text-[#D4AF37] block font-medium">🏺 Treasure Vase</strong>
+                              <span>Spiritual abundance</span>
+                            </div>
+                            <div className="p-2 rounded-lg bg-white/5 border border-white/5">
+                              <strong className="text-[#D4AF37] block font-medium">🎏 Golden Fishes</strong>
+                              <span>Liberation & joy</span>
+                            </div>
+                            <div className="p-2 rounded-lg bg-white/5 border border-white/5">
+                              <strong className="text-[#D4AF37] block font-medium">🚩 Victory Banner</strong>
+                              <span>Triumph over delusions</span>
+                            </div>
+                            <div className="p-2 rounded-lg bg-white/5 border border-white/5">
+                              <strong className="text-[#D4AF37] block font-medium">☂ Parasol</strong>
+                              <span>Sacred protection</span>
+                            </div>
+                            <div className="p-2 rounded-lg bg-white/5 border border-white/5">
+                              <strong className="text-[#D4AF37] block font-medium">🐚 Conch Shell</strong>
+                              <span>Call to Dharma</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     )}

@@ -111,12 +111,12 @@ export default function AdminSidebar({ isOpen, onClose }) {
         <nav className="flex-1 overflow-y-auto p-3 space-y-4 text-xs no-scrollbar">
 
           {/* ========================================================= */}
-          {/* CATEGORY 1: WEBSITE & PAGES                               */}
+          {/* CATEGORY 1: WEBSITE & CONTENT                             */}
           {/* ========================================================= */}
           <div>
             <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center justify-between">
-              <span>1. Website & Pages</span>
-              <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-[#D4AF37] font-bold tracking-wider">CMS</span>
+              <span>1. Website & Content</span>
+              <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-[#D4AF37] font-bold tracking-wider">Pages</span>
             </div>
             <div className="space-y-0.5">
               {/* Dashboard Overview */}
@@ -266,7 +266,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
           {(isSuperAdmin || isStaff) && (
             <div>
               <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                2. Stories & Media
+                2. News & Media Library
               </div>
               <div className="space-y-0.5">
                 <Link
@@ -325,12 +325,12 @@ export default function AdminSidebar({ isOpen, onClose }) {
           )}
 
           {/* ========================================================= */}
-          {/* CATEGORY 3: MONASTIC ACADEMY & SANGHA                     */}
+          {/* CATEGORY 3: STUDENTS & MONASTIC SANGHA                    */}
           {/* ========================================================= */}
           {(isSuperAdmin || isStaff) && (
             <div>
               <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                3. Monastic Academy & Sangha
+                3. Students & Monastic Sangha
               </div>
               <div className="space-y-0.5">
                 <Link
@@ -390,12 +390,12 @@ export default function AdminSidebar({ isOpen, onClose }) {
           )}
 
           {/* ========================================================= */}
-          {/* CATEGORY 4: DONATIONS & TREASURY                          */}
+          {/* CATEGORY 4: DONATIONS & BANK APPROVALS                    */}
           {/* ========================================================= */}
           {(isSuperAdmin || isAccountant) && (
             <div>
               <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                4. Donations & Treasury
+                4. Donations & Bank Approvals
               </div>
               <div className="space-y-0.5">
                 <Link
@@ -508,7 +508,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
           {/* ========================================================= */}
           <div>
             <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-              5. Settings & Governance
+              5. Site Settings & Governance
             </div>
             <div className="space-y-0.5">
               <Link
@@ -521,7 +521,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                 }`}
               >
                 <Sliders className="w-4 h-4 text-[#D4AF37]" />
-                <span className="flex-1">Global Site Details</span>
+                <span className="flex-1">Website Contact & Footer Settings</span>
               </Link>
 
               <Link
@@ -534,7 +534,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                 }`}
               >
                 <HeartHandshake className="w-4 h-4 text-[#D4AF37]" />
-                <span className="flex-1">Legal &amp; Statutory Policies</span>
+                <span className="flex-1">Statutory & Tax Exemption Settings</span>
               </Link>
 
               <Link
@@ -547,7 +547,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                 }`}
               >
                 <MessageSquareShare className="w-4 h-4 text-[#D4AF37]" />
-                <span className="flex-1">Devotee Inquiries & CRM</span>
+                <span className="flex-1">Devotee Messages & Inquiries</span>
               </Link>
 
               {isSuperAdmin && (
@@ -561,8 +561,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <UserCog className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Staff User Accounts & Roles</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-semibold uppercase tracking-wider">RBAC</span>
+                  <span className="flex-1">Staff Accounts & Permissions</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-semibold uppercase tracking-wider">Access</span>
                 </Link>
               )}
 
@@ -577,7 +577,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <Settings className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">System Settings & Audit Logs</span>
+                  <span className="flex-1">System Logs & Audit Trail</span>
                 </Link>
               )}
 
@@ -589,7 +589,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
               >
                 <div className="flex items-center space-x-2">
                   <Warehouse className="w-3.5 h-3.5 text-gray-400" />
-                  <span className="text-[11px]">Operations & Inventory</span>
+                  <span className="text-[11px]">Staff, Payroll & Supplies</span>
                 </div>
                 <ChevronDown
                   className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${

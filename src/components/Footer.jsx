@@ -12,7 +12,18 @@ export default function Footer({ onOpenDonate }) {
   const [liveSettings, setLiveSettings] = useState({
     footer_copyright: '© 2026 Drodul Phendey Ling Foundation · All Rights Reserved',
     contact_address: 'Gelephu, Sarpang Dzongkhag, Bhutan',
-    contact_phone: '+975 17556559'
+    contact_phone: '+975 17556559',
+    contact_email: 'contact@drodulphendeyling.org',
+    footer_description: 'Registered Buddhist charitable foundation dedicated to constructing the 108ft Great Druk Wangyel Peace Stupa, expanding the Shedra Monastic University, and preserving authentic Buddha Dharma for global peace.',
+    footer_charity_title: 'Kingdom of Bhutan Registered Charity',
+    footer_charity_reg: 'ROB Reg: ROB/CP-04/2021 · 100% Tax Deductible',
+    footer_show_ashtamangala: 'true',
+    footer_newsletter_title: 'Dharma Dispatches',
+    footer_newsletter_desc: 'Receive auspicious lunar calendar notices, puja live-stream links, and stupa construction reports directly in your inbox.',
+    footer_tibetan_blessing: '༄༅། །བཀྲ་ཤིས་བདེ་ལེགས་ཕུན་སུམ་ཚོགས།',
+    footer_privacy_url: '/about',
+    footer_terms_url: '/about',
+    footer_contact_url: '/contact'
   });
 
   const openLiveEditor = (sec = 'footer') => {
@@ -74,16 +85,18 @@ export default function Footer({ onOpenDonate }) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-12">
         {/* 1. Eight Auspicious Symbols (Ashtamangala) Accent Bar */}
-        <div className="flex items-center justify-center gap-4 sm:gap-8 pb-8 border-b border-[#D4AF37]/20 text-[#D4AF37]/80 text-xl sm:text-2xl select-none overflow-x-auto no-scrollbar py-2">
-          <span className="hover:scale-125 transition-transform cursor-default" title="Dharmachakra (Wheel of Dharma)">☸</span>
-          <span className="hover:scale-125 transition-transform cursor-default" title="Lotus Flower (Purity)">🪷</span>
-          <span className="hover:scale-125 transition-transform cursor-default" title="Endless Knot (Interdependence)">♾</span>
-          <span className="hover:scale-125 transition-transform cursor-default" title="Treasure Vase (Abundance)">🏺</span>
-          <span className="hover:scale-125 transition-transform cursor-default" title="Golden Fishes (Liberation)">🎏</span>
-          <span className="hover:scale-125 transition-transform cursor-default" title="Victory Banner (Enlightenment)">🚩</span>
-          <span className="hover:scale-125 transition-transform cursor-default" title="Parasol (Protection)">☂</span>
-          <span className="hover:scale-125 transition-transform cursor-default" title="Conch Shell (Call to Dharma)">🐚</span>
-        </div>
+        {liveSettings.footer_show_ashtamangala !== 'false' && (
+          <div className="flex items-center justify-center gap-4 sm:gap-8 pb-8 border-b border-[#D4AF37]/20 text-[#D4AF37]/80 text-xl sm:text-2xl select-none overflow-x-auto no-scrollbar py-2">
+            <span className="hover:scale-125 transition-transform cursor-default" title="Dharmachakra (Wheel of Dharma)">☸</span>
+            <span className="hover:scale-125 transition-transform cursor-default" title="Lotus Flower (Purity)">🪷</span>
+            <span className="hover:scale-125 transition-transform cursor-default" title="Endless Knot (Interdependence)">♾</span>
+            <span className="hover:scale-125 transition-transform cursor-default" title="Treasure Vase (Abundance)">🏺</span>
+            <span className="hover:scale-125 transition-transform cursor-default" title="Golden Fishes (Liberation)">🎏</span>
+            <span className="hover:scale-125 transition-transform cursor-default" title="Victory Banner (Enlightenment)">🚩</span>
+            <span className="hover:scale-125 transition-transform cursor-default" title="Parasol (Protection)">☂</span>
+            <span className="hover:scale-125 transition-transform cursor-default" title="Conch Shell (Call to Dharma)">🐚</span>
+          </div>
+        )}
 
         {/* 2. Main 4-Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
@@ -98,21 +111,23 @@ export default function Footer({ onOpenDonate }) {
                   DRODUL PHENDEY LING
                 </h3>
                 <p className="text-[10px] text-[#D4AF37] font-semibold uppercase tracking-widest font-tibetan">
-                  ༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པ།
+                  {liveSettings.footer_tibetan_blessing || '༄༅། །དྲོ་བདུལ་ཕན་བདེ་གླིང་དགོན་པ།'}
                 </p>
               </div>
             </div>
 
             <p className="text-xs text-gray-400 leading-relaxed font-light">
-              Registered Buddhist charitable foundation dedicated to constructing the 108ft Great Druk Wangyel Peace Stupa, expanding the Shedra Monastic University, and preserving authentic Buddha Dharma for global peace.
+              {liveSettings.footer_description || 'Registered Buddhist charitable foundation dedicated to constructing the 108ft Great Druk Wangyel Peace Stupa, expanding the Shedra Monastic University, and preserving authentic Buddha Dharma for global peace.'}
             </p>
 
             <div className="p-3 bg-white/5 backdrop-blur-md rounded-xl border border-[#D4AF37]/30 text-[11px] text-gray-300 space-y-1">
               <p className="text-[#D4AF37] font-semibold flex items-center gap-1.5">
                 <Shield className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                <span>Kingdom of Bhutan Registered Charity</span>
+                <span>{liveSettings.footer_charity_title || 'Kingdom of Bhutan Registered Charity'}</span>
               </p>
-              <p className="font-mono text-[10px] text-gray-400">ROB Reg: ROB/CP-04/2021 · 100% Tax Deductible</p>
+              <p className="font-mono text-[10px] text-gray-400">
+                {liveSettings.footer_charity_reg || 'ROB Reg: ROB/CP-04/2021 · 100% Tax Deductible'}
+              </p>
             </div>
           </div>
 
