@@ -4,7 +4,7 @@ import {
   Globe, Layout, Sparkles, Heart, Flame, GraduationCap, Video,
   Image, Newspaper, Phone, ExternalLink, Edit3, CheckCircle2, ChevronRight,
   Plus, Search, Trash2, Eye, Compass, X, Save, AlertCircle, Loader2,
-  Share2, ShieldCheck
+  Share2, ShieldCheck, ClipboardList, ChevronDown, ChevronsUpDown
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
@@ -18,6 +18,21 @@ export default function PagesDirectory() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [directoryTab, setDirectoryTab] = useState('all');
+
+  // Collapsible List View Sections
+  const [coreStudiosOpen, setCoreStudiosOpen] = useState(true);
+  const [customPagesOpen, setCustomPagesOpen] = useState(true);
+
+  const allDirectoryCollapsed = !coreStudiosOpen && !customPagesOpen;
+  const toggleDirectoryCollapseAll = () => {
+    if (allDirectoryCollapsed) {
+      setCoreStudiosOpen(true);
+      setCustomPagesOpen(true);
+    } else {
+      setCoreStudiosOpen(false);
+      setCustomPagesOpen(false);
+    }
+  };
 
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
@@ -165,7 +180,7 @@ export default function PagesDirectory() {
     return matchesSearch && matchesCategory;
   });
 
-  // Core Monastic Studios
+  // Core Monastic Studios (All 11 Foundational Pages & Modules)
   const coreStudios = [
     {
       id: 'home',
@@ -214,8 +229,48 @@ export default function PagesDirectory() {
       route: '/donate',
       studioUrl: '/admin/donate-settings',
       icon: Heart,
-      sectionsCount: 3,
-      sections: ['Hero Banner', 'Active Causes', 'Official Bank Wire & 80G'],
+      sectionsCount: 4,
+      sections: ['Hero Banner', 'Active Causes', 'Official Bank Wire', '80G Tax Exemption'],
+    },
+    {
+      id: 'learning',
+      name: 'Dharma LMS & Video Teachings',
+      tibetan: 'ཆོས་སློབ།',
+      route: '/learning',
+      studioUrl: '/admin/learning',
+      icon: Video,
+      sectionsCount: 2,
+      sections: ['Dharma LMS Hero', 'Video Lectures Archive'],
+    },
+    {
+      id: 'blog',
+      name: 'Sacred Gazette & Articles',
+      tibetan: 'གསར་དེབ།',
+      route: '/blog',
+      studioUrl: '/admin/blog',
+      icon: Newspaper,
+      sectionsCount: 2,
+      sections: ['Gazette Hero Banner', 'Articles & Publications'],
+    },
+    {
+      id: 'news',
+      name: 'Monastery News & Ceremonies',
+      tibetan: 'གསར་འགྱུར།',
+      route: '/news-events',
+      studioUrl: '/admin/prayer-requests?tab=news',
+      icon: ClipboardList,
+      sectionsCount: 2,
+      sections: ['Ceremonies Hero', 'Upcoming Rituals & Events'],
+    },
+    {
+      id: 'gallery',
+      name: 'Sacred Photo Gallery & Archives',
+      tibetan: 'སྐུ་པར།',
+      route: '/gallery',
+      studioUrl: '/admin/gallery',
+      icon: Image,
+      sectionsCount: 2,
+      sections: ['Sacred Media Hero', 'Consecrated Photo Archive'],
     },
     {
       id: 'contact',
@@ -226,6 +281,16 @@ export default function PagesDirectory() {
       icon: Phone,
       sectionsCount: 4,
       sections: ['Hero & Inscription', 'Secretariat Seat Address', 'Department Directory', 'Visiting Hours & Map'],
+    },
+    {
+      id: 'footer',
+      name: 'Footer & Ashtamangala Legal',
+      tibetan: 'མཇུག་བྱང་།',
+      route: '/#footer',
+      studioUrl: '/admin/site-settings#footer',
+      icon: ShieldCheck,
+      sectionsCount: 3,
+      sections: ['Ashtamangala Accent Bar', 'Charity & 80G Governance', 'Dharma Dispatches'],
     },
   ];
 
@@ -382,14 +447,26 @@ export default function PagesDirectory() {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={handleOpenCreate}
-              className="px-3.5 py-1.5 rounded-xl bg-[#D4AF37] hover:bg-[#b89528] text-[#0F172A] text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>+ Add Custom Page</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={toggleDirectoryCollapseAll}
+                className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border border-slate-300 shadow-2xs"
+                title={allDirectoryCollapsed ? 'Expand all sections in directory' : 'Collapse all sections in directory'}
+              >
+                <ChevronsUpDown className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>{allDirectoryCollapsed ? 'Expand All' : 'Collapse All'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleOpenCreate}
+                className="px-3.5 py-1.5 rounded-xl bg-[#D4AF37] hover:bg-[#b89528] text-[#0F172A] text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>+ Add Custom Page</span>
+              </button>
+            </div>
           </div>
 
           <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
@@ -405,8 +482,31 @@ export default function PagesDirectory() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 font-medium">
+                  {/* Group 1 Header: Core Monastic Studios */}
+                  <tr className="bg-slate-100/95 border-t border-b border-slate-200">
+                    <td colSpan={5} className="px-4 py-2.5">
+                      <button
+                        type="button"
+                        onClick={() => setCoreStudiosOpen(!coreStudiosOpen)}
+                        className="w-full flex items-center justify-between text-xs font-bold text-slate-800 hover:text-[#8B2E24] cursor-pointer transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Layout className="w-4 h-4 text-[#D4AF37]" />
+                          <span className="font-serif-brand tracking-wide">Core Monastic Studios</span>
+                          <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 font-semibold">
+                            {filteredCoreStudios.length} Foundational Pages
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-semibold">
+                          <span>{coreStudiosOpen ? 'Collapse' : 'Expand'}</span>
+                          <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${coreStudiosOpen ? 'transform rotate-180 text-[#D4AF37]' : ''}`} />
+                        </div>
+                      </button>
+                    </td>
+                  </tr>
+
                   {/* Core Studios Rows */}
-                  {filteredCoreStudios.map((studio) => {
+                  {coreStudiosOpen && filteredCoreStudios.map((studio) => {
                     const Icon = studio.icon || Layout;
                     return (
                       <tr key={`core-${studio.id}`} className="hover:bg-amber-50/30 transition-colors">
@@ -475,8 +575,31 @@ export default function PagesDirectory() {
                     );
                   })}
 
+                  {/* Group 2 Header: Bespoke Custom Chronicles */}
+                  <tr className="bg-slate-100/95 border-t border-b border-slate-200">
+                    <td colSpan={5} className="px-4 py-2.5">
+                      <button
+                        type="button"
+                        onClick={() => setCustomPagesOpen(!customPagesOpen)}
+                        className="w-full flex items-center justify-between text-xs font-bold text-slate-800 hover:text-[#8B2E24] cursor-pointer transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-amber-600" />
+                          <span className="font-serif-brand tracking-wide">Bespoke Dynamic Chronicles</span>
+                          <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-semibold">
+                            {filteredPages.length} Custom Pages
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-semibold">
+                          <span>{customPagesOpen ? 'Collapse' : 'Expand'}</span>
+                          <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${customPagesOpen ? 'transform rotate-180 text-[#D4AF37]' : ''}`} />
+                        </div>
+                      </button>
+                    </td>
+                  </tr>
+
                   {/* Dynamic Custom Pages Rows */}
-                  {filteredPages.map((page) => (
+                  {customPagesOpen && filteredPages.map((page) => (
                     <tr key={`custom-${page.id}`} className="hover:bg-gray-50/80 transition-colors">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2.5">
@@ -550,7 +673,7 @@ export default function PagesDirectory() {
                             onClick={() => handleOpenEdit(page)}
                             className="px-2.5 py-1.5 bg-[#8B2E24] hover:bg-[#a0362b] text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer"
                           >
-                            <Edit3 className="w-3.5 h-3.5 text-[#D4AF37]" />
+                            <Edit3 className="w-3.5 h-3.5" />
                             <span>Edit</span>
                           </button>
 

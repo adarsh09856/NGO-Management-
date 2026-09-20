@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   Save, RefreshCw, Sparkles, Image, CheckCircle2, ArrowRight,
   ExternalLink, Sliders, Landmark, GraduationCap, Flame, Globe,
-  Play, BookOpen, ChevronRight, Award, UploadCloud
+  Play, BookOpen, ChevronRight, Award, UploadCloud, Heart, Video
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
