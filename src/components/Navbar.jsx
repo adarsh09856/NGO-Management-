@@ -144,8 +144,8 @@ export default function Navbar({ onOpenDonate }) {
       <PrayerFlagsRibbon />
 
       {/* 1. TOP UTILITY BAR (Deep Monastic Obsidian) */}
-      <div className="bg-[#070A12] text-[#E2E8F0] text-[10px] sm:text-xs py-1.5 px-3 sm:px-8 border-b border-[#D4AF37]/20 relative">
-        <div className="max-w-7xl mx-auto flex justify-between items-center gap-2">
+      <div className="bg-[#070A12] text-[#E2E8F0] text-[10px] sm:text-xs py-1.5 px-3 sm:px-8 border-b border-[#D4AF37]/20 relative overflow-x-auto no-scrollbar">
+        <div className="max-w-7xl mx-auto flex justify-between items-center gap-2 min-w-max sm:min-w-0">
           {/* Left contact info */}
           <div className="flex items-center space-x-3 sm:space-x-6">
             <div className="flex items-center space-x-1.5 text-gray-300 hover:text-[#D4AF37] transition-colors cursor-default">
