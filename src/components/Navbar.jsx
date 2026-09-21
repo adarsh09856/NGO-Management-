@@ -301,57 +301,57 @@ export default function Navbar({ onOpenDonate }) {
 
             {/* Silk Dropdown Card */}
             {activeDropdown === 'activities' && (
-              <div className="absolute top-full left-0 w-72 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-[#D4AF37]/30 p-2 animate-scale-in z-50">
-                <div className="space-y-1 text-xs font-serif">
+              <div className="absolute top-full left-0 w-72 bg-white rounded-2xl shadow-[0_20px_50px_rgba(15,23,42,0.22)] border-2 border-[#D4AF37] p-2.5 animate-scale-in z-50 ring-1 ring-black/5">
+                <div className="space-y-1.5 text-xs font-serif">
                   <Link
                     to="/about"
-                    className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group"
+                    className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group border border-transparent hover:border-[#D4AF37]/30"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-xs">
                       <Landmark className="w-4 h-4" />
                     </div>
-                    <div>
-                      <p className="font-bold text-xs text-[#1A0B0E]">Great Druk Wangyel Peace Stupa</p>
-                      <p className="text-[10px] text-gray-500 font-sans line-clamp-1">108ft sacred monument for world peace</p>
+                    <div className="min-w-0">
+                      <p className="font-bold text-xs text-[#0F172A] group-hover:text-[#721C24] leading-tight">Great Druk Wangyel Peace Stupa</p>
+                      <p className="text-[10.5px] text-gray-600 font-sans line-clamp-1 mt-0.5">108ft sacred monument for world peace</p>
                     </div>
                   </Link>
 
                   <Link
                     to="/shedra"
-                    className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group"
+                    className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group border border-transparent hover:border-[#D4AF37]/30"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-xs">
                       <GraduationCap className="w-4 h-4" />
                     </div>
-                    <div>
-                      <p className="font-bold text-xs text-[#1A0B0E]">Shedra Monastic University</p>
-                      <p className="text-[10px] text-gray-500 font-sans line-clamp-1">9-year higher Buddhist philosophy degrees</p>
+                    <div className="min-w-0">
+                      <p className="font-bold text-xs text-[#0F172A] group-hover:text-[#721C24] leading-tight">Shedra Monastic University</p>
+                      <p className="text-[10.5px] text-gray-600 font-sans line-clamp-1 mt-0.5">9-year higher Buddhist philosophy degrees</p>
                     </div>
                   </Link>
 
                   <Link
                     to="/prayer-request"
-                    className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group"
+                    className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group border border-transparent hover:border-[#D4AF37]/30"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-xs">
                       <Flame className="w-4 h-4" />
                     </div>
-                    <div>
-                      <p className="font-bold text-xs text-[#1A0B0E]">Butter Lamp Offerings</p>
-                      <p className="text-[10px] text-gray-500 font-sans line-clamp-1">Dedicate prayers & merit</p>
+                    <div className="min-w-0">
+                      <p className="font-bold text-xs text-[#0F172A] group-hover:text-[#721C24] leading-tight">Butter Lamp Offerings</p>
+                      <p className="text-[10.5px] text-gray-600 font-sans line-clamp-1 mt-0.5">Dedicate prayers & merit</p>
                     </div>
                   </Link>
 
                   <Link
                     to="/tracking"
-                    className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group"
+                    className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group border border-transparent hover:border-[#D4AF37]/30"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-xs">
                       <Clock className="w-4 h-4" />
                     </div>
-                    <div>
-                      <p className="font-bold text-xs text-[#1A0B0E]">Track Offering Status</p>
-                      <p className="text-[10px] text-gray-500 font-sans line-clamp-1">Live bank & prayer progress</p>
+                    <div className="min-w-0">
+                      <p className="font-bold text-xs text-[#0F172A] group-hover:text-[#721C24] leading-tight">Track Offering Status</p>
+                      <p className="text-[10.5px] text-gray-600 font-sans line-clamp-1 mt-0.5">Live bank & prayer progress</p>
                     </div>
                   </Link>
                 </div>
@@ -420,69 +420,89 @@ export default function Navbar({ onOpenDonate }) {
             </button>
 
             {navMoreOpen && (
-              <div className="absolute right-0 top-full mt-1 w-56 bg-white/98 backdrop-blur-2xl rounded-2xl shadow-2xl border border-[#D4AF37]/30 p-2 z-50 animate-fadeIn space-y-1 text-xs font-serif">
+              <div className="absolute right-0 top-full mt-1 w-72 bg-white rounded-2xl shadow-[0_20px_50px_rgba(15,23,42,0.22)] border-2 border-[#D4AF37] p-2.5 z-50 animate-fadeIn space-y-1.5 text-xs font-serif ring-1 ring-black/5">
                 <Link
                   to="/blog"
                   onClick={() => setNavMoreOpen(false)}
-                  className={`p-2.5 rounded-xl transition-colors flex items-center justify-between group ${
+                  className={`p-2.5 rounded-xl transition-all flex items-center justify-between group border ${
                     isActive('/blog')
-                      ? 'bg-[#FAF5F0] text-[#721C24] font-bold border border-[#D4AF37]/30'
-                      : 'text-gray-800 hover:bg-[#FAF5F0]'
+                      ? 'bg-[#FAF5F0] text-[#721C24] border-[#D4AF37]'
+                      : 'text-gray-800 hover:bg-[#FAF5F0] border-transparent hover:border-[#D4AF37]/30'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className={`w-1.5 h-1.5 rounded-full ${isActive('/blog') ? 'bg-[#721C24]' : 'bg-[#D4AF37]'}`} />
-                    <span>{t.blog}</span>
+                  <div className="flex items-center space-x-3 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-xs">
+                      <Newspaper className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-xs text-[#0F172A] group-hover:text-[#721C24] leading-tight">{t.blog}</p>
+                      <p className="text-[10.5px] text-gray-600 font-sans line-clamp-1 mt-0.5">Sacred articles & teachings</p>
+                    </div>
                   </div>
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#721C24] transition-colors" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#721C24] group-hover:translate-x-0.5 transition-all flex-shrink-0" />
                 </Link>
 
                 <Link
                   to="/gallery"
                   onClick={() => setNavMoreOpen(false)}
-                  className={`p-2.5 rounded-xl transition-colors flex items-center justify-between group ${
+                  className={`p-2.5 rounded-xl transition-all flex items-center justify-between group border ${
                     isActive('/gallery')
-                      ? 'bg-[#FAF5F0] text-[#721C24] font-bold border border-[#D4AF37]/30'
-                      : 'text-gray-800 hover:bg-[#FAF5F0]'
+                      ? 'bg-[#FAF5F0] text-[#721C24] border-[#D4AF37]'
+                      : 'text-gray-800 hover:bg-[#FAF5F0] border-transparent hover:border-[#D4AF37]/30'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className={`w-1.5 h-1.5 rounded-full ${isActive('/gallery') ? 'bg-[#721C24]' : 'bg-[#D4AF37]'}`} />
-                    <span>{t.gallery}</span>
+                  <div className="flex items-center space-x-3 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-xs">
+                      <ImageIcon className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-xs text-[#0F172A] group-hover:text-[#721C24] leading-tight">{t.gallery}</p>
+                      <p className="text-[10.5px] text-gray-600 font-sans line-clamp-1 mt-0.5">Monastery photo archives</p>
+                    </div>
                   </div>
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#721C24] transition-colors" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#721C24] group-hover:translate-x-0.5 transition-all flex-shrink-0" />
                 </Link>
 
                 <Link
                   to="/news-events"
                   onClick={() => setNavMoreOpen(false)}
-                  className={`p-2.5 rounded-xl transition-colors flex items-center justify-between group ${
+                  className={`p-2.5 rounded-xl transition-all flex items-center justify-between group border ${
                     isActive('/news-events')
-                      ? 'bg-[#FAF5F0] text-[#721C24] font-bold border border-[#D4AF37]/30'
-                      : 'text-gray-800 hover:bg-[#FAF5F0]'
+                      ? 'bg-[#FAF5F0] text-[#721C24] border-[#D4AF37]'
+                      : 'text-gray-800 hover:bg-[#FAF5F0] border-transparent hover:border-[#D4AF37]/30'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className={`w-1.5 h-1.5 rounded-full ${isActive('/news-events') ? 'bg-[#721C24]' : 'bg-[#D4AF37]'}`} />
-                    <span>News & Events</span>
+                  <div className="flex items-center space-x-3 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-xs">
+                      <Calendar className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-xs text-[#0F172A] group-hover:text-[#721C24] leading-tight">News & Events</p>
+                      <p className="text-[10.5px] text-gray-600 font-sans line-clamp-1 mt-0.5">Upcoming pujas & ceremonies</p>
+                    </div>
                   </div>
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#721C24] transition-colors" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#721C24] group-hover:translate-x-0.5 transition-all flex-shrink-0" />
                 </Link>
 
                 <Link
                   to="/contact"
                   onClick={() => setNavMoreOpen(false)}
-                  className={`p-2.5 rounded-xl transition-colors flex items-center justify-between group ${
+                  className={`p-2.5 rounded-xl transition-all flex items-center justify-between group border ${
                     isActive('/contact')
-                      ? 'bg-[#FAF5F0] text-[#721C24] font-bold border border-[#D4AF37]/30'
-                      : 'text-gray-800 hover:bg-[#FAF5F0]'
+                      ? 'bg-[#FAF5F0] text-[#721C24] border-[#D4AF37]'
+                      : 'text-gray-800 hover:bg-[#FAF5F0] border-transparent hover:border-[#D4AF37]/30'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className={`w-1.5 h-1.5 rounded-full ${isActive('/contact') ? 'bg-[#721C24]' : 'bg-[#D4AF37]'}`} />
-                    <span>{t.contact}</span>
+                  <div className="flex items-center space-x-3 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-xs">
+                      <Phone className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-xs text-[#0F172A] group-hover:text-[#721C24] leading-tight">{t.contact}</p>
+                      <p className="text-[10.5px] text-gray-600 font-sans line-clamp-1 mt-0.5">Secretariat desk & inquiry</p>
+                    </div>
                   </div>
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#721C24] transition-colors" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#721C24] group-hover:translate-x-0.5 transition-all flex-shrink-0" />
                 </Link>
 
                 {/* Any dynamic custom pages created in Admin */}
@@ -493,17 +513,22 @@ export default function Navbar({ onOpenDonate }) {
                       key={item.id || item.url}
                       to={item.url}
                       onClick={() => setNavMoreOpen(false)}
-                      className={`p-2.5 rounded-xl transition-colors flex items-center justify-between group ${
+                      className={`p-2.5 rounded-xl transition-all flex items-center justify-between group border ${
                         isActive(item.url)
-                          ? 'bg-[#FAF5F0] text-[#721C24] font-bold border border-[#D4AF37]/30'
-                          : 'text-gray-800 hover:bg-[#FAF5F0]'
+                          ? 'bg-[#FAF5F0] text-[#721C24] border-[#D4AF37]'
+                          : 'text-gray-800 hover:bg-[#FAF5F0] border-transparent hover:border-[#D4AF37]/30'
                       }`}
                     >
-                      <div className="flex items-center gap-2.5">
-                        <span className={`w-1.5 h-1.5 rounded-full ${isActive(item.url) ? 'bg-[#721C24]' : 'bg-[#D4AF37]'}`} />
-                        <span className="truncate">{item.label || item.title}</span>
+                      <div className="flex items-center space-x-3 min-w-0">
+                        <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-xs">
+                          <Sparkles className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-bold text-xs text-[#0F172A] group-hover:text-[#721C24] leading-tight truncate">{item.label || item.title}</p>
+                          <p className="text-[10.5px] text-gray-600 font-sans line-clamp-1 mt-0.5">Dedicated sacred page</p>
+                        </div>
                       </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#721C24] transition-colors" />
+                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#721C24] group-hover:translate-x-0.5 transition-all flex-shrink-0" />
                     </Link>
                   ))}
               </div>
