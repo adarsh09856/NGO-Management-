@@ -22,18 +22,13 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const isAccountant = roleSlug === 'accountant';
   const isStaff = roleSlug === 'staff' || roleSlug === 'hr_manager';
 
-  const isPageStudioActive = location.pathname.startsWith('/admin/pages') ||
-                             location.pathname === '/admin/navigation' ||
-                             location.pathname === '/admin/donate-settings' ||
-                             location.pathname === '/admin/site-settings';
-
-  // Collapsible category states
-  const [secWebsiteOpen, setSecWebsiteOpen] = useState(true);
-  const [pagesOpen, setPagesOpen] = useState(true);
-  const [secMediaOpen, setSecMediaOpen] = useState(true);
-  const [secSanghaOpen, setSecSanghaOpen] = useState(true);
-  const [secDonationsOpen, setSecDonationsOpen] = useState(true);
-  const [secSettingsOpen, setSecSettingsOpen] = useState(true);
+  // Collapsible category states - ALL COLLAPSED BY DEFAULT AS REQUESTED
+  const [secWebsiteOpen, setSecWebsiteOpen] = useState(false);
+  const [pagesOpen, setPagesOpen] = useState(false);
+  const [secMediaOpen, setSecMediaOpen] = useState(false);
+  const [secSanghaOpen, setSecSanghaOpen] = useState(false);
+  const [secDonationsOpen, setSecDonationsOpen] = useState(false);
+  const [secSettingsOpen, setSecSettingsOpen] = useState(false);
   const [operationsOpen, setOperationsOpen] = useState(false);
   const [pendingApprovalsCount, setPendingApprovalsCount] = useState(0);
 
@@ -58,13 +53,6 @@ export default function AdminSidebar({ isOpen, onClose }) {
       setOperationsOpen(false);
     }
   };
-
-  useEffect(() => {
-    if (isPageStudioActive) {
-      setPagesOpen(true);
-      setSecWebsiteOpen(true);
-    }
-  }, [location.pathname]);
 
   // Periodically fetch pending UTR count for live treasury notification badge
   useEffect(() => {
@@ -112,7 +100,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        {/* Brand Crest Header */}
+        {/* Brand Header */}
         <div className="p-4 border-b border-[#1E293B] flex items-center justify-between flex-shrink-0 bg-[#0B0F19]">
           <div className="flex items-center space-x-2.5 min-w-0">
             <div className="w-8 h-8 rounded-full bg-[#0F172A] border-2 border-[#D4AF37] flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -123,7 +111,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                 DRODUL PHENDEY LING
               </h2>
               <p className="text-[9px] text-[#D4AF37] tracking-widest uppercase truncate font-medium">
-                {isSuperAdmin ? 'Super Admin Portal' : isAccountant ? 'Finance Portal' : 'Staff Workspace'}
+                {isSuperAdmin ? 'Admin Portal' : isAccountant ? 'Finance Portal' : 'Staff Portal'}
               </p>
             </div>
           </div>
@@ -136,8 +124,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* Scrollable Navigation Menu (5 Structured Client-Friendly Categories) */}
-        <nav className="flex-1 overflow-y-auto p-3 space-y-3 text-xs no-scrollbar">
+        {/* Scrollable Navigation Menu - Clean List with Simple Everyday Language */}
+        <nav className="flex-1 overflow-y-auto p-3 space-y-2 text-xs no-scrollbar">
 
           {/* Quick Collapse / Expand All Controller */}
           <div className="flex items-center justify-between px-2.5 py-1.5 bg-[#0B0F19] rounded-xl border border-[#1E293B] shadow-xs">
@@ -153,8 +141,23 @@ export default function AdminSidebar({ isOpen, onClose }) {
             </button>
           </div>
 
+          {/* Direct Home Link */}
+          <Link
+            to="/admin"
+            onClick={handleNavClick}
+            className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
+              isActive('/admin', true)
+                ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
+            }`}
+          >
+            <LayoutDashboard className="w-4 h-4 text-[#D4AF37]" />
+            <span className="flex-1 font-semibold">Home</span>
+            <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-semibold uppercase tracking-wider">Live</span>
+          </Link>
+
           {/* ========================================================= */}
-          {/* CATEGORY 1: WEBSITE & CONTENT                             */}
+          {/* 1. PAGES & MENUS (Collapsed by Default)                   */}
           {/* ========================================================= */}
           <div className="bg-[#0B0F19]/60 rounded-xl border border-[#1E293B]/60 p-1 space-y-1">
             <button
@@ -163,29 +166,14 @@ export default function AdminSidebar({ isOpen, onClose }) {
               className="w-full px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400 hover:text-white flex items-center justify-between transition-colors text-left"
             >
               <div className="flex items-center gap-1.5">
-                <span>1. Website & Content</span>
-                <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-[#D4AF37] font-bold tracking-wider">Pages</span>
+                <Globe className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>Pages & Menu</span>
               </div>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${secWebsiteOpen ? 'transform rotate-180 text-[#D4AF37]' : ''}`} />
             </button>
 
             {secWebsiteOpen && (
               <div className="space-y-0.5 animate-fadeIn">
-                {/* Dashboard Overview */}
-                <Link
-                  to="/admin"
-                  onClick={handleNavClick}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
-                    isActive('/admin', true)
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
-                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
-                  }`}
-                >
-                  <LayoutDashboard className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Dashboard Overview</span>
-                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-semibold uppercase tracking-wider">Live</span>
-                </Link>
-
                 {/* Website Pages Directory */}
                 <Link
                   to="/admin/pages"
@@ -197,9 +185,9 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <Globe className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Website Pages</span>
+                  <span className="flex-1">Pages</span>
                   <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-bold">
-                    + Create
+                    + New
                   </span>
                 </Link>
 
@@ -214,25 +202,18 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <MenuIcon className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Navigation & Menus</span>
-                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-medium">
-                    Header/Footer
-                  </span>
+                  <span className="flex-1">Menu</span>
                 </Link>
 
-                {/* Collapsible Core Page Editors */}
+                {/* Collapsible Core Pages - Collapsed by Default as requested */}
                 <button
                   type="button"
                   onClick={() => setPagesOpen(!pagesOpen)}
-                  className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg transition-all text-left ${
-                    isPageStudioActive && !isActive('/admin/pages', true) && !isActive('/admin/navigation')
-                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-semibold'
-                      : 'text-gray-400 hover:bg-[#1E293B]/40 hover:text-gray-200'
-                  }`}
+                  className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-gray-400 hover:bg-[#1E293B]/40 hover:text-gray-200 transition-all text-left"
                 >
                   <div className="flex items-center space-x-2">
                     <FileText className="w-3.5 h-3.5 text-gray-400" />
-                    <span className="text-[11px] font-semibold">Core Page Sections</span>
+                    <span className="text-[11px] font-semibold">Core Pages</span>
                   </div>
                   <ChevronDown
                     className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${
@@ -253,7 +234,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                       }`}
                     >
                       <Sparkles className="w-3 h-3 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Edit Homepage</span>
+                      <span className="flex-1 truncate">Homepage</span>
                     </Link>
 
                     <Link
@@ -266,7 +247,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                       }`}
                     >
                       <BookOpen className="w-3 h-3 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Edit About Us</span>
+                      <span className="flex-1 truncate">About Us</span>
                     </Link>
 
                     <Link
@@ -279,7 +260,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                       }`}
                     >
                       <GraduationCap className="w-3 h-3 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Edit Shedra Academy</span>
+                      <span className="flex-1 truncate">Shedra Academy</span>
                     </Link>
 
                     <Link
@@ -292,7 +273,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                       }`}
                     >
                       <Flame className="w-3 h-3 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Edit Ceremonial Prayers</span>
+                      <span className="flex-1 truncate">Prayers</span>
                     </Link>
 
                     <Link
@@ -305,7 +286,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                       }`}
                     >
                       <Heart className="w-3 h-3 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Edit Donate & Giving</span>
+                      <span className="flex-1 truncate">Donate</span>
                     </Link>
 
                     <Link
@@ -318,7 +299,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                       }`}
                     >
                       <Video className="w-3 h-3 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Edit Dharma Learning</span>
+                      <span className="flex-1 truncate">Learning</span>
                     </Link>
 
                     <Link
@@ -331,7 +312,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                       }`}
                     >
                       <Newspaper className="w-3 h-3 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Edit Sacred Blog</span>
+                      <span className="flex-1 truncate">Blog</span>
                     </Link>
 
                     <Link
@@ -344,7 +325,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                       }`}
                     >
                       <ClipboardList className="w-3 h-3 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Edit News & Events</span>
+                      <span className="flex-1 truncate">News & Events</span>
                     </Link>
 
                     <Link
@@ -357,7 +338,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                       }`}
                     >
                       <ImageIcon className="w-3 h-3 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Edit Sacred Gallery</span>
+                      <span className="flex-1 truncate">Gallery</span>
                     </Link>
 
                     <Link
@@ -370,7 +351,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                       }`}
                     >
                       <Phone className="w-3 h-3 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Edit Contact Desk</span>
+                      <span className="flex-1 truncate">Contact</span>
                     </Link>
 
                     <Link
@@ -383,7 +364,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                       }`}
                     >
                       <Shield className="w-3 h-3 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Edit Footer & Ashtamangala</span>
+                      <span className="flex-1 truncate">Footer</span>
                     </Link>
 
                     <Link
@@ -396,7 +377,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                       }`}
                     >
                       <Globe className="w-3 h-3 text-[#D4AF37]" />
-                      <span className="flex-1 truncate">Bespoke Custom Pages</span>
+                      <span className="flex-1 truncate">All Pages</span>
                     </Link>
                   </div>
                 )}
@@ -405,7 +386,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
           </div>
 
           {/* ========================================================= */}
-          {/* CATEGORY 2: STORIES & MEDIA                               */}
+          {/* 2. NEWS & MEDIA (Collapsed by Default)                    */}
           {/* ========================================================= */}
           {(isSuperAdmin || isStaff) && (
             <div className="bg-[#0B0F19]/60 rounded-xl border border-[#1E293B]/60 p-1 space-y-1">
@@ -414,7 +395,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
                 onClick={() => setSecMediaOpen(!secMediaOpen)}
                 className="w-full px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400 hover:text-white flex items-center justify-between transition-colors text-left"
               >
-                <span>2. News & Media Library</span>
+                <div className="flex items-center gap-1.5">
+                  <Newspaper className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <span>News & Media</span>
+                </div>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${secMediaOpen ? 'transform rotate-180 text-[#D4AF37]' : ''}`} />
               </button>
 
@@ -430,7 +414,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <ClipboardList className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">News & Announcements</span>
+                    <span className="flex-1">News</span>
                   </Link>
 
                   <Link
@@ -443,7 +427,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <Newspaper className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Sacred Gazette & Articles</span>
+                    <span className="flex-1">Blog</span>
                   </Link>
 
                   <Link
@@ -456,7 +440,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <ImageIcon className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Photo & Media Archives</span>
+                    <span className="flex-1">Gallery</span>
                   </Link>
 
                   <Link
@@ -469,7 +453,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <Video className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Dharma Video Discourses</span>
+                    <span className="flex-1">Videos</span>
                   </Link>
                 </div>
               )}
@@ -477,7 +461,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
           )}
 
           {/* ========================================================= */}
-          {/* CATEGORY 3: STUDENTS & MONASTIC SANGHA                    */}
+          {/* 3. MONKS & COURSES (Collapsed by Default)                 */}
           {/* ========================================================= */}
           {(isSuperAdmin || isStaff) && (
             <div className="bg-[#0B0F19]/60 rounded-xl border border-[#1E293B]/60 p-1 space-y-1">
@@ -486,7 +470,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
                 onClick={() => setSecSanghaOpen(!secSanghaOpen)}
                 className="w-full px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400 hover:text-white flex items-center justify-between transition-colors text-left"
               >
-                <span>3. Students & Monastic Sangha</span>
+                <div className="flex items-center gap-1.5">
+                  <GraduationCap className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <span>Monks & Courses</span>
+                </div>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${secSanghaOpen ? 'transform rotate-180 text-[#D4AF37]' : ''}`} />
               </button>
 
@@ -502,8 +489,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <GraduationCap className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Monk Scholars & Students</span>
-                    <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-semibold uppercase tracking-wider">Sangha</span>
+                    <span className="flex-1">Monks</span>
                   </Link>
 
                   <Link
@@ -516,7 +502,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <BookOpen className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Courses & LMS Curriculum</span>
+                    <span className="flex-1">Courses</span>
                   </Link>
 
                   <Link
@@ -529,7 +515,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <Award className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Consecrated Certificates</span>
+                    <span className="flex-1">Certificates</span>
                   </Link>
 
                   <Link
@@ -542,7 +528,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <Flame className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Prayer Requests & Pujas</span>
+                    <span className="flex-1">Prayers</span>
                   </Link>
                 </div>
               )}
@@ -550,7 +536,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
           )}
 
           {/* ========================================================= */}
-          {/* CATEGORY 4: DONATIONS & BANK APPROVALS                    */}
+          {/* 4. DONATIONS & ACCOUNTS (Collapsed by Default)            */}
           {/* ========================================================= */}
           {(isSuperAdmin || isAccountant) && (
             <div className="bg-[#0B0F19]/60 rounded-xl border border-[#1E293B]/60 p-1 space-y-1">
@@ -559,7 +545,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
                 onClick={() => setSecDonationsOpen(!secDonationsOpen)}
                 className="w-full px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400 hover:text-white flex items-center justify-between transition-colors text-left"
               >
-                <span>4. Donations & Bank Approvals</span>
+                <div className="flex items-center gap-1.5">
+                  <Coins className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <span>Donations & Accounts</span>
+                </div>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${secDonationsOpen ? 'transform rotate-180 text-[#D4AF37]' : ''}`} />
               </button>
 
@@ -575,14 +564,14 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Payment Approvals</span>
+                    <span className="flex-1">Approvals</span>
                     {pendingApprovalsCount > 0 ? (
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500 text-black font-extrabold uppercase tracking-wider animate-pulse shadow-xs">
                         {pendingApprovalsCount}
                       </span>
                     ) : (
                       <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-semibold uppercase tracking-wider">
-                        Treasury
+                        0
                       </span>
                     )}
                   </Link>
@@ -597,8 +586,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <HeartHandshake className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Donation Records</span>
-                    <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-400/20 text-[#D4AF37] font-semibold uppercase tracking-wider">Track</span>
+                    <span className="flex-1">Donations</span>
                   </Link>
 
                   <Link
@@ -611,7 +599,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <Flame className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Campaigns & Causes</span>
+                    <span className="flex-1">Campaigns</span>
                   </Link>
 
                   <Link
@@ -624,7 +612,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <Users className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Donors Directory</span>
+                    <span className="flex-1">Donors</span>
                   </Link>
 
                   <Link
@@ -637,8 +625,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <CreditCard className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Money Receipts</span>
-                    <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-semibold uppercase tracking-wider">80G</span>
+                    <span className="flex-1">Receipts</span>
                   </Link>
 
                   <Link
@@ -651,7 +638,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <Landmark className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Accounts & Expenses</span>
+                    <span className="flex-1">Accounts</span>
                   </Link>
 
                   <Link
@@ -664,7 +651,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <Coins className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Payment Gateways & Currency</span>
+                    <span className="flex-1">Payment Gateways</span>
                   </Link>
                 </div>
               )}
@@ -672,7 +659,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
           )}
 
           {/* ========================================================= */}
-          {/* CATEGORY 5: SETTINGS & GOVERNANCE                         */}
+          {/* 5. SETTINGS & USERS (Collapsed by Default)                */}
           {/* ========================================================= */}
           <div className="bg-[#0B0F19]/60 rounded-xl border border-[#1E293B]/60 p-1 space-y-1">
             <button
@@ -680,7 +667,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
               onClick={() => setSecSettingsOpen(!secSettingsOpen)}
               className="w-full px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400 hover:text-white flex items-center justify-between transition-colors text-left"
             >
-              <span>5. Site Settings & Governance</span>
+              <div className="flex items-center gap-1.5">
+                <Settings className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>Settings & Users</span>
+              </div>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${secSettingsOpen ? 'transform rotate-180 text-[#D4AF37]' : ''}`} />
             </button>
 
@@ -696,7 +686,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <Sliders className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Website Contact & Footer Settings</span>
+                  <span className="flex-1">Settings</span>
                 </Link>
 
                 <Link
@@ -709,7 +699,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <HeartHandshake className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Statutory & Tax Exemption Settings</span>
+                  <span className="flex-1">Tax & 80G</span>
                 </Link>
 
                 <Link
@@ -722,7 +712,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   }`}
                 >
                   <MessageSquareShare className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="flex-1">Devotee Messages & Inquiries</span>
+                  <span className="flex-1">Messages</span>
                 </Link>
 
                 {isSuperAdmin && (
@@ -736,7 +726,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <UserCog className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">Staff Accounts & Permissions</span>
+                    <span className="flex-1">Users</span>
                     <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-semibold uppercase tracking-wider">Access</span>
                   </Link>
                 )}
@@ -752,7 +742,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     }`}
                   >
                     <Settings className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="flex-1">System Logs & Audit Trail</span>
+                    <span className="flex-1">Audit Logs</span>
                   </Link>
                 )}
               </div>
@@ -760,7 +750,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
           </div>
 
           {/* ========================================================= */}
-          {/* OPERATIONS DESK                                           */}
+          {/* 6. OPERATIONS & STAFF (Collapsed by Default)              */}
           {/* ========================================================= */}
           <div className="bg-[#0B0F19]/60 rounded-xl border border-[#1E293B]/60 p-1 space-y-1">
             <button
@@ -768,9 +758,9 @@ export default function AdminSidebar({ isOpen, onClose }) {
               onClick={() => setOperationsOpen(!operationsOpen)}
               className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition-all text-left"
             >
-              <div className="flex items-center space-x-2">
-                <Warehouse className="w-3.5 h-3.5 text-gray-400" />
-                <span className="text-[11px] font-semibold">Staff, Payroll & Supplies</span>
+              <div className="flex items-center space-x-1.5">
+                <Warehouse className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Operations & Staff</span>
               </div>
               <ChevronDown
                 className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${
@@ -780,57 +770,57 @@ export default function AdminSidebar({ isOpen, onClose }) {
             </button>
 
             {operationsOpen && (
-              <div className="pl-3 pr-1 pt-0.5 pb-0.5 space-y-0.5 border-l-2 border-[#D4AF37]/30 ml-4 animate-fadeIn">
+              <div className="space-y-0.5 animate-fadeIn">
                 <Link
                   to="/admin/inventory"
                   onClick={handleNavClick}
-                  className={`flex items-center space-x-2 px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
                     isActive('/admin/inventory')
-                      ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
-                      : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
                   }`}
                 >
-                  <Warehouse className="w-3 h-3 text-[#D4AF37]" />
-                  <span className="flex-1 truncate">Inventory & Store</span>
+                  <Warehouse className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1 truncate">Inventory</span>
                 </Link>
 
                 <Link
                   to="/admin/hrm/employees"
                   onClick={handleNavClick}
-                  className={`flex items-center space-x-2 px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
                     isActive('/admin/hrm')
-                      ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
-                      : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
                   }`}
                 >
-                  <UserCheck className="w-3 h-3 text-[#D4AF37]" />
-                  <span className="flex-1 truncate">HRM & Attendance</span>
+                  <UserCheck className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1 truncate">Staff / HR</span>
                 </Link>
 
                 <Link
                   to="/admin/payroll"
                   onClick={handleNavClick}
-                  className={`flex items-center space-x-2 px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
                     isActive('/admin/payroll')
-                      ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
-                      : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
                   }`}
                 >
-                  <Coins className="w-3 h-3 text-[#D4AF37]" />
-                  <span className="flex-1 truncate">Payroll & Wages</span>
+                  <Coins className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1 truncate">Payroll</span>
                 </Link>
 
                 <Link
                   to="/admin/reports"
                   onClick={handleNavClick}
-                  className={`flex items-center space-x-2 px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-all ${
                     isActive('/admin/reports')
-                      ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-bold'
-                      : 'text-gray-300 hover:bg-[#1E293B] hover:text-white'
+                      ? 'bg-[#1E293B] text-white border-l-4 border-[#D4AF37] font-bold shadow-sm'
+                      : 'text-gray-300 hover:bg-[#1E293B]/60 hover:text-white'
                   }`}
                 >
-                  <BarChart3 className="w-3 h-3 text-[#D4AF37]" />
-                  <span className="flex-1 truncate">Reports & Export</span>
+                  <BarChart3 className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="flex-1 truncate">Reports</span>
                 </Link>
               </div>
             )}

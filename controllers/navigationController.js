@@ -14,12 +14,12 @@ async function getNavigation(req, res, next) {
       const defaultSeeds = [
         ['header', 'Home', '/', 0, 0, 1, 1],
         ['header', 'About Us', '/about', 0, 0, 2, 1],
-        ['header', 'Shedra Academy', '/shedra', 0, 0, 3, 1],
-        ['header', 'Butter Lamps & Prayers', '/prayer-request', 0, 0, 4, 1],
-        ['header', 'Dharma LMS', '/learning', 0, 0, 5, 1],
-        ['header', 'Sacred Gazette', '/blog', 0, 0, 6, 1],
-        ['header', 'Photo Archives', '/gallery', 0, 0, 7, 1],
-        ['header', 'Secretariat & Contact', '/contact', 0, 0, 8, 1],
+        ['header', 'Shedra', '/shedra', 0, 0, 3, 1],
+        ['header', 'Prayers', '/prayer-request', 0, 0, 4, 1],
+        ['header', 'Learning', '/learning', 0, 0, 5, 1],
+        ['header', 'Blog', '/blog', 0, 0, 6, 1],
+        ['header', 'Gallery', '/gallery', 0, 0, 7, 1],
+        ['header', 'Contact', '/contact', 0, 0, 8, 1],
 
         ['footer_programs', '108ft Peace Stupa', '/about', 0, 0, 1, 1],
         ['footer_programs', 'Shedra Monastic Academy', '/shedra', 0, 0, 2, 1],

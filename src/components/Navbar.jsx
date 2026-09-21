@@ -238,427 +238,277 @@ export default function Navbar({ onOpenDonate }) {
           </div>
         </Link>
 
-        {/* Desktop Navigation Links (Device-friendly flex with adaptive density) */}
-        <nav className="hidden xl:flex items-center space-x-3 2xl:space-x-6 text-[11px] 2xl:text-xs font-bold text-[#1E293B] tracking-normal 2xl:tracking-wider uppercase flex-shrink-0">
-          {navItems.length > 0 ? (
-            <>
-              {/* Primary Nav Items (First 5 visible on laptop & large desktop) */}
-              {navItems.slice(0, 5).map((item) => {
-                const isExt = item.url?.startsWith('http');
-                const active = isActive(item.url);
-                return isExt ? (
-                  <a
-                    key={item.id || item.url}
-                    href={item.url}
-                    target={item.target || '_blank'}
-                    rel="noreferrer"
-                    className="relative py-1.5 transition-all duration-200 hover:text-[#721C24] group text-gray-700 whitespace-nowrap flex-shrink-0"
-                  >
-                    <span>{item.label || item.title}</span>
-                    <span className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 w-0 group-hover:w-full" />
-                  </a>
-                ) : (
+        {/* Desktop Navigation Links (Device-friendly auto-adjusting responsive flex layout) */}
+        <nav className="hidden lg:flex items-center space-x-2 xl:space-x-5 2xl:space-x-7 text-[11px] xl:text-xs font-bold text-[#1E293B] tracking-wide uppercase flex-1 justify-center min-w-0">
+          {/* HOME */}
+          <Link
+            to="/"
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap flex-shrink-0 ${
+              isActive('/') ? 'text-[#721C24]' : 'text-gray-700'
+            }`}
+          >
+            <span>{t.home}</span>
+            <span
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
+                isActive('/') ? 'w-full' : 'w-0 group-hover:w-full'
+              }`}
+            />
+          </Link>
+
+          {/* ABOUT US */}
+          <Link
+            to="/about"
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap flex-shrink-0 ${
+              isActive('/about') ? 'text-[#721C24]' : 'text-gray-700'
+            }`}
+          >
+            <span>{t.about}</span>
+            <span
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
+                isActive('/about') ? 'w-full' : 'w-0 group-hover:w-full'
+              }`}
+            />
+          </Link>
+
+          {/* OUR ACTIVITIES DROPDOWN */}
+          <div
+            className="relative flex-shrink-0"
+            onMouseEnter={() => setActiveDropdown('activities')}
+            onMouseLeave={() => setActiveDropdown(null)}
+          >
+            <button
+              type="button"
+              className={`flex items-center gap-1 py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap ${
+                activeDropdown === 'activities' || location.pathname.startsWith('/activities')
+                  ? 'text-[#721C24]'
+                  : 'text-gray-700'
+              }`}
+            >
+              <span>{t.activities}</span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 text-[#D4AF37] transition-transform duration-200 ${
+                  activeDropdown === 'activities' ? 'rotate-180' : ''
+                }`}
+              />
+              <span
+                className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
+                  activeDropdown === 'activities' || location.pathname.startsWith('/activities')
+                    ? 'w-full'
+                    : 'w-0 group-hover:w-full'
+                }`}
+              />
+            </button>
+
+            {/* Silk Dropdown Card */}
+            {activeDropdown === 'activities' && (
+              <div className="absolute top-full left-0 w-72 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-[#D4AF37]/30 p-2 animate-scale-in z-50">
+                <div className="space-y-1 text-xs font-serif">
                   <Link
-                    key={item.id || item.url}
-                    to={item.url}
-                    target={item.target || '_self'}
-                    className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap flex-shrink-0 ${
-                      active ? 'text-[#721C24]' : 'text-gray-700'
-                    }`}
+                    to="/about"
+                    className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group"
                   >
-                    <span>{item.label || item.title}</span>
-                    <span
-                      className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
-                        active ? 'w-full' : 'w-0 group-hover:w-full'
-                      }`}
-                    />
-                  </Link>
-                );
-              })}
-
-              {/* Remaining Items on Large Displays (2xl: 1536px+) */}
-              {navItems.slice(5).map((item) => {
-                const isExt = item.url?.startsWith('http');
-                const active = isActive(item.url);
-                return isExt ? (
-                  <a
-                    key={item.id || item.url}
-                    href={item.url}
-                    target={item.target || '_blank'}
-                    rel="noreferrer"
-                    className="hidden 2xl:inline-block relative py-1.5 transition-all duration-200 hover:text-[#721C24] group text-gray-700 whitespace-nowrap flex-shrink-0"
-                  >
-                    <span>{item.label || item.title}</span>
-                    <span className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 w-0 group-hover:w-full" />
-                  </a>
-                ) : (
-                  <Link
-                    key={item.id || item.url}
-                    to={item.url}
-                    target={item.target || '_self'}
-                    className={`hidden 2xl:inline-block relative py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap flex-shrink-0 ${
-                      active ? 'text-[#721C24]' : 'text-gray-700'
-                    }`}
-                  >
-                    <span>{item.label || item.title}</span>
-                    <span
-                      className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
-                        active ? 'w-full' : 'w-0 group-hover:w-full'
-                      }`}
-                    />
-                  </Link>
-                );
-              })}
-
-              {/* Adaptive "More ▾" Dropdown for Laptop Viewports (1280px-1535px) */}
-              {navItems.length > 5 && (
-                <div
-                  className="relative xl:inline-block 2xl:hidden"
-                  onMouseEnter={() => setNavMoreOpen(true)}
-                  onMouseLeave={() => setNavMoreOpen(false)}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setNavMoreOpen(!navMoreOpen)}
-                    className={`flex items-center gap-1 py-1.5 transition-all duration-200 hover:text-[#721C24] whitespace-nowrap flex-shrink-0 text-[11px] font-bold uppercase tracking-normal ${
-                      navItems.slice(5).some((item) => isActive(item.url)) ? 'text-[#721C24]' : 'text-gray-700'
-                    }`}
-                  >
-                    <span>More</span>
-                    <ChevronDown
-                      className={`w-3 h-3 text-[#D4AF37] transition-transform duration-200 ${
-                        navMoreOpen ? 'rotate-180' : ''
-                      }`}
-                    />
-                    <span
-                      className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
-                        navItems.slice(5).some((item) => isActive(item.url)) ? 'w-full' : 'w-0'
-                      }`}
-                    />
-                  </button>
-
-                  {navMoreOpen && (
-                    <div className="absolute right-0 top-full mt-1 w-64 bg-white/98 backdrop-blur-2xl rounded-2xl shadow-2xl border border-[#D4AF37]/30 p-2 z-50 animate-fadeIn space-y-1 text-xs font-serif">
-                      {navItems.slice(5).map((item) => {
-                        const isExt = item.url?.startsWith('http');
-                        const active = isActive(item.url);
-                        return isExt ? (
-                          <a
-                            key={item.id || item.url}
-                            href={item.url}
-                            target={item.target || '_blank'}
-                            rel="noreferrer"
-                            className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-center justify-between group text-gray-800"
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
-                              <span className="font-medium">{item.label || item.title}</span>
-                            </div>
-                            <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#721C24] transition-colors" />
-                          </a>
-                        ) : (
-                          <Link
-                            key={item.id || item.url}
-                            to={item.url}
-                            target={item.target || '_self'}
-                            onClick={() => setNavMoreOpen(false)}
-                            className={`p-2.5 rounded-xl transition-colors flex items-center justify-between group ${
-                              active
-                                ? 'bg-[#FAF5F0] text-[#721C24] font-bold border border-[#D4AF37]/30'
-                                : 'text-gray-800 hover:bg-[#FAF5F0]'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-[#721C24]' : 'bg-[#D4AF37]'}`} />
-                              <span>{item.label || item.title}</span>
-                            </div>
-                            <ChevronRight
-                              className={`w-3.5 h-3.5 ${
-                                active ? 'text-[#721C24]' : 'text-gray-400 group-hover:text-[#721C24]'
-                              }`}
-                            />
-                          </Link>
-                        );
-                      })}
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
+                      <Landmark className="w-4 h-4" />
                     </div>
-                  )}
+                    <div>
+                      <p className="font-bold text-xs text-[#1A0B0E]">Great Druk Wangyel Peace Stupa</p>
+                      <p className="text-[10px] text-gray-500 font-sans line-clamp-1">108ft sacred monument for world peace</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to="/shedra"
+                    className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
+                      <GraduationCap className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-xs text-[#1A0B0E]">Shedra Monastic University</p>
+                      <p className="text-[10px] text-gray-500 font-sans line-clamp-1">9-year higher Buddhist philosophy degrees</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to="/prayer-request"
+                    className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
+                      <Flame className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-xs text-[#1A0B0E]">Butter Lamp Offerings</p>
+                      <p className="text-[10px] text-gray-500 font-sans line-clamp-1">Dedicate prayers & merit</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to="/tracking"
+                    className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
+                      <Clock className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-xs text-[#1A0B0E]">Track Offering Status</p>
+                      <p className="text-[10px] text-gray-500 font-sans line-clamp-1">Live bank & prayer progress</p>
+                    </div>
+                  </Link>
                 </div>
-              )}
-            </>
-          ) : (
-            <>
-              {/* HOME */}
-              <Link
-                to="/"
-                className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap flex-shrink-0 ${
-                  isActive('/') ? 'text-[#721C24]' : 'text-gray-700'
-                }`}
-              >
-                <span>{t.home}</span>
-                <span
-                  className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
-                    isActive('/') ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}
-                />
-              </Link>
+              </div>
+            )}
+          </div>
 
-              {/* ABOUT US */}
-              <Link
-                to="/about"
-                className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap flex-shrink-0 ${
-                  isActive('/about') ? 'text-[#721C24]' : 'text-gray-700'
-                }`}
-              >
-                <span>{t.about}</span>
-                <span
-                  className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
-                    isActive('/about') ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}
-                />
-              </Link>
+          {/* SHEDRA MONASTIC ACADEMY */}
+          <Link
+            to="/shedra"
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap flex-shrink-0 ${
+              isActive('/shedra') ? 'text-[#721C24]' : 'text-gray-700'
+            }`}
+          >
+            <span>{t.shedra}</span>
+            <span
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
+                isActive('/shedra') ? 'w-full' : 'w-0 group-hover:w-full'
+              }`}
+            />
+          </Link>
 
-              {/* OUR ACTIVITIES DROPDOWN */}
-              <div
-                className="relative flex-shrink-0"
-                onMouseEnter={() => setActiveDropdown('activities')}
-                onMouseLeave={() => setActiveDropdown(null)}
-              >
-                <button
-                  type="button"
-                  className={`flex items-center gap-1 py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap ${
-                    activeDropdown === 'activities' || location.pathname.startsWith('/activities')
-                      ? 'text-[#721C24]'
-                      : 'text-gray-700'
+          {/* LEARNING */}
+          <Link
+            to="/learning"
+            className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap flex-shrink-0 ${
+              isActive('/learning') ? 'text-[#721C24]' : 'text-gray-700'
+            }`}
+          >
+            <span>{t.learning}</span>
+            <span
+              className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
+                isActive('/learning') ? 'w-full' : 'w-0 group-hover:w-full'
+              }`}
+            />
+          </Link>
+
+          {/* MORE DROPDOWN (Blog, Gallery, Contact, Custom Pages) */}
+          <div
+            className="relative flex-shrink-0"
+            onMouseEnter={() => setNavMoreOpen(true)}
+            onMouseLeave={() => setNavMoreOpen(false)}
+          >
+            <button
+              type="button"
+              onClick={() => setNavMoreOpen(!navMoreOpen)}
+              className={`flex items-center gap-1 py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap ${
+                ['/blog', '/gallery', '/contact', '/news-events'].includes(location.pathname) || location.pathname.startsWith('/pages/')
+                  ? 'text-[#721C24]'
+                  : 'text-gray-700'
+              }`}
+            >
+              <span>More</span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 text-[#D4AF37] transition-transform duration-200 ${
+                  navMoreOpen ? 'rotate-180' : ''
+                }`}
+              />
+              <span
+                className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
+                  ['/blog', '/gallery', '/contact', '/news-events'].includes(location.pathname) || location.pathname.startsWith('/pages/')
+                    ? 'w-full'
+                    : 'w-0 group-hover:w-full'
+                }`}
+              />
+            </button>
+
+            {navMoreOpen && (
+              <div className="absolute right-0 top-full mt-1 w-56 bg-white/98 backdrop-blur-2xl rounded-2xl shadow-2xl border border-[#D4AF37]/30 p-2 z-50 animate-fadeIn space-y-1 text-xs font-serif">
+                <Link
+                  to="/blog"
+                  onClick={() => setNavMoreOpen(false)}
+                  className={`p-2.5 rounded-xl transition-colors flex items-center justify-between group ${
+                    isActive('/blog')
+                      ? 'bg-[#FAF5F0] text-[#721C24] font-bold border border-[#D4AF37]/30'
+                      : 'text-gray-800 hover:bg-[#FAF5F0]'
                   }`}
                 >
-                  <span>{t.activities}</span>
-                  <ChevronDown
-                    className={`w-3.5 h-3.5 text-[#D4AF37] transition-transform duration-200 ${
-                      activeDropdown === 'activities' ? 'rotate-180' : ''
-                    }`}
-                  />
-                  <span
-                    className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
-                      activeDropdown === 'activities' || location.pathname.startsWith('/activities')
-                        ? 'w-full'
-                        : 'w-0 group-hover:w-full'
-                    }`}
-                  />
-                </button>
-
-                {/* Silk Dropdown Card */}
-                {activeDropdown === 'activities' && (
-                  <div className="absolute top-full left-0 w-72 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-[#D4AF37]/30 p-2 animate-scale-in z-50">
-                    <div className="space-y-1 text-xs font-serif">
-                      <Link
-                        to="/about"
-                        className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
-                          <Landmark className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-xs text-[#1A0B0E]">Great Druk Wangyel Peace Stupa</p>
-                          <p className="text-[10px] text-gray-500 font-sans line-clamp-1">108ft sacred monument for world peace</p>
-                        </div>
-                      </Link>
-
-                      <Link
-                        to="/shedra"
-                        className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
-                          <GraduationCap className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-xs text-[#1A0B0E]">Shedra Monastic University</p>
-                          <p className="text-[10px] text-gray-500 font-sans line-clamp-1">9-year higher Buddhist philosophy degrees</p>
-                        </div>
-                      </Link>
-
-                      <Link
-                        to="/prayer-request"
-                        className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
-                          <Flame className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-xs text-[#1A0B0E]">Butter Lamp Offerings</p>
-                          <p className="text-[10px] text-gray-500 font-sans line-clamp-1">Dedicate prayers & merit</p>
-                        </div>
-                      </Link>
-
-                      <Link
-                        to="/tracking"
-                        className="p-2.5 rounded-xl hover:bg-[#FAF5F0] transition-colors flex items-start space-x-3 group"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-[#FAF5F0] group-hover:bg-[#1A0B0E] text-[#721C24] group-hover:text-[#D4AF37] flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
-                          <Clock className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-xs text-[#1A0B0E]">Track Offering Status</p>
-                          <p className="text-[10px] text-gray-500 font-sans line-clamp-1">Live bank & prayer progress</p>
-                        </div>
-                      </Link>
-                    </div>
+                  <div className="flex items-center gap-2.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${isActive('/blog') ? 'bg-[#721C24]' : 'bg-[#D4AF37]'}`} />
+                    <span>{t.blog}</span>
                   </div>
-                )}
-              </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#721C24] transition-colors" />
+                </Link>
 
-              {/* SHEDRA MONASTIC ACADEMY */}
-              <Link
-                to="/shedra"
-                className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap flex-shrink-0 ${
-                  isActive('/shedra') ? 'text-[#721C24]' : 'text-gray-700'
-                }`}
-              >
-                <span>{t.shedra}</span>
-                <span
-                  className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
-                    isActive('/shedra') ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}
-                />
-              </Link>
-
-              {/* LEARNING */}
-              <Link
-                to="/learning"
-                className={`relative py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap flex-shrink-0 ${
-                  isActive('/learning') ? 'text-[#721C24]' : 'text-gray-700'
-                }`}
-              >
-                <span>{t.learning}</span>
-                <span
-                  className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
-                    isActive('/learning') ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}
-                />
-              </Link>
-
-              {/* Extra Fallback Items on 2xl */}
-              <Link
-                to="/blog"
-                className={`hidden 2xl:inline-block relative py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap flex-shrink-0 ${
-                  isActive('/blog') ? 'text-[#721C24]' : 'text-gray-700'
-                }`}
-              >
-                <span>{t.blog}</span>
-                <span
-                  className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
-                    isActive('/blog') ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}
-                />
-              </Link>
-
-              <Link
-                to="/gallery"
-                className={`hidden 2xl:inline-block relative py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap flex-shrink-0 ${
-                  isActive('/gallery') ? 'text-[#721C24]' : 'text-gray-700'
-                }`}
-              >
-                <span>{t.gallery}</span>
-                <span
-                  className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
-                    isActive('/gallery') ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}
-                />
-              </Link>
-
-              <Link
-                to="/contact"
-                className={`hidden 2xl:inline-block relative py-1.5 transition-all duration-200 hover:text-[#721C24] group whitespace-nowrap flex-shrink-0 ${
-                  isActive('/contact') ? 'text-[#721C24]' : 'text-gray-700'
-                }`}
-              >
-                <span>{t.contact}</span>
-                <span
-                  className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
-                    isActive('/contact') ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}
-                />
-              </Link>
-
-              {/* Fallback "More ▾" Dropdown on xl */}
-              <div
-                className="relative xl:inline-block 2xl:hidden"
-                onMouseEnter={() => setNavMoreOpen(true)}
-                onMouseLeave={() => setNavMoreOpen(false)}
-              >
-                <button
-                  type="button"
-                  onClick={() => setNavMoreOpen(!navMoreOpen)}
-                  className={`flex items-center gap-1 py-1.5 transition-all duration-200 hover:text-[#721C24] whitespace-nowrap flex-shrink-0 text-[11px] font-bold uppercase tracking-normal ${
-                    ['/blog', '/gallery', '/contact'].includes(location.pathname) ? 'text-[#721C24]' : 'text-gray-700'
+                <Link
+                  to="/gallery"
+                  onClick={() => setNavMoreOpen(false)}
+                  className={`p-2.5 rounded-xl transition-colors flex items-center justify-between group ${
+                    isActive('/gallery')
+                      ? 'bg-[#FAF5F0] text-[#721C24] font-bold border border-[#D4AF37]/30'
+                      : 'text-gray-800 hover:bg-[#FAF5F0]'
                   }`}
                 >
-                  <span>More</span>
-                  <ChevronDown
-                    className={`w-3 h-3 text-[#D4AF37] transition-transform duration-200 ${
-                      navMoreOpen ? 'rotate-180' : ''
-                    }`}
-                  />
-                  <span
-                    className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-[#721C24] transition-all duration-300 ${
-                      ['/blog', '/gallery', '/contact'].includes(location.pathname) ? 'w-full' : 'w-0'
-                    }`}
-                  />
-                </button>
-
-                {navMoreOpen && (
-                  <div className="absolute right-0 top-full mt-1 w-56 bg-white/98 backdrop-blur-2xl rounded-2xl shadow-2xl border border-[#D4AF37]/30 p-2 z-50 animate-fadeIn space-y-1 text-xs font-serif">
-                    <Link
-                      to="/blog"
-                      onClick={() => setNavMoreOpen(false)}
-                      className={`p-2.5 rounded-xl transition-colors flex items-center justify-between group ${
-                        isActive('/blog')
-                          ? 'bg-[#FAF5F0] text-[#721C24] font-bold border border-[#D4AF37]/30'
-                          : 'text-gray-800 hover:bg-[#FAF5F0]'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className={`w-1.5 h-1.5 rounded-full ${isActive('/blog') ? 'bg-[#721C24]' : 'bg-[#D4AF37]'}`} />
-                        <span>{t.blog}</span>
-                      </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#721C24] transition-colors" />
-                    </Link>
-
-                    <Link
-                      to="/gallery"
-                      onClick={() => setNavMoreOpen(false)}
-                      className={`p-2.5 rounded-xl transition-colors flex items-center justify-between group ${
-                        isActive('/gallery')
-                          ? 'bg-[#FAF5F0] text-[#721C24] font-bold border border-[#D4AF37]/30'
-                          : 'text-gray-800 hover:bg-[#FAF5F0]'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className={`w-1.5 h-1.5 rounded-full ${isActive('/gallery') ? 'bg-[#721C24]' : 'bg-[#D4AF37]'}`} />
-                        <span>{t.gallery}</span>
-                      </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#721C24] transition-colors" />
-                    </Link>
-
-                    <Link
-                      to="/contact"
-                      onClick={() => setNavMoreOpen(false)}
-                      className={`p-2.5 rounded-xl transition-colors flex items-center justify-between group ${
-                        isActive('/contact')
-                          ? 'bg-[#FAF5F0] text-[#721C24] font-bold border border-[#D4AF37]/30'
-                          : 'text-gray-800 hover:bg-[#FAF5F0]'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className={`w-1.5 h-1.5 rounded-full ${isActive('/contact') ? 'bg-[#721C24]' : 'bg-[#D4AF37]'}`} />
-                        <span>{t.contact}</span>
-                      </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#721C24] transition-colors" />
-                    </Link>
+                  <div className="flex items-center gap-2.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${isActive('/gallery') ? 'bg-[#721C24]' : 'bg-[#D4AF37]'}`} />
+                    <span>{t.gallery}</span>
                   </div>
-                )}
+                  <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#721C24] transition-colors" />
+                </Link>
+
+                <Link
+                  to="/news-events"
+                  onClick={() => setNavMoreOpen(false)}
+                  className={`p-2.5 rounded-xl transition-colors flex items-center justify-between group ${
+                    isActive('/news-events')
+                      ? 'bg-[#FAF5F0] text-[#721C24] font-bold border border-[#D4AF37]/30'
+                      : 'text-gray-800 hover:bg-[#FAF5F0]'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${isActive('/news-events') ? 'bg-[#721C24]' : 'bg-[#D4AF37]'}`} />
+                    <span>News & Events</span>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#721C24] transition-colors" />
+                </Link>
+
+                <Link
+                  to="/contact"
+                  onClick={() => setNavMoreOpen(false)}
+                  className={`p-2.5 rounded-xl transition-colors flex items-center justify-between group ${
+                    isActive('/contact')
+                      ? 'bg-[#FAF5F0] text-[#721C24] font-bold border border-[#D4AF37]/30'
+                      : 'text-gray-800 hover:bg-[#FAF5F0]'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${isActive('/contact') ? 'bg-[#721C24]' : 'bg-[#D4AF37]'}`} />
+                    <span>{t.contact}</span>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#721C24] transition-colors" />
+                </Link>
+
+                {/* Any dynamic custom pages created in Admin */}
+                {navItems
+                  .filter((item) => item.url?.startsWith('/pages/') || (item.url && !['/', '/about', '/shedra', '/learning', '/prayer-request', '/blog', '/gallery', '/contact', '/news-events', '/tracking'].includes(item.url)))
+                  .map((item) => (
+                    <Link
+                      key={item.id || item.url}
+                      to={item.url}
+                      onClick={() => setNavMoreOpen(false)}
+                      className={`p-2.5 rounded-xl transition-colors flex items-center justify-between group ${
+                        isActive(item.url)
+                          ? 'bg-[#FAF5F0] text-[#721C24] font-bold border border-[#D4AF37]/30'
+                          : 'text-gray-800 hover:bg-[#FAF5F0]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className={`w-1.5 h-1.5 rounded-full ${isActive(item.url) ? 'bg-[#721C24]' : 'bg-[#D4AF37]'}`} />
+                        <span className="truncate">{item.label || item.title}</span>
+                      </div>
+                      <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#721C24] transition-colors" />
+                    </Link>
+                  ))}
               </div>
-            </>
-          )}
+            )}
+          </div>
         </nav>
 
         {/* Right Action Controls */}
@@ -701,7 +551,7 @@ export default function Navbar({ onOpenDonate }) {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(true)}
-            className="xl:hidden p-1.5 xs:p-2 rounded-full text-[#1A0B0E] hover:bg-amber-50/80 border border-gray-200 transition-colors shadow-sm active:scale-95 flex-shrink-0"
+            className="lg:hidden p-1.5 xs:p-2 rounded-full text-[#1A0B0E] hover:bg-amber-50/80 border border-gray-200 transition-colors shadow-sm active:scale-95 flex-shrink-0"
             aria-label="Open Navigation Menu"
           >
             <Menu className="w-5 h-5" />
@@ -719,7 +569,7 @@ export default function Navbar({ onOpenDonate }) {
 
       {/* 4. LUXURY SLIDE-OVER MOBILE DRAWER */}
       {mobileMenuOpen && typeof document !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[9999] xl:hidden flex justify-end">
+        <div className="fixed inset-0 z-[9999] lg:hidden flex justify-end">
           {/* Backdrop Overlay */}
           <div
             onClick={() => setMobileMenuOpen(false)}
