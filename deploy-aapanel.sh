@@ -28,6 +28,7 @@ echo "🗄️ Running database migrations & seed..."
 node db/migrate.js || true
 node db/seed.js || true
 if [ -f scripts/seed-live-settings.js ]; then
+    echo "⚙️ Seeding master default site settings..."
     node scripts/seed-live-settings.js || true
 fi
 
