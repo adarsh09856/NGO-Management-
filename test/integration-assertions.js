@@ -1020,6 +1020,60 @@ async function runAllAssertions() {
   });
 
   // -------------------------------------------------------------
+  // SECTION 14: LIVE SECTION EDITING & DEFAULT SETTINGS MERGE
+  // -------------------------------------------------------------
+  console.log('\n--- Section 14: Full-Site Live Section Editing & Default Settings Auto-Merge ---');
+
+  await test('Master default settings configuration exists with 100+ comprehensive content keys', () => {
+    const configPath = path.join(__dirname, '..', 'config', 'defaultSettings.js');
+    assert.strictEqual(fs.existsSync(configPath), true, 'config/defaultSettings.js must exist');
+    const DEFAULT_SETTINGS = require(configPath);
+    const keys = Object.keys(DEFAULT_SETTINGS);
+    assert.ok(keys.length >= 100, `Expected at least 100 default settings keys, got ${keys.length}`);
+    assert.ok(DEFAULT_SETTINGS.home_hero_title, 'Must contain home_hero_title');
+    assert.ok(DEFAULT_SETTINGS.home_doc_title, 'Must contain home_doc_title');
+    assert.ok(DEFAULT_SETTINGS.tracking_hero_title, 'Must contain tracking_hero_title');
+    assert.ok(DEFAULT_SETTINGS.bank_name, 'Must contain bank_name');
+  });
+
+  await test('Frontend constants defaultSiteSettings.js matches master default keys', () => {
+    const fePath = path.join(__dirname, '..', 'src', 'constants', 'defaultSiteSettings.js');
+    assert.strictEqual(fs.existsSync(fePath), true, 'src/constants/defaultSiteSettings.js must exist');
+    const feContent = fs.readFileSync(fePath, 'utf8');
+    assert.ok(feContent.includes('home_hero_title'), 'Must export home_hero_title');
+    assert.ok(feContent.includes('tracking_hero_title'), 'Must export tracking_hero_title');
+    assert.ok(feContent.includes('DEFAULT_SITE_SETTINGS'), 'Must export DEFAULT_SITE_SETTINGS');
+  });
+
+  await test('SQL migration 008_seed_live_site_settings.sql exists and contains ON DUPLICATE KEY UPDATE seed queries', () => {
+    const sqlPath = path.join(__dirname, '..', 'db', 'migrations', '008_seed_live_site_settings.sql');
+    assert.strictEqual(fs.existsSync(sqlPath), true, '008_seed_live_site_settings.sql must exist');
+    const sqlContent = fs.readFileSync(sqlPath, 'utf8');
+    assert.ok(sqlContent.includes('INSERT INTO system_settings'), 'Must contain INSERT statements');
+    assert.ok(sqlContent.includes('ON DUPLICATE KEY UPDATE'), 'Must contain ON DUPLICATE KEY UPDATE clause');
+    assert.ok(sqlContent.includes('hero_title'), 'Must seed hero_title');
+    assert.ok(sqlContent.includes('tracking_hero_title'), 'Must seed tracking_hero_title');
+  });
+
+  await test('LiveSectionEditor.jsx imports DEFAULT_SITE_SETTINGS and supports tracking and media sections', () => {
+    const editorPath = path.join(__dirname, '..', 'src', 'components', 'LiveSectionEditor.jsx');
+    assert.strictEqual(fs.existsSync(editorPath), true, 'LiveSectionEditor.jsx must exist');
+    const editorContent = fs.readFileSync(editorPath, 'utf8');
+    assert.ok(editorContent.includes('DEFAULT_SITE_SETTINGS'), 'Must import DEFAULT_SITE_SETTINGS');
+    assert.ok(editorContent.includes('sectionKey === \'tracking\''), 'Must have tracking section editor block');
+    assert.ok(editorContent.includes('sectionKey === \'media\''), 'Must have media section mapped');
+  });
+
+  await test('Tracking.jsx integrates liveSettings and SectionEditBadge for in-place live editing', () => {
+    const trackingPath = path.join(__dirname, '..', 'src', 'pages', 'public', 'Tracking.jsx');
+    assert.strictEqual(fs.existsSync(trackingPath), true, 'Tracking.jsx must exist');
+    const trackingContent = fs.readFileSync(trackingPath, 'utf8');
+    assert.ok(trackingContent.includes('sectionKey="tracking"'), 'Must have sectionKey="tracking" badge');
+    assert.ok(trackingContent.includes('ngo:settings-updated'), 'Must listen to real-time settings update events');
+    assert.ok(trackingContent.includes('liveSettings.tracking_hero_title'), 'Must bind to liveSettings.tracking_hero_title');
+  });
+
+  // -------------------------------------------------------------
   // TEST SUMMARY
   // -------------------------------------------------------------
   console.log('\n======================================================================');

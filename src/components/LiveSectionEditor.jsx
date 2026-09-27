@@ -10,6 +10,7 @@ import {
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import AdvancedEditorSuite from './admin/AdvancedEditorSuite';
+import DEFAULT_SITE_SETTINGS from '../constants/defaultSiteSettings';
 
 export default function LiveSectionEditor({
   isOpen,
@@ -37,8 +38,8 @@ export default function LiveSectionEditor({
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [customCategoryInput, setCustomCategoryInput] = useState('');
 
-  // Form State
-  const [form, setForm] = useState({});
+  // Form State initialized with full Master Default Settings so inputs are never empty
+  const [form, setForm] = useState(DEFAULT_SITE_SETTINGS);
 
   useEffect(() => {
     setMounted(true);
@@ -113,7 +114,7 @@ export default function LiveSectionEditor({
       try {
         const res = await api.get('/settings');
         if (isMounted && res.data?.success && res.data.data) {
-          setForm(res.data.data);
+          setForm({ ...DEFAULT_SITE_SETTINGS, ...res.data.data });
         }
       } catch (err) {
         if (isMounted) {
@@ -533,6 +534,20 @@ export default function LiveSectionEditor({
       studio: '/admin/prayer-requests?tab=news',
       hasActions: true,
       hasMedia: true,
+      hasCards: false
+    },
+    media: {
+      title: 'Monastery Gazette & News Events',
+      studio: '/admin/prayer-requests?tab=news',
+      hasActions: true,
+      hasMedia: true,
+      hasCards: false
+    },
+    tracking: {
+      title: 'Offering & Prayer Tracking Ledger',
+      studio: '/admin/payments',
+      hasActions: false,
+      hasMedia: false,
       hasCards: false
     },
     social: {
@@ -1891,7 +1906,7 @@ export default function LiveSectionEditor({
                     )}
 
                     {/* SECTION: NEWS & EVENTS */}
-                    {(sectionKey === 'news' || sectionKey === 'news-hero') && (
+                    {(sectionKey === 'news' || sectionKey === 'news-hero' || sectionKey === 'media') && (
                       <div className="space-y-3.5">
                         <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
                           Customize Ceremonies, auspicious feast days, and official news announcements.
@@ -1936,6 +1951,57 @@ export default function LiveSectionEditor({
                             onChange={(e) => updateField('news_hero_subtitle', e.target.value)}
                             placeholder="Stay informed about upcoming lunar calendar pujas, annual Drubchen retreats, and consecrations."
                             className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION: OFFERING & PRAYER TRACKING */}
+                    {sectionKey === 'tracking' && (
+                      <div className="space-y-3.5">
+                        <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 font-medium">
+                          Customize Offering & Prayer Tracking ledger headline, Tibetan banner, and audit notice.
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Eyebrow & Ledger Notice</label>
+                            <input
+                              type="text"
+                              value={form.tracking_hero_eyebrow || ''}
+                              onChange={(e) => updateField('tracking_hero_eyebrow', e.target.value)}
+                              placeholder="༄༅། །རྗེས་འདེད་ལྟ་རྟོགས། • Monastic Treasury Reconciliation Ledger"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Main Headline</label>
+                            <input
+                              type="text"
+                              value={form.tracking_hero_title || ''}
+                              onChange={(e) => updateField('tracking_hero_title', e.target.value)}
+                              placeholder="Live Offering & Prayer Tracking"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Subtitle & Description</label>
+                          <textarea
+                            rows={3}
+                            value={form.tracking_hero_subtitle || ''}
+                            onChange={(e) => updateField('tracking_hero_subtitle', e.target.value)}
+                            placeholder="Track the real-time status of your sacred Dana offering or prayer request through our multi-step monastic treasury verification..."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Search Tip / Notice Text</label>
+                          <input
+                            type="text"
+                            value={form.tracking_notice || ''}
+                            onChange={(e) => updateField('tracking_notice', e.target.value)}
+                            placeholder="Enter your 12-digit UPI UTR, Bank Transfer Reference, Receipt Number (RC-...), or Tracking ID (TRK-...) to track verification progress."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs"
                           />
                         </div>
                       </div>
@@ -2709,7 +2775,7 @@ export default function LiveSectionEditor({
                     )}
 
                     {/* SECTION: NEWS & EVENTS ACTIONS */}
-                    {(sectionKey === 'news' || sectionKey === 'news-hero') && (
+                    {(sectionKey === 'news' || sectionKey === 'news-hero' || sectionKey === 'media') && (
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
@@ -3020,7 +3086,7 @@ export default function LiveSectionEditor({
                     )}
 
                     {/* News Banner Image */}
-                    {(sectionKey === 'news' || sectionKey === 'news-hero') && (
+                    {(sectionKey === 'news' || sectionKey === 'news-hero' || sectionKey === 'media') && (
                       <div className="space-y-3">
                         <label className="block text-xs font-bold text-slate-700">Ceremonies Hero Banner Image</label>
                         {form.news_hero_image && (

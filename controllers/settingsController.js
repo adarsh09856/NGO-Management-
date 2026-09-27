@@ -4,6 +4,8 @@ const { logAudit, verifyAuditLogChain } = require('../middleware/auditLogger');
 const { validatePasswordStrength } = require('./authController');
 const bcrypt = require('bcryptjs');
 
+const { DEFAULT_SETTINGS } = require('../config/defaultSettings');
+
 const BCRYPT_ROUNDS = 12;
 
 // 1. System Settings & Dynamic Site Configuration
@@ -32,7 +34,13 @@ async function getSettings(req, res) {
       // Table may not exist yet if migrations haven't run
     }
 
-    return res.json({ success: true, data: settingsMap, siteSettings: siteSettingsMap, raw: rows });
+    // Merge baseline defaults with stored database settings (stored takes precedence)
+    const mergedData = {
+      ...DEFAULT_SETTINGS,
+      ...settingsMap
+    };
+
+    return res.json({ success: true, data: mergedData, siteSettings: siteSettingsMap, raw: rows });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to fetch settings: ' + error.message });
   }

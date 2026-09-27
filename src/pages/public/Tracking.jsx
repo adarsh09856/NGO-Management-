@@ -14,6 +14,27 @@ export default function Tracking() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const [liveSettings, setLiveSettings] = useState({});
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await api.get('/settings');
+        if (res.data?.success && res.data.data) {
+          setLiveSettings(res.data.data);
+        }
+      } catch (_) {}
+    }
+    loadSettings();
+
+    const handleSettingsUpdate = (e) => {
+      if (e.detail?.settings) {
+        setLiveSettings(e.detail.settings);
+      }
+    };
+    window.addEventListener('ngo:settings-updated', handleSettingsUpdate);
+    return () => window.removeEventListener('ngo:settings-updated', handleSettingsUpdate);
+  }, []);
 
   const fetchTracking = async (trackingQuery) => {
     const q = (trackingQuery || '').trim();
@@ -58,21 +79,20 @@ export default function Tracking() {
         <div className="flex items-center justify-center gap-2">
           <div className="inline-flex items-center space-x-2 glow-pill-gold px-3.5 py-1.5 rounded-full text-xs font-bold animate-float">
             <Shield className="w-4 h-4 text-amber-600" />
-            <span className="font-tibetan text-sm">༄༅། །རྗེས་འདེད་ལྟ་རྟོགས།</span>
-            <span>• Monastic Treasury Reconciliation Ledger</span>
+            <span className="font-tibetan text-sm">{liveSettings.tracking_hero_eyebrow || '༄༅། །རྗེས་འདེད་ལྟ་རྟོགས། • Monastic Treasury Reconciliation Ledger'}</span>
           </div>
           <SectionEditBadge
-            sectionKey="donate"
-            label="Treasury Approvals"
+            sectionKey="tracking"
+            label="Edit Tracking Page"
             studioHref="/admin/payments"
             position="relative top-0 right-0"
           />
         </div>
         <h1 className="font-serif-brand font-extrabold text-2xl xs:text-3xl sm:text-5xl text-[#0F172A] tracking-wide break-words">
-          Live Offering & Prayer Tracking
+          {liveSettings.tracking_hero_title || 'Live Offering & Prayer Tracking'}
         </h1>
         <p className="text-xs sm:text-sm text-gray-600 max-w-xl mx-auto font-light leading-relaxed">
-          Track the real-time status of your sacred Dana offering or prayer request through our multi-step monastic treasury verification, bank statement audit, and Section 80G statutory certification.
+          {liveSettings.tracking_hero_subtitle || 'Track the real-time status of your sacred Dana offering or prayer request through our multi-step monastic treasury verification, bank statement audit, and Section 80G statutory certification.'}
         </p>
       </div>
 
