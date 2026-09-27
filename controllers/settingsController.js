@@ -11,9 +11,16 @@ const BCRYPT_ROUNDS = 12;
 // 1. System Settings & Dynamic Site Configuration
 async function getSettings(req, res) {
   try {
-    const [rows] = await pool.query(`SELECT * FROM system_settings ORDER BY group_name ASC, id ASC`);
     const settingsMap = {};
-    rows.forEach(r => { settingsMap[r.setting_key] = r.setting_value; });
+    let rows = [];
+
+    try {
+      const [dbRows] = await pool.query(`SELECT * FROM system_settings ORDER BY group_name ASC, id ASC`);
+      rows = dbRows;
+      rows.forEach(r => { settingsMap[r.setting_key] = r.setting_value; });
+    } catch (dbErr) {
+      console.warn('[Settings Warning] system_settings query failed or table not found:', dbErr.message);
+    }
 
     // Also fetch structured site_settings if available
     let siteSettingsMap = {};
@@ -42,7 +49,8 @@ async function getSettings(req, res) {
 
     return res.json({ success: true, data: mergedData, siteSettings: siteSettingsMap, raw: rows });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to fetch settings: ' + error.message });
+    // Fail-safe: even on unexpected error, return baseline defaults instead of crashing frontend
+    return res.json({ success: true, data: DEFAULT_SETTINGS, siteSettings: {}, raw: [] });
   }
 }
 

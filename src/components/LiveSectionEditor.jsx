@@ -118,8 +118,9 @@ export default function LiveSectionEditor({
         }
       } catch (err) {
         if (isMounted) {
-          console.error('Failed to load settings in editor:', err);
-          setErrorMsg('Failed to load settings. Please refresh or check connection.');
+          console.warn('Network issue fetching live settings, using bundled defaults:', err.message);
+          // Keep DEFAULT_SITE_SETTINGS populated in form so user can still edit and save without seeing a blocking error banner
+          setForm((prev) => ({ ...DEFAULT_SITE_SETTINGS, ...(prev || {}) }));
         }
       } finally {
         if (isMounted) setLoading(false);
